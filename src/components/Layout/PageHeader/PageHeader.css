@@ -1,0 +1,64 @@
+.PageHeader{
+    width: 100%;
+    height: 80px;
+    background-color: #12171A;
+    border-bottom: 3px solid #353D4F;
+    color: #A9B0C1;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Old versions of Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome, Edge, Opera and Firefox */
+}
+
+.pageHeaderLeft{
+    margin-left: 20px;
+    display: flex;
+    flex-direction: row;
+    padding-top: 9px;
+}
+
+.pageHeaderRight{
+    position: absolute;
+    right: 20px;
+    font-size: 18px;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.headerLogoImage{
+    width: 240px;
+}
+
+.pageHeaderLink {
+    margin-left: 10px;
+    margin-right: 10px;
+    border: 1px #76829C solid;
+    padding: 10px 30px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    border-radius: 6px;
+    background: transparent;
+    transition: all 0.33s ease-in-out;
+}
+
+.OpenDashboardIcon {
+    padding-left: 10px;
+    height: 100%;
+    transition: all 0.33s ease-in-out;
+}
+
+.pageHeaderLink:hover {
+  cursor: pointer;
+  border: 1px #6CC24A solid;
+  background: #6CC24A;
+  color: #12171A;
+}

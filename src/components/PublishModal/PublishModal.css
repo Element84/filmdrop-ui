@@ -1,0 +1,207 @@
+.publishModal {
+    background-color: #00000070;
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 100;
+}
+
+.publishModalContainerImage {
+    position: absolute;
+    opacity: .02;
+    z-index: 2;
+    height: 60%;
+    width: 60%;
+    min-height: 300px;
+    min-width: 500px;
+}
+
+.publishModalContainerBackground {
+    position: absolute;
+    z-index: 1;
+    height: 60%;
+    width: 60%;
+    min-height: 300px;
+    min-width: 500px;
+    background-color: #353D4F;
+}
+
+.publishModalContainer {
+    position: absolute;
+    z-index: 3;
+    height: 60%;
+    width: 60%;
+    min-height: 300px;
+    min-width: 500px;
+    color: #dedede;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.modalLogoImage {
+    width: 225px;
+}
+
+.searchServicesTitle {
+    margin-top: 30px;
+    font-size: 48px;
+    font-weight: 900;
+}
+
+.searchServicesDescription {
+    margin-top: 40px;
+    font-size: 18px;
+    line-height: 28.8px;
+    max-width: 36em;
+    text-align: center;
+}
+
+.copySearchParamsButton {
+    background-color: #6CC24A;
+    color: #222;
+    border: 0px;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: bold;
+    height: 50px;
+    width: 300px;
+    margin-top: 40px;
+    cursor: pointer;
+    transition: all 0.33s ease-in-out;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+
+}
+
+.copySearchParamsButton:hover {
+    background-color: #35731c;
+    color: #dedede;
+}
+
+.closeSearchModal {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: transparent;
+    color: #A9B0C1;
+    border: 0px;
+    font-size: 28px;
+    font-weight: bold;
+    height: 40px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
+    transition: color 0.33s ease-in-out;
+    -webkit-touch-callout: none;
+    /* iOS Safari */
+    -webkit-user-select: none;
+    /* Safari */
+    -khtml-user-select: none;
+    /* Konqueror HTML */
+    -moz-user-select: none;
+    /* Old versions of Firefox */
+    -ms-user-select: none;
+    /* Internet Explorer/Edge */
+    user-select: none;
+    /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+.closeSearchModal:hover {
+    color: #6CC24A;
+}
+
+
+@media only screen and (max-width: 1000px) {
+    .modalLogoImage {
+        width: 100px;
+    }
+
+    .searchServicesTitle {
+        margin-top: 30px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .searchServicesDescription {
+        margin-top: 40px;
+        font-size: 14px;
+        max-width: 80%;
+        text-align: center;
+    }
+
+    .copySearchParamsButton {
+        font-size: 14px;
+        font-weight: bold;
+        height: 50px;
+        width: 250px;
+    }
+}
+
+@media only screen and (max-width: 1300px) {
+    .modalLogoImage {
+        width: 200px;
+    }
+
+    .searchServicesTitle {
+        margin-top: 30px;
+        font-size: 36px;
+        font-weight: bold;
+    }
+
+    .searchServicesDescription {
+        margin-top: 40px;
+        font-size: 16px;
+        max-width: 80%;
+        text-align: center;
+    }
+
+    .copySearchParamsButton {
+        font-size: 16px;
+        font-weight: bold;
+        height: 50px;
+        width: 275px;
+    }
+}
+
+@media only screen and (max-height: 650px) {
+    .modalLogoImage {
+        display: none;
+    }
+
+    .searchServicesTitle {
+        margin-top: 30px;
+        font-size: 24px;
+        font-weight: bold;
+    }
+
+    .searchServicesDescription {
+        margin-top: 40px;
+        font-size: 14px;
+        max-width: 80%;
+        text-align: center;
+    }
+
+    .copySearchParamsButton {
+        font-size: 14px;
+        font-weight: bold;
+        height: 50px;
+        width: 250px;
+    }
+}

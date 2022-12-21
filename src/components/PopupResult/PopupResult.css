@@ -1,0 +1,67 @@
+.popupResult{
+    overflow: auto;
+    height: calc(100% - 40px);
+    display: flex;
+    flex-direction: column;
+    background-color: #12171A;
+    border-bottom: #353D4F 3px solid;
+}
+
+.popupResultThumbnailContainer{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.popupResultThumbnail{
+    height: 325px;
+    width: 325px;
+}
+
+.popupResultDetails{
+    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.detailRow{
+    width: 340px;
+    padding-top: 10px;
+}
+
+.detailRow label{
+    font-weight: bold;
+    color: #fff;
+}
+
+.detailRow span{
+    font-size: 14px;
+}
+
+.finalDetailRow{
+    margin-bottom: 20px;
+}
+/* width */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  /* Track */
+  ::-webkit-scrollbar-track {
+    background: #dedede;
+  }
+
+  /* Handle */
+  ::-webkit-scrollbar-thumb {
+    background: #888;
+  }
+
+  /* Handle on hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }

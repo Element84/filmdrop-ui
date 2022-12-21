@@ -1,0 +1,61 @@
+import { React, useEffect, useState, useRef } from "react";
+import "./LeafMap.css";
+
+// redux imports
+import { useDispatch } from "react-redux";
+// you need to import each action you need to use
+import { setmap } from "../../redux/slices/mainSlice";
+
+import { MapContainer } from "react-leaflet/MapContainer";
+import { TileLayer } from "react-leaflet/TileLayer";
+
+const LeafMap = () => {
+  // set map ref to itself with useRef
+  const mapRef = useRef();
+  // if you are setting redux state, call dispatch
+  const dispatch = useDispatch();
+
+  // set up local state
+  const [map, setMap] = useState({});
+
+  useEffect(() => {
+    if (mapRef) {
+      setMap(mapRef.current);
+    }
+    // eslint-disable-next-line
+  }, [mapRef.current]);
+
+  useEffect(() => {
+    // update the shared map context when the map loads
+    dispatch(setmap(map));
+
+    // if map full loaded
+    if (map && Object.keys(map).length > 0) {
+      //onMapLoaded();
+    }
+
+    // eslint-disable-next-line
+  }, [map]); // this will give a linter error only beacuse setting context API in useEffect, but context has to be set outside
+
+  return (
+    <div className="LeafMap" data-testid="LeafMap">
+      {/* this sets up the base of the map component and a few default params */}
+      <MapContainer
+        className="mainMap"
+        ref={mapRef}
+        center={[30, -0]}
+        zoom={3}
+        scrollWheelZoom={true}
+        zoomControl={false}
+      >
+        {/* set basemap layers here: */}
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+        />
+      </MapContainer>
+    </div>
+  );
+};
+
+export default LeafMap;
