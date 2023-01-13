@@ -23,8 +23,10 @@ const BottomContent = () => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch();
 
+  const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_LINK;
+
   function onAnalyzeClick() {
-    // window.open("", "_blank");
+    window.open(ANALYZE_LINK, "_blank");
   }
 
   function onPublishClick() {
@@ -35,9 +37,11 @@ const BottomContent = () => {
     <div className="BottomContent">
       <LeafMap></LeafMap>
       <div className="actionButtons">
-        <button className="actionButton" onClick={() => onAnalyzeClick()}>
-          Analyze
-        </button>
+        {ANALYZE_LINK && (
+          <button className="actionButton" onClick={() => onAnalyzeClick()}>
+            Analyze
+          </button>
+        ) }
         <button className="actionButton" onClick={() => onPublishClick()}>
           Publish
         </button>

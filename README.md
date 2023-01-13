@@ -8,6 +8,22 @@ It is currently hard-coded to interact with the [Earth Search v1](https://earth-
 
 ## Deployment
 
+### Environment Files
+
+For local development, you should include an `.env.development` file with the proper configuration.
+
+For production builds, you should include an `.env.production` file with the proper configuration.
+
+```
+CIRRUS_API_ENDPOINT="[Endpoint]"
+METRICS_API_ENDPOINT="[Endpoint]"
+REACT_APP_TITILER="[Endpoint]"
+REACT_APP_STAC_API_ENDPOINT="[Endpoint]"
+REACT_APP_COLLECTIONS="[Collection]"
+REACT_APP_DASHBOARD_LINK="[URL]"
+REACT_APP_ANALYZE_LINK="[URL]"
+```
+
 ### Links
 
 Static files are built with `npm run build` OR `npm run build:prod` then moved to overwrite files in existing S3 buckets.
