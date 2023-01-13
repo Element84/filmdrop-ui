@@ -362,7 +362,7 @@ const Search = () => {
             singleAssetName +
             "&return_mask=true",
           {
-            attribution: "©OpenStreetMap, ©CartoDB",
+            attribution: "©OpenStreetMap",
             tileSize: 256,
             bounds: tileBounds,
             pane: "imagery",
