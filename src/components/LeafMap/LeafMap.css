@@ -20,3 +20,6 @@
     height: 100%;
     width: 100%;
 }
+.map-tiles {
+    filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
+}

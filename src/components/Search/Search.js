@@ -273,10 +273,13 @@ const Search = () => {
     // get cloud cover silder value
     const cloudCover = _cloudCover;
 
+    const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT;
+    const COLLECTIONS = process.env.REACT_APP_COLLECTIONS;
+
     // build GET URL (limit hardcoded to 362)
     const baseURLGET =
-      "https://earth-search.aws.element84.com/v1/search" +
-      "?bbox=" +
+      API_ENDPOINT +
+      "/search?bbox=" +
       aoiBounds._southWest.lng +
       "," +
       aoiBounds._southWest.lat +
@@ -288,7 +291,8 @@ const Search = () => {
       cloudCover +
       "%7D%7D&datetime=" +
       combinedDateRange +
-      "&collections=sentinel-2-l2a";
+      "&collections=" +
+      COLLECTIONS;
 
     // TODO rework this to make DRY with baseURLGET string above...
     // build string to set for publish copy to clipboard
@@ -358,7 +362,7 @@ const Search = () => {
             singleAssetName +
             "&return_mask=true",
           {
-            attribution: "©OpenStreetMap, ©CartoDB",
+            attribution: "©OpenStreetMap",
             tileSize: 256,
             bounds: tileBounds,
             pane: "imagery",
