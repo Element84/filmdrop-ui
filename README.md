@@ -4,8 +4,6 @@
 
 FilmDrop UI is a browser-based interface for displaying results from a STAC API.
 
-It is currently hard-coded to interact with the [Earth Search v1](https://earth-search.aws.element84.com/v1) STAC API that contains metadata for several Earth on AWS Datasets.
-
 ## Deployment
 
 ### Environment Files
