@@ -15,10 +15,12 @@ import * as L from "leaflet";
 import "leaflet-draw";
 import DateTimeRangePicker from "@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker";
 import CloudSlider from "../CloudSlider/CloudSlider";
+import CollectionDropdown from "../CollectionDropdown/CollectionDropdown";
 
 const Search = () => {
   const _map = useSelector((state) => state.mainSlice.map);
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover);
+  const _collectionSelected = useSelector((state) => state.mainSlice.selectedCollection);
   const _searchResults = useSelector((state) => state.mainSlice.searchResults);
   const _currentPopupResult = useSelector(
     (state) => state.mainSlice.currentPopupResult
@@ -272,29 +274,8 @@ const Search = () => {
 
     // get cloud cover silder value
     const cloudCover = _cloudCover;
-
     const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT;
-    const COLLECTIONS = process.env.REACT_APP_COLLECTIONS;
 
-    // build GET URL (limit hardcoded to 362)
-    const baseURLGET =
-      API_ENDPOINT +
-      "/search?bbox=" +
-      aoiBounds._southWest.lng +
-      "," +
-      aoiBounds._southWest.lat +
-      "," +
-      aoiBounds._northEast.lng +
-      "," +
-      aoiBounds._northEast.lat +
-      '&limit=100&query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A' +
-      cloudCover +
-      "%7D%7D&datetime=" +
-      combinedDateRange +
-      "&collections=" +
-      COLLECTIONS;
-
-    // TODO rework this to make DRY with baseURLGET string above...
     // build string to set for publish copy to clipboard
     const searchParametersString =
       "?bbox=" +
@@ -309,10 +290,17 @@ const Search = () => {
       cloudCover +
       "%7D%7D&datetime=" +
       combinedDateRange +
-      "&collections=sentinel-2-l2a";
+      "&collections=" +
+      _collectionSelected;
 
     //set state for publish copy to clipboard
     dispatch(setsearchParameters(searchParametersString));
+
+    // build GET URL (limit hardcoded to 362)
+    const baseURLGET =
+      API_ENDPOINT +
+      "/search" +
+      searchParametersString;
 
     // send GET request to find first 200 STAC images that intersect bbox
     fetch(baseURLGET, {
@@ -337,13 +325,30 @@ const Search = () => {
 
   // function to remove old image layer and add new image layer to map
   function addImageClicked(feature) {
+    //show loading spinner
+    dispatch(setsearchLoading(true));
+
     const featureURL = feature.links[0].href;
     clickedFootprintsImageLayer.clearLayers();
 
     const titilerURL_E84AWS = process.env.REACT_APP_TITILER;
 
+    // Adjust asset names based on collection selected
     const singleAssetName = "visual";
-
+    const landsatAssetNames = "&assets=red&assets=green&assets=blue";
+    let AssetNames = "";
+    switch (_collectionSelected) {
+      case 'sentinel-2-l1c':
+      case 'sentinel-2-l2a':
+        AssetNames = singleAssetName;
+        break;
+      case 'landsat-c2-l2':
+        AssetNames = singleAssetName+landsatAssetNames;
+        break;
+      default:
+        AssetNames = singleAssetName;
+    }
+    
     fetch(featureURL, {
       method: "GET",
     })
@@ -354,12 +359,13 @@ const Search = () => {
         const corner1 = L.latLng(json.bbox[1], json.bbox[0]);
         const corner2 = L.latLng(json.bbox[3], json.bbox[2]);
         const tileBounds = L.latLngBounds(corner1, corner2);
+        map.fitBounds(tileBounds, { padding: [100, 100] });
         L.tileLayer(
           titilerURL_E84AWS +
             "/stac/tiles/{z}/{x}/{y}.png?&url=" +
             featureURL +
             "&assets=" +
-            singleAssetName +
+            AssetNames +
             "&return_mask=true",
           {
             attribution: "©OpenStreetMap",
@@ -368,6 +374,9 @@ const Search = () => {
             pane: "imagery",
           }
         ).addTo(clickedFootprintsImageLayer);
+        //hide loading spinner
+        dispatch(setsearchLoading(false));
+
       });
   }
 
@@ -388,6 +397,9 @@ const Search = () => {
       </div>
       <div className="searchContainer">
         <CloudSlider></CloudSlider>
+      </div>
+      <div className="searchContainer collection-dropdown">
+        <CollectionDropdown></CollectionDropdown>
       </div>
       <button className="searchButton" onClick={() => searchAPI()}>
         Search

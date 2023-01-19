@@ -7,6 +7,7 @@ import { useDispatch } from "react-redux";
 import { setcurrentPopupResult } from "../../redux/slices/mainSlice";
 
 const PopupResult = (props) => {
+  console.log("Popupresult props: ", props);
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch();
   //props can sometimes be undefined while re-rendering so need to make sure it exists
@@ -31,18 +32,20 @@ const PopupResult = (props) => {
       {props.result ? (
         <div>
           <div className="popupResultThumbnailContainer">
-            <picture>
-              <source
-                src={props.result.assets.thumbnail.href}
-                type="image/jp2"
-                className="popupResultThumbnail"
-              />
-              <img
-                src={props.result.assets.thumbnail.href}
-                alt="thumbnail"
-                className="popupResultThumbnail"
-              ></img>
-            </picture>
+            {props.result.assets.thumbnail.href.indexOf("https") === 0 && (
+              <picture>
+                <source
+                  src={props.result.assets.thumbnail.href}
+                  type="image/jp2"
+                  className="popupResultThumbnail"
+                />
+                <img
+                  src={props.result.assets.thumbnail.href}
+                  alt="thumbnail"
+                  className="popupResultThumbnail"
+                ></img>
+              </picture>
+            )}
           </div>
           <div className="popupResultDetails">
             <div className="detailRow">

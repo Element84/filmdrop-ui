@@ -6,6 +6,7 @@ const initialState = {
   map: {},
   dateTime: [],
   cloudCover: 0,
+  selectedCollection: null,
   searchResults: null,
   clickResults: [],
   searchLoading: false,
@@ -30,6 +31,9 @@ export const mainSlice = createSlice({
     },
     setcloudCover: (state, action) => {
       state.cloudCover = action.payload;
+    },
+    setselectedCollection: (state, action) => {
+      state.selectedCollection = action.payload;
     },
     setsearchResults: (state, action) => {
       state.searchResults = action.payload;
@@ -57,6 +61,7 @@ export const mainSlice = createSlice({
 export const { setmap } = mainSlice.actions;
 export const { setdateTime } = mainSlice.actions;
 export const { setcloudCover } = mainSlice.actions;
+export const { setselectedCollection } = mainSlice.actions;
 export const { setsearchResults } = mainSlice.actions;
 export const { setclickResults } = mainSlice.actions;
 export const { setsearchLoading } = mainSlice.actions;

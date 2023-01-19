@@ -1,0 +1,11 @@
+.collection-dropdown .MuiInput-underline:before {
+  border-color: rgba(255,255,255,0.3);
+}
+.collection-dropdown svg {
+  color: rgba(255,255,255,0.5);
+}
+
+#collections-dropdown {
+  border-color: white;
+  color: white;
+}
