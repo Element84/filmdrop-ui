@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 import { setcurrentPopupResult } from "../../redux/slices/mainSlice";
 
 const PopupResult = (props) => {
-  console.log("Popupresult props: ", props);
+
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch();
   //props can sometimes be undefined while re-rendering so need to make sure it exists
@@ -27,24 +27,34 @@ const PopupResult = (props) => {
     // eslint-disable-next-line
   }, []);
 
+  let thumbnail = props.result?.links?.filter(({ rel }) => rel === 'thumbnail')[0].href;
+
+  // TODO: Temporary fix until Sentinel 2 L1C thumbnails are made available
+  const collection = props.result.collection;
+  if (collection === "sentinel-2-l1c") { thumbnail = ""};
+
   return (
     <div className="popupResult">
       {props.result ? (
         <div>
           <div className="popupResultThumbnailContainer">
-            {props.result.assets.thumbnail.href.indexOf("https") === 0 && (
+            {thumbnail 
+            ? (
               <picture>
                 <source
-                  src={props.result.assets.thumbnail.href}
+                  src={thumbnail}
                   type="image/jp2"
                   className="popupResultThumbnail"
                 />
                 <img
-                  src={props.result.assets.thumbnail.href}
+                  src={thumbnail}
                   alt="thumbnail"
                   className="popupResultThumbnail"
                 ></img>
               </picture>
+            ) 
+            : (
+              <span className="popupResultCaption"><em>Thumbnail not available.</em></span> 
             )}
           </div>
           <div className="popupResultDetails">

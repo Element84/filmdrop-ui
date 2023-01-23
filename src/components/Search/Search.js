@@ -33,17 +33,16 @@ const Search = () => {
   const map = _map;
 
   // set default date range (current minus 24 * 60 * 60 * 1000 per day)
-  const oneWeekAgo = new Date(Date.now() - 604800000);
+  const twoWeeksAgo = new Date(Date.now() - 1209600000);
 
   // set up local state
-  const [dateTimeValue, setdateTimeValue] = useState([oneWeekAgo, new Date()]);
+  const [dateTimeValue, setdateTimeValue] = useState([twoWeeksAgo, new Date()]);
   const [drawHandler, setdrawHandler] = useState();
   const [drawnItems, setdrawnItems] = useState();
   const [resultFootprints, setresultFootprints] = useState();
-  const [clickedFootprintHighlights, setclickedFootprintsHighlight] =
-    useState();
-  const [clickedFootprintsImageLayer, setclickedFootprintsImageLayer] =
-    useState();
+  const [clickedFootprintHighlights, setclickedFootprintsHighlight] = useState();
+  const [clickedFootprintsImageLayer, setclickedFootprintsImageLayer] = useState();
+  const [drawboxBtnError, setdrawboxBtnError] = useState(false);
 
   // override leaflet draw tooltips
   L.drawLocal = {
@@ -51,7 +50,7 @@ const Search = () => {
       handlers: {
         rectangle: {
           tooltip: {
-            start: "Click and Drag to Draw Bounding Box.",
+            start: "Click and drag to draw bounding box.",
           },
         },
         simpleshape: {
@@ -236,6 +235,7 @@ const Search = () => {
 
   // function called when search button clicked
   function searchAPI() {
+
     // get AOI bounds
     let aoiBounds;
     drawnItems.eachLayer(function (layer) {
@@ -244,10 +244,16 @@ const Search = () => {
       }
     });
 
-    // if no bounding box drawn, abort search TODO: add better error handling
+    // if no bounding box drawn, abort search 
     if (!aoiBounds) {
+      setdrawboxBtnError(true);
       return;
+    } else {
+      setdrawboxBtnError(false);
     }
+
+    // if the date time field is empty, abort search 
+    if (!dateTimeValue) return;
 
     // remove clicked footprint highlight
     if (clickedFootprintHighlights) {
@@ -296,11 +302,12 @@ const Search = () => {
     //set state for publish copy to clipboard
     dispatch(setsearchParameters(searchParametersString));
 
-    // build GET URL (limit hardcoded to 362)
+    // build GET URL (limit hardcoded to 100)
     const baseURLGET =
       API_ENDPOINT +
       "/search" +
-      searchParametersString;
+      searchParametersString +
+      "&limit=100";
 
     // send GET request to find first 200 STAC images that intersect bbox
     fetch(baseURLGET, {
@@ -323,8 +330,9 @@ const Search = () => {
       });
   }
 
-  // function to remove old image layer and add new image layer to map
+  // function to remove old image layer and add new Titiler image layer to map
   function addImageClicked(feature) {
+
     //show loading spinner
     dispatch(setsearchLoading(true));
 
@@ -335,20 +343,23 @@ const Search = () => {
 
     // Adjust asset names based on collection selected
     const singleAssetName = "visual";
-    const landsatAssetNames = "&assets=red&assets=green&assets=blue";
-    let AssetNames = "";
+    const rgbAssetNames = "red&assets=green&assets=blue";
+    const colorAdjustment = "&color_formula=Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35";
+    let assetNames = "";
     switch (_collectionSelected) {
       case 'sentinel-2-l1c':
+        assetNames = rgbAssetNames;
+        break;
       case 'sentinel-2-l2a':
-        AssetNames = singleAssetName;
+        assetNames = singleAssetName;
         break;
       case 'landsat-c2-l2':
-        AssetNames = singleAssetName+landsatAssetNames;
+        assetNames = rgbAssetNames+colorAdjustment;
         break;
       default:
-        AssetNames = singleAssetName;
+        assetNames = singleAssetName;
     }
-    
+
     fetch(featureURL, {
       method: "GET",
     })
@@ -360,12 +371,13 @@ const Search = () => {
         const corner2 = L.latLng(json.bbox[3], json.bbox[2]);
         const tileBounds = L.latLngBounds(corner1, corner2);
         map.fitBounds(tileBounds, { padding: [100, 100] });
+
         L.tileLayer(
           titilerURL_E84AWS +
             "/stac/tiles/{z}/{x}/{y}.png?&url=" +
             featureURL +
             "&assets=" +
-            AssetNames +
+            assetNames +
             "&return_mask=true",
           {
             attribution: "©OpenStreetMap",
@@ -373,20 +385,20 @@ const Search = () => {
             bounds: tileBounds,
             pane: "imagery",
           }
-        ).addTo(clickedFootprintsImageLayer);
-        //hide loading spinner
-        dispatch(setsearchLoading(false));
-
+        ).addTo(clickedFootprintsImageLayer).on('load', function () { 
+          //hide loading spinner
+          dispatch(setsearchLoading(false));
+        });
       });
   }
 
   return (
     <div className="Search" data-testid="Search">
-      <button onClick={() => drawBBOX()} className="bboxButton">
+      <button onClick={() => drawBBOX()} className={`bboxButton error-${drawboxBtnError}`}>
         Draw BBOX
       </button>
       <div className="searchContainer">
-        <label>Select Date & Time Range</label>
+        <label>Select Date & Time Range {!dateTimeValue && <span className="error-true"><em>Required</em></span>}</label>
         <DateTimeRangePicker
           className="dateTimePicker"
           onChange={setdateTimeValue}

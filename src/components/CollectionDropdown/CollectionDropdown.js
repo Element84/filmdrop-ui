@@ -16,7 +16,7 @@ import { setselectedCollection } from "../../redux/slices/mainSlice";
 const Dropdown = () => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch();
-  const [value, setValue] = useState('');
+  const [value, setValue] = useState('sentinel-2-l2a');
   const [collectionData, setCollectionData] = useState(null);
 
   const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT;
@@ -55,7 +55,6 @@ const Dropdown = () => {
               width: 250,
             }}
           >
-            <option>Select one</option>
             {collectionData && collectionData.collections.map(({ id, title }) => (
               <option key={id} value={id}>{title}</option>
             ))}
