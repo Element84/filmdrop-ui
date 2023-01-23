@@ -22,7 +22,7 @@ const Dropdown = () => {
   const dispatch = useDispatch();
   const [value, setValue] = useState(DEFAULT_COLLECTION);
   const [collectionData, setCollectionData] = useState(null);
-console.log(value);
+
   useEffect(() => {
     fetch(API_ENDPOINT+`/collections`)
       .then((response) => response.json())
