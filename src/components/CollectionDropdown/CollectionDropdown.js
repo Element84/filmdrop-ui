@@ -14,13 +14,15 @@ import { useDispatch } from "react-redux";
 import { setselectedCollection } from "../../redux/slices/mainSlice";
 
 const Dropdown = () => {
-  // if you are setting redux state, call dispatch
-  const dispatch = useDispatch();
-  const [value, setValue] = useState('sentinel-2-l2a');
-  const [collectionData, setCollectionData] = useState(null);
 
   const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT;
+  const DEFAULT_COLLECTION = process.env.REACT_APP_DEFAULT_COLLECTION;
 
+  // if you are setting redux state, call dispatch
+  const dispatch = useDispatch();
+  const [value, setValue] = useState(DEFAULT_COLLECTION);
+  const [collectionData, setCollectionData] = useState(null);
+console.log(value);
   useEffect(() => {
     fetch(API_ENDPOINT+`/collections`)
       .then((response) => response.json())
