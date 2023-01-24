@@ -13,13 +13,13 @@ For local development, you should include an `.env.development` file with the pr
 For production builds, you should include an `.env.production` file with the proper configuration.
 
 ```
-CIRRUS_API_ENDPOINT="[Endpoint]"
-METRICS_API_ENDPOINT="[Endpoint]"
-REACT_APP_TITILER="[Endpoint]"
-REACT_APP_STAC_API_ENDPOINT="[Endpoint]"
-REACT_APP_COLLECTIONS="[Collection]"
-REACT_APP_DASHBOARD_LINK="[URL]"
-REACT_APP_ANALYZE_LINK="[URL]"
+CIRRUS_API_ENDPOINT=[Endpoint]
+METRICS_API_ENDPOINT=[Endpoint]
+REACT_APP_TITILER=[Endpoint]
+REACT_APP_STAC_API_ENDPOINT=[Endpoint]
+REACT_APP_DEFAULT_COLLECTION=[Collection]
+REACT_APP_DASHBOARD_LINK=[URL]
+REACT_APP_ANALYZE_LINK=[URL]
 ```
 
 ### Links
