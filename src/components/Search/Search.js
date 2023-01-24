@@ -404,6 +404,7 @@ const Search = () => {
           onChange={setdateTimeValue}
           format={"yy-MM-dd HH:mm"}
           maxDate={new Date()}
+          required='true'
           value={dateTimeValue}
         ></DateTimeRangePicker>
       </div>
