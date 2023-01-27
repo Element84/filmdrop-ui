@@ -27,35 +27,24 @@ const PopupResult = (props) => {
     // eslint-disable-next-line
   }, []);
 
-  let thumbnail = props.result?.links?.filter(({ rel }) => rel === 'thumbnail')[0].href;
-
-  // TODO: Temporary fix until Sentinel 2 L1C thumbnails are made available
-  const collection = props.result.collection;
-  if (collection === "sentinel-2-l1c") { thumbnail = ""};
+  const thumbnailURL = props.result?.links?.find(({ rel }) => rel === 'thumbnail')?.href;
 
   return (
     <div className="popupResult">
       {props.result ? (
         <div>
           <div className="popupResultThumbnailContainer">
-            {thumbnail 
-            ? (
-              <picture>
-                <source
-                  src={thumbnail}
-                  type="image/jp2"
-                  className="popupResultThumbnail"
-                />
-                <img
-                  src={thumbnail}
-                  alt="thumbnail"
-                  className="popupResultThumbnail"
-                ></img>
-              </picture>
-            ) 
-            : (
-              <span className="popupResultCaption"><em>Thumbnail not available.</em></span> 
-            )}
+            <picture>
+              <img
+                src={thumbnailURL}
+                alt="thumbnail"
+                className="popupResultThumbnail"
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null; // prevents looping
+                  currentTarget.parentElement.remove();
+                }}
+              ></img>
+            </picture>
           </div>
           <div className="popupResultDetails">
             <div className="detailRow">

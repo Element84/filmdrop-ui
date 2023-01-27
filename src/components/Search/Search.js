@@ -32,8 +32,8 @@ const Search = () => {
   // set up map state
   const map = _map;
 
-  // set default date range (current minus 24 * 60 * 60 * 1000 per day)
-  const twoWeeksAgo = new Date(Date.now() - 1209600000);
+  // set default date range (current minus 24hrs * 60min * 60sec * 1000ms per day * 14 days)
+  const twoWeeksAgo = new Date(Date.now() - (24 * 60 * 60 * 1000 * 14));
 
   // set up local state
   const [dateTimeValue, setdateTimeValue] = useState([twoWeeksAgo, new Date()]);
@@ -341,25 +341,10 @@ const Search = () => {
 
     const titilerURL_E84AWS = process.env.REACT_APP_TITILER;
 
-    // Adjust asset names based on collection selected
-    const singleAssetName = "visual";
-    const rgbAssetNames = "red&assets=green&assets=blue";
-    const colorAdjustment = "&color_formula=Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35";
-    let assetNames = "";
-    switch (_collectionSelected) {
-      case 'sentinel-2-l1c':
-        assetNames = rgbAssetNames;
-        break;
-      case 'sentinel-2-l2a':
-        assetNames = singleAssetName;
-        break;
-      case 'landsat-c2-l2':
-        assetNames = rgbAssetNames+colorAdjustment;
-        break;
-      default:
-        assetNames = singleAssetName;
-    }
-
+    // Set up assets from environment variable
+    const envAssets = JSON.parse(process.env.REACT_APP_ASSET_CONFIGURATIONS);
+    const assetParameters = (envAssets?.find(element => element.collection === _collectionSelected)).asset;
+    
     fetch(featureURL, {
       method: "GET",
     })
@@ -376,8 +361,7 @@ const Search = () => {
           titilerURL_E84AWS +
             "/stac/tiles/{z}/{x}/{y}.png?&url=" +
             featureURL +
-            "&assets=" +
-            assetNames +
+            assetParameters +
             "&return_mask=true",
           {
             attribution: "©OpenStreetMap",
@@ -388,6 +372,8 @@ const Search = () => {
         ).addTo(clickedFootprintsImageLayer).on('load', function () { 
           //hide loading spinner
           dispatch(setsearchLoading(false));
+        }).on('tileerror', function() {
+          console.log("Tile Error");
         });
       });
   }
@@ -404,7 +390,7 @@ const Search = () => {
           onChange={setdateTimeValue}
           format={"yy-MM-dd HH:mm"}
           maxDate={new Date()}
-          required='true'
+          required={true}
           value={dateTimeValue}
         ></DateTimeRangePicker>
       </div>
