@@ -1,61 +1,61 @@
-import { React, useState, useEffect } from "react";
-import { styled, createTheme, ThemeProvider } from "@mui/material/styles";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Slider from "@mui/material/Slider";
-import MuiInput from "@mui/material/Input";
+import { React, useState, useEffect } from 'react'
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
+import Box from '@mui/material/Box'
+import Grid from '@mui/material/Grid'
+import Slider from '@mui/material/Slider'
+import MuiInput from '@mui/material/Input'
 
-import "./CloudSlider.css";
+import './CloudSlider.css'
 
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-slider/#slider-with-input-field
 
 // redux imports
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setcloudCover } from "../../redux/slices/mainSlice";
+import { setCloudCover } from '../../store/slices/mainSlice'
 
 const Input = styled(MuiInput)`
   width: 42px;
   color: #dedede;
-`;
+`
 
 const CloudSlider = () => {
   // if you are setting redux state, call dispatch
-  const dispatch = useDispatch();
-  const [value, setValue] = useState(30);
+  const dispatch = useDispatch()
+  const [value, setValue] = useState(30)
 
   useEffect(() => {
-    dispatch(setcloudCover(value));
+    dispatch(setCloudCover(value))
     // eslint-disable-next-line
   }, [value]);
 
   const handleSliderChange = (event, newValue) => {
-    setValue(newValue);
-  };
+    setValue(newValue)
+  }
 
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#dedede",
+        main: '#dedede'
       },
       secondary: {
-        main: "#edf2ff",
-      },
-    },
-  });
+        main: '#edf2ff'
+      }
+    }
+  })
 
   const handleInputChange = (event) => {
-    setValue(event.target.value === "" ? 0 : Number(event.target.value));
-  };
+    setValue(event.target.value === '' ? 0 : Number(event.target.value))
+  }
 
   const handleBlur = () => {
     if (value < 0) {
-      setValue(0);
+      setValue(0)
     } else if (value > 100) {
-      setValue(100);
+      setValue(100)
     }
-  };
+  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -64,7 +64,7 @@ const CloudSlider = () => {
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
             <Slider
-              value={typeof value === "number" ? value : 0}
+              value={typeof value === 'number' ? value : 0}
               onChange={handleSliderChange}
               aria-labelledby="input-slider"
               color="primary"
@@ -78,23 +78,23 @@ const CloudSlider = () => {
               onBlur={handleBlur}
               className="sliderInput"
               sx={{
-                ":before": { borderBottomColor: "#dedede" },
+                ':before': { borderBottomColor: '#dedede' },
                 // underline when selected
-                ":after": { borderBottomColor: "#dedede" },
+                ':after': { borderBottomColor: '#dedede' }
               }}
               inputProps={{
                 step: 1,
                 min: 0,
                 max: 100,
-                type: "number",
-                "aria-labelledby": "input-slider",
+                type: 'number',
+                'aria-labelledby': 'input-slider'
               }}
             />
           </Grid>
         </Grid>
       </Box>
     </ThemeProvider>
-  );
-};
+  )
+}
 
-export default CloudSlider;
+export default CloudSlider
