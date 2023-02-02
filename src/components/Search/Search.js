@@ -5,7 +5,7 @@ import { constructTilerURL, processEnvVars, constructAssetsURL } from './envVarS
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setSearchResults, setDateTime, setClickResults, setSearchLoading, setSearchParameters } from '../../store/slices/mainSlice'
+import { setsearchResults, setdateTime, setclickResults, setsearchLoading, setsearchParameters } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import 'leaflet-draw'
@@ -115,11 +115,13 @@ const Search = () => {
 
       map.on('click', clickHandler)
     }
+  // eslint-disable-next-line
   }, [map])
 
   // when dataTime changes set in global store
   useEffect(() => {
-    dispatch(setDateTime(dateTimeValue))
+    dispatch(setdateTime(dateTimeValue))
+    // eslint-disable-next-line
   }, [dateTimeValue])
 
   // when search results change, if map loaded, set new clickHandler
@@ -127,6 +129,7 @@ const Search = () => {
     if (map && Object.keys(map).length > 0 && _searchResults !== null) {
       map.on('click', clickHandler)
     }
+  // eslint-disable-next-line 
   }, [_searchResults])
 
   // when currentPopupResult set, add image layer to map
@@ -138,6 +141,7 @@ const Search = () => {
       // call add new image layer to map function
       addImageClicked(_currentPopupResult)
     }
+  // eslint-disable-next-line
   }, [_currentPopupResult])
 
   // function called when draw BBOX button clicked
@@ -145,8 +149,8 @@ const Search = () => {
     // remove old bbox, footprints and enable draw handler
     drawnItems.clearLayers()
     clickedFootprintsImageLayer.clearLayers()
-    dispatch(setSearchResults(null))
-    dispatch(setClickResults([]))
+    dispatch(setsearchResults(null))
+    dispatch(setclickResults([]))
     if (clickedFootprintHighlights) {
       clickedFootprintHighlights.clearLayers()
     }
@@ -194,11 +198,11 @@ const Search = () => {
 
     // if at least one feature found, push to store else clear store
     if (intersectingFeatures.length > 0) {
-      dispatch(setClickResults(intersectingFeatures))
+      dispatch(setclickResults(intersectingFeatures))
       // push to store
     } else {
       // clear store
-      dispatch(setClickResults([]))
+      dispatch(setclickResults([]))
     }
   }
 
@@ -274,9 +278,9 @@ const Search = () => {
     removeFootprints()
 
     // show loading spinner
-    dispatch(setSearchLoading(true))
-    dispatch(setSearchResults(null))
-    dispatch(setClickResults([]))
+    dispatch(setsearchLoading(true))
+    dispatch(setsearchResults(null))
+    dispatch(setclickResults([]))
 
     // build datetime input
     const combinedDateRange =
@@ -306,7 +310,7 @@ const Search = () => {
       _collectionSelected
 
     // set state for publish copy to clipboard
-    dispatch(setSearchParameters(searchParametersString))
+    dispatch(setsearchParameters(searchParametersString))
 
     // build GET URL (limit hardcoded to 100)
     const baseURLGET =
@@ -324,10 +328,10 @@ const Search = () => {
       })
       .then(function (json) {
         // set search results in store for use in other components
-        dispatch(setSearchResults(json))
+        dispatch(setsearchResults(json))
 
         // remove loading spinner
-        dispatch(setSearchLoading(false))
+        dispatch(setsearchLoading(false))
 
         // add new footprints to map
         const resultFootprintsFound = L.geoJSON(json, {})
@@ -339,7 +343,7 @@ const Search = () => {
   // function to remove old image layer and add new Tiler image layer to map
   function addImageClicked (feature) {
     // show loading spinner
-    dispatch(setSearchLoading(true))
+    dispatch(setsearchLoading(true))
 
     clickedFootprintsImageLayer.clearLayers()
     const featureURL = feature.links[0].href
@@ -371,7 +375,7 @@ const Search = () => {
           }
         ).addTo(clickedFootprintsImageLayer).on('load', function () {
           // hide loading spinner
-          dispatch(setSearchLoading(false))
+          dispatch(setsearchLoading(false))
         }).on('tileerror', function () {
           console.log('Tile Error')
         })
