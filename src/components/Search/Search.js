@@ -38,6 +38,9 @@ const Search = () => {
   const [drawboxBtnError, setDrawboxBtnError] = useState(false)
   const [collectionError, setCollectionError] = useState(false)
 
+  // setup environment variables
+  processEnvVars()
+
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
   L.drawLocal = {
@@ -56,7 +59,6 @@ const Search = () => {
       }
     }
   }
-  processEnvVars()
 
   // when map is set (will only happen once), set up more controls/layers
   useEffect(() => {

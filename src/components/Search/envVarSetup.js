@@ -1,5 +1,6 @@
 // function to parse through environment variables
 let envVariables = {}
+
 export const processEnvVars = () => {
   let envAssets = ''
   try {
@@ -19,7 +20,7 @@ export const processEnvVars = () => {
     console.log('Invalid JSON for color formula:', error.message)
   }
 
-  // If env variables include both Assets and Color Formula settings
+  // combine both Assets and Color Formula settings if both exist
   if (envAssets && envColorFormula) {
     envVariables = [...[envAssets, envColorFormula].reduce((m, a) => (
       a.forEach(
@@ -36,6 +37,7 @@ export const constructAssetsURL = (defaultCollection) => {
   let colorFormula = ''
   let assetsValue = ''
   if (!defaultCollection) defaultCollection = process.env.REACT_APP_DEFAULT_COLLECTION
+
   if (envVariables) {
     const collectionValues = envVariables.filter(element => element.collection === defaultCollection)[0]
     if (collectionValues) {
@@ -43,6 +45,7 @@ export const constructAssetsURL = (defaultCollection) => {
       if ('color_formula' in collectionValues) colorFormula = collectionValues.color_formula
     }
   }
+
   return (`&assets=${assetsValue}&color_formula=${colorFormula}&return_mask=true`)
 }
 
