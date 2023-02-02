@@ -1,6 +1,7 @@
 .collection-dropdown .MuiInput-underline:before {
   border-color: rgba(255,255,255,0.3);
 }
+
 .collection-dropdown svg {
   color: rgba(255,255,255,0.5);
 }
@@ -8,4 +9,10 @@
 #collections-dropdown {
   border-color: white;
   color: white;
+}
+
+.collection-dropdown.error-true select {
+  color: #bc3131 !important;
+  font-weight: bold;
+  border-bottom: 1px solid #bc3131;
 }
