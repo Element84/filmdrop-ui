@@ -1,14 +1,14 @@
-import React from 'react'
-import { describe, test, render, screen, expect } from '@testing-library/react'
-import '@testing-library/jest-dom/extend-expect'
-import Search from './Search'
+import React from 'react';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
+import Search from './Search';
 
 describe('<Search />', () => {
   test('it should mount', () => {
-    render(<Search />)
+    render(<Search />);
+    
+    const search = screen.getByTestId('Search');
 
-    const search = screen.getByTestId('Search')
-
-    expect(search).toBeInTheDocument()
-  })
-})
+    expect(search).toBeInTheDocument();
+  });
+});

@@ -1,41 +1,41 @@
-import { React, useEffect, useState, useRef } from 'react'
-import './LeafMap.css'
+import { React, useEffect, useState, useRef } from "react";
+import "./LeafMap.css";
 
 // redux imports
-import { useDispatch } from 'react-redux'
+import { useDispatch } from "react-redux";
 // you need to import each action you need to use
-import { setMap } from '../../store/slices/mainSlice'
+import { setmap } from "../../redux/slices/mainSlice";
 
-import { MapContainer } from 'react-leaflet/MapContainer'
-import { TileLayer } from 'react-leaflet/TileLayer'
+import { MapContainer } from "react-leaflet/MapContainer";
+import { TileLayer } from "react-leaflet/TileLayer";
 
 const LeafMap = () => {
   // set map ref to itself with useRef
-  const mapRef = useRef()
+  const mapRef = useRef();
   // if you are setting redux state, call dispatch
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
 
   // set up local state
-  const [localMap, setLocalMap] = useState({})
+  const [map, setMap] = useState({});
 
   useEffect(() => {
     if (mapRef) {
-      setLocalMap(mapRef.current)
+      setMap(mapRef.current);
     }
     // eslint-disable-next-line
   }, [mapRef.current]);
 
   useEffect(() => {
     // update the shared map context when the map loads
-    dispatch(setMap(localMap))
+    dispatch(setmap(map));
 
     // if map full loaded
-    if (localMap && Object.keys(localMap).length > 0) {
-      // onMapLoaded();
+    if (map && Object.keys(map).length > 0) {
+      //onMapLoaded();
     }
 
     // eslint-disable-next-line
-  }, [localMap]); // this will give a linter error only beacuse setting context API in useEffect, but context has to be set outside
+  }, [map]); // this will give a linter error only beacuse setting context API in useEffect, but context has to be set outside
 
   return (
     <div className="LeafMap" data-testid="LeafMap">
@@ -56,7 +56,7 @@ const LeafMap = () => {
         />
       </MapContainer>
     </div>
-  )
-}
+  );
+};
 
-export default LeafMap
+export default LeafMap;
