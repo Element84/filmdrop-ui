@@ -1,36 +1,48 @@
 // function to parse through environment variables
-let envVariables = {}
-
-export const processEnvVars = () => {
-  let envAssets = ''
+const processEnvVars = () => {
+  // grab the asset variable
+  let assetObj = ''
   try {
-    envAssets = JSON.parse(process.env.REACT_APP_ASSET_CONFIGURATIONS)
-  } catch (error) {
-    if (error instanceof SyntaxError) {
-      console.error('Invalid JSON for assets:', error.message)
-    } else {
-      throw error
-    }
+    assetObj = JSON.parse(process.env.REACT_APP_TILER_ASSETS)
+  } catch (e) {
+    console.log(e.message); 
   }
-
-  let envColorFormula = ''
+  // grab the color formula variable
+  let colorFormulaObj = ''
   try {
-    envColorFormula = JSON.parse(process.env.REACT_APP_COLOR_FORMULA)
-  } catch (error) {
-    console.log('Invalid JSON for color formula:', error.message)
+    colorFormulaObj = JSON.parse(process.env.REACT_APP_TILER_COLOR_FORMULAS)
+  } catch (e) {
+    console.log(e.message); 
   }
-
-  // combine both Assets and Color Formula settings if both exist
-  if (envAssets && envColorFormula) {
-    envVariables = [...[envAssets, envColorFormula].reduce((m, a) => (
-      a.forEach(
-        o => (m.has(o.collection) && Object.assign(m.get(o.collection), o)) || m.set(o.collection, o)
-      // eslint-disable-next-line no-sequences
-      ), m), new Map()).values()]
-  } else {
-    envVariables = envAssets
+  
+  // combine assets and color formulas into one object
+  let map = assetObj
+  if (assetObj && colorFormulaObj) {
+    map = assetObj.map((item, i) => {
+      if (colorFormulaObj) {
+        // eslint-disable-next-line array-callback-return
+        colorFormulaObj.map((colorItem, i) => {
+          if (colorItem.collection === item.collection) return item.color_formula = colorItem.color_formula
+        })
+      }
+      return item
+    })
   }
+  
+  // setup object with collection as keys
+  const formattedData = map.reduce(
+    (obj, { collection, ...rest }) =>
+      Object.assign(obj, {
+        [collection]: {
+          ...rest,
+        },
+      }),
+    {}
+  )
+  return formattedData
 }
+
+const envVariables = processEnvVars()
 
 // function to construct the assets and/or color formula portion of the Tiler URL
 export const constructAssetsURL = (defaultCollection) => {
@@ -39,19 +51,13 @@ export const constructAssetsURL = (defaultCollection) => {
   if (!defaultCollection) defaultCollection = process.env.REACT_APP_DEFAULT_COLLECTION
 
   if (envVariables) {
-    const collectionValues = envVariables.filter(element => element.collection === defaultCollection)[0]
-    if (collectionValues) {
-      if ('assets' in collectionValues) assetsValue = collectionValues.assets
-      if ('color_formula' in collectionValues) colorFormula = collectionValues.color_formula
-    }
+    assetsValue = envVariables[defaultCollection].assets || ''
+    colorFormula = envVariables[defaultCollection].color_formula || ''
   }
-
-  return (`&assets=${assetsValue}&color_formula=${colorFormula}&return_mask=true`)
+  return `&assets=${assetsValue}&color_formula=${colorFormula}&return_mask=true`
 }
 
 // function to retrieve tiler URL from env variable
 export const constructTilerURL = () => {
-  let tilerConfigurationURL = process.env.REACT_APP_TILER_CONFIGURATION
-  if (!tilerConfigurationURL) tilerConfigurationURL = ''
-  return (tilerConfigurationURL)
+  return process.env.REACT_APP_TILER_CONFIGURATION || ''
 }

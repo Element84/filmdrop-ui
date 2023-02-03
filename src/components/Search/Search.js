@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import './Search.css'
-import { constructTilerURL, processEnvVars, constructAssetsURL } from './envVarSetup'
+import { constructTilerURL, constructAssetsURL } from './envVarSetup'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -37,9 +37,6 @@ const Search = () => {
   const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] = useState()
   const [drawboxBtnError, setDrawboxBtnError] = useState(false)
   const [collectionError, setCollectionError] = useState(false)
-
-  // setup environment variables
-  processEnvVars()
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
