@@ -18,9 +18,9 @@ REACT_APP_DASHBOARD_LINK=[URL]
 REACT_APP_ANALYZE_LINK=[URL]
 REACT_APP_STAC_API_ENDPOINT=[URL Endpoint]
 REACT_APP_DEFAULT_COLLECTION=[Collection Name]
-REACT_APP_TITILER=[Endpoint]
-REACT_APP_ASSET_CONFIGURATIONS=[{"collection":"landsat-c2-l2","assets":"red&assets=green&assets=blue"}]
-REACT_APP_COLOR_FORMULA=[{"collection":"landsat-c2-l2","color_formula":"Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}]
+REACT_APP_TILER_CONFIGURATION=[Endpoint]
+REACT_APP_TILER_COLOR_FORMULAS=[{"collection":"landsat-c2-l2","assets":"red&assets=green&assets=blue"}]
+REACT_APP_TILER_COLOR_FORMULAS=[{"collection":"landsat-c2-l2","color_formula":"Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}]
 ```
 
 ### Links

@@ -1,5 +1,5 @@
-import React from "react";
-import "./LoadingAnimation.css";
+import React from 'react'
+import './LoadingAnimation.css'
 
 const LoadingAnimation = () => {
   return (
@@ -19,7 +19,7 @@ const LoadingAnimation = () => {
         <path className="triangle" d="M13.8,58.4L45,89.5l31.2-31.2H13.8z" />
       </svg>
     </div>
-  );
-};
+  )
+}
 
-export default LoadingAnimation;
+export default LoadingAnimation

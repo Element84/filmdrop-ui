@@ -5,16 +5,16 @@ const processEnvVars = () => {
   try {
     assetObj = JSON.parse(process.env.REACT_APP_TILER_ASSETS)
   } catch (e) {
-    console.log(e.message); 
+    console.log(e.message)
   }
   // grab the color formula variable
   let colorFormulaObj = ''
   try {
     colorFormulaObj = JSON.parse(process.env.REACT_APP_TILER_COLOR_FORMULAS)
   } catch (e) {
-    console.log(e.message); 
+    console.log(e.message)
   }
-  
+
   // combine assets and color formulas into one object
   let map = assetObj
   if (assetObj && colorFormulaObj) {
@@ -22,20 +22,20 @@ const processEnvVars = () => {
       if (colorFormulaObj) {
         // eslint-disable-next-line array-callback-return
         colorFormulaObj.map((colorItem, i) => {
-          if (colorItem.collection === item.collection) return item.color_formula = colorItem.color_formula
+          if (colorItem.collection === item.collection) return (item.color_formula = colorItem.color_formula)
         })
       }
       return item
     })
   }
-  
+
   // setup object with collection as keys
   const formattedData = map.reduce(
     (obj, { collection, ...rest }) =>
       Object.assign(obj, {
         [collection]: {
-          ...rest,
-        },
+          ...rest
+        }
       }),
     {}
   )
@@ -51,9 +51,18 @@ export const constructAssetsURL = (defaultCollection) => {
   if (!defaultCollection) defaultCollection = process.env.REACT_APP_DEFAULT_COLLECTION
 
   if (envVariables) {
-    assetsValue = envVariables[defaultCollection].assets || ''
-    colorFormula = envVariables[defaultCollection].color_formula || ''
+    try {
+      assetsValue = envVariables[defaultCollection].assets || ''
+    } catch (e) {
+      console.log(e.message)
+    }
+    try {
+      colorFormula = envVariables[defaultCollection].color_formula || ''
+    } catch (e) {
+      console.log(e.message)
+    }
   }
+
   return `&assets=${assetsValue}&color_formula=${colorFormula}&return_mask=true`
 }
 

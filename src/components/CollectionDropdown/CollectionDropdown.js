@@ -12,7 +12,7 @@ import './CollectionDropdown.css'
 // redux imports
 import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setselectedCollection } from '../../redux/slices/mainSlice'
+import { setSelectedCollection } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
   const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT
@@ -35,7 +35,7 @@ const Dropdown = ({ error }) => {
   }, [API_ENDPOINT])
 
   useEffect(() => {
-    dispatch(setselectedCollection(value))
+    dispatch(setSelectedCollection(value))
     // eslint-disable-next-line
   }, [value]);
 
