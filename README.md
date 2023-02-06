@@ -13,7 +13,9 @@ For local development, you should include an `.env.development` file with the pr
 For production builds, you should include an `.env.production` file with the proper configuration.
 
 ```
+PUBLIC_URL=[URL]
 REACT_APP_LOGO=[URL]
+REACT_APP_LOGO_ALT_VALUE="Alt description for my custom logo"
 REACT_APP_DASHBOARD_LINK=[URL]
 REACT_APP_ANALYZE_LINK=[URL]
 REACT_APP_STAC_API_ENDPOINT=[URL Endpoint]
