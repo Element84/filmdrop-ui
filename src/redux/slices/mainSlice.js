@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want
@@ -12,61 +12,61 @@ const initialState = {
   searchLoading: false,
   currentPopupResult: null,
   showPublishModal: false,
-  searchParameters: "need to run search",
-};
+  searchParameters: 'need to run search'
+}
 
 // next, for every key in the initialState
 // add a reducer and a basic setter action
 // this is the simple way to just set it
 // look up redux doc for more advances ways to add/alter actions
 export const mainSlice = createSlice({
-  name: "mainSlice",
+  name: 'mainSlice',
   initialState,
   reducers: {
-    setmap: (state, action) => {
-      state.map = action.payload;
+    setMap: (state, action) => {
+      state.map = action.payload
     },
-    setdateTime: (state, action) => {
-      state.dateTime = action.payload;
+    setDateTime: (state, action) => {
+      state.dateTime = action.payload
     },
-    setcloudCover: (state, action) => {
-      state.cloudCover = action.payload;
+    setCloudCover: (state, action) => {
+      state.cloudCover = action.payload
     },
-    setselectedCollection: (state, action) => {
-      state.selectedCollection = action.payload;
+    setSelectedCollection: (state, action) => {
+      state.selectedCollection = action.payload
     },
-    setsearchResults: (state, action) => {
-      state.searchResults = action.payload;
+    setSearchResults: (state, action) => {
+      state.searchResults = action.payload
     },
-    setclickResults: (state, action) => {
-      state.clickResults = action.payload;
+    setClickResults: (state, action) => {
+      state.clickResults = action.payload
     },
-    setsearchLoading: (state, action) => {
-      state.searchLoading = action.payload;
+    setSearchLoading: (state, action) => {
+      state.searchLoading = action.payload
     },
-    setcurrentPopupResult: (state, action) => {
-      state.currentPopupResult = action.payload;
+    setCurrentPopupResult: (state, action) => {
+      state.currentPopupResult = action.payload
     },
-    setshowPublishModal: (state, action) => {
-      state.showPublishModal = action.payload;
+    setShowPublishModal: (state, action) => {
+      state.showPublishModal = action.payload
     },
-    setsearchParameters: (state, action) => {
-      state.searchParameters = action.payload;
-    },
-  },
-});
+    setSearchParameters: (state, action) => {
+      state.searchParameters = action.payload
+    }
+  }
+})
 
 // finally, add a new export for the
 // reducer/action info that you added above
-export const { setmap } = mainSlice.actions;
-export const { setdateTime } = mainSlice.actions;
-export const { setcloudCover } = mainSlice.actions;
-export const { setselectedCollection } = mainSlice.actions;
-export const { setsearchResults } = mainSlice.actions;
-export const { setclickResults } = mainSlice.actions;
-export const { setsearchLoading } = mainSlice.actions;
-export const { setcurrentPopupResult } = mainSlice.actions;
-export const { setshowPublishModal } = mainSlice.actions;
-export const { setsearchParameters } = mainSlice.actions;
+export const { setMap } = mainSlice.actions
+export const { setDateTime } = mainSlice.actions
+export const { setCloudCover } = mainSlice.actions
+export const { setSelectedCollection } = mainSlice.actions
+export const { setSearchResults } = mainSlice.actions
+export const { setClickResults } = mainSlice.actions
+export const { setSearchLoading } = mainSlice.actions
+export const { setCurrentPopupResult } = mainSlice.actions
+export const { setShowPublishModal } = mainSlice.actions
+export const { setSearchParameters } = mainSlice.actions
 
-export default mainSlice.reducer;
+export default mainSlice.reducer

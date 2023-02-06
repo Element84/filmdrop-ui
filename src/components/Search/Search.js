@@ -5,7 +5,7 @@ import { constructTilerURL, constructAssetsURL } from './envVarSetup'
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setsearchResults, setdateTime, setclickResults, setsearchLoading, setsearchParameters } from '../../redux/slices/mainSlice'
+import { setSearchResults, setDateTime, setClickResults, setSearchLoading, setSearchParameters } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import 'leaflet-draw'
@@ -29,7 +29,7 @@ const Search = () => {
   const twoWeeksAgo = new Date(Date.now() - (24 * 60 * 60 * 1000 * 14))
 
   // set up local state
-  const [dateTimeValue, setdateTimeValue] = useState([twoWeeksAgo, new Date()])
+  const [dateTimeValue, setDateTimeValue] = useState([twoWeeksAgo, new Date()])
   const [drawHandler, setDrawHandler] = useState()
   const [drawnItems, setDrawnItems] = useState()
   const [resultFootprints, setResultFootprints] = useState()
@@ -117,7 +117,7 @@ const Search = () => {
 
   // when dataTime changes set in global store
   useEffect(() => {
-    dispatch(setdateTime(dateTimeValue))
+    dispatch(setDateTime(dateTimeValue))
     // eslint-disable-next-line
   }, [dateTimeValue])
 
@@ -126,7 +126,7 @@ const Search = () => {
     if (map && Object.keys(map).length > 0 && _searchResults !== null) {
       map.on('click', clickHandler)
     }
-  // eslint-disable-next-line 
+  // eslint-disable-next-line
   }, [_searchResults])
 
   // when currentPopupResult set, add image layer to map
@@ -146,8 +146,8 @@ const Search = () => {
     // remove old bbox, footprints and enable draw handler
     drawnItems.clearLayers()
     clickedFootprintsImageLayer.clearLayers()
-    dispatch(setsearchResults(null))
-    dispatch(setclickResults([]))
+    dispatch(setSearchResults(null))
+    dispatch(setClickResults([]))
     if (clickedFootprintHighlights) {
       clickedFootprintHighlights.clearLayers()
     }
@@ -195,11 +195,11 @@ const Search = () => {
 
     // if at least one feature found, push to store else clear store
     if (intersectingFeatures.length > 0) {
-      dispatch(setclickResults(intersectingFeatures))
+      dispatch(setClickResults(intersectingFeatures))
       // push to store
     } else {
       // clear store
-      dispatch(setclickResults([]))
+      dispatch(setClickResults([]))
     }
   }
 
@@ -275,9 +275,9 @@ const Search = () => {
     removeFootprints()
 
     // show loading spinner
-    dispatch(setsearchLoading(true))
-    dispatch(setsearchResults(null))
-    dispatch(setclickResults([]))
+    dispatch(setSearchLoading(true))
+    dispatch(setSearchResults(null))
+    dispatch(setClickResults([]))
 
     // build datetime input
     const combinedDateRange =
@@ -307,7 +307,7 @@ const Search = () => {
       _collectionSelected
 
     // set state for publish copy to clipboard
-    dispatch(setsearchParameters(searchParametersString))
+    dispatch(setSearchParameters(searchParametersString))
 
     // build GET URL (limit hardcoded to 100)
     const baseURLGET =
@@ -325,10 +325,10 @@ const Search = () => {
       })
       .then(function (json) {
         // set search results in store for use in other components
-        dispatch(setsearchResults(json))
+        dispatch(setSearchResults(json))
 
         // remove loading spinner
-        dispatch(setsearchLoading(false))
+        dispatch(setSearchLoading(false))
 
         // add new footprints to map
         const resultFootprintsFound = L.geoJSON(json, {})
@@ -340,7 +340,7 @@ const Search = () => {
   // function to remove old image layer and add new Tiler image layer to map
   function addImageClicked (feature) {
     // show loading spinner
-    dispatch(setsearchLoading(true))
+    dispatch(setSearchLoading(true))
 
     clickedFootprintsImageLayer.clearLayers()
     const featureURL = feature.links[0].href
@@ -372,7 +372,7 @@ const Search = () => {
           }
         ).addTo(clickedFootprintsImageLayer).on('load', function () {
           // hide loading spinner
-          dispatch(setsearchLoading(false))
+          dispatch(setSearchLoading(false))
         }).on('tileerror', function () {
           console.log('Tile Error')
         })
@@ -388,7 +388,7 @@ const Search = () => {
         <label>Select Date & Time Range {!dateTimeValue && <span className="error-true"><em>Required</em></span>}</label>
         <DateTimeRangePicker
           className="dateTimePicker"
-          onChange={setdateTimeValue}
+          onChange={setDateTimeValue}
           format={'yy-MM-dd HH:mm'}
           maxDate={new Date()}
           required={true}

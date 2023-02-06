@@ -1,37 +1,37 @@
-import { React, useEffect, useState, useRef } from "react";
-import "./LeafMap.css";
+import { React, useEffect, useState, useRef } from 'react'
+import './LeafMap.css'
 
 // redux imports
-import { useDispatch } from "react-redux";
+import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setmap } from "../../redux/slices/mainSlice";
+import { setMap } from '../../redux/slices/mainSlice'
 
-import { MapContainer } from "react-leaflet/MapContainer";
-import { TileLayer } from "react-leaflet/TileLayer";
+import { MapContainer } from 'react-leaflet/MapContainer'
+import { TileLayer } from 'react-leaflet/TileLayer'
 
 const LeafMap = () => {
   // set map ref to itself with useRef
-  const mapRef = useRef();
+  const mapRef = useRef()
   // if you are setting redux state, call dispatch
-  const dispatch = useDispatch();
+  const dispatch = useDispatch()
 
   // set up local state
-  const [map, setMap] = useState({});
+  const [map, setLocalMap] = useState({})
 
   useEffect(() => {
     if (mapRef) {
-      setMap(mapRef.current);
+      setLocalMap(mapRef.current)
     }
     // eslint-disable-next-line
   }, [mapRef.current]);
 
   useEffect(() => {
     // update the shared map context when the map loads
-    dispatch(setmap(map));
+    dispatch(setMap(map))
 
     // if map full loaded
     if (map && Object.keys(map).length > 0) {
-      //onMapLoaded();
+      // onMapLoaded();
     }
 
     // eslint-disable-next-line
@@ -56,7 +56,7 @@ const LeafMap = () => {
         />
       </MapContainer>
     </div>
-  );
-};
+  )
+}
 
-export default LeafMap;
+export default LeafMap

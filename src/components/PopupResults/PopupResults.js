@@ -1,32 +1,34 @@
-import { React, useEffect, useState } from "react";
-import "./PopupResults.css";
+import { React, useEffect, useState } from 'react'
+import PropTypes from 'prop-types'
+import './PopupResults.css'
 
-import PopupResult from "../PopupResult/PopupResult";
+import PopupResult from '../PopupResult/PopupResult'
 
-import { ChevronRight, ChevronLeft } from "@mui/icons-material";
+import { ChevronRight, ChevronLeft } from '@mui/icons-material'
 
 const PopupResults = (props) => {
-  const [currentResultIndex, setcurrentResultIndex] = useState(0);
+  const [currentResultIndex, setCurrentResultIndex] = useState(0)
 
   useEffect(() => {
-    setcurrentResultIndex(0);
-  }, [props.results]);
+    setCurrentResultIndex(0)
+  }, [props.results])
 
-  function onNextClick() {
+  function onNextClick () {
     if (currentResultIndex < props.results.length - 1) {
-      setcurrentResultIndex(currentResultIndex + 1);
+      setCurrentResultIndex(currentResultIndex + 1)
     }
   }
 
-  function onPrevClick() {
+  function onPrevClick () {
     if (currentResultIndex > 0) {
-      setcurrentResultIndex(currentResultIndex - 1);
+      setCurrentResultIndex(currentResultIndex - 1)
     }
   }
 
   return (
     <div className="popupResultsContainer">
-      {props.results ? (
+      {props.results
+        ? (
         <div className="popupResults">
           <PopupResult result={props.results[currentResultIndex]}></PopupResult>
           <div className="popupFooter">
@@ -36,7 +38,7 @@ const PopupResults = (props) => {
                 onClick={() => onPrevClick()}
               ></ChevronLeft>
             </div>
-            {currentResultIndex + 1 + " of " + props.results.length}
+            {currentResultIndex + 1 + ' of ' + props.results.length}
             <div className="popupFooterNext popupFooterIconContainer">
               <ChevronRight
                 className="popupFooterIcon"
@@ -45,9 +47,14 @@ const PopupResults = (props) => {
             </div>
           </div>
         </div>
-      ) : null}
+          )
+        : null}
     </div>
-  );
-};
+  )
+}
 
-export default PopupResults;
+PopupResults.propTypes = {
+  results: PropTypes.array
+}
+
+export default PopupResults
