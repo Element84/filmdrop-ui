@@ -2,28 +2,29 @@
 
 ## Summary
 
-FilmDrop UI is a browser-based interface for displaying results from a STAC API.
+FilmDrop UI is a browser-based interface for displaying results from a STAC API. Additional information can be found in the [CHANGELOG](CHANGELOG.md).
 
 ## Deployment
 
 ### Environment Files
 
-For local development, you should include an `.env.development` file with the proper configuration.
+For local development, you should include an `.env.development` file with the proper configuration outlined in the table below.
 
-For production builds, you should include an `.env.production` file with the proper configuration.
+For production builds, you should include an `.env.production` file with the proper configuration outlined in the table below.
 
-```
-PUBLIC_URL=[URL]
-REACT_APP_LOGO=[URL]
-REACT_APP_LOGO_ALT_VALUE="Alt description for my custom logo"
-REACT_APP_DASHBOARD_LINK=[URL]
-REACT_APP_ANALYZE_LINK=[URL]
-REACT_APP_STAC_API_ENDPOINT=[URL Endpoint]
-REACT_APP_DEFAULT_COLLECTION=[Collection Name]
-REACT_APP_TILER_CONFIGURATION=[Endpoint]
-REACT_APP_TILER_COLOR_FORMULAS=[{"collection":"landsat-c2-l2","assets":"red&assets=green&assets=blue"}]
-REACT_APP_TILER_COLOR_FORMULAS=[{"collection":"landsat-c2-l2","color_formula":"Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}]
-```
+| Variable  | Description | Required |
+| ------------- | ------------- | ------------- |
+| PUBLIC_URL | URL for the FilmDrop UI. Useful when using a CDN to host application. | Optional |
+| REACT_APP_LOGO_URL | URL for your custom logo | Optional |
+| REACT_APP_LOGO_ALT | Alt image description for your custom logo | Optional |
+| REACT_APP_DASHBOARD_BTN_URL | URL for the Dashboard button at the top right of the UI. If not set, the button will not be visible. | Optional |
+| REACT_APP_ANALYZE_BTN_URL | URL for the Analyze button at the bottom left of the UI. If not set, the button will not be visible. | Optional |
+| REACT_APP_STAC_API_URL | URL for STAC API | Required |
+| REACT_APP_DEFAULT_COLLECTION | Default collection option for collection dropdown | Optional |
+| REACT_APP_TILER_URL | URL for map tiling | Required |
+| REACT_APP_TILER_ASSETS | Asset settings by collection name. Example: `[{"collection":"sentinel-2-l2a","assets":"visual"}]` | Required |
+| REACT_APP_TILER_COLOR_FORMULAS | If needed, color formula settings by collection name. Example: `[{"collection":"landsat-c2-l2","color_formula":"Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}]` | Optional |
+
 
 ### Links
 
