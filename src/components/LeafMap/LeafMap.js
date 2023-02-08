@@ -29,13 +29,8 @@ const LeafMap = () => {
     // update the shared map context when the map loads
     dispatch(setMap(map))
 
-    // if map full loaded
-    if (map && Object.keys(map).length > 0) {
-      // onMapLoaded();
-    }
-
     // eslint-disable-next-line
-  }, [map]); // this will give a linter error only beacuse setting context API in useEffect, but context has to be set outside
+  }, [map]); // this will give a linter error only because setting context API in useEffect, but context has to be set outside
 
   return (
     <div className="LeafMap" data-testid="LeafMap">
