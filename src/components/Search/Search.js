@@ -22,6 +22,7 @@ const Search = () => {
   const tilerURL = constructTilerURL()
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
+
   // set up map state
   const map = _map
 
