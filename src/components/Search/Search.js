@@ -287,7 +287,7 @@ const Search = () => {
 
     // get cloud cover silder value
     const cloudCover = _cloudCover
-    const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT
+    const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
 
     // build string to set for publish copy to clipboard
     const searchParametersString =

@@ -4,8 +4,8 @@ import './PageHeader.css'
 import { OpenInNew } from '@mui/icons-material'
 
 const PageHeader = () => {
-  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_LINK
-  const LOGO = process.env.REACT_APP_LOGO
+  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_BTN_URL
+  const LOGO = process.env.REACT_APP_LOGO_URL
   const ALT_TEXT = process.env.REACT_APP_LOGO_ALT
 
   function onDashboardClick () {

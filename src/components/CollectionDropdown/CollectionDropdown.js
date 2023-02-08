@@ -15,7 +15,7 @@ import { useDispatch } from 'react-redux'
 import { setSelectedCollection } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
-  const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT
+  const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
   const DEFAULT_COLLECTION = process.env.REACT_APP_DEFAULT_COLLECTION
 
   // if you are setting redux state, call dispatch
