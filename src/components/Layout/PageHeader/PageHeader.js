@@ -1,16 +1,15 @@
-import React from "react";
-import "./PageHeader.css";
+import React from 'react'
+import './PageHeader.css'
 
-import logoFilmDrop from "../../../assets/logo-filmdrop-white.svg";
+import logoFilmDrop from '../../../assets/logo-filmdrop-white.svg'
 
-import { OpenInNew } from "@mui/icons-material";
+import { OpenInNew } from '@mui/icons-material'
 
 const PageHeader = () => {
+  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_LINK
 
-  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_LINK;
-
-  function onDashboardClick() {
-    window.open(DASHBOARD_LINK, "_blank");
+  function onDashboardClick () {
+    window.open(DASHBOARD_LINK, '_blank')
   }
 
   return (
@@ -27,7 +26,7 @@ const PageHeader = () => {
         </div>
       ) }
     </div>
-  );
-};
+  )
+}
 
-export default PageHeader;
+export default PageHeader
