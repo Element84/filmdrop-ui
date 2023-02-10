@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import './Search.css'
-import { constructTilerURL, constructAssetsURL } from './envVarSetup'
+import { envTilerURL, constructAssetsURL } from './envVarSetup'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -19,7 +19,7 @@ const Search = () => {
   const _collectionSelected = useSelector((state) => state.mainSlice.selectedCollection)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _currentPopupResult = useSelector((state) => state.mainSlice.currentPopupResult)
-  const tilerURL = constructTilerURL()
+  const tilerURL = envTilerURL
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
@@ -111,23 +111,20 @@ const Search = () => {
       map.getPane('imagery').style.zIndex = 650
       map.getPane('imagery').style.pointerEvents = 'none'
 
-      map.on('click', clickHandler)
+      map.on('click', mapClickHandler)
     }
-  // eslint-disable-next-line
   }, [map])
 
   // when dataTime changes set in global store
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
-    // eslint-disable-next-line
   }, [dateTimeValue])
 
-  // when search results change, if map loaded, set new clickHandler
+  // when search results change, if map loaded, set new mapClickHandler
   useEffect(() => {
     if (map && Object.keys(map).length > 0 && _searchResults !== null) {
-      map.on('click', clickHandler)
+      map.on('click', mapClickHandler)
     }
-  // eslint-disable-next-line
   }, [_searchResults])
 
   // when currentPopupResult set, add image layer to map
@@ -139,7 +136,6 @@ const Search = () => {
       // call add new image layer to map function
       addImageClicked(_currentPopupResult)
     }
-  // eslint-disable-next-line
   }, [_currentPopupResult])
 
   // function called when draw BBOX button clicked
@@ -156,8 +152,10 @@ const Search = () => {
     drawHandler.enable()
   }
 
-  // function to handle click on map
-  function clickHandler (e) {
+  // when a user clicks on a search result tile, highlight the tile
+  // or remove the image preview and clear popup result if
+  // the user clicks just on the map
+  function mapClickHandler (e) {
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
     if (clickedFootprintHighlights) {

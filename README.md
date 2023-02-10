@@ -22,9 +22,7 @@ For production builds, you should include an `.env.production` file with the pro
 | REACT_APP_STAC_API_URL | URL for STAC API | Required |
 | REACT_APP_DEFAULT_COLLECTION | Default collection option for collection dropdown | Optional |
 | REACT_APP_TILER_URL | URL for map tiling | Required |
-| REACT_APP_TILER_ASSETS | Asset settings by collection name. Example: `[{"collection":"sentinel-2-l2a","assets":"visual"}]` | Required |
-| REACT_APP_TILER_COLOR_FORMULAS | If needed, color formula settings by collection name. Example: `[{"collection":"landsat-c2-l2","color_formula":"Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}]` | Optional |
-
+| REACT_APP_TILER_PARAMS | Asset and color formula settings by collection name. Example: `{"sentinel-2-l2a": {"assets":["visual"]}, "landsat-c2-l2": {"assets":["red","green","blue"], "color_formula": "Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}}` | Required |
 
 ### Links
 
