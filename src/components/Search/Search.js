@@ -1,5 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import './Search.css'
+import { envTilerURL, constructAssetsURL } from './envVarSetup'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -10,33 +11,33 @@ import * as L from 'leaflet'
 import 'leaflet-draw'
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker'
 import CloudSlider from '../CloudSlider/CloudSlider'
+import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
+  const _collectionSelected = useSelector((state) => state.mainSlice.selectedCollection)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
-  const _currentPopupResult = useSelector(
-    (state) => state.mainSlice.currentPopupResult
-  )
-
+  const _currentPopupResult = useSelector((state) => state.mainSlice.currentPopupResult)
+  const tilerURL = envTilerURL
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
   // set up map state
   const map = _map
 
-  // set default date range (current minus 24 * 60 * 60 * 1000 per day)
-  const oneWeekAgo = new Date(Date.now() - 604800000)
+  // set default date range (current minus 24hrs * 60min * 60sec * 1000ms per day * 14 days)
+  const twoWeeksAgo = new Date(Date.now() - (24 * 60 * 60 * 1000 * 14))
 
   // set up local state
-  const [dateTimeValue, setDateTimeValue] = useState([oneWeekAgo, new Date()])
+  const [dateTimeValue, setDateTimeValue] = useState([twoWeeksAgo, new Date()])
   const [drawHandler, setDrawHandler] = useState()
   const [drawnItems, setDrawnItems] = useState()
   const [resultFootprints, setResultFootprints] = useState()
-  const [clickedFootprintHighlights, setClickedFootprintsHighlight] =
-    useState()
-  const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] =
-    useState()
+  const [clickedFootprintHighlights, setClickedFootprintsHighlight] = useState()
+  const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] = useState()
+  const [drawboxBtnError, setDrawboxBtnError] = useState(false)
+  const [collectionError, setCollectionError] = useState(false)
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -45,7 +46,7 @@ const Search = () => {
       handlers: {
         rectangle: {
           tooltip: {
-            start: 'Click and Drag to Draw Bounding Box.'
+            start: 'Click and drag to draw bounding box.'
           }
         },
         simpleshape: {
@@ -110,24 +111,21 @@ const Search = () => {
       map.getPane('imagery').style.zIndex = 650
       map.getPane('imagery').style.pointerEvents = 'none'
 
-      map.on('click', clickHandler)
+      map.on('click', mapClickHandler)
     }
-    // eslint-disable-next-line
-  }, [map]);
+  }, [map])
 
   // when dataTime changes set in global store
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
-    // eslint-disable-next-line
-  }, [dateTimeValue]);
+  }, [dateTimeValue])
 
-  // when search results change, if map loaded, set new clickHandler
+  // when search results change, if map loaded, set new mapClickHandler
   useEffect(() => {
     if (map && Object.keys(map).length > 0 && _searchResults !== null) {
-      map.on('click', clickHandler)
+      map.on('click', mapClickHandler)
     }
-    // eslint-disable-next-line
-  }, [_searchResults]);
+  }, [_searchResults])
 
   // when currentPopupResult set, add image layer to map
   useEffect(() => {
@@ -138,8 +136,7 @@ const Search = () => {
       // call add new image layer to map function
       addImageClicked(_currentPopupResult)
     }
-    // eslint-disable-next-line
-  }, [_currentPopupResult]);
+  }, [_currentPopupResult])
 
   // function called when draw BBOX button clicked
   function drawBBOX () {
@@ -155,7 +152,10 @@ const Search = () => {
     drawHandler.enable()
   }
 
-  function clickHandler (e) {
+  // when a user clicks on a search result tile, highlight the tile
+  // or remove the image preview and clear popup result if
+  // the user clicks just on the map
+  function mapClickHandler (e) {
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
     if (clickedFootprintHighlights) {
@@ -238,9 +238,26 @@ const Search = () => {
       }
     })
 
-    // if no bounding box drawn, abort search TODO: add better error handling
+    // if no bounding box drawn, abort search
     if (!aoiBounds) {
+      setDrawboxBtnError(true)
       return
+    } else {
+      setDrawboxBtnError(false)
+    }
+
+    // if the date time field is empty, abort search
+    if (!dateTimeValue) return
+
+    // if a valid collection is not selected, abort search
+    if (!_collectionSelected) {
+      removeFootprints()
+      clickedFootprintsImageLayer.clearLayers()
+      clickedFootprintHighlights.clearLayers()
+      setCollectionError(true)
+      return
+    } else {
+      setCollectionError(false)
     }
 
     // remove clicked footprint highlight
@@ -252,6 +269,7 @@ const Search = () => {
     if (clickedFootprintsImageLayer) {
       clickedFootprintsImageLayer.clearLayers()
     }
+
     // remove existing footprints from map
     removeFootprints()
 
@@ -268,29 +286,8 @@ const Search = () => {
 
     // get cloud cover silder value
     const cloudCover = _cloudCover
+    const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
 
-    const API_ENDPOINT = process.env.REACT_APP_STAC_API_ENDPOINT
-    const COLLECTIONS = process.env.REACT_APP_COLLECTIONS
-
-    // build GET URL (limit hardcoded to 362)
-    const baseURLGET =
-      API_ENDPOINT +
-      '/search?bbox=' +
-      aoiBounds._southWest.lng +
-      ',' +
-      aoiBounds._southWest.lat +
-      ',' +
-      aoiBounds._northEast.lng +
-      ',' +
-      aoiBounds._northEast.lat +
-      '&limit=100&query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A' +
-      cloudCover +
-      '%7D%7D&datetime=' +
-      combinedDateRange +
-      '&collections=' +
-      COLLECTIONS
-
-    // TODO rework this to make DRY with baseURLGET string above...
     // build string to set for publish copy to clipboard
     const searchParametersString =
       '?bbox=' +
@@ -305,10 +302,18 @@ const Search = () => {
       cloudCover +
       '%7D%7D&datetime=' +
       combinedDateRange +
-      '&collections=sentinel-2-l2a'
+      '&collections=' +
+      _collectionSelected
 
     // set state for publish copy to clipboard
     dispatch(setSearchParameters(searchParametersString))
+
+    // build GET URL (limit hardcoded to 100)
+    const baseURLGET =
+      API_ENDPOINT +
+      '/search' +
+      searchParametersString +
+      '&limit=100'
 
     // send GET request to find first 200 STAC images that intersect bbox
     fetch(baseURLGET, {
@@ -331,14 +336,14 @@ const Search = () => {
       })
   }
 
-  // function to remove old image layer and add new image layer to map
+  // function to remove old image layer and add new Tiler image layer to map
   function addImageClicked (feature) {
-    const featureURL = feature.links[0].href
+    // show loading spinner
+    dispatch(setSearchLoading(true))
+
     clickedFootprintsImageLayer.clearLayers()
-
-    const tilerURL = process.env.REACT_APP_TITILER
-
-    const singleAssetName = 'visual'
+    const featureURL = feature.links[0].href
+    const assetURL = constructAssetsURL(_collectionSelected)
 
     fetch(featureURL, {
       method: 'GET'
@@ -350,12 +355,13 @@ const Search = () => {
         const corner1 = L.latLng(json.bbox[1], json.bbox[0])
         const corner2 = L.latLng(json.bbox[3], json.bbox[2])
         const tileBounds = L.latLngBounds(corner1, corner2)
+        map.fitBounds(tileBounds, { padding: [100, 100] })
+
         L.tileLayer(
           tilerURL +
             '/stac/tiles/{z}/{x}/{y}.png?&url=' +
             featureURL +
-            '&assets=' +
-            singleAssetName +
+            assetURL +
             '&return_mask=true',
           {
             attribution: '©OpenStreetMap',
@@ -363,27 +369,36 @@ const Search = () => {
             bounds: tileBounds,
             pane: 'imagery'
           }
-        ).addTo(clickedFootprintsImageLayer)
+        ).addTo(clickedFootprintsImageLayer).on('load', function () {
+          // hide loading spinner
+          dispatch(setSearchLoading(false))
+        }).on('tileerror', function () {
+          console.log('Tile Error')
+        })
       })
   }
 
   return (
     <div className="Search" data-testid="Search">
-      <button onClick={() => drawBBOX()} className="bboxButton">
+      <button onClick={() => drawBBOX()} className={`bboxButton error-${drawboxBtnError}`}>
         Draw BBOX
       </button>
       <div className="searchContainer">
-        <label>Select Date & Time Range</label>
+        <label>Select Date & Time Range {!dateTimeValue && <span className="error-true"><em>Required</em></span>}</label>
         <DateTimeRangePicker
           className="dateTimePicker"
           onChange={setDateTimeValue}
           format={'yy-MM-dd HH:mm'}
           maxDate={new Date()}
+          required={true}
           value={dateTimeValue}
         ></DateTimeRangePicker>
       </div>
       <div className="searchContainer">
         <CloudSlider></CloudSlider>
+      </div>
+      <div className={`searchContainer collection-dropdown error-${collectionError}`}>
+        <CollectionDropdown error={collectionError}></CollectionDropdown>
       </div>
       <button className="searchButton" onClick={() => searchAPI()}>
         Search

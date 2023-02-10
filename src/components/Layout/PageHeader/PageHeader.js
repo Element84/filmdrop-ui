@@ -1,12 +1,12 @@
 import React from 'react'
 import './PageHeader.css'
 
-import logoFilmDrop from '../../../assets/logo-filmdrop-white.svg'
-
 import { OpenInNew } from '@mui/icons-material'
 
 const PageHeader = () => {
-  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_LINK
+  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_BTN_URL
+  const LOGO = process.env.REACT_APP_LOGO_URL
+  const ALT_TEXT = process.env.REACT_APP_LOGO_ALT
 
   function onDashboardClick () {
     window.open(DASHBOARD_LINK, '_blank')
@@ -15,7 +15,13 @@ const PageHeader = () => {
   return (
     <div className="PageHeader">
       <div className="pageHeaderLeft">
-        <img src={logoFilmDrop} alt="logo" className="headerLogoImage"></img>
+        {LOGO
+          ? (
+          <img src={LOGO} alt={ALT_TEXT} className="headerLogoImage"></img>
+            )
+          : (
+          <img src={process.env.PUBLIC_URL + '/logo.png'} alt="FilmDrop by Element 84" className="headerLogoImage"></img>
+            )}
       </div>
       {DASHBOARD_LINK && (
         <div className="pageHeaderRight" onClick={() => onDashboardClick()}>

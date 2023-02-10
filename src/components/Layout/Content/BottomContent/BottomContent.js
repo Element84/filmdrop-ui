@@ -22,7 +22,7 @@ const BottomContent = () => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
-  const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_LINK
+  const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
 
   function onAnalyzeClick () {
     window.open(ANALYZE_LINK, '_blank')

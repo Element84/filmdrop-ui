@@ -27,6 +27,8 @@ const PopupResult = (props) => {
     // eslint-disable-next-line
   }, []);
 
+  const thumbnailURL = props.result?.links?.find(({ rel }) => rel === 'thumbnail')?.href
+
   return (
     <div className="popupResult">
       {props.result
@@ -34,15 +36,14 @@ const PopupResult = (props) => {
         <div>
           <div className="popupResultThumbnailContainer">
             <picture>
-              <source
-                src={props.result.assets.thumbnail.href}
-                type="image/jp2"
-                className="popupResultThumbnail"
-              />
               <img
-                src={props.result.assets.thumbnail.href}
+                src={thumbnailURL}
                 alt="thumbnail"
                 className="popupResultThumbnail"
+                onError={({ currentTarget }) => {
+                  currentTarget.onerror = null // prevents looping
+                  currentTarget.parentElement.remove()
+                }}
               ></img>
             </picture>
           </div>

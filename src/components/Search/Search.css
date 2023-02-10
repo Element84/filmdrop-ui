@@ -25,9 +25,16 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
     transition: all 0.33s ease-in-out;
 }
+.bboxButton.error-true {
+  background-color: #bc3131;
+}
 .bboxButton:hover {
     background-color: #6CC24A;
     color: #12171A;
+}
+
+span.error-true {
+  color: #bc3131;
 }
 
 .searchButton{
