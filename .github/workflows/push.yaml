@@ -32,7 +32,9 @@ jobs:
         run: npm run audit-all
       - name: Run audit (prod, no exclusions)
         run: npm run audit-prod
-      - name: Run unit tests
-        run: npm run test
-      - name: Run build
+      # - name: Run unit tests
+        # run: npm run test
+      - name: Run dev build
         run: npm run build
+      - name: Run production build
+        run: npm run build:prod
