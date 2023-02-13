@@ -22,12 +22,16 @@ jobs:
         run: npm install -g npm@latest
       - name: Install dependencies
         run: npm install
+      - name: Run Markdown checks
+        run: npm check-markdown
       - name: Run eslint
         run: npm run lint
       # - name: Typecheck
       #   run: npm run typecheck
-      - name: Run NPM Audit
-        run: npm run audit
+      - name: Run audit (all, with exclusions)
+        run: npm run audit-all
+      - name: Run audit (prod, no exclusions)
+        run: npm run audit-prod
       - name: Run unit tests
         run: npm run test
       - name: Run build
