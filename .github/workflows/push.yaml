@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Run Markdown checks
-        run: npm check-markdown
+        run: npm run check-markdown
       - name: Run eslint
         run: npm run lint
       # - name: Typecheck
