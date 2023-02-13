@@ -18,6 +18,14 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@tsconfig/node18": "^1.0.1",
+    "pre-commit": "^1.2.2",
+    "typescript": "^4.9.4",
+    "prettier": "^2.8.3",
+    "prettier-eslint": "^15.0.1",
+    "prettier-eslint-cli": "^7.1.0",
+    "@typescript-eslint/eslint-plugin": "^5.49.0",
+    "@typescript-eslint/parser": "^5.49.0",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -46,11 +54,11 @@
     "build:prod": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint . --ext .js,.ts && echo \"👍  Passed linting\n\"",
-    "lint-fix": "eslint . --ext .js,.ts --fix",
-    "typecheck": "tsc",
+    "lint": "eslint ./src --ext .js,.ts && echo \"👍  Passed linting\n\"",
+    "lint-fix": "eslint ./src --ext .js,.ts --fix",
+    "typecheck": "tsc --jsx react",
     "audit-all": "npx better-npm-audit audit --exclude GHSA-rp65-9cf3-cjxr",
-    "audit-prod": "npx better-npm-audit --production",
+    "audit-prod": "npx better-npm-audit audit --production",
     "pre-commit": "./node_modules/pre-commit/hook",
     "check-markdown": "remark . --frail"
   },
@@ -58,10 +66,10 @@
     "silent": false,
     "run": [
       "lint",
-      "typecheck",
-      "audit",
-      "test",
-      "build"
+      "audit-all",
+      "audit-prod",
+      "build",
+      "build:prod"
     ]
   },
   "eslintConfig": {
