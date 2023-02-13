@@ -13,13 +13,13 @@ const PopupResults = (props) => {
     setCurrentResultIndex(0)
   }, [props.results])
 
-  function onNextClick () {
+  function onNextClick() {
     if (currentResultIndex < props.results.length - 1) {
       setCurrentResultIndex(currentResultIndex + 1)
     }
   }
 
-  function onPrevClick () {
+  function onPrevClick() {
     if (currentResultIndex > 0) {
       setCurrentResultIndex(currentResultIndex - 1)
     }
@@ -27,8 +27,7 @@ const PopupResults = (props) => {
 
   return (
     <div className="popupResultsContainer">
-      {props.results
-        ? (
+      {props.results ? (
         <div className="popupResults">
           <PopupResult result={props.results[currentResultIndex]}></PopupResult>
           <div className="popupFooter">
@@ -47,8 +46,7 @@ const PopupResults = (props) => {
             </div>
           </div>
         </div>
-          )
-        : null}
+      ) : null}
     </div>
   )
 }

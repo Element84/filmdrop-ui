@@ -28,7 +28,7 @@ const CloudSlider = () => {
   useEffect(() => {
     dispatch(setCloudCover(value))
     // eslint-disable-next-line
-  }, [value]);
+  }, [value])
 
   const handleSliderChange = (event, newValue) => {
     setValue(newValue)

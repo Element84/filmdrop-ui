@@ -1,25 +1,25 @@
 @import '~leaflet/dist/leaflet.css';
 
 .LeafMap {
-    color: #222;
-    width: 100%;
-    background-color: lightblue;
+  color: #222;
+  width: 100%;
+  background-color: lightblue;
 }
-.mainMap{
-    height: 100%;
-    width: 100%;
-    z-index: 1;
+.mainMap {
+  height: 100%;
+  width: 100%;
+  z-index: 1;
 }
 
 .LeafMap {
-    color: #222;
-    width: 100%;
-    background-color: lightblue;
+  color: #222;
+  width: 100%;
+  background-color: lightblue;
 }
-.mainMap{
-    height: 100%;
-    width: 100%;
+.mainMap {
+  height: 100%;
+  width: 100%;
 }
 .map-tiles {
-    filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
+  filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
 }

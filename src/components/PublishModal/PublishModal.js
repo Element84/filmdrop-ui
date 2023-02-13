@@ -18,16 +18,14 @@ const PublishModal = () => {
     (state) => state.mainSlice.searchParameters
   )
 
-  const [copyButtonText, setCopyButtonText] = useState(
-    'Copy Search Parameters'
-  )
+  const [copyButtonText, setCopyButtonText] = useState('Copy Search Parameters')
 
-  function onCloseClick () {
+  function onCloseClick() {
     dispatch(setShowPublishModal(!_showPublishModal))
   }
 
   // on click call copy and set button text
-  function onCopyClick () {
+  function onCopyClick() {
     copyContent()
     setTimeout(() => {
       setCopyButtonText('Copy Search Parameters')
@@ -50,13 +48,16 @@ const PublishModal = () => {
       <div className="publishModalContainerImage"></div>
       <div className="publishModalContainer">
         <img src={logoFilmDrop} alt="logo" className="modalLogoImage"></img>
-        <span className="searchServicesTitle">Publish Search Image Services</span>
-        <span className="searchServicesDescription">
-          {
-            'Use the STAC API search parameters directly in your application.'
-          }
+        <span className="searchServicesTitle">
+          Publish Search Image Services
         </span>
-        <button className="copySearchParamsButton" onClick={() => onCopyClick()}>
+        <span className="searchServicesDescription">
+          {'Use the STAC API search parameters directly in your application.'}
+        </span>
+        <button
+          className="copySearchParamsButton"
+          onClick={() => onCopyClick()}
+        >
           {copyButtonText}
         </button>
         <button className="closeSearchModal" onClick={() => onCloseClick()}>

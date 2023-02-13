@@ -23,14 +23,14 @@ const LeafMap = () => {
       setLocalMap(mapRef.current)
     }
     // eslint-disable-next-line
-  }, [mapRef.current]);
+  }, [mapRef.current])
 
   useEffect(() => {
     // update the shared map context when the map loads
     dispatch(setMap(map))
 
     // eslint-disable-next-line
-  }, [map]); // this will give a linter error only because setting context API in useEffect, but context has to be set outside
+  }, [map]) // this will give a linter error only because setting context API in useEffect, but context has to be set outside
 
   return (
     <div className="LeafMap" data-testid="LeafMap">
@@ -45,7 +45,7 @@ const LeafMap = () => {
       >
         {/* set basemap layers here: */}
         <TileLayer
-          className='map-tiles'
+          className="map-tiles"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
         />

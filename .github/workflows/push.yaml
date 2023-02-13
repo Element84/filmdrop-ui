@@ -1,0 +1,42 @@
+name: FilmDrop UI CI
+on:
+  push:
+    branches:
+      - main
+      - 'feature/**'
+  pull_request:
+    branches:
+      - '**'
+jobs:
+  test:
+    name: Run static analysis and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+          cache-dependency-path: package.json
+      - name: Upgrade npm
+        run: npm install -g npm@latest
+      - name: Install dependencies
+        run: npm install
+      - name: Run Markdown checks
+        run: npm run check-markdown
+      - name: Run format
+        run: npm run format
+      - name: Run eslint
+        run: npm run lint
+      # - name: Typecheck
+      #   run: npm run typecheck
+      - name: Run audit (all, with exclusions)
+        run: npm run audit-all
+      - name: Run audit (prod, no exclusions)
+        run: npm run audit-prod
+      # - name: Run unit tests
+      # run: npm run test
+      - name: Run dev build
+        run: npm run build
+      - name: Run production build
+        run: npm run build:prod

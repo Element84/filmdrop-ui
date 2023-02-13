@@ -37,7 +37,7 @@ const Dropdown = ({ error }) => {
   useEffect(() => {
     dispatch(setSelectedCollection(value))
     // eslint-disable-next-line
-  }, [value]);
+  }, [value])
 
   const handleDropdownChange = (event) => {
     if (event) {
@@ -49,7 +49,14 @@ const Dropdown = ({ error }) => {
 
   return (
     <Box sx={{ width: 250 }}>
-      <label>Collection {error && <span className="error-true"><em>Required</em></span>}</label>
+      <label>
+        Collection{' '}
+        {error && (
+          <span className="error-true">
+            <em>Required</em>
+          </span>
+        )}
+      </label>
       <Grid container spacing={2} alignItems="center">
         <Grid item xs>
           <NativeSelect
@@ -62,9 +69,12 @@ const Dropdown = ({ error }) => {
             }}
           >
             <option value="">Select One</option>
-            {collectionData && collectionData.collections.map(({ id, title }) => (
-              <option key={id} value={id}>{title}</option>
-            ))}
+            {collectionData &&
+              collectionData.collections.map(({ id, title }) => (
+                <option key={id} value={id}>
+                  {title}
+                </option>
+              ))}
           </NativeSelect>
         </Grid>
       </Grid>

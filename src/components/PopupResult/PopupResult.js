@@ -17,7 +17,7 @@ const PopupResult = (props) => {
       dispatch(setCurrentPopupResult(props.result))
     }
     // eslint-disable-next-line
-  }, [props.result]);
+  }, [props.result])
 
   useEffect(() => {
     return () => {
@@ -25,14 +25,15 @@ const PopupResult = (props) => {
       dispatch(setCurrentPopupResult(null))
     }
     // eslint-disable-next-line
-  }, []);
+  }, [])
 
-  const thumbnailURL = props.result?.links?.find(({ rel }) => rel === 'thumbnail')?.href
+  const thumbnailURL = props.result?.links?.find(
+    ({ rel }) => rel === 'thumbnail'
+  )?.href
 
   return (
     <div className="popupResult">
-      {props.result
-        ? (
+      {props.result ? (
         <div>
           <div className="popupResultThumbnailContainer">
             <picture>
@@ -64,8 +65,7 @@ const PopupResult = (props) => {
             </div>
           </div>
         </div>
-          )
-        : null}
+      ) : null}
     </div>
   )
 }
