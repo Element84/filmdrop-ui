@@ -29,8 +29,21 @@
     "build:prod": "env-cmd -f .env.production react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint \"**/*.js\" && echo \"👍  Passed linting\n\"",
-    "lint-fix": "eslint --fix \"**/*.js\""
+    "lint": "eslint . --ext .js,.ts && echo \"👍  Passed linting\n\"",
+    "lint-fix": "eslint . --ext .js,.ts --fix",
+    "typecheck": "tsc",
+    "audit": "npx better-npm-audit audit --exclude GHSA-rp65-9cf3-cjxr",
+    "pre-commit": "./node_modules/pre-commit/hook"
+  },
+  "pre-commit": {
+    "silent": false,
+    "run": [
+      "lint",
+      "typecheck",
+      "audit",
+      "test",
+      "build"
+    ]
   },
   "eslintConfig": {
     "extends": [
@@ -51,6 +64,7 @@
     ]
   },
   "devDependencies": {
+    "better-npm-audit": "^3.7.3",
     "eslint": "^8.33.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
