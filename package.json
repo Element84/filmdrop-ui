@@ -163,13 +163,10 @@
         false
       ]
     ]
-<<<<<<< HEAD
   },
   "jest": {
     "transformIgnorePatterns": [
       "node_modules/(?!react-leaflet)/"
     ]
-=======
->>>>>>> main
   }
 }
