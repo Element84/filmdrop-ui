@@ -5,7 +5,13 @@ import { envTilerURL, constructAssetsURL } from './envVarSetup'
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setSearchResults, setDateTime, setClickResults, setSearchLoading, setSearchParameters } from '../../redux/slices/mainSlice'
+import {
+  setSearchResults,
+  setDateTime,
+  setClickResults,
+  setSearchLoading,
+  setSearchParameters
+} from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import 'leaflet-draw'
@@ -16,9 +22,13 @@ import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 const Search = () => {
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
-  const _collectionSelected = useSelector((state) => state.mainSlice.selectedCollection)
+  const _collectionSelected = useSelector(
+    (state) => state.mainSlice.selectedCollection
+  )
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
-  const _currentPopupResult = useSelector((state) => state.mainSlice.currentPopupResult)
+  const _currentPopupResult = useSelector(
+    (state) => state.mainSlice.currentPopupResult
+  )
   const tilerURL = envTilerURL
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
@@ -27,7 +37,7 @@ const Search = () => {
   const map = _map
 
   // set default date range (current minus 24hrs * 60min * 60sec * 1000ms per day * 14 days)
-  const twoWeeksAgo = new Date(Date.now() - (24 * 60 * 60 * 1000 * 14))
+  const twoWeeksAgo = new Date(Date.now() - 24 * 60 * 60 * 1000 * 14)
 
   // set up local state
   const [dateTimeValue, setDateTimeValue] = useState([twoWeeksAgo, new Date()])
@@ -35,7 +45,8 @@ const Search = () => {
   const [drawnItems, setDrawnItems] = useState()
   const [resultFootprints, setResultFootprints] = useState()
   const [clickedFootprintHighlights, setClickedFootprintsHighlight] = useState()
-  const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] = useState()
+  const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] =
+    useState()
   const [drawboxBtnError, setDrawboxBtnError] = useState(false)
   const [collectionError, setCollectionError] = useState(false)
 
@@ -139,7 +150,7 @@ const Search = () => {
   }, [_currentPopupResult])
 
   // function called when draw BBOX button clicked
-  function drawBBOX () {
+  function drawBBOX() {
     // remove old bbox, footprints and enable draw handler
     drawnItems.clearLayers()
     clickedFootprintsImageLayer.clearLayers()
@@ -155,7 +166,7 @@ const Search = () => {
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
-  function mapClickHandler (e) {
+  function mapClickHandler(e) {
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
     if (clickedFootprintHighlights) {
@@ -203,7 +214,7 @@ const Search = () => {
   }
 
   // function to convert DateTime Range Picker values to STAC compliant format
-  function convertDateTimeForAPI (dateTime) {
+  function convertDateTimeForAPI(dateTime) {
     const dateString =
       dateTime.getUTCFullYear() +
       '-' +
@@ -222,14 +233,14 @@ const Search = () => {
   }
 
   // remove old footprints from map
-  function removeFootprints () {
+  function removeFootprints() {
     resultFootprints.eachLayer(function (layer) {
       map.removeLayer(layer)
     })
   }
 
   // function called when search button clicked
-  function searchAPI () {
+  function searchAPI() {
     // get AOI bounds
     let aoiBounds
     drawnItems.eachLayer(function (layer) {
@@ -310,10 +321,7 @@ const Search = () => {
 
     // build GET URL (limit hardcoded to 100)
     const baseURLGET =
-      API_ENDPOINT +
-      '/search' +
-      searchParametersString +
-      '&limit=100'
+      API_ENDPOINT + '/search' + searchParametersString + '&limit=100'
 
     // send GET request to find first 200 STAC images that intersect bbox
     fetch(baseURLGET, {
@@ -337,7 +345,7 @@ const Search = () => {
   }
 
   // function to remove old image layer and add new Tiler image layer to map
-  function addImageClicked (feature) {
+  function addImageClicked(feature) {
     // show loading spinner
     dispatch(setSearchLoading(true))
 
@@ -369,22 +377,35 @@ const Search = () => {
             bounds: tileBounds,
             pane: 'imagery'
           }
-        ).addTo(clickedFootprintsImageLayer).on('load', function () {
-          // hide loading spinner
-          dispatch(setSearchLoading(false))
-        }).on('tileerror', function () {
-          console.log('Tile Error')
-        })
+        )
+          .addTo(clickedFootprintsImageLayer)
+          .on('load', function () {
+            // hide loading spinner
+            dispatch(setSearchLoading(false))
+          })
+          .on('tileerror', function () {
+            console.log('Tile Error')
+          })
       })
   }
 
   return (
     <div className="Search" data-testid="Search">
-      <button onClick={() => drawBBOX()} className={`bboxButton error-${drawboxBtnError}`}>
+      <button
+        onClick={() => drawBBOX()}
+        className={`bboxButton error-${drawboxBtnError}`}
+      >
         Draw BBOX
       </button>
       <div className="searchContainer">
-        <label>Select Date & Time Range {!dateTimeValue && <span className="error-true"><em>Required</em></span>}</label>
+        <label>
+          Select Date & Time Range{' '}
+          {!dateTimeValue && (
+            <span className="error-true">
+              <em>Required</em>
+            </span>
+          )}
+        </label>
         <DateTimeRangePicker
           className="dateTimePicker"
           onChange={setDateTimeValue}
@@ -397,7 +418,9 @@ const Search = () => {
       <div className="searchContainer">
         <CloudSlider></CloudSlider>
       </div>
-      <div className={`searchContainer collection-dropdown error-${collectionError}`}>
+      <div
+        className={`searchContainer collection-dropdown error-${collectionError}`}
+      >
         <CollectionDropdown error={collectionError}></CollectionDropdown>
       </div>
       <button className="searchButton" onClick={() => searchAPI()}>

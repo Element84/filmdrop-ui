@@ -1,12 +1,11 @@
-**Related Issue(s):** 
+**Related Issue(s):**
 
 - #
 
-
 **Proposed Changes:**
 
-1. 
-2. 
+1.
+2.
 
 **PR Checklist:**
 

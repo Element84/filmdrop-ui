@@ -3,88 +3,88 @@
 @import 'react-clock/dist/Clock.css';
 
 .Search {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
-.bboxButton{
-    cursor: pointer;
-    height: 80px;
-    margin-left: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    background-color: #353D4F;
-    color: #DEDEDE;
-    border: 0px;
-    border-radius: 6px;
-    font-size: 18px;
-    font-weight: bold;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-    transition: all 0.33s ease-in-out;
+.bboxButton {
+  cursor: pointer;
+  height: 80px;
+  margin-left: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #353d4f;
+  color: #dedede;
+  border: 0px;
+  border-radius: 6px;
+  font-size: 18px;
+  font-weight: bold;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
+  transition: all 0.33s ease-in-out;
 }
 .bboxButton.error-true {
   background-color: #bc3131;
 }
 .bboxButton:hover {
-    background-color: #6CC24A;
-    color: #12171A;
+  background-color: #6cc24a;
+  color: #12171a;
 }
 
 span.error-true {
   color: #bc3131;
 }
 
-.searchButton{
-    cursor: pointer;
-    height: 80px;
-    margin-left: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    background-color: #6CC24A;
-    color: #12171A;
-    border: 0px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 6px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-    transition: all 0.33s ease-in-out;
+.searchButton {
+  cursor: pointer;
+  height: 80px;
+  margin-left: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #6cc24a;
+  color: #12171a;
+  border: 0px;
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
+  transition: all 0.33s ease-in-out;
 }
 
-.searchButton:hover{
-    background-color: #35731c;
-    color: #dedede;
+.searchButton:hover {
+  background-color: #35731c;
+  color: #dedede;
 }
 
-.searchContainer{
-    height: 80px;
-    margin-left: 20px;
-    padding-left: 20px;
-    padding-right: 20px;
-    background-color: #353D4F;
-    color: #DEDEDE;
-    border: 0px;
-    font-size: 16px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+.searchContainer {
+  height: 80px;
+  margin-left: 20px;
+  padding-left: 20px;
+  padding-right: 20px;
+  background-color: #353d4f;
+  color: #dedede;
+  border: 0px;
+  font-size: 16px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
-.searchContainer label{
-    font-weight: bold;
-    color: #A9B0C1;
+.searchContainer label {
+  font-weight: bold;
+  color: #a9b0c1;
 }
 
 /* Date Range Picker */
 
-.dateTimePicker{
-    margin-top: 10px;
-    z-index: 4;
-    font-size: 16px;
-    width: 100%;
+.dateTimePicker {
+  margin-top: 10px;
+  z-index: 4;
+  font-size: 16px;
+  width: 100%;
 }
 
 .react-datetimerange-picker__wrapper {
@@ -92,30 +92,30 @@ span.error-true {
 }
 
 .react-datetimerange-picker__inputGroup {
-  border-bottom: 1px solid #76829C;
+  border-bottom: 1px solid #76829c;
 }
 
-.dateTimePicker svg{
-    stroke: #a9b0c1;
+.dateTimePicker svg {
+  stroke: #a9b0c1;
 }
 
-.dateTimePicker input::placeholder{
-    color: #ffffff;
+.dateTimePicker input::placeholder {
+  color: #ffffff;
 }
 
-.dateTimePicker select{
-    color: #353D4F;
+.dateTimePicker select {
+  color: #353d4f;
 }
 
 .react-datetimerange-picker__inputGroup__input {
   color: white;
 }
 
-.react-datetimerange-picker__clock{
-    display: none;
+.react-datetimerange-picker__clock {
+  display: none;
 }
 .react-datetimerange-picker__clock--open {
-    display: none;
+  display: none;
 }
 
 /* Cloud Slider */
@@ -125,12 +125,12 @@ span.error-true {
   top: 4px;
 }
 
-input[class$="-MuiInputBase-root-MuiInput-root"]::before {
-  border-bottom-color: #76829C !important;
+input[class$='-MuiInputBase-root-MuiInput-root']::before {
+  border-bottom-color: #76829c !important;
 }
 
-input[class$="-MuiInputBase-input-MuiInput-input"] {
+input[class$='-MuiInputBase-input-MuiInput-input'] {
   text-align: center;
-  font-family: "Inter", Arial, Helvetica, sans-serif !important;
+  font-family: 'Inter', Arial, Helvetica, sans-serif !important;
   color: white !important;
 }

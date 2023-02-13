@@ -1,34 +1,32 @@
 .animated-loader {
-    display: inline-block;
-    position: relative;
-    width: 60px;
-    height: 100px;
-    text-align: center;
+  display: inline-block;
+  position: relative;
+  width: 60px;
+  height: 100px;
+  text-align: center;
+}
+
+.animated-loader svg {
+  width: 60px;
+  height: 100px;
+  display: block;
+  transform: rotate(-45deg);
+}
+
+.animated-loader svg path {
+  stroke: #76829c;
+  stroke-width: 5;
+  fill: transparent;
+  stroke-dasharray: 250;
+  animation: strokePath 2s linear infinite;
+}
+
+@keyframes strokePath {
+  0% {
+    stroke-dashoffset: 500;
   }
 
-  .animated-loader svg {
-    width: 60px;
-    height: 100px;
-    display: block;
-    transform: rotate(-45deg);
+  100% {
+    stroke-dashoffset: 0;
   }
-
-  .animated-loader svg path {
-    stroke: #76829C;
-    stroke-width: 5;
-    fill: transparent;
-    stroke-dasharray: 250;
-    animation: strokePath 2s linear infinite;
-  }
-
-  @keyframes strokePath {
-
-    0% {
-      stroke-dashoffset: 500;
-    }
-
-    100% {
-      stroke-dashoffset: 0;
-    }
-
-  }
+}

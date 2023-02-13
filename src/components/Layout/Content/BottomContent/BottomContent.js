@@ -24,11 +24,11 @@ const BottomContent = () => {
 
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
 
-  function onAnalyzeClick () {
+  function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
   }
 
-  function onPublishClick () {
+  function onPublishClick() {
     dispatch(setShowPublishModal(!_showPublishModal))
   }
 
@@ -40,31 +40,25 @@ const BottomContent = () => {
           <button className="actionButton" onClick={() => onAnalyzeClick()}>
             Analyze
           </button>
-        ) }
+        )}
         <button className="actionButton" onClick={() => onPublishClick()}>
           Publish
         </button>
       </div>
-      {_searchResults !== null
-        ? (
+      {_searchResults !== null ? (
         <div className="resultCount">
           Showing {_searchResults.features.length} of{' '}
           {_searchResults.context.matched} Scenes
         </div>
-          )
-        : null}
-      {_clickResults.length > 0
-        ? (
+      ) : null}
+      {_clickResults.length > 0 ? (
         <PopupResults results={_clickResults}></PopupResults>
-          )
-        : null}
-      {_searchLoading
-        ? (
+      ) : null}
+      {_searchLoading ? (
         <div className="loadingSpinnerContainer">
           <LoadingAnimation></LoadingAnimation>
         </div>
-          )
-        : null}
+      ) : null}
     </div>
   )
 }
