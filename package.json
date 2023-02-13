@@ -53,7 +53,8 @@
     "start:prod": "env-cmd -f .env.production react-scripts start",
     "build": "env-cmd -f .env.development react-scripts build",
     "build:prod": "env-cmd -f .env.production react-scripts build",
-    "test": "react-scripts test",
+    "test": "react-scripts test --passWithNoTests --watchAll=false",
+    "test-watch": "react-scripts test",
     "eject": "react-scripts eject",
     "lint": "eslint ./src --ext .js,.ts && echo \"👍  Passed linting check.\n\"",
     "lint-fix": "eslint ./src --ext .js,.ts --fix",
@@ -72,6 +73,7 @@
       "lint",
       "audit-all",
       "audit-prod",
+      "test",
       "build",
       "build:prod"
     ]
@@ -160,6 +162,11 @@
         "remark-lint-list-item-spacing",
         false
       ]
+    ]
+  },
+  "jest": {
+    "transformIgnorePatterns": [
+      "node_modules/(?!react-leaflet)/"
     ]
   }
 }
