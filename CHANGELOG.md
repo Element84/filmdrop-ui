@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Update README.md with new env variables
 - Make date/time field required
 - Date function to calculate the last 2 weeks
+- Make Publish button configurable in env variable
 
 ### Added
 
@@ -29,6 +30,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Error indicators for UI elements
 - Support for Landsat thumbnail preview
 - Functionality for custom Logo and alt description
+- Env variable REACT_APP_SHOW_PUBLISH_BTN
+- FilmDrop - Element 84 logo
 
 ## v0.2.0 - 2023-Jan-13
 

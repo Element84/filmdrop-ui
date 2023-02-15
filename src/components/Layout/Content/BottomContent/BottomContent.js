@@ -1,4 +1,4 @@
-import { React } from 'react'
+import React from 'react'
 import './BottomContent.css'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
@@ -23,6 +23,7 @@ const BottomContent = () => {
   const dispatch = useDispatch()
 
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
+  const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -41,9 +42,11 @@ const BottomContent = () => {
             Analyze
           </button>
         )}
-        <button className="actionButton" onClick={() => onPublishClick()}>
-          Publish
-        </button>
+        {SHOW_PUBLISH_BTN === 'true' && (
+          <button className="actionButton" onClick={() => onPublishClick()}>
+            Publish
+          </button>
+        )}
       </div>
       {_searchResults !== null ? (
         <div className="resultCount">
