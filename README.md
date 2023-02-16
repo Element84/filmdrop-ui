@@ -2,28 +2,25 @@
 
 - [FilmDrop UI](#filmdrop-ui)
   - [Summary](#summary)
-  - [Deployment](#deployment)
+  - [Running](#running)
     - [Environment Files](#environment-files)
     - [Links](#links)
   - [Scripts](#scripts)
     - [`npm start`](#npm-start)
-    - [`npm start:prod`](#npm-startprod)
     - [`npm test`](#npm-test)
     - [`npm run build`](#npm-run-build)
-    - [`npm run build:prod`](#npm-run-buildprod)
     - [`npm run eject`](#npm-run-eject)
 
 ## Summary
 
 FilmDrop UI is a browser-based interface for displaying results from a STAC API. Additional information can be found in the [CHANGELOG](CHANGELOG.md).
 
-## Deployment
+## Running
 
 ### Environment Files
 
-For local development, you should include an `.env.development` file with the proper configuration outlined in the table below.
-
-For production builds, you should include an `.env.production` file with the proper configuration outlined in the table below.
+For local development, you should create an `.env` file with the appropriate configuration outlined in the table below.
+The file `.env.example` is included in this repository as a representative file.
 
 | Variable                     | Description                                                                                                                                                                                                                          | Required |
 | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- |
@@ -35,29 +32,23 @@ For production builds, you should include an `.env.production` file with the pro
 | REACT_APP_STAC_API_URL       | URL for STAC API                                                                                                                                                                                                                     | Required |
 | REACT_APP_DEFAULT_COLLECTION | Default collection option for collection dropdown                                                                                                                                                                                    | Optional |
 | REACT_APP_TILER_URL          | URL for map tiling                                                                                                                                                                                                                   | Required |
-| REACT_APP_TILER_PARAMS       | Asset and color formula settings by collection name. Example: `{"sentinel-2-l2a": {"assets":["visual"]}, "landsat-c2-l2": {"assets":["red","green","blue"], "color_formula": "Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}}` | Required |
+| REACT_APP_TILER_PARAMS       | Asset and color formula settings by collection name. Example: `{"sentinel-2-l2a": {"assets":["visual"]}, "landsat-c2-l2": {"assets":["red","green","blue"], "color_formula": "Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}}` | Optional |
 
 ### Links
 
-Static files are built with `npm run build` OR `npm run build:prod` then moved to overwrite files in existing S3 buckets.
+Static files are built with `npm run build` then moved to overwrite files in existing S3 buckets.
 
 ## Scripts
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
-In the project directory, you can run:
+This project contains several NPM scripts for common tasks.
 
 ### `npm start`
 
 Runs the app for local dev: at [http://localhost:3000](http://localhost:3000)
 
-This uses the env vars found in .env.development
-
-### `npm start:prod`
-
-This uses the env vars found in .env.production
-
-Everything else is the same as `npm start`
+This uses the env vars found in `.env`.
 
 ### `npm test`
 
@@ -65,16 +56,9 @@ Launches the test runner in the interactive watch mode.
 
 ### `npm run build`
 
-This builds using the env vars found in .env.development
+This builds using the env vars found in `.env`.
 
 Builds the app for production to the `build` folder.
-
-### `npm run build:prod`
-
-This builds using the env vars found in .env.production
-
-Still builds the app for production to the `build` folder.\
-Everything else is the same as `npm run build`
 
 ### `npm run eject`
 
