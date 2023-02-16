@@ -2,6 +2,7 @@ import React from 'react'
 import './PageHeader.css'
 
 import { OpenInNew } from '@mui/icons-material'
+import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 
 const PageHeader = () => {
   const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_BTN_URL
@@ -22,17 +23,24 @@ const PageHeader = () => {
             src={process.env.PUBLIC_URL + '/logo.png'}
             alt="FilmDrop by Element 84"
             className="headerLogoImage"
-          ></img>
+          />
         )}
       </div>
-      {DASHBOARD_LINK && (
-        <div className="pageHeaderRight" onClick={() => onDashboardClick()}>
-          <span className="pageHeaderLink pageHeaderLinkHoverable">
-            Dashboard
-            <OpenInNew className="OpenDashboardIcon" />
-          </span>
-        </div>
-      )}
+      <div className="pageHeaderRight">
+        {DASHBOARD_LINK && (
+          <div className="dashboardLink" onClick={() => onDashboardClick()}>
+            <span className="pageHeaderLink pageHeaderLinkHoverable">
+              Dashboard
+              <OpenInNew className="OpenDashboardIcon" />
+            </span>
+          </div>
+        )}
+        <img
+          src={logoFilmDrop}
+          alt="FilmDrop by Element 84"
+          className="headerLogoImage filmDrop"
+        />
+      </div>
     </div>
   )
 }
