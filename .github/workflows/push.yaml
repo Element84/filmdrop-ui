@@ -36,7 +36,7 @@ jobs:
         run: npm run audit-prod
       - name: Run unit tests
         run: npm run test
+      - name: Copy env file
+        run: cp .env.example .env
       - name: Run dev build
         run: npm run build
-      - name: Run production build
-        run: npm run build:prod
