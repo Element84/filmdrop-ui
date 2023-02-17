@@ -103,6 +103,16 @@ const Search = () => {
       map.getPane('imagery').style.zIndex = 650
       map.getPane('imagery').style.pointerEvents = 'none'
 
+      // setup max map bounds
+      const southWest = L.latLng(-89.98155760646617, -180)
+      const northEast = L.latLng(89.99346179538875, 180)
+      const bounds = L.latLngBounds(southWest, northEast)
+
+      map.setMaxBounds(bounds)
+      map.on('drag', function () {
+        map.panInsideBounds(bounds, { animate: false })
+      })
+
       map.on('click', mapClickHandler)
 
       map.on('zoomend', function () {
