@@ -12,7 +12,8 @@ const initialState = {
   searchLoading: false,
   currentPopupResult: null,
   showPublishModal: false,
-  searchParameters: 'need to run search'
+  searchParameters: 'need to run search',
+  showZoomNotice: true
 }
 
 // next, for every key in the initialState
@@ -52,6 +53,9 @@ export const mainSlice = createSlice({
     },
     setSearchParameters: (state, action) => {
       state.searchParameters = action.payload
+    },
+    setShowZoomNotice: (state, action) => {
+      state.showZoomNotice = action.payload
     }
   }
 })
@@ -68,5 +72,6 @@ export const { setSearchLoading } = mainSlice.actions
 export const { setCurrentPopupResult } = mainSlice.actions
 export const { setShowPublishModal } = mainSlice.actions
 export const { setSearchParameters } = mainSlice.actions
+export const { setShowZoomNotice } = mainSlice.actions
 
 export default mainSlice.reducer

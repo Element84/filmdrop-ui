@@ -13,12 +13,15 @@ import { setShowPublishModal } from '../../../../redux/slices/mainSlice'
 
 const BottomContent = () => {
   // set up useSelector to get value from store
+  const _map = useSelector((state) => state.mainSlice.map)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
   const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
   const _showPublishModal = useSelector(
     (state) => state.mainSlice.showPublishModal
   )
+  const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
+
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
@@ -33,9 +36,21 @@ const BottomContent = () => {
     dispatch(setShowPublishModal(!_showPublishModal))
   }
 
+  function onZoomClick() {
+    _map.setZoom(7)
+  }
+
   return (
     <div className="BottomContent">
       <LeafMap></LeafMap>
+      {_showZoomNotice && (
+        <div className="ZoomNotice">
+          Images are not visible at this zoom level.
+          <a onClick={onZoomClick}>
+            <strong>Zoom in</strong>
+          </a>
+        </div>
+      )}
       <div className="actionButtons">
         {ANALYZE_LINK && (
           <button className="actionButton" onClick={() => onAnalyzeClick()}>
