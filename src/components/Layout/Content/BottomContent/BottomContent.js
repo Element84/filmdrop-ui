@@ -27,6 +27,7 @@ const BottomContent = () => {
 
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
+  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -37,7 +38,7 @@ const BottomContent = () => {
   }
 
   function onZoomClick() {
-    _map.setZoom(7)
+    _map.setZoom(MIN_ZOOM)
   }
 
   return (

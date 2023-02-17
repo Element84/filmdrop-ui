@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Env variable REACT_APP_SHOW_PUBLISH_BTN
 - FilmDrop - Element 84 logo
 - Minimum zoom level for search
+- Env variable REACT_APP_MIN_ZOOM_LEVEL
 
 ## v0.2.0 - 2023-Jan-13
 

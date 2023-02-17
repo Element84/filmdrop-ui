@@ -21,6 +21,7 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
+  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _collectionSelected = useSelector(
@@ -112,7 +113,7 @@ const Search = () => {
 
   // when zoom level changes, set in global store to hide/show zoom notice
   useEffect(() => {
-    if (zoomLevel >= 7) {
+    if (zoomLevel >= MIN_ZOOM) {
       dispatch(setShowZoomNotice(false))
     } else {
       dispatch(setShowZoomNotice(true))
@@ -224,7 +225,7 @@ const Search = () => {
     const viewportBounds = map.getBounds()
 
     // if the zoom level is too high, abort search
-    if (zoomLevel < 7) return
+    if (zoomLevel < MIN_ZOOM) return
 
     // if the date time field is empty, abort search
     if (!dateTimeValue) return

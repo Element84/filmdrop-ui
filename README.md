@@ -34,6 +34,7 @@ The file `.env.example` is included in this repository as a representative file.
 | REACT_APP_DEFAULT_COLLECTION | Default collection option for collection dropdown                                                                                                                                                                                    | Optional |
 | REACT_APP_TILER_URL          | URL for map tiling                                                                                                                                                                                                                   | Required |
 | REACT_APP_TILER_PARAMS       | Asset and color formula settings by collection name. Example: `{"sentinel-2-l2a": {"assets":["visual"]}, "landsat-c2-l2": {"assets":["red","green","blue"], "color_formula": "Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35"}}` | Optional |
+| REACT_APP_MIN_ZOOM_LEVEL     | Minimum zoom level for search results                                                                                                                                                                                                | Required |
 
 ### Links
 
