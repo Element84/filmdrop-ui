@@ -10,7 +10,8 @@ import {
   setDateTime,
   setClickResults,
   setSearchLoading,
-  setSearchParameters
+  setSearchParameters,
+  setShowZoomNotice
 } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
@@ -20,6 +21,7 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
+  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _collectionSelected = useSelector(
@@ -41,14 +43,12 @@ const Search = () => {
 
   // set up local state
   const [dateTimeValue, setDateTimeValue] = useState([twoWeeksAgo, new Date()])
-  const [drawHandler, setDrawHandler] = useState()
-  const [drawnItems, setDrawnItems] = useState()
   const [resultFootprints, setResultFootprints] = useState()
   const [clickedFootprintHighlights, setClickedFootprintsHighlight] = useState()
   const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] =
     useState()
-  const [drawboxBtnError, setDrawboxBtnError] = useState(false)
   const [collectionError, setCollectionError] = useState(false)
+  const [zoomLevel, setZoomLevel] = useState()
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -80,19 +80,6 @@ const Search = () => {
         })
         .addTo(map)
 
-      // set up draw BBOX control and set color
-      const drawHandler = new L.Draw.Rectangle(map, {
-        shapeOptions: {
-          color: '#6CC24A'
-        }
-      })
-      setDrawHandler(drawHandler)
-
-      // add feature group to hold BBOX rectangle and add to map
-      const drawnItemsInit = new L.FeatureGroup()
-      setDrawnItems(drawnItemsInit)
-      map.addLayer(drawnItemsInit)
-
       // set up layerGroup for footprints and add to map
       const resultFootprintsInit = new L.FeatureGroup()
       setResultFootprints(resultFootprintsInit)
@@ -108,25 +95,42 @@ const Search = () => {
       setClickedFootprintsImageLayer(clickedFootprintsImageLayerInit)
       clickedFootprintsImageLayerInit.addTo(map)
 
-      // handle event after BBOX is drawn
-      map.on(L.Draw.Event.CREATED, function (e) {
-        const layer = e.layer
-        // add layer ID so it can easily be found later
-        layer.id = 'drawnAOI'
-        drawnItemsInit.addLayer(layer)
-        // zoom to bounds
-        map.fitBounds(layer._bounds, { padding: [100, 100] })
-      })
+      // set initial zoom level
+      setZoomLevel(map.getZoom())
 
+      // setup custom pane for tiler image result
       map.createPane('imagery')
       map.getPane('imagery').style.zIndex = 650
       map.getPane('imagery').style.pointerEvents = 'none'
 
+      // setup max map bounds
+      const southWest = L.latLng(-90, -180)
+      const northEast = L.latLng(90, 180)
+      const bounds = L.latLngBounds(southWest, northEast)
+
+      map.setMaxBounds(bounds)
+      map.on('drag', function () {
+        map.panInsideBounds(bounds, { animate: false })
+      })
+
       map.on('click', mapClickHandler)
+
+      map.on('zoomend', function () {
+        setZoomLevel(map.getZoom())
+      })
     }
   }, [map])
 
-  // when dataTime changes set in global store
+  // when zoom level changes, set in global store to hide/show zoom notice
+  useEffect(() => {
+    if (zoomLevel >= MIN_ZOOM) {
+      dispatch(setShowZoomNotice(false))
+    } else {
+      dispatch(setShowZoomNotice(true))
+    }
+  }, [zoomLevel])
+
+  // when dataTime changes, set in global store
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
   }, [dateTimeValue])
@@ -148,20 +152,6 @@ const Search = () => {
       addImageClicked(_currentPopupResult)
     }
   }, [_currentPopupResult])
-
-  // function called when draw BBOX button clicked
-  function drawBBOX() {
-    // remove old bbox, footprints and enable draw handler
-    drawnItems.clearLayers()
-    clickedFootprintsImageLayer.clearLayers()
-    dispatch(setSearchResults(null))
-    dispatch(setClickResults([]))
-    if (clickedFootprintHighlights) {
-      clickedFootprintHighlights.clearLayers()
-    }
-    removeFootprints()
-    drawHandler.enable()
-  }
 
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
@@ -241,21 +231,11 @@ const Search = () => {
 
   // function called when search button clicked
   function searchAPI() {
-    // get AOI bounds
-    let aoiBounds
-    drawnItems.eachLayer(function (layer) {
-      if (layer.id === 'drawnAOI') {
-        aoiBounds = layer._bounds
-      }
-    })
+    // get viewport bounds
+    const viewportBounds = map.getBounds()
 
-    // if no bounding box drawn, abort search
-    if (!aoiBounds) {
-      setDrawboxBtnError(true)
-      return
-    } else {
-      setDrawboxBtnError(false)
-    }
+    // if the zoom level is too high, abort search
+    if (zoomLevel < MIN_ZOOM) return
 
     // if the date time field is empty, abort search
     if (!dateTimeValue) return
@@ -302,13 +282,13 @@ const Search = () => {
     // build string to set for publish copy to clipboard
     const searchParametersString =
       '?bbox=' +
-      aoiBounds._southWest.lng +
+      viewportBounds._southWest.lng +
       ',' +
-      aoiBounds._southWest.lat +
+      viewportBounds._southWest.lat +
       ',' +
-      aoiBounds._northEast.lng +
+      viewportBounds._northEast.lng +
       ',' +
-      aoiBounds._northEast.lat +
+      viewportBounds._northEast.lat +
       '&query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A' +
       cloudCover +
       '%7D%7D&datetime=' +
@@ -369,8 +349,7 @@ const Search = () => {
           tilerURL +
             '/stac/tiles/{z}/{x}/{y}.png?&url=' +
             featureURL +
-            assetURL +
-            '&return_mask=true',
+            assetURL,
           {
             attribution: '©OpenStreetMap',
             tileSize: 256,
@@ -391,12 +370,6 @@ const Search = () => {
 
   return (
     <div className="Search" data-testid="Search">
-      <button
-        onClick={() => drawBBOX()}
-        className={`bboxButton error-${drawboxBtnError}`}
-      >
-        Draw BBOX
-      </button>
       <div className="searchContainer">
         <label>
           Select Date & Time Range{' '}

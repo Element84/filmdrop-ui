@@ -3,8 +3,43 @@
   height: calc(100% - 103px);
   background-color: #222;
   display: flex;
+  position: relative;
+}
+
+.ZoomNotice {
   position: absolute;
-  top: 103px;
+  top: 10px;
+  left: 50%;
+  z-index: 99999;
+  transform: translateX(-50%);
+  background: #353d4f;
+  padding: 10px 30px;
+  border-radius: 6px;
+  font-size: 0.75em;
+  animation: fadeIn 0.45s ease-in-out 0.4s forwards;
+  opacity: 0;
+}
+
+a {
+  color: #6cc24a;
+  cursor: pointer;
+  transition: border-color 0.33s ease-in-out;
+  border-bottom: 1px solid transparent;
+  display: inline-block;
+  margin-left: 10px;
+}
+
+a:hover {
+  border-color: #6cc24a;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .actionButtons {
