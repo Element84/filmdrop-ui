@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Make Publish button configurable in env variable
 - Remove BBOX button
 - Make REACT_APP_MIN_ZOOM_LEVEL optional
+- Improve use of MIN_ZOOM constant
 
 ### Added
 

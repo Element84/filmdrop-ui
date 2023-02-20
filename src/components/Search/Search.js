@@ -1,6 +1,7 @@
 import { React, useEffect, useState } from 'react'
 import './Search.css'
 import { envTilerURL, constructAssetsURL } from './envVarSetup'
+import { MIN_ZOOM } from '../defaults'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -21,7 +22,6 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
-  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL || 7
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _collectionSelected = useSelector(

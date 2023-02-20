@@ -1,5 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
+import { MIN_ZOOM } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
@@ -27,7 +28,6 @@ const BottomContent = () => {
 
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
-  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL || 7
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
