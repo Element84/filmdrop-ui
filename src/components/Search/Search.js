@@ -21,7 +21,7 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
-  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL
+  const MIN_ZOOM = process.env.REACT_APP_MIN_ZOOM_LEVEL || 7
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _collectionSelected = useSelector(
