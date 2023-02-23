@@ -31,6 +31,8 @@ const PopupResult = (props) => {
     ({ rel }) => rel === 'thumbnail'
   )?.href
 
+  const cloudCover = props.result?.properties['eo:cloud_cover']
+
   return (
     <div className="popupResult">
       {props.result ? (
@@ -53,16 +55,16 @@ const PopupResult = (props) => {
               <label>Title: </label>
               <span>{props.result.id}</span>
             </div>
-            <div className="detailRow">
+            <div
+              className={cloudCover ? 'detailRow' : 'detailRow finalDetailRow'}
+            >
               <label>Collection Date: </label>
               <span>{props.result.properties.datetime}</span>
             </div>
-            {props.result?.properties['eo:cloud_cover'] ? (
+            {cloudCover ? (
               <div className="detailRow finalDetailRow">
                 <label>Cloud Cover: </label>
-                <span>
-                  {props.result?.properties['eo:cloud_cover']?.toFixed(2) + '%'}
-                </span>
+                <span>{`${cloudCover?.toFixed(2)}%`}</span>
               </div>
             ) : null}
           </div>
