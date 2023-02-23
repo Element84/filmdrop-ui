@@ -78,9 +78,9 @@ const CloudSlider = () => {
               onBlur={handleBlur}
               className="sliderInput"
               sx={{
-                ':before': { borderBottomColor: '#dedede' },
+                ':before': { borderBottomColor: '#76829c' },
                 // underline when selected
-                ':after': { borderBottomColor: '#dedede' }
+                ':after': { borderBottomColor: '#76829c' }
               }}
               inputProps={{
                 step: 1,
