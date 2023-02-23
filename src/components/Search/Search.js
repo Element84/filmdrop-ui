@@ -23,7 +23,7 @@ import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
   const _map = useSelector((state) => state.mainSlice.map)
-  const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
+  // const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _collectionSelected = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
@@ -275,36 +275,29 @@ const Search = () => {
       '%2F' +
       convertDateTimeForAPI(dateTimeValue[1])
 
-    // get cloud cover silder value
-    const cloudCover = _cloudCover
-    const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
+    const bbox = [
+      viewportBounds._southWest.lng,
+      viewportBounds._southWest.lat,
+      viewportBounds._northEast.lng,
+      viewportBounds._northEast.lat
+    ].join(',')
 
-    // build string to set for publish copy to clipboard
-    const searchParametersString =
-      '?bbox=' +
-      viewportBounds._southWest.lng +
-      ',' +
-      viewportBounds._southWest.lat +
-      ',' +
-      viewportBounds._northEast.lng +
-      ',' +
-      viewportBounds._northEast.lat +
-      '&query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A' +
-      cloudCover +
-      '%7D%7D&datetime=' +
-      combinedDateRange +
-      '&collections=' +
-      _collectionSelected
+    const searchParametersString = [
+      `bbox=${bbox}`,
+      // `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`,
+      `datetime=${combinedDateRange}`,
+      `collections=${_collectionSelected}`,
+      'limit=100'
+    ].join('&')
 
-    // set state for publish copy to clipboard
+    // set search parameter state
     dispatch(setSearchParameters(searchParametersString))
 
-    // build GET URL (limit hardcoded to 100)
-    const baseURLGET =
-      API_ENDPOINT + '/search' + searchParametersString + '&limit=100'
+    // build search URL
+    const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParametersString}`
 
-    // send GET request to find first 200 STAC images that intersect bbox
-    fetch(baseURLGET, {
+    // fetch search results for parameters
+    fetch(searchURL, {
       method: 'GET'
     })
       .then(function (response) {
