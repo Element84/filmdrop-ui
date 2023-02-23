@@ -57,12 +57,14 @@ const PopupResult = (props) => {
               <label>Collection Date: </label>
               <span>{props.result.properties.datetime}</span>
             </div>
-            <div className="detailRow finalDetailRow">
-              <label>Cloud Cover: </label>
-              <span>
-                {props.result.properties['eo:cloud_cover'].toFixed(2) + ' %'}
-              </span>
-            </div>
+            {props.result?.properties['eo:cloud_cover'] ? (
+              <div className="detailRow finalDetailRow">
+                <label>Cloud Cover: </label>
+                <span>
+                  {props.result?.properties['eo:cloud_cover']?.toFixed(2) + '%'}
+                </span>
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
