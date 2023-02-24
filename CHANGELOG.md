@@ -37,6 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - FilmDrop - Element 84 logo
 - Minimum zoom level for search
 - Env variable REACT_APP_MIN_ZOOM_LEVEL
+- Add support for `asset_bidx` tiler configuration
 
 ## v0.2.0 - 2023-Jan-13
 

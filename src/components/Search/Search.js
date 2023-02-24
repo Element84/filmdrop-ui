@@ -1,6 +1,6 @@
 import { React, useEffect, useState } from 'react'
 import './Search.css'
-import { envTilerURL, constructAssetsURL } from './envVarSetup'
+import { envTilerURL, constructTilerParams } from './envVarSetup'
 import { MIN_ZOOM } from '../defaults'
 
 // redux imports
@@ -324,7 +324,7 @@ const Search = () => {
 
     clickedFootprintsImageLayer.clearLayers()
     const featureURL = feature.links[0].href
-    const assetURL = constructAssetsURL(_collectionSelected)
+    const tilerParams = constructTilerParams(_collectionSelected)
 
     fetch(featureURL, {
       method: 'GET'
@@ -339,10 +339,7 @@ const Search = () => {
         map.fitBounds(tileBounds, { padding: [100, 100] })
 
         L.tileLayer(
-          tilerURL +
-            '/stac/tiles/{z}/{x}/{y}.png?&url=' +
-            featureURL +
-            assetURL,
+          `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}${tilerParams}`,
           {
             attribution: '©OpenStreetMap',
             tileSize: 256,
