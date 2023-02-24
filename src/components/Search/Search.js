@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react'
+import { React, useEffect, useState, useRef } from 'react'
 import './Search.css'
 import { envTilerURL, constructTilerParams } from './envVarSetup'
 import { MIN_ZOOM } from '../defaults'
@@ -32,6 +32,7 @@ const Search = () => {
     (state) => state.mainSlice.currentPopupResult
   )
   const tilerURL = envTilerURL
+
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
@@ -48,7 +49,9 @@ const Search = () => {
   const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] =
     useState()
   const [collectionError, setCollectionError] = useState(false)
-  const [zoomLevel, setZoomLevel] = useState()
+  const [zoomLevelNotice, setZoomLevelNotice] = useState(0)
+  const zoomLevelRef = useRef(0)
+  const localCollectionRef = useRef(_collectionSelected)
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -95,9 +98,6 @@ const Search = () => {
       setClickedFootprintsImageLayer(clickedFootprintsImageLayerInit)
       clickedFootprintsImageLayerInit.addTo(map)
 
-      // set initial zoom level
-      setZoomLevel(map.getZoom())
-
       // setup custom pane for tiler image result
       map.createPane('imagery')
       map.getPane('imagery').style.zIndex = 650
@@ -107,33 +107,56 @@ const Search = () => {
       const southWest = L.latLng(-90, -180)
       const northEast = L.latLng(90, 180)
       const bounds = L.latLngBounds(southWest, northEast)
-
       map.setMaxBounds(bounds)
       map.on('drag', function () {
         map.panInsideBounds(bounds, { animate: false })
       })
 
+      map.on('zoomend', function () {
+        zoomLevelRef.current = map.getZoom()
+        setZoomLevelNotice(map.getZoom())
+        processSearch(resultFootprintsInit)
+      })
+
+      map.on('dragend', function () {
+        processSearch(resultFootprintsInit)
+      })
+
       map.on('click', mapClickHandler)
 
-      map.on('zoomend', function () {
-        setZoomLevel(map.getZoom())
-      })
+      // initiate first search on load
+      processSearch(resultFootprintsInit)
     }
   }, [map])
 
   // when zoom level changes, set in global store to hide/show zoom notice
+  // and perform search if within zoom limits
   useEffect(() => {
-    if (zoomLevel >= MIN_ZOOM) {
+    if (zoomLevelNotice >= MIN_ZOOM) {
       dispatch(setShowZoomNotice(false))
     } else {
       dispatch(setShowZoomNotice(true))
     }
-  }, [zoomLevel])
+  }, [zoomLevelNotice])
 
-  // when dataTime changes, set in global store
+  // when datatime changes, set in global store and perform new search
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
+    if (map && Object.keys(map).length > 0) processSearch()
   }, [dateTimeValue])
+
+  /* Disabled temporarily
+  // when cloud cover value changes, if map loaded, perform new search
+  useEffect(() => {
+    if (map && Object.keys(map).length > 0) processSearch()
+  }, [_cloudCover])
+  */
+
+  // when collection dropdown changes, if map loaded, perform new search
+  useEffect(() => {
+    localCollectionRef.current = _collectionSelected
+    if (map && Object.keys(map).length > 0) processSearch()
+  }, [_collectionSelected])
 
   // when search results change, if map loaded, set new mapClickHandler
   useEffect(() => {
@@ -223,28 +246,42 @@ const Search = () => {
   }
 
   // remove old footprints from map
-  function removeFootprints() {
-    resultFootprints.eachLayer(function (layer) {
-      map.removeLayer(layer)
+  function removeFootprints(resultFootPrintsLocal) {
+    resultFootPrintsLocal.eachLayer(function (layer) {
+      resultFootPrintsLocal.removeLayer(layer)
     })
   }
 
-  // function called when search button clicked
-  function searchAPI() {
-    // get viewport bounds
-    const viewportBounds = map.getBounds()
+  // throttle function to prevent map from rendering too quickly
+  const debounce = (func, waitInMillis) => {
+    let timeout
+    return function executedFunction(...args) {
+      const later = () => {
+        clearTimeout(timeout)
+        func(...args)
+      }
+      clearTimeout(timeout)
+      timeout = setTimeout(later, waitInMillis)
+    }
+  }
+
+  // search throttle set to 1000ms
+  const processSearch = (resultFootprintsInit) =>
+    debounce(searchAPI(resultFootprintsInit), 1000)
+
+  // function called when search is initiated
+  function searchAPI(resultFootprintsInit) {
+    // set up footprints layer
+    const resultFootPrintsLocal = resultFootprintsInit || resultFootprints
 
     // if the zoom level is too high, abort search
-    if (zoomLevel < MIN_ZOOM) return
+    if (zoomLevelRef.current < MIN_ZOOM) return
 
     // if the date time field is empty, abort search
     if (!dateTimeValue) return
 
     // if a valid collection is not selected, abort search
     if (!_collectionSelected) {
-      removeFootprints()
-      clickedFootprintsImageLayer.clearLayers()
-      clickedFootprintHighlights.clearLayers()
       setCollectionError(true)
       return
     } else {
@@ -252,17 +289,13 @@ const Search = () => {
     }
 
     // remove clicked footprint highlight
-    if (clickedFootprintHighlights) {
-      clickedFootprintHighlights.clearLayers()
-    }
+    if (clickedFootprintHighlights) clickedFootprintHighlights.clearLayers()
 
     // remove image layer
-    if (clickedFootprintsImageLayer) {
-      clickedFootprintsImageLayer.clearLayers()
-    }
+    if (clickedFootprintsImageLayer) clickedFootprintsImageLayer.clearLayers()
 
     // remove existing footprints from map
-    removeFootprints()
+    removeFootprints(resultFootPrintsLocal)
 
     // show loading spinner
     dispatch(setSearchLoading(true))
@@ -275,6 +308,9 @@ const Search = () => {
       '%2F' +
       convertDateTimeForAPI(dateTimeValue[1])
 
+    // get viewport bounds
+    const viewportBounds = map.getBounds()
+
     const bbox = [
       viewportBounds._southWest.lng,
       viewportBounds._southWest.lat,
@@ -286,7 +322,7 @@ const Search = () => {
       `bbox=${bbox}`,
       // `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`,
       `datetime=${combinedDateRange}`,
-      `collections=${_collectionSelected}`,
+      `collections=${localCollectionRef.current}`,
       'limit=100'
     ].join('&')
 
@@ -312,8 +348,8 @@ const Search = () => {
 
         // add new footprints to map
         const resultFootprintsFound = L.geoJSON(json, {})
-        resultFootprints.id = 'resultFootprints'
-        resultFootprintsFound.addTo(resultFootprints)
+        resultFootPrintsLocal.id = 'resultFootprints'
+        resultFootprintsFound.addTo(resultFootPrintsLocal)
       })
   }
 
@@ -336,7 +372,6 @@ const Search = () => {
         const corner1 = L.latLng(json.bbox[1], json.bbox[0])
         const corner2 = L.latLng(json.bbox[3], json.bbox[2])
         const tileBounds = L.latLngBounds(corner1, corner2)
-        map.fitBounds(tileBounds, { padding: [100, 100] })
 
         L.tileLayer(
           `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}${tilerParams}`,
@@ -386,9 +421,6 @@ const Search = () => {
       >
         <CollectionDropdown error={collectionError}></CollectionDropdown>
       </div>
-      <button className="searchButton" onClick={() => searchAPI()}>
-        Search
-      </button>
     </div>
   )
 }

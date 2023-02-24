@@ -1,10 +1,10 @@
 .Content {
-  height: calc(100% - 83px);
+  height: calc(100% - 80px);
   width: 100%;
   display: flex;
   flex-direction: column;
   color: #d3d3d3;
   font-size: 20px;
   position: absolute;
-  top: 83px;
+  top: 80px;
 }

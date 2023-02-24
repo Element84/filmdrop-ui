@@ -10,64 +10,18 @@
   align-items: center;
 }
 
-.bboxButton {
-  cursor: pointer;
-  height: 80px;
-  margin-left: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: #353d4f;
-  color: #dedede;
-  border: 0px;
-  border-radius: 6px;
-  font-size: 18px;
-  font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-  transition: all 0.33s ease-in-out;
-}
-.bboxButton.error-true {
-  background-color: #bc3131;
-}
-.bboxButton:hover {
-  background-color: #6cc24a;
-  color: #12171a;
-}
-
 span.error-true {
   color: #bc3131;
 }
 
-.searchButton {
-  cursor: pointer;
-  height: 80px;
-  margin-left: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: #6cc24a;
-  color: #12171a;
-  border: 0px;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-  transition: all 0.33s ease-in-out;
-}
-
-.searchButton:hover {
-  background-color: #35731c;
-  color: #dedede;
-}
-
 .searchContainer {
-  height: 80px;
-  margin-left: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
+  height: 100px;
+  padding-left: 30px;
+  padding-right: 30px;
   background-color: #353d4f;
-  color: #dedede;
-  border: 0px;
+  border-right: 1px solid #757a85;
+  color: #ffffff;
   font-size: 16px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -85,6 +39,10 @@ span.error-true {
   z-index: 4;
   font-size: 16px;
   width: 100%;
+}
+
+.react-calendar__month-view__weekdays {
+  color: #333;
 }
 
 .react-datetimerange-picker__wrapper {

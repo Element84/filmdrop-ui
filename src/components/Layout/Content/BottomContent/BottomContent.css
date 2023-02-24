@@ -10,7 +10,7 @@
   position: absolute;
   top: 11px;
   left: 50px;
-  z-index: 99999;
+  z-index: 1;
   background: #353d4f;
   padding: 10px 30px;
   border-radius: 6px;
