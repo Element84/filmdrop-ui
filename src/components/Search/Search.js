@@ -340,7 +340,7 @@ const Search = () => {
 
         L.tileLayer(
           tilerURL +
-            '/stac/tiles/{z}/{x}/{y}.png?&url=' +
+            '/stac/tiles/{z}/{x}/{y}.png?url=' +
             featureURL +
             assetURL,
           {
