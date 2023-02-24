@@ -10,52 +10,8 @@
   align-items: center;
 }
 
-.bboxButton {
-  cursor: pointer;
-  height: 80px;
-  margin-left: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: #353d4f;
-  color: #dedede;
-  border: 0px;
-  border-radius: 6px;
-  font-size: 18px;
-  font-weight: bold;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-  transition: all 0.33s ease-in-out;
-}
-.bboxButton.error-true {
-  background-color: #bc3131;
-}
-.bboxButton:hover {
-  background-color: #6cc24a;
-  color: #12171a;
-}
-
 span.error-true {
   color: #bc3131;
-}
-
-.searchButton {
-  cursor: pointer;
-  height: 80px;
-  margin-left: 20px;
-  padding-left: 20px;
-  padding-right: 20px;
-  background-color: #6cc24a;
-  color: #12171a;
-  border: 0px;
-  font-size: 18px;
-  font-weight: bold;
-  border-radius: 6px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.394);
-  transition: all 0.33s ease-in-out;
-}
-
-.searchButton:hover {
-  background-color: #35731c;
-  color: #dedede;
 }
 
 .searchContainer {

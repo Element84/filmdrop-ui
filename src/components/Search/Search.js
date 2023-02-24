@@ -139,7 +139,7 @@ const Search = () => {
     }
   }, [zoomLevelNotice])
 
-  // when dataTime changes, set in global store and perform new search
+  // when datatime changes, set in global store and perform new search
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
     if (map && Object.keys(map).length > 0) processSearch()
@@ -253,7 +253,7 @@ const Search = () => {
   }
 
   // throttle function to prevent map from rendering too quickly
-  const debounce = (func, wait) => {
+  const debounce = (func, waitInMillis) => {
     let timeout
     return function executedFunction(...args) {
       const later = () => {
@@ -261,20 +261,18 @@ const Search = () => {
         func(...args)
       }
       clearTimeout(timeout)
-      timeout = setTimeout(later, wait)
+      timeout = setTimeout(later, waitInMillis)
     }
   }
 
   // search throttle set to 1000ms
-  const processSearch = debounce(function (resultFootprintsInit) {
-    searchAPI(resultFootprintsInit)
-  }, 1000)
+  const processSearch = (resultFootprintsInit) =>
+    debounce(searchAPI(resultFootprintsInit), 1000)
 
   // function called when search is initiated
   function searchAPI(resultFootprintsInit) {
     // set up footprints layer
-    let resultFootPrintsLocal = resultFootprints
-    if (resultFootprintsInit) resultFootPrintsLocal = resultFootprintsInit
+    const resultFootPrintsLocal = resultFootprintsInit || resultFootprints
 
     // if the zoom level is too high, abort search
     if (zoomLevelRef.current < MIN_ZOOM) return
