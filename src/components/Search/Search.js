@@ -50,6 +50,7 @@ const Search = () => {
     useState()
   const [collectionError, setCollectionError] = useState(false)
   const [zoomLevelNotice, setZoomLevelNotice] = useState(0)
+  const dateTimeRef = useRef(dateTimeValue)
   const zoomLevelRef = useRef(0)
   const localCollectionRef = useRef(_collectionSelected)
 
@@ -142,6 +143,7 @@ const Search = () => {
   // when datatime changes, set in global store and perform new search
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
+    dateTimeRef.current = dateTimeValue
     if (map && Object.keys(map).length > 0) processSearch()
   }, [dateTimeValue])
 
@@ -304,9 +306,9 @@ const Search = () => {
 
     // build datetime input
     const combinedDateRange =
-      convertDateTimeForAPI(dateTimeValue[0]) +
+      convertDateTimeForAPI(dateTimeRef.current[0]) +
       '%2F' +
-      convertDateTimeForAPI(dateTimeValue[1])
+      convertDateTimeForAPI(dateTimeRef.current[1])
 
     // get viewport bounds
     const viewportBounds = map.getBounds()
