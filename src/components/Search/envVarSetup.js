@@ -1,24 +1,35 @@
-// function to construct the assets and/or color formula portion of the Tiler URL
-export const constructAssetsURL = (selectedCollection) => {
-  let colorFormula = ''
-  let assetsValue = ''
-
+// function to construct the Titiler tile query parameters from
+// REACT_APP_TILER_PARAMS env var
+export const constructTilerParams = (selectedCollection) => {
   // retrieve tiler parameters from env variable
   let tilerParams = {}
   try {
     tilerParams = JSON.parse(process.env.REACT_APP_TILER_PARAMS)
   } catch (e) {
-    console.log(e.message)
+    console.log(`Error parsing tiler params: ${e.message}`)
   }
 
-  if (tilerParams) {
-    assetsValue = tilerParams[selectedCollection]?.assets || ''
-    if (assetsValue.length > 1) {
-      assetsValue = assetsValue.join('&assets=')
-    }
-    colorFormula = tilerParams[selectedCollection]?.color_formula || ''
+  const assets = tilerParams[selectedCollection]?.assets || []
+  if (!assets) {
+    console.log(`Assets not defined for ${selectedCollection}`)
   }
-  return `&assets=${assetsValue}&color_formula=${colorFormula}`
+
+  // titiler accepts multiple `assets` parameters for compositing
+  // multiple files, so add extra params here if there's more than
+  // one asset specified
+  const assetsStr = assets.join('&assets=')
+
+  const colorFormula = tilerParams[selectedCollection]?.color_formula
+  const assetBidx = tilerParams[selectedCollection]?.asset_bidx
+
+  let paramStr = `&assets=${assetsStr}`
+  if (colorFormula) {
+    paramStr = paramStr + `&color_formula=${colorFormula}`
+  }
+  if (assetBidx) {
+    paramStr = paramStr + `&asset_bidx=${assetBidx}`
+  }
+  return paramStr
 }
 
 // retrieve tiler URL from env variable
