@@ -1,0 +1,151 @@
+.launchModal {
+  background-color: #00000070;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  z-index: 100;
+}
+
+.launchModalContainer {
+  background-color: #353d4f;
+  position: absolute;
+  z-index: 3;
+  width: 50%;
+  min-height: 300px;
+  min-width: 800px;
+  color: #dedede;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.launchModalContent {
+  padding: 80px;
+  max-width: 700px;
+  line-height: 1.6;
+}
+
+h3 {
+  text-align: center;
+  line-height: 1;
+}
+
+h2 {
+  font-size: 2em;
+  font-weight: 100;
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 1.25em;
+  line-height: 1;
+}
+
+.fieldContainer {
+  margin-top: 2.25em;
+  margin-bottom: 2.5em;
+}
+
+.fieldContainer a {
+  color: #6cc24a;
+  display: inline-block;
+  border-bottom: 1px solid transparent;
+  margin-top: 10px;
+  transition: border-color 0.33s ease-in-out;
+  cursor: pointer;
+  font-size: 0.85em;
+}
+
+.fieldContainer a:hover {
+  border-color: #6cc24a;
+}
+
+.fieldContainer img {
+  margin-right: 5px;
+}
+
+.fieldContent {
+  display: flex;
+  flex-direction: row;
+}
+
+.templateURL {
+  background-color: white;
+  border: 1px solid #bbb;
+  color: black;
+  padding: 10px;
+  border-radius: 2px;
+  margin-right: 15px;
+}
+
+.copyButton {
+  background: transparent;
+  border: 1px solid #a9b0c1;
+  border-radius: 8px;
+  padding: 10px 20px;
+  color: white;
+  cursor: pointer;
+  font-size: 1em;
+  transition: all 0.33s ease-in-out;
+}
+
+.copyButton:hover {
+  background: #a9b0c1;
+  color: #000;
+}
+
+.buttonContainer {
+  text-align: center;
+}
+
+img {
+  position: relative;
+  top: 1px;
+  margin-left: 5px;
+}
+
+.closeLaunchModal {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 0px;
+  font-size: 28px;
+  font-weight: bold;
+  height: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Old versions of Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently
+                                    supported by Chrome, Edge, Opera and Firefox */
+}
+
+.closeLaunchModal:hover {
+  color: #6cc24a;
+}
+
+/* Image Modal Styling */
+.launchModalContainer.image {
+  right: 20%;
+  min-width: unset;
+  width: unset;
+}
+
+.launchModalContainer.image h3 {
+  text-align: left;
+}
