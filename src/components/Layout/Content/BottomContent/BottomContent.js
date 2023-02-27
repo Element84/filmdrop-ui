@@ -28,7 +28,9 @@ const BottomContent = () => {
 
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
-  const SHOW_LAUNCH_BTN = process.env.REACT_APP_SHOW_LAUNCH_BTN
+  const CF_TEMPLATE_URL = process.env.REACT_APP_AWS_CF_TEMPLATE
+  const VIEWER_BTN_TEXT =
+    process.env.REACT_APP_LAUNCH_BTN_TEXT || 'Launch Your Own FilmDrop UI'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -68,9 +70,9 @@ const BottomContent = () => {
             Publish
           </button>
         )}
-        {SHOW_LAUNCH_BTN === 'true' && (
+        {CF_TEMPLATE_URL && (
           <button className="actionButton" onClick={() => onLaunchClick()}>
-            Launch Your Own Viewer
+            {VIEWER_BTN_TEXT}
           </button>
         )}
       </div>

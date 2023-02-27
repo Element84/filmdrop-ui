@@ -14,8 +14,8 @@ import {
 const LaunchModal = () => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
-  const templateURL =
-    'https://s3.amazonaws.com/templates/GeospatialViewer.template'
+  const templateURL = process.env.REACT_APP_AWS_CF_TEMPLATE
+  const appName = process.env.REACT_APP_APP_NAME
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))
@@ -23,7 +23,7 @@ const LaunchModal = () => {
 
   function onButtonClick() {
     window.open(
-      'https://us-east-1.console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/create',
+      'https://console.aws.amazon.com/cloudformation/home#/stacks/create',
       '_blank'
     )
   }
@@ -49,13 +49,11 @@ const LaunchModal = () => {
         </button>
         <div className="launchModalContent">
           <h3>Launch Your Own</h3>
-          <h2>
-            Earth on AWS <strong>Viewer</strong>
-          </h2>
+          <h2>{appName}</h2>
           <p>
-            Now you can view your own datasets by deploying an Earth on AWS
-            Viewer into your AWS account! Simply follow the instructions below
-            to get started.
+            Now you can view your own datasets by deploying an {appName} into
+            your AWS account! Simply follow the instructions below to get
+            started.
           </p>
           <ol>
             <li>Sign In to the Console</li>
@@ -63,11 +61,12 @@ const LaunchModal = () => {
               Create a new CloudFormation Stack with the template link below
             </li>
             <li>Configure new Stack as needed</li>
-            <li>Launch your own viewer</li>
+            <li>Launch your own {appName}</li>
           </ol>
           <div className="fieldContainer">
             <p>
-              Copy and paste this template URL into the “Amazon S3 URL” field:
+              Copy and paste this template URL into the &ldquo;Amazon S3
+              URL&rdquo; field:
             </p>
             <div className="fieldContent">
               <div className="templateURL">{templateURL}</div>
