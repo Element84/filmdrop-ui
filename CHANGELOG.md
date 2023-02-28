@@ -39,7 +39,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Minimum zoom level for search
 - Env variable REACT_APP_MIN_ZOOM_LEVEL
 - Add support for `asset_bidx` tiler configuration
-- Env variable REACT_APP_SHOW_LAUNCH_BTN
+- Env variable REACT_APP_AWS_CF_TEMPLATE_URL
+- Env variable REACT_APP_LAUNCH_BTN_TEXT
+- Env variable REACT_APP_APP_NAME
 
 ## v0.2.0 - 2023-Jan-13
 

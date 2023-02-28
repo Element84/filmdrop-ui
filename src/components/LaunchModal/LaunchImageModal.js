@@ -2,13 +2,10 @@ import { React } from 'react'
 import './LaunchModal.css'
 import cloudFormationTemplateImage from '../../assets/cloudFormationTemplate.png'
 
-// redux imports
 import { useDispatch } from 'react-redux'
-// you need to import each action you need to use
 import { setShowLaunchImageModal } from '../../redux/slices/mainSlice'
 
 const LaunchImageModal = () => {
-  // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
   function onCloseClick() {
@@ -22,10 +19,10 @@ const LaunchImageModal = () => {
           ✕
         </button>
         <div className="launchModalContent">
-          <h3>On the &ldquo;Create stack&rdquo; page</h3>
+          <h3>On the &quot;Create stack&quot; page</h3>
           <img
             src={cloudFormationTemplateImage}
-            alt="Screenshot of Cloud Formation Template field"
+            alt="Screenshot of CloudFormation Template field"
           ></img>
         </div>
       </div>

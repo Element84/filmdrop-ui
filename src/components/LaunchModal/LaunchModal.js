@@ -3,18 +3,15 @@ import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
 
-// redux imports
 import { useDispatch } from 'react-redux'
-// you need to import each action you need to use
 import {
   setShowLaunchModal,
   setShowLaunchImageModal
 } from '../../redux/slices/mainSlice'
 
 const LaunchModal = () => {
-  // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
-  const templateURL = process.env.REACT_APP_AWS_CF_TEMPLATE
+  const templateURL = process.env.REACT_APP_AWS_CF_TEMPLATE_URL
   const appName = process.env.REACT_APP_APP_NAME
 
   function onCloseClick() {
@@ -65,8 +62,8 @@ const LaunchModal = () => {
           </ol>
           <div className="fieldContainer">
             <p>
-              Copy and paste this template URL into the &ldquo;Amazon S3
-              URL&rdquo; field:
+              Copy and paste this template URL into the &quot;Amazon S3
+              URL&quot; field:
             </p>
             <div className="fieldContent">
               <div className="templateURL">{templateURL}</div>
