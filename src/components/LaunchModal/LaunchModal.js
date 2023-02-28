@@ -38,9 +38,6 @@ const LaunchModal = () => {
     dispatch(setShowLaunchImageModal(true))
   }
 
-  const startsWithVowel = (word) => /[aeiou]/i.test(word[0])
-  const transitionalWord = startsWithVowel(APP_NAME) ? 'an' : 'a'
-
   return (
     <div className="launchModal">
       <div className="launchModalContainer">
@@ -51,7 +48,7 @@ const LaunchModal = () => {
           <h3>Launch Your Own</h3>
           <h2>{APP_NAME}</h2>
           <p>
-            Now you can view your own datasets by deploying {transitionalWord}{' '}
+            Now you can view your own datasets by deploying an
             {APP_NAME} into your AWS account! Simply follow the instructions
             below to get started.
           </p>
