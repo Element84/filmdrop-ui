@@ -48,8 +48,8 @@ const LaunchModal = () => {
           <h3>Launch Your Own</h3>
           <h2>{APP_NAME}</h2>
           <p>
-            Now you can view your own datasets by deploying {APP_NAME} into your AWS account! Simply follow the instructions
-            below to get started.
+            Now you can view your own datasets by deploying {APP_NAME} into your
+            AWS account! Simply follow the instructions below to get started.
           </p>
           <ol>
             <li>Sign In to the Console</li>
