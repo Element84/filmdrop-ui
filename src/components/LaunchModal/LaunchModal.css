@@ -29,12 +29,12 @@
   line-height: 1.6;
 }
 
-h3 {
+.launchModal h3 {
   text-align: center;
   line-height: 1;
 }
 
-h2 {
+.launchModal h2 {
   font-size: 2em;
   text-align: center;
   margin-top: 0;
@@ -42,12 +42,12 @@ h2 {
   line-height: 1;
 }
 
-.fieldContainer {
+.launchModal .fieldContainer {
   margin-top: 2.25em;
   margin-bottom: 2.5em;
 }
 
-.fieldContainer a {
+.launchModal .fieldContainer a {
   color: #6cc24a;
   display: inline-block;
   border-bottom: 1px solid transparent;
@@ -57,20 +57,20 @@ h2 {
   font-size: 0.85em;
 }
 
-.fieldContainer a:hover {
+.launchModal .fieldContainer a:hover {
   border-color: #6cc24a;
 }
 
-.fieldContainer img {
+.launchModal .fieldContainer img {
   margin-right: 5px;
 }
 
-.fieldContent {
+.launchModal .fieldContent {
   display: flex;
   flex-direction: row;
 }
 
-.templateURL {
+.launchModal .templateURL {
   background-color: white;
   border: 1px solid #bbb;
   color: black;
@@ -81,7 +81,7 @@ h2 {
   overflow: hidden;
 }
 
-.copyButton {
+.launchModal .copyButton {
   background: transparent;
   border: 1px solid #a9b0c1;
   border-radius: 8px;
@@ -90,18 +90,36 @@ h2 {
   cursor: pointer;
   font-size: 1em;
   transition: all 0.33s ease-in-out;
+  white-space: nowrap;
 }
 
-.copyButton:hover {
+.launchModal .copyButton:hover {
   background: #a9b0c1;
   color: #000;
 }
 
-.buttonContainer {
+.launchModal .copyButton.default span {
+  display: none;
+}
+
+.launchModal .copyButton.success {
+  border-color: #6cc24a;
+}
+
+.launchModal .copyButton.success img {
+  display: none;
+}
+
+.launchModal .copyButton.success span {
+  display: inline;
+  color: #6cc24a;
+}
+
+.launchModal .buttonContainer {
   text-align: center;
 }
 
-img {
+.launchModal img {
   position: relative;
   top: 1px;
   margin-left: 5px;
