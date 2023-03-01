@@ -2,6 +2,7 @@ import { React } from 'react'
 import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
+import { APP_NAME } from '../defaults'
 
 import { useDispatch } from 'react-redux'
 import {
@@ -12,7 +13,6 @@ import {
 const LaunchModal = () => {
   const dispatch = useDispatch()
   const templateURL = process.env.REACT_APP_AWS_CF_TEMPLATE_URL
-  const appName = process.env.REACT_APP_APP_NAME
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))
@@ -46,11 +46,10 @@ const LaunchModal = () => {
         </button>
         <div className="launchModalContent">
           <h3>Launch Your Own</h3>
-          <h2>{appName}</h2>
+          <h2>{APP_NAME}</h2>
           <p>
-            Now you can view your own datasets by deploying an {appName} into
-            your AWS account! Simply follow the instructions below to get
-            started.
+            Now you can view your own datasets by deploying {APP_NAME} into your
+            AWS account! Simply follow the instructions below to get started.
           </p>
           <ol>
             <li>Sign In to the Console</li>
@@ -58,7 +57,7 @@ const LaunchModal = () => {
               Create a new CloudFormation Stack with the template link below
             </li>
             <li>Configure new Stack as needed</li>
-            <li>Launch your own {appName}</li>
+            <li>Launch your own {APP_NAME}</li>
           </ol>
           <div className="fieldContainer">
             <p>

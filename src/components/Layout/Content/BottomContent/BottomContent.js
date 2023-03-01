@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { MIN_ZOOM } from '../../../defaults'
+import { MIN_ZOOM, APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
@@ -29,8 +29,7 @@ const BottomContent = () => {
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
   const CF_TEMPLATE_URL = process.env.REACT_APP_AWS_CF_TEMPLATE_URL
-  const VIEWER_BTN_TEXT =
-    process.env.REACT_APP_LAUNCH_BTN_TEXT || 'Launch Your Own FilmDrop UI'
+  const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
