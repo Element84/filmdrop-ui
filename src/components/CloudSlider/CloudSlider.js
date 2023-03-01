@@ -33,17 +33,14 @@ const CloudSlider = () => {
       fetch(`${API_ENDPOINT}/collections/${_collectionSelected}/queryables`)
         .then((response) => response.json())
         .then((actualData) => {
-          const cloudData = actualData?.properties['eo:cloud_cover'] || null
-          if (cloudData) {
-            dispatch(setShowCloudSlider(true))
-            setDisabled(false)
-          } else {
-            dispatch(setShowCloudSlider(false))
-            setDisabled(true)
-          }
+          const supportsCloudCover = !!actualData?.properties['eo:cloud_cover']
+          dispatch(setShowCloudSlider(supportsCloudCover))
+          setDisabled(!supportsCloudCover)
         })
         .catch((err) => {
-          console.log('CloudSlider.js Fetch Error: ', err.message)
+          dispatch(setShowCloudSlider(false))
+          setDisabled(true)
+          console.log('Fetch Error: ', err.message)
         })
     }
   }, [_collectionSelected])
