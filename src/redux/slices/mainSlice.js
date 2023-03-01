@@ -13,7 +13,9 @@ const initialState = {
   currentPopupResult: null,
   showPublishModal: false,
   searchParameters: 'need to run search',
-  showZoomNotice: true
+  showZoomNotice: true,
+  showLaunchModal: false,
+  showLaunchImageModal: false
 }
 
 // next, for every key in the initialState
@@ -56,6 +58,12 @@ export const mainSlice = createSlice({
     },
     setShowZoomNotice: (state, action) => {
       state.showZoomNotice = action.payload
+    },
+    setShowLaunchModal: (state, action) => {
+      state.showLaunchModal = action.payload
+    },
+    setShowLaunchImageModal: (state, action) => {
+      state.showLaunchImageModal = action.payload
     }
   }
 })
@@ -73,5 +81,7 @@ export const { setCurrentPopupResult } = mainSlice.actions
 export const { setShowPublishModal } = mainSlice.actions
 export const { setSearchParameters } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions
+export const { setShowLaunchModal } = mainSlice.actions
+export const { setShowLaunchImageModal } = mainSlice.actions
 
 export default mainSlice.reducer

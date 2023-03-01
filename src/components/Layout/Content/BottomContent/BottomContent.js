@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { MIN_ZOOM } from '../../../defaults'
+import { MIN_ZOOM, APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
@@ -10,7 +10,10 @@ import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setShowPublishModal } from '../../../../redux/slices/mainSlice'
+import {
+  setShowPublishModal,
+  setShowLaunchModal
+} from '../../../../redux/slices/mainSlice'
 
 const BottomContent = () => {
   // set up useSelector to get value from store
@@ -18,9 +21,6 @@ const BottomContent = () => {
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
   const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
-  const _showPublishModal = useSelector(
-    (state) => state.mainSlice.showPublishModal
-  )
   const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
 
   // if you are setting redux state, call dispatch
@@ -28,13 +28,19 @@ const BottomContent = () => {
 
   const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
+  const CF_TEMPLATE_URL = process.env.REACT_APP_AWS_CF_TEMPLATE_URL
+  const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
   }
 
   function onPublishClick() {
-    dispatch(setShowPublishModal(!_showPublishModal))
+    dispatch(setShowPublishModal(true))
+  }
+
+  function onLaunchClick() {
+    dispatch(setShowLaunchModal(true))
   }
 
   function onZoomClick() {
@@ -61,6 +67,11 @@ const BottomContent = () => {
         {SHOW_PUBLISH_BTN === 'true' && (
           <button className="actionButton" onClick={() => onPublishClick()}>
             Publish
+          </button>
+        )}
+        {CF_TEMPLATE_URL && (
+          <button className="actionButton" onClick={() => onLaunchClick()}>
+            {VIEWER_BTN_TEXT}
           </button>
         )}
       </div>
