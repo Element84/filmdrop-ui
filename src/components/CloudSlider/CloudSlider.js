@@ -10,10 +10,8 @@ import './CloudSlider.css'
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-slider/#slider-with-input-field
 
-// redux imports
-import { useDispatch } from 'react-redux'
-// you need to import each action you need to use
-import { setCloudCover } from '../../redux/slices/mainSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import { setCloudCover, setShowCloudSlider } from '../../redux/slices/mainSlice'
 
 const Input = styled(MuiInput)`
   width: 42px;
@@ -21,29 +19,42 @@ const Input = styled(MuiInput)`
 `
 
 const CloudSlider = () => {
-  // if you are setting redux state, call dispatch
+  const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
+  const _collectionSelected = useSelector(
+    (state) => state.mainSlice.selectedCollection
+  )
+
   const dispatch = useDispatch()
   const [value, setValue] = useState(30)
+  const [disabled, setDisabled] = useState(false)
+
+  useEffect(() => {
+    if (_collectionSelected) {
+      fetch(`${API_ENDPOINT}/collections/${_collectionSelected}/queryables`)
+        .then((response) => response.json())
+        .then((actualData) => {
+          const cloudData = actualData?.properties['eo:cloud_cover'] || null
+          if (cloudData) {
+            dispatch(setShowCloudSlider(true))
+            setDisabled(false)
+          } else {
+            dispatch(setShowCloudSlider(false))
+            setDisabled(true)
+          }
+        })
+        .catch((err) => {
+          console.log('CloudSlider.js Fetch Error: ', err.message)
+        })
+    }
+  }, [_collectionSelected])
 
   useEffect(() => {
     dispatch(setCloudCover(value))
-    // eslint-disable-next-line
   }, [value])
 
   const handleSliderChange = (event, newValue) => {
     setValue(newValue)
   }
-
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#dedede'
-      },
-      secondary: {
-        main: '#edf2ff'
-      }
-    }
-  })
 
   const handleInputChange = (event) => {
     setValue(event.target.value === '' ? 0 : Number(event.target.value))
@@ -57,9 +68,23 @@ const CloudSlider = () => {
     }
   }
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#dedede'
+      },
+      secondary: {
+        main: '#edf2ff'
+      }
+    }
+  })
+
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ width: 250 }}>
+      <Box
+        sx={{ width: 250 }}
+        className={`cloudSlider ${disabled && 'disabled'}`}
+      >
         <label>Max Cloud Cover %</label>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
@@ -68,6 +93,7 @@ const CloudSlider = () => {
               onChange={handleSliderChange}
               aria-labelledby="input-slider"
               color="primary"
+              disabled={disabled}
             />
           </Grid>
           <Grid item>
@@ -89,6 +115,7 @@ const CloudSlider = () => {
                 type: 'number',
                 'aria-labelledby': 'input-slider'
               }}
+              disabled={disabled}
             />
           </Grid>
         </Grid>

@@ -22,8 +22,12 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 
 const Search = () => {
+  const dispatch = useDispatch()
   const _map = useSelector((state) => state.mainSlice.map)
-  // const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
+  const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
+  const _showCloudSlider = useSelector(
+    (state) => state.mainSlice.showCloudSlider
+  )
   const _collectionSelected = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
@@ -32,9 +36,6 @@ const Search = () => {
     (state) => state.mainSlice.currentPopupResult
   )
   const tilerURL = envTilerURL
-
-  // if you are setting redux state, call dispatch
-  const dispatch = useDispatch()
 
   // set up map state
   const map = _map
@@ -52,7 +53,8 @@ const Search = () => {
   const [zoomLevelNotice, setZoomLevelNotice] = useState(0)
   const dateTimeRef = useRef(dateTimeValue)
   const zoomLevelRef = useRef(0)
-  const localCollectionRef = useRef(_collectionSelected)
+  const selectedCollectionRef = useRef(_collectionSelected)
+  const showCloudSliderRef = useRef(_showCloudSlider)
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -147,18 +149,22 @@ const Search = () => {
     if (map && Object.keys(map).length > 0) processSearch()
   }, [dateTimeValue])
 
-  /* Disabled temporarily
   // when cloud cover value changes, if map loaded, perform new search
   useEffect(() => {
     if (map && Object.keys(map).length > 0) processSearch()
   }, [_cloudCover])
-  */
 
   // when collection dropdown changes, if map loaded, perform new search
   useEffect(() => {
-    localCollectionRef.current = _collectionSelected
+    selectedCollectionRef.current = _collectionSelected
     if (map && Object.keys(map).length > 0) processSearch()
   }, [_collectionSelected])
+
+  // when collection dropdown changes and the cloud slider needs to be hidden or shown, perform new search with adjusted search params
+  useEffect(() => {
+    showCloudSliderRef.current = _showCloudSlider
+    if (map && Object.keys(map).length > 0) processSearch()
+  }, [_showCloudSlider])
 
   // when search results change, if map loaded, set new mapClickHandler
   useEffect(() => {
@@ -237,12 +243,7 @@ const Search = () => {
       '-' +
       ('0' + dateTime.getUTCDate()).slice(-2) +
       'T' +
-      ('0' + dateTime.getUTCHours()).slice(-2) +
-      ':' +
-      ('0' + dateTime.getUTCMinutes()).slice(-2) +
-      ':' +
-      ('0' + dateTime.getUTCSeconds()).slice(-2) +
-      'Z'
+      '00:00:00Z'
     // format dateTime here
     return dateString
   }
@@ -267,9 +268,9 @@ const Search = () => {
     }
   }
 
-  // search throttle set to 1000ms
+  // search throttle set to 1500ms
   const processSearch = (resultFootprintsInit) =>
-    debounce(searchAPI(resultFootprintsInit), 1000)
+    debounce(searchAPI(resultFootprintsInit), 1500)
 
   // function called when search is initiated
   function searchAPI(resultFootprintsInit) {
@@ -310,9 +311,8 @@ const Search = () => {
       '%2F' +
       convertDateTimeForAPI(dateTimeRef.current[1])
 
-    // get viewport bounds
+    // get viewport bounds and setup bbox parameter
     const viewportBounds = map.getBounds()
-
     const bbox = [
       viewportBounds._southWest.lng,
       viewportBounds._southWest.lat,
@@ -320,11 +320,16 @@ const Search = () => {
       viewportBounds._northEast.lat
     ].join(',')
 
+    let cloudCover = '%20'
+    if (showCloudSliderRef.current) {
+      cloudCover = `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`
+    }
+
     const searchParametersString = [
       `bbox=${bbox}`,
-      // `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`,
+      `${cloudCover}`,
       `datetime=${combinedDateRange}`,
-      `collections=${localCollectionRef.current}`,
+      `collections=${selectedCollectionRef.current}`,
       'limit=100'
     ].join('&')
 
@@ -397,9 +402,14 @@ const Search = () => {
 
   return (
     <div className="Search" data-testid="Search">
+      <div
+        className={`searchContainer collection-dropdown error-${collectionError}`}
+      >
+        <CollectionDropdown error={collectionError}></CollectionDropdown>
+      </div>
       <div className="searchContainer">
         <label>
-          Select Date & Time Range{' '}
+          Select Date Range{' '}
           {!dateTimeValue && (
             <span className="error-true">
               <em>Required</em>
@@ -409,7 +419,7 @@ const Search = () => {
         <DateTimeRangePicker
           className="dateTimePicker"
           onChange={setDateTimeValue}
-          format={'yy-MM-dd HH:mm'}
+          format={'yy-MM-dd'}
           maxDate={new Date()}
           required={true}
           value={dateTimeValue}
@@ -417,11 +427,6 @@ const Search = () => {
       </div>
       <div className="searchContainer">
         <CloudSlider></CloudSlider>
-      </div>
-      <div
-        className={`searchContainer collection-dropdown error-${collectionError}`}
-      >
-        <CollectionDropdown error={collectionError}></CollectionDropdown>
       </div>
     </div>
   )
