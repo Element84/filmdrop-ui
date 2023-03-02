@@ -1,4 +1,4 @@
-import { React } from 'react'
+import { React, useState } from 'react'
 import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
@@ -12,7 +12,9 @@ import {
 
 const LaunchModal = () => {
   const dispatch = useDispatch()
-  const templateURL = process.env.REACT_APP_AWS_CF_TEMPLATE_URL
+  const [copyButtonText, setCopyButtonText] = useState('Copy URL')
+  const [copyButtonState, setCopyButtonState] = useState('default')
+  const templateURL = process.env.REACT_APP_CF_TEMPLATE_URL
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))
@@ -29,8 +31,10 @@ const LaunchModal = () => {
   const onCopyClick = async () => {
     try {
       await navigator.clipboard.writeText(templateURL)
+      setCopyButtonText('Copied to Clipboard')
+      setCopyButtonState('success')
     } catch (err) {
-      console.log('Failed to copy')
+      setCopyButtonText('Failed to copy')
     }
   }
 
@@ -66,8 +70,12 @@ const LaunchModal = () => {
             </p>
             <div className="fieldContent">
               <div className="templateURL">{templateURL}</div>
-              <button className="copyButton" onClick={() => onCopyClick()}>
-                <img src={iconCopy} alt="copy icon" /> Copy URL
+              <button
+                className={`copyButton ${copyButtonState}`}
+                onClick={() => onCopyClick()}
+              >
+                <img src={iconCopy} alt="copy icon" />
+                <span>&#x2713;</span> {copyButtonText}
               </button>
             </div>
             <a onClick={() => onImageClick()}>

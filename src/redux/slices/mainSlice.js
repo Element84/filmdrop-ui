@@ -6,7 +6,8 @@ const initialState = {
   map: {},
   dateTime: [],
   cloudCover: 0,
-  selectedCollection: null,
+  showCloudSlider: true,
+  selectedCollection: process.env.REACT_APP_DEFAULT_COLLECTION || null,
   searchResults: null,
   clickResults: [],
   searchLoading: false,
@@ -34,6 +35,9 @@ export const mainSlice = createSlice({
     },
     setCloudCover: (state, action) => {
       state.cloudCover = action.payload
+    },
+    setShowCloudSlider: (state, action) => {
+      state.showCloudSlider = action.payload
     },
     setSelectedCollection: (state, action) => {
       state.selectedCollection = action.payload
@@ -73,6 +77,7 @@ export const mainSlice = createSlice({
 export const { setMap } = mainSlice.actions
 export const { setDateTime } = mainSlice.actions
 export const { setCloudCover } = mainSlice.actions
+export const { setShowCloudSlider } = mainSlice.actions
 export const { setSelectedCollection } = mainSlice.actions
 export const { setSearchResults } = mainSlice.actions
 export const { setClickResults } = mainSlice.actions
