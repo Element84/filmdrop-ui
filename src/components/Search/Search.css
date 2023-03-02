@@ -32,10 +32,15 @@ span.error-true {
   color: #a9b0c1;
 }
 
+.searchContainer.datePicker label {
+  position: relative;
+  top: 2px;
+}
+
 /* Date Range Picker */
 
 .dateTimePicker {
-  margin-top: 10px;
+  margin-top: 6px;
   z-index: 4;
   font-size: 16px;
   width: 100%;
@@ -51,6 +56,25 @@ span.error-true {
 
 .react-datetimerange-picker__inputGroup {
   border-bottom: 1px solid #76829c;
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+  padding-bottom: 1px;
+}
+
+.react-datetimerange-picker__inputGroup:hover {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.87);
+}
+
+.react-datetimerange-picker__button {
+  margin-bottom: 4px;
+}
+
+.react-datetimerange-picker__button:enabled:hover
+  .react-datetimerange-picker__button__icon,
+.react-datetimerange-picker__button:enabled:focus
+  .react-datetimerange-picker__button__icon {
+  stroke: #6cc24a;
 }
 
 .dateTimePicker svg {

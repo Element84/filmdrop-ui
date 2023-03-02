@@ -403,11 +403,11 @@ const Search = () => {
   return (
     <div className="Search" data-testid="Search">
       <div
-        className={`searchContainer collection-dropdown error-${collectionError}`}
+        className={`searchContainer collectionDropdown error-${collectionError}`}
       >
         <CollectionDropdown error={collectionError}></CollectionDropdown>
       </div>
-      <div className="searchContainer">
+      <div className="searchContainer datePicker">
         <label>
           Select Date Range{' '}
           {!dateTimeValue && (
@@ -425,7 +425,7 @@ const Search = () => {
           value={dateTimeValue}
         ></DateTimeRangePicker>
       </div>
-      <div className="searchContainer">
+      <div className="searchContainer cloudSlider">
         <CloudSlider></CloudSlider>
       </div>
     </div>
