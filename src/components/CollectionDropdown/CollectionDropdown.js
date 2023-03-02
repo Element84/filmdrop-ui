@@ -60,7 +60,7 @@ const Dropdown = ({ error }) => {
       <Grid container spacing={2} alignItems="center">
         <Grid item xs>
           <NativeSelect
-            id="collections-dropdown"
+            id="collectionDropdown"
             value={value}
             label="Collection"
             onChange={handleDropdownChange}

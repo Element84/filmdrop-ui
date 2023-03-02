@@ -1,18 +1,23 @@
-.collection-dropdown .MuiInput-underline:before {
-  border-color: rgba(255, 255, 255, 0.3);
+.collectionDropdown .MuiInput-underline:before {
+  border-color: #76829c;
 }
 
-.collection-dropdown svg {
+.collectionDropdown svg {
   color: rgba(255, 255, 255, 0.5);
 }
 
-#collections-dropdown {
+#collectionDropdown {
   border-color: white;
   color: white;
 }
 
-.collection-dropdown.error-true select {
+.collectionDropdown.error-true select {
   color: #bc3131 !important;
   font-weight: bold;
   border-bottom: 1px solid #bc3131;
+}
+
+.collectionDropdown div[label='Collection'] {
+  top: -2.5px;
+  padding-top: 1px;
 }
