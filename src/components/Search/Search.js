@@ -188,6 +188,9 @@ const Search = () => {
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
   function mapClickHandler(e) {
+    // if double-clicking the image, zoom in, otherwise process click
+    if (e.originalEvent.detail === 2) return
+
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
     if (clickedFootprintHighlights) {
