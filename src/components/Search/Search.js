@@ -1,11 +1,10 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './Search.css'
 import { envTilerURL, constructTilerParams } from './envVarSetup'
+import { convertDateTimeForAPI, debounce } from '../../utils'
 import { MIN_ZOOM } from '../defaults'
 
-// redux imports
-import { useSelector, useDispatch } from 'react-redux'
-// you need to import each action you need to use
+import { useSelector, useDispatch, batch } from 'react-redux'
 import {
   setSearchResults,
   setDateTime,
@@ -20,6 +19,7 @@ import 'leaflet-draw'
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
+import ViewSelector from '../ViewSelector/ViewSelector'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -31,6 +31,7 @@ const Search = () => {
   const _collectionSelected = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
+  const _viewMode = useSelector((state) => state.mainSlice.viewMode)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _currentPopupResult = useSelector(
     (state) => state.mainSlice.currentPopupResult
@@ -50,11 +51,12 @@ const Search = () => {
   const [clickedFootprintsImageLayer, setClickedFootprintsImageLayer] =
     useState()
   const [collectionError, setCollectionError] = useState(false)
-  const [zoomLevelNotice, setZoomLevelNotice] = useState(0)
+  const [zoomLevelValue, setZoomLevelValue] = useState(0)
   const dateTimeRef = useRef(dateTimeValue)
   const zoomLevelRef = useRef(0)
   const selectedCollectionRef = useRef(_collectionSelected)
   const showCloudSliderRef = useRef(_showCloudSlider)
+  const viewModeRef = useRef(_viewMode)
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -90,11 +92,13 @@ const Search = () => {
       const resultFootprintsInit = new L.FeatureGroup()
       setResultFootprints(resultFootprintsInit)
       resultFootprintsInit.addTo(map)
+      resultFootprintsInit.id = 'resultFootprints'
 
       // set up layerGroup for highlight footprints and add to map
       const clickedFootprintsHighlightInit = new L.FeatureGroup()
       setClickedFootprintsHighlight(clickedFootprintsHighlightInit)
       clickedFootprintsHighlightInit.addTo(map)
+      clickedFootprintsHighlightInit.id = 'clickedFootprintHighlights'
 
       // set up layerGroup for image layer and add to map
       const clickedFootprintsImageLayerInit = new L.FeatureGroup()
@@ -117,7 +121,7 @@ const Search = () => {
 
       map.on('zoomend', function () {
         zoomLevelRef.current = map.getZoom()
-        setZoomLevelNotice(map.getZoom())
+        setZoomLevelValue(map.getZoom())
         processSearch(resultFootprintsInit)
       })
 
@@ -135,36 +139,28 @@ const Search = () => {
   // when zoom level changes, set in global store to hide/show zoom notice
   // and perform search if within zoom limits
   useEffect(() => {
-    if (zoomLevelNotice >= MIN_ZOOM) {
+    if (zoomLevelValue >= MIN_ZOOM || _viewMode === 'footprint') {
       dispatch(setShowZoomNotice(false))
     } else {
       dispatch(setShowZoomNotice(true))
     }
-  }, [zoomLevelNotice])
+  }, [zoomLevelValue, _viewMode])
 
-  // when datatime changes, set in global store and perform new search
+  // when there are changes, update store and perform new search
   useEffect(() => {
     dispatch(setDateTime(dateTimeValue))
     dateTimeRef.current = dateTimeValue
-    if (map && Object.keys(map).length > 0) processSearch()
-  }, [dateTimeValue])
-
-  // when cloud cover value changes, if map loaded, perform new search
-  useEffect(() => {
-    if (map && Object.keys(map).length > 0) processSearch()
-  }, [_cloudCover])
-
-  // when collection dropdown changes, if map loaded, perform new search
-  useEffect(() => {
     selectedCollectionRef.current = _collectionSelected
-    if (map && Object.keys(map).length > 0) processSearch()
-  }, [_collectionSelected])
-
-  // when collection dropdown changes and the cloud slider needs to be hidden or shown, perform new search with adjusted search params
-  useEffect(() => {
     showCloudSliderRef.current = _showCloudSlider
+    viewModeRef.current = _viewMode
     if (map && Object.keys(map).length > 0) processSearch()
-  }, [_showCloudSlider])
+  }, [
+    dateTimeValue,
+    _cloudCover,
+    _collectionSelected,
+    _showCloudSlider,
+    _viewMode
+  ])
 
   // when search results change, if map loaded, set new mapClickHandler
   useEffect(() => {
@@ -188,6 +184,8 @@ const Search = () => {
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
   function mapClickHandler(e) {
+    // if double-clicking the image, zoom in, otherwise process click
+    if (e.originalEvent.detail === 2) return
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
     if (clickedFootprintHighlights) {
@@ -218,7 +216,6 @@ const Search = () => {
           const clickedFootprintsFound = L.geoJSON(feature, {
             style: clickedFootprintsSelectedStyle
           })
-          clickedFootprintsFound.id = 'clickedFootprintHighlights'
           clickedFootprintsFound.addTo(clickedFootprintHighlights)
         }
       }
@@ -234,18 +231,21 @@ const Search = () => {
     }
   }
 
-  // function to convert DateTime Range Picker values to STAC compliant format
-  function convertDateTimeForAPI(dateTime) {
-    const dateString =
-      dateTime.getUTCFullYear() +
-      '-' +
-      ('0' + (dateTime.getUTCMonth() + 1)).slice(-2) +
-      '-' +
-      ('0' + dateTime.getUTCDate()).slice(-2) +
-      'T' +
-      '00:00:00Z'
-    // format dateTime here
-    return dateString
+  function clearResults(resultFootPrintsLocal) {
+    // show loading spinner, clear previous results
+    batch(() => {
+      dispatch(setSearchResults(null))
+      dispatch(setClickResults([]))
+    })
+
+    // remove clicked footprint highlight
+    if (clickedFootprintHighlights) clickedFootprintHighlights.clearLayers()
+
+    // remove image layer
+    if (clickedFootprintsImageLayer) clickedFootprintsImageLayer.clearLayers()
+
+    // remove existing footprints from map
+    removeFootprints(resultFootPrintsLocal)
   }
 
   // remove old footprints from map
@@ -253,19 +253,6 @@ const Search = () => {
     resultFootPrintsLocal.eachLayer(function (layer) {
       resultFootPrintsLocal.removeLayer(layer)
     })
-  }
-
-  // throttle function to prevent map from rendering too quickly
-  const debounce = (func, waitInMillis) => {
-    let timeout
-    return function executedFunction(...args) {
-      const later = () => {
-        clearTimeout(timeout)
-        func(...args)
-      }
-      clearTimeout(timeout)
-      timeout = setTimeout(later, waitInMillis)
-    }
   }
 
   // search throttle set to 1500ms
@@ -277,11 +264,20 @@ const Search = () => {
     // set up footprints layer
     const resultFootPrintsLocal = resultFootprintsInit || resultFootprints
 
-    // if the zoom level is too high, abort search
-    if (zoomLevelRef.current < MIN_ZOOM) return
+    // clear previous results from map
+    clearResults(resultFootPrintsLocal)
 
-    // if the date time field is empty, abort search
-    if (!dateTimeValue) return
+    // if the zoom level is too high in mosaic view, abort search
+    // otherwise, move to the mosaic search
+    if (zoomLevelRef.current < MIN_ZOOM && viewModeRef.current === 'mosaic') {
+      return
+    } else if (
+      zoomLevelRef.current >= MIN_ZOOM &&
+      viewModeRef.current === 'mosaic'
+    ) {
+      addMosaic(resultFootPrintsLocal)
+      return
+    }
 
     // if a valid collection is not selected, abort search
     if (!_collectionSelected) {
@@ -291,19 +287,10 @@ const Search = () => {
       setCollectionError(false)
     }
 
-    // remove clicked footprint highlight
-    if (clickedFootprintHighlights) clickedFootprintHighlights.clearLayers()
+    // if the date time field is empty, abort search
+    if (!dateTimeValue) return
 
-    // remove image layer
-    if (clickedFootprintsImageLayer) clickedFootprintsImageLayer.clearLayers()
-
-    // remove existing footprints from map
-    removeFootprints(resultFootPrintsLocal)
-
-    // show loading spinner
     dispatch(setSearchLoading(true))
-    dispatch(setSearchResults(null))
-    dispatch(setClickResults([]))
 
     // build datetime input
     const combinedDateRange =
@@ -320,10 +307,9 @@ const Search = () => {
       viewportBounds._northEast.lat
     ].join(',')
 
-    let cloudCover = '%20'
-    if (showCloudSliderRef.current) {
+    let cloudCover = ''
+    if (showCloudSliderRef.current)
       cloudCover = `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`
-    }
 
     const searchParametersString = [
       `bbox=${bbox}`,
@@ -355,7 +341,6 @@ const Search = () => {
 
         // add new footprints to map
         const resultFootprintsFound = L.geoJSON(json, {})
-        resultFootPrintsLocal.id = 'resultFootprints'
         resultFootprintsFound.addTo(resultFootPrintsLocal)
       })
   }
@@ -400,6 +385,67 @@ const Search = () => {
       })
   }
 
+  // function to remove old image layer and add new Tiler image layer to map
+  function addMosaic(resultFootPrintsLocal) {
+    // clear previous results from map
+    clearResults(resultFootPrintsLocal)
+
+    // const tilerParams = constructTilerParams(_collectionSelected)
+
+    // build date input
+    const combinedDateRange =
+      convertDateTimeForAPI(dateTimeRef.current[0]) +
+      '%2F' +
+      convertDateTimeForAPI(dateTimeRef.current[1])
+
+    // get viewport bounds and setup bbox parameter
+    const viewportBounds = map.getBounds()
+    const boundBox = [
+      viewportBounds._southWest.lng,
+      viewportBounds._southWest.lat,
+      viewportBounds._northEast.lng,
+      viewportBounds._northEast.lat
+    ].join(',')
+
+    const requestOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/vnd.titiler.stac-api-query+json'
+      },
+      body: JSON.stringify({
+        stac_api_root: process.env.REACT_APP_STAC_API_URL,
+        asset_name: 'visual',
+        collections: [selectedCollectionRef.current],
+        datetime: combinedDateRange,
+        bbox: boundBox
+      })
+    }
+    const mosaicTilerURL =
+      'https://htqmtboamg.execute-api.us-west-2.amazonaws.com'
+    fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
+      .then(function (response) {
+        return response.json()
+      })
+      .then(function (json) {
+        console.log(json)
+        const tileHref = json.links[3].href
+        L.tileLayer(`${tileHref}`, {
+          attribution: '©OpenStreetMap',
+          tileSize: 256,
+          bounds: boundBox,
+          pane: 'imagery'
+        })
+          .addTo(clickedFootprintsImageLayer)
+          .on('load', function () {
+            // hide loading spinner
+            dispatch(setSearchLoading(false))
+          })
+          .on('tileerror', function () {
+            console.log('Tile Error')
+          })
+      })
+  }
+
   return (
     <div className="Search" data-testid="Search">
       <div
@@ -427,6 +473,9 @@ const Search = () => {
       </div>
       <div className="searchContainer cloudSlider">
         <CloudSlider></CloudSlider>
+      </div>
+      <div className="searchContainer">
+        <ViewSelector></ViewSelector>
       </div>
     </div>
   )

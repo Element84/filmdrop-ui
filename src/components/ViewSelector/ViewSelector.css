@@ -1,0 +1,23 @@
+.viewSelector button:nth-child(1) {
+  border-top-left-radius: 6px;
+  border-bottom-left-radius: 6px;
+}
+
+.viewSelector button:nth-child(2) {
+  border-top-right-radius: 6px;
+  border-bottom-right-radius: 6px;
+  position: relative;
+  left: -1px;
+}
+
+.viewSelector button {
+  border: 1px solid #76829c !important;
+  font-size: 12px;
+  line-height: 15px;
+  margin-top: 7px;
+  letter-spacing: 0.05em;
+}
+
+.viewSelector div[role='group'] {
+  box-shadow: none;
+}
