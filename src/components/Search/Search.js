@@ -393,19 +393,23 @@ const Search = () => {
     // const tilerParams = constructTilerParams(_collectionSelected)
 
     // build date input
-    const combinedDateRange =
+    const datetime =
       convertDateTimeForAPI(dateTimeRef.current[0]) +
-      '%2F' +
+      '/' +
       convertDateTimeForAPI(dateTimeRef.current[1])
 
     // get viewport bounds and setup bbox parameter
     const viewportBounds = map.getBounds()
-    const boundBox = [
+    const bbox = [
       viewportBounds._southWest.lng,
       viewportBounds._southWest.lat,
       viewportBounds._northEast.lng,
       viewportBounds._northEast.lat
-    ].join(',')
+    ]
+
+    const corner1 = L.latLng(bbox[1], bbox[0])
+    const corner2 = L.latLng(bbox[3], bbox[2])
+    const mosaicBounds = L.latLngBounds(corner1, corner2)
 
     const requestOptions = {
       method: 'POST',
@@ -414,25 +418,22 @@ const Search = () => {
       },
       body: JSON.stringify({
         stac_api_root: process.env.REACT_APP_STAC_API_URL,
-        asset_name: 'visual',
+        asset_name: 'visual', // todo: use first entry in assets config
         collections: [selectedCollectionRef.current],
-        datetime: combinedDateRange,
-        bbox: boundBox
+        datetime,
+        bbox
+        // todo: query w/ cloud_cover, as a JSON object rather than a url-encoded string
       })
     }
-    const mosaicTilerURL =
-      'https://htqmtboamg.execute-api.us-west-2.amazonaws.com'
-    fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
-      .then(function (response) {
-        return response.json()
-      })
-      .then(function (json) {
-        console.log(json)
-        const tileHref = json.links[3].href
+    fetch(`${tilerURL}/mosaicjson/mosaics`, requestOptions)
+      .then((r) => r.json())
+      .then((body) => {
+        console.log(`mosaic create response: ${JSON.stringify(body)}`)
+        const tileHref = body.links[3].href // todo: rel=tiles
         L.tileLayer(`${tileHref}`, {
           attribution: '©OpenStreetMap',
           tileSize: 256,
-          bounds: boundBox,
+          bounds: mosaicBounds,
           pane: 'imagery'
         })
           .addTo(clickedFootprintsImageLayer)
