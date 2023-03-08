@@ -203,7 +203,7 @@ const Search = () => {
     if (e.originalEvent.detail === 2 || viewModeRef.current === 'mosaic') return
 
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
-
+    
     const intersectingFeatures = []
 
     if (_searchResults !== null) {
