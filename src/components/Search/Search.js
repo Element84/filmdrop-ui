@@ -5,7 +5,12 @@ import {
   constructTilerParams,
   envMosaicTilerURL
 } from './envVarSetup'
-import { convertDateTimeForAPI, debounce } from '../../utils'
+import {
+  convertDateTimeForAPI,
+  debounce,
+  setupBbox,
+  setupBounds
+} from '../../utils'
 import { MIN_ZOOM } from '../defaults'
 
 import { useSelector, useDispatch, batch } from 'react-redux'
@@ -194,20 +199,17 @@ const Search = () => {
     // disable click function in mosaic view
     if (e.originalEvent.detail === 2 || viewModeRef.current === 'mosaic') return
 
-    const clickBounds = L.latLngBounds(e.latlng, e.latlng)
-
     clickedFootprintHighlightRef.current.clearLayers()
     clickedFootprintImageLayerRef.current.clearLayers()
 
+    const clickBounds = L.latLngBounds(e.latlng, e.latlng)
     const intersectingFeatures = []
 
     if (_searchResults !== null) {
       for (const f in _searchResults.features) {
         const feature = _searchResults.features[f]
-        const bounds = feature.bbox
-        const swCorner = L.latLng(bounds[1], bounds[0])
-        const neCorner = L.latLng(bounds[3], bounds[2])
-        const featureBounds = L.latLngBounds(swCorner, neCorner)
+        const featureBounds = setupBounds(feature.bbox)
+
         if (featureBounds && clickBounds.intersects(featureBounds)) {
           intersectingFeatures.push(feature)
           // add features to clickedHighlight layer
@@ -235,6 +237,7 @@ const Search = () => {
     }
   }
 
+  // clears search results and empties out all the layers on the map
   function clearResults() {
     // show loading spinner, clear previous results
     batch(() => {
@@ -290,19 +293,11 @@ const Search = () => {
     dispatch(setSearchLoading(true))
 
     // build datetime input
-    const combinedDateRange =
-      convertDateTimeForAPI(dateTimeRef.current[0]) +
-      '%2F' +
-      convertDateTimeForAPI(dateTimeRef.current[1])
+    const combinedDateRange = convertDateTimeForAPI(dateTimeRef.current, true)
 
     // get viewport bounds and setup bbox parameter
-    const viewportBounds = map.getBounds()
-    const bbox = [
-      viewportBounds._southWest.lng,
-      viewportBounds._southWest.lat,
-      viewportBounds._northEast.lng,
-      viewportBounds._northEast.lat
-    ].join(',')
+    const bbox = setupBbox(map, true)
+
     let cloudCover = ''
     if (showCloudSliderRef.current)
       cloudCover = `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`
@@ -357,14 +352,11 @@ const Search = () => {
         return response.json()
       })
       .then(function (json) {
-        const swCorner = L.latLng(json.bbox[1], json.bbox[0])
-        const neCorner = L.latLng(json.bbox[3], json.bbox[2])
-        const tileBounds = L.latLngBounds(swCorner, neCorner)
+        const tileBounds = setupBounds(json.bbox)
 
         L.tileLayer(
           `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}${tilerParams}`,
           {
-            attribution: '©OpenStreetMap',
             tileSize: 256,
             bounds: tileBounds,
             pane: 'imagery'
@@ -392,23 +384,11 @@ const Search = () => {
     // const tilerParams = constructTilerParams(_collectionSelected)
 
     // build date input
-    const datetime =
-      convertDateTimeForAPI(dateTimeRef.current[0]) +
-      '/' +
-      convertDateTimeForAPI(dateTimeRef.current[1])
+    const datetime = convertDateTimeForAPI(dateTimeRef.current)
 
     // get viewport bounds and setup bbox parameter
-    const viewportBounds = map.getBounds()
-    const bbox = [
-      viewportBounds._southWest.lng,
-      viewportBounds._southWest.lat,
-      viewportBounds._northEast.lng,
-      viewportBounds._northEast.lat
-    ]
-
-    const swCorner = L.latLng(bbox[1], bbox[0])
-    const neCorner = L.latLng(bbox[3], bbox[2])
-    const mosaicBounds = L.latLngBounds(swCorner, neCorner)
+    const bbox = setupBbox(map)
+    const mosaicBounds = setupBounds(bbox)
 
     const requestOptions = {
       method: 'POST',
@@ -417,32 +397,34 @@ const Search = () => {
       },
       body: JSON.stringify({
         stac_api_root: process.env.REACT_APP_STAC_API_URL,
-        asset_name: 'visual', // todo: use first entry in assets config
+        asset_name: 'visual', // TODO: use first entry in assets config
         collections: [selectedCollectionRef.current],
         datetime,
         bbox,
-        max_items: 10
-        // todo: query w/ cloud_cover, as a JSON object rather than a url-encoded string
+        max_items: 100,
+        'eo:cloud_cover': { gte: 0, lte: _cloudCover }
       })
     }
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
       .then((r) => r.json())
       .then((body) => {
-        const tileHref = body?.links?.find((el) => el.rel === 'tiles').href
-        L.tileLayer(`${tileHref}`, {
-          attribution: '©OpenStreetMap',
-          tileSize: 256,
-          bounds: mosaicBounds,
-          pane: 'imagery'
-        })
-          .addTo(clickedFootprintImageLayerRef.current)
-          .on('load', function () {
-            // hide loading spinner
-            dispatch(setSearchLoading(false))
+        const tileHref =
+          body?.links?.find((el) => el.rel === 'tiles').href + '.png'
+        if (tileHref) {
+          L.tileLayer(tileHref, {
+            tileSize: 256,
+            bounds: mosaicBounds,
+            pane: 'imagery'
           })
-          .on('tileerror', function () {
-            console.log('Tile Error')
-          })
+            .addTo(clickedFootprintImageLayerRef.current)
+            .on('load', function () {
+              // hide loading spinner
+              dispatch(setSearchLoading(false))
+            })
+            .on('tileerror', function () {
+              console.log('Tile Error')
+            })
+        }
       })
   }
 
