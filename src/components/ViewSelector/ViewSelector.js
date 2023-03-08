@@ -43,10 +43,10 @@ const ViewSelector = () => {
               aria-label="outlined primary button group"
             >
               <Button
-                color={selectedBtn === 'footprint' ? 'secondary' : 'primary'}
-                onClick={() => setSelectedBtn('footprint')}
+                color={selectedBtn === 'scene' ? 'secondary' : 'primary'}
+                onClick={() => setSelectedBtn('scene')}
               >
-                Footprint
+                Scene
               </Button>
               <Button
                 color={selectedBtn === 'mosaic' ? 'secondary' : 'primary'}

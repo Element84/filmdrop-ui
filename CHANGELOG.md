@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Remove Search button
 - Enable cloud cover dependency based on collection
 - Remove time from date range
+- Add mosaic view mode
 
 ### Added
 
@@ -43,6 +44,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add support for `asset_bidx` tiler configuration
 - Env variable REACT_APP_CF_TEMPLATE_URL
 - Env variable REACT_APP_APP_NAME
+- Env variable REACT_APP_MOSAIC_TILER_URL
 
 ## v0.2.0 - 2023-Jan-13
 

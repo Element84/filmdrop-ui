@@ -32,5 +32,6 @@ export const constructTilerParams = (selectedCollection) => {
   return paramStr
 }
 
-// retrieve tiler URL from env variable
+// retrieve tiler URLs from env variable
 export const envTilerURL = process.env.REACT_APP_TILER_URL || ''
+export const envMosaicTilerURL = process.env.REACT_APP_MOSAIC_TILER_URL || ''

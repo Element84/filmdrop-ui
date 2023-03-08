@@ -17,7 +17,7 @@ const initialState = {
   showZoomNotice: false,
   showLaunchModal: false,
   showLaunchImageModal: false,
-  viewMode: 'footprint'
+  viewMode: 'scene'
 }
 
 // next, for every key in the initialState
