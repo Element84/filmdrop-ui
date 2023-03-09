@@ -399,7 +399,7 @@ const Search = () => {
       },
       body: JSON.stringify({
         stac_api_root: process.env.REACT_APP_STAC_API_URL,
-        asset_name: constructAssetsParam(selectedCollectionRef.current), // TODO: use first entry in assets config
+        asset_name: constructAssetsParam(selectedCollectionRef.current),
         collections: [selectedCollectionRef.current],
         datetime,
         bbox,
