@@ -10,10 +10,11 @@ import {
 import {
   convertDateTimeForAPI,
   debounce,
-  setupBbox,
+  setupArrayBbox,
+  setupCommaSeparatedBbox,
   setupBounds
 } from '../../utils'
-import { MIN_ZOOM } from '../defaults'
+import { MIN_ZOOM, MAX_ITEMS } from '../defaults'
 
 import { useSelector, useDispatch, batch } from 'react-redux'
 import {
@@ -66,7 +67,6 @@ const Search = () => {
   const selectedCollectionRef = useRef(_collectionSelected)
   const showCloudSliderRef = useRef(_showCloudSlider)
   const viewModeRef = useRef(_viewMode)
-
   const resultFootprintsRef = useRef()
   const clickedFootprintHighlightRef = useRef()
   const clickedFootprintImageLayerRef = useRef()
@@ -129,6 +129,7 @@ const Search = () => {
       const northEast = L.latLng(90, 180)
       const bounds = L.latLngBounds(southWest, northEast)
       map.setMaxBounds(bounds)
+
       map.on('drag', function () {
         map.panInsideBounds(bounds, { animate: false })
       })
@@ -201,10 +202,8 @@ const Search = () => {
     // disable click function in mosaic view
     if (e.originalEvent.detail === 2 || viewModeRef.current === 'mosaic') return
 
-    clickedFootprintHighlightRef.current.clearLayers()
-    clickedFootprintImageLayerRef.current.clearLayers()
-
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
+
     const intersectingFeatures = []
 
     if (_searchResults !== null) {
@@ -240,7 +239,7 @@ const Search = () => {
   }
 
   // clears search results and empties out all the layers on the map
-  function clearResults() {
+  function clearResultsFromMap() {
     // show loading spinner, clear previous results
     batch(() => {
       dispatch(setSearchResults(null))
@@ -248,11 +247,11 @@ const Search = () => {
     })
 
     // remove clicked footprint highlight
-    if (clickedFootprintHighlightRef)
+    if (clickedFootprintHighlightRef.current)
       clickedFootprintHighlightRef.current.clearLayers()
 
     // remove image layer
-    if (clickedFootprintImageLayerRef)
+    if (clickedFootprintImageLayerRef.current)
       clickedFootprintImageLayerRef.current.clearLayers()
 
     // remove existing footprints from map
@@ -267,7 +266,7 @@ const Search = () => {
   // function called when search is initiated
   function searchAPI() {
     // clear previous results from map
-    clearResults()
+    clearResultsFromMap()
 
     // if the zoom level is too high in mosaic view, abort search
     // otherwise, move to the mosaic search
@@ -298,7 +297,7 @@ const Search = () => {
     const combinedDateRange = convertDateTimeForAPI(dateTimeRef.current, true)
 
     // get viewport bounds and setup bbox parameter
-    const bbox = setupBbox(map, true)
+    const bbox = setupCommaSeparatedBbox(map)
 
     let cloudCover = ''
     if (showCloudSliderRef.current)
@@ -309,7 +308,7 @@ const Search = () => {
       `${cloudCover}`,
       `datetime=${combinedDateRange}`,
       `collections=${selectedCollectionRef.current}`,
-      'limit=100'
+      'limit=200'
     ].join('&')
 
     // set search parameter state
@@ -378,18 +377,16 @@ const Search = () => {
   // function to remove old image layer and add new Tiler image layer to map
   function addMosaic() {
     // clear previous results from map
-    clearResults()
+    clearResultsFromMap()
 
     // show loading spinner
     dispatch(setSearchLoading(true))
-
-    // const tilerParams = constructTilerParams(_collectionSelected)
 
     // build date input
     const datetime = convertDateTimeForAPI(dateTimeRef.current)
 
     // get viewport bounds and setup bbox parameter
-    const bbox = setupBbox(map)
+    const bbox = setupArrayBbox(map)
     const mosaicBounds = setupBounds(bbox)
 
     const requestOptions = {
@@ -403,7 +400,7 @@ const Search = () => {
         collections: [selectedCollectionRef.current],
         datetime,
         bbox,
-        max_items: 100,
+        max_items: MAX_ITEMS,
         query: { 'eo:cloud_cover': { gte: 0, lte: _cloudCover } }
       })
     }

@@ -15,9 +15,6 @@ export default function convertDateTimeForAPI(dateTimeRef, urlEscaped) {
   const fromDate = convertDate(dateTimeRef[0])
   const toDate = convertDate(dateTimeRef[1])
 
-  if (urlEscaped) {
-    return `${fromDate}%2F${toDate}`
-  } else {
-    return `${fromDate}/${toDate}`
-  }
+  const datetime = `${fromDate}/${toDate}`
+  return urlEscaped ? encodeURIComponent(datetime) : datetime
 }

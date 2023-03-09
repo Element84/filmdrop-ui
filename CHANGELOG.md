@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Add mosaic view mode if REACT_APP_MOSAIC_TILER_URL (new) is defined
+- Env variable REACT_APP_MOSAIC_MAX_ITEMS
 
 ### Changed
 
