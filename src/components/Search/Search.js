@@ -404,7 +404,7 @@ const Search = () => {
         datetime,
         bbox,
         max_items: 100,
-        'eo:cloud_cover': { gte: 0, lte: _cloudCover }
+        query: { 'eo:cloud_cover': { gte: 0, lte: _cloudCover } }
       })
     }
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
