@@ -107,6 +107,10 @@
         "remark-lint-emphasis-marker",
         "*"
       ],
+      [
+        "remark-lint-no-duplicate-headings",
+        false
+      ],
       "remark-lint-hard-break-spaces",
       "remark-lint-blockquote-indentation",
       "remark-lint-no-consecutive-blank-lines",

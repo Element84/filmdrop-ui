@@ -3,6 +3,8 @@ import './Search.css'
 import {
   envTilerURL,
   constructTilerParams,
+  constructMosaicTilerParams,
+  constructAssetsParam,
   envMosaicTilerURL
 } from './envVarSetup'
 import {
@@ -397,7 +399,7 @@ const Search = () => {
       },
       body: JSON.stringify({
         stac_api_root: process.env.REACT_APP_STAC_API_URL,
-        asset_name: 'visual', // TODO: use first entry in assets config
+        asset_name: constructAssetsParam(selectedCollectionRef.current),
         collections: [selectedCollectionRef.current],
         datetime,
         bbox,
@@ -408,10 +410,15 @@ const Search = () => {
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
       .then((r) => r.json())
       .then((body) => {
-        const tileHref =
-          body?.links?.find((el) => el.rel === 'tiles').href + '.png'
-        if (tileHref) {
-          L.tileLayer(tileHref, {
+        const imgFormat = 'png'
+        const baseTileLayerHref = body?.links?.find(
+          (el) => el.rel === 'tiles'
+        )?.href
+        const tilerParams = constructMosaicTilerParams(_collectionSelected)
+        const tileLayerHref = `${baseTileLayerHref}.${imgFormat}?${tilerParams}`
+
+        if (tileLayerHref) {
+          L.tileLayer(tileLayerHref, {
             tileSize: 256,
             bounds: mosaicBounds,
             pane: 'imagery'
