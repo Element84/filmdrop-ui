@@ -7,15 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v0.4.0 - TBD
 
-### Added
-
-- Add mosaic view mode if REACT_APP_MOSAIC_TILER_URL (new) is defined
-- Env variable REACT_APP_MOSAIC_MAX_ITEMS
-
 ### Changed
 
 - Env variable REACT_APP_TILER_PARAMS key `asset_bidx` changed to `bidx`. The format is
   now just a comma-separated list of indexes (e.g., `1,2,3`) rather than of the form `asset-name|1,2,3`
+
+### Added
+
+- Add mosaic view mode if REACT_APP_MOSAIC_TILER_URL (new) is defined
+- Env variable REACT_APP_MOSAIC_MAX_ITEMS
+- `mosaic_asset` and `mosaic_color_formula` tiler parameters
+
+## Fixed
+
+- Single-file, multi-band mosaic compositing (e.g., NAIP) now works
 
 ## v0.3.0 - 2023-03-06
 
