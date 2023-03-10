@@ -4,7 +4,7 @@ import {
   envTilerURL,
   constructTilerParams,
   constructMosaicTilerParams,
-  constructMosaicAssetParam,
+  constructMosaicAssetVal,
   envMosaicTilerURL
 } from './envVarSetup'
 import {
@@ -399,7 +399,7 @@ const Search = () => {
 
     const createMosaicBody = {
       stac_api_root: process.env.REACT_APP_STAC_API_URL,
-      asset_name: constructMosaicAssetParam(selectedCollectionRef.current),
+      asset_name: constructMosaicAssetVal(selectedCollectionRef.current),
       collections: [selectedCollectionRef.current],
       datetime,
       bbox,
