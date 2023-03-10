@@ -52,10 +52,7 @@ const getTilerParams = () => {
   return {}
 }
 
-export const constructAssetsParam = (selectedCollection, tilerParams) => {
-  if (!tilerParams) {
-    tilerParams = getTilerParams()
-  }
+const constructAssetsParam = (selectedCollection, tilerParams) => {
   const assets = tilerParams[selectedCollection]?.assets || []
   if (!assets) {
     console.log(`Assets not defined for ${selectedCollection}`)
@@ -65,4 +62,14 @@ export const constructAssetsParam = (selectedCollection, tilerParams) => {
   // one asset specified
   const assetsStr = assets.join('&assets=')
   return assetsStr
+}
+
+export const constructMosaicAssetParam = (selectedCollection) => {
+  const assets = getTilerParams()[selectedCollection]?.assets || []
+  if (!assets) {
+    console.log(`Assets not defined for ${selectedCollection}`)
+    return null
+  } else {
+    return assets[0]
+  }
 }

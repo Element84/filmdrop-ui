@@ -4,7 +4,7 @@ import {
   envTilerURL,
   constructTilerParams,
   constructMosaicTilerParams,
-  constructAssetsParam,
+  constructMosaicAssetParam,
   envMosaicTilerURL
 } from './envVarSetup'
 import {
@@ -299,23 +299,29 @@ const Search = () => {
     // get viewport bounds and setup bbox parameter
     const bbox = setupCommaSeparatedBbox(map)
 
-    let cloudCover = ''
+    const searchParams = new Map([
+      ['bbox', bbox],
+      ['datetime', combinedDateRange],
+      ['collections', selectedCollectionRef.current],
+      ['limit', 200]
+    ])
+
     if (showCloudSliderRef.current)
-      cloudCover = `query=%7B"eo%3Acloud_cover"%3A%7B"gte"%3A0,"lte"%3A${_cloudCover}%7D%7D`
+      searchParams.set(
+        'query',
+        encodeURIComponent(JSON.stringify(getQueryVal()))
+      )
 
-    const searchParametersString = [
-      `bbox=${bbox}`,
-      `${cloudCover}`,
-      `datetime=${combinedDateRange}`,
-      `collections=${selectedCollectionRef.current}`,
-      'limit=200'
-    ].join('&')
+    const searchParamsStr = [...searchParams]
+      .reduce((obj, x) => {
+        obj.push(x.join('='))
+        return obj
+      }, [])
+      .join('&')
 
-    // set search parameter state
-    dispatch(setSearchParameters(searchParametersString))
+    dispatch(setSearchParameters(searchParamsStr))
 
-    // build search URL
-    const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParametersString}`
+    const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParamsStr}`
 
     // fetch search results for parameters
     fetch(searchURL, {
@@ -344,7 +350,7 @@ const Search = () => {
 
     clickedFootprintImageLayerRef.current.clearLayers()
     const featureURL = feature.links[0].href
-    const tilerParams = constructTilerParams(_collectionSelected)
+    const tilerParams = constructTilerParams(selectedCollectionRef.current)
 
     fetch(featureURL, {
       method: 'GET'
@@ -374,6 +380,8 @@ const Search = () => {
       })
   }
 
+  const getQueryVal = () => ({ 'eo:cloud_cover': { gte: 0, lte: _cloudCover } })
+
   // function to remove old image layer and add new Tiler image layer to map
   function addMosaic() {
     // clear previous results from map
@@ -389,20 +397,23 @@ const Search = () => {
     const bbox = setupArrayBbox(map)
     const mosaicBounds = setupBounds(bbox)
 
+    const createMosaicBody = {
+      stac_api_root: process.env.REACT_APP_STAC_API_URL,
+      asset_name: constructMosaicAssetParam(selectedCollectionRef.current),
+      collections: [selectedCollectionRef.current],
+      datetime,
+      bbox,
+      max_items: MAX_ITEMS
+    }
+
+    if (showCloudSliderRef.current) createMosaicBody.query = getQueryVal()
+
     const requestOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/vnd.titiler.stac-api-query+json'
       },
-      body: JSON.stringify({
-        stac_api_root: process.env.REACT_APP_STAC_API_URL,
-        asset_name: constructAssetsParam(selectedCollectionRef.current),
-        collections: [selectedCollectionRef.current],
-        datetime,
-        bbox,
-        max_items: MAX_ITEMS,
-        query: { 'eo:cloud_cover': { gte: 0, lte: _cloudCover } }
-      })
+      body: JSON.stringify(createMosaicBody)
     }
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
       .then((r) => r.json())
@@ -411,7 +422,9 @@ const Search = () => {
         const baseTileLayerHref = body?.links?.find(
           (el) => el.rel === 'tiles'
         )?.href
-        const tilerParams = constructMosaicTilerParams(_collectionSelected)
+        const tilerParams = constructMosaicTilerParams(
+          selectedCollectionRef.current
+        )
         const tileLayerHref = `${baseTileLayerHref}.${imgFormat}?${tilerParams}`
 
         if (tileLayerHref) {
