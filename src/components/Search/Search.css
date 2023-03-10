@@ -70,6 +70,11 @@ span.error-true {
   margin-bottom: 4px;
 }
 
+.react-datetimerange-picker__range-divider {
+  position: relative;
+  top: -1px;
+}
+
 .react-datetimerange-picker__button:enabled:hover
   .react-datetimerange-picker__button__icon,
 .react-datetimerange-picker__button:enabled:focus
