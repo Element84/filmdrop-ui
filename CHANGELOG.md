@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add mosaic view mode if REACT_APP_MOSAIC_TILER_URL (new) is defined
 - Env variable REACT_APP_MOSAIC_MAX_ITEMS
 - `mosaic_asset` and `mosaic_color_formula` tiler parameters
+- Env variable REACT_APP_API_MAX_ITEMS
 
 ## Fixed
 
