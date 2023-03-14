@@ -299,7 +299,7 @@ const Search = () => {
   })
 
   const getPolarizationQueryVal = () => ({
-    'sar:polarizations': { eq: ['VV', 'VH'] }
+    'sar:polarizations': { in: ['VV', 'VH'] }
   })
 
   async function fetchAPIitems() {
