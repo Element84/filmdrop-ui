@@ -49,6 +49,9 @@ const Search = () => {
   const _currentPopupResult = useSelector(
     (state) => state.mainSlice.currentPopupResult
   )
+  const _sarPolarizations = useSelector(
+    (state) => state.mainSlice.sarPolarizations
+  )
   const tilerURL = envTilerURL
   const mosaicTilerURL = envMosaicTilerURL
 
@@ -177,8 +180,9 @@ const Search = () => {
     viewModeRef.current = _viewMode
     if (map && Object.keys(map).length > 0) {
       currentImageClickedRef.current = false
-      if (clickedFootprintsHighlightLayer)
+      if (clickedFootprintsHighlightLayer) {
         clickedFootprintsHighlightLayer.clearLayers()
+      }
       processSearch()
     }
   }, [
@@ -220,8 +224,9 @@ const Search = () => {
     if (!currentImageClickBoundsRef.current) {
       currentImageClickBoundsRef.current = clickBounds
     }
-    if (clickedFootprintHighlightRef)
+    if (clickedFootprintHighlightRef) {
       clickedFootprintHighlightRef.current.clearLayers()
+    }
     const intersectingFeatures = []
 
     if (_searchResults !== null) {
@@ -277,17 +282,25 @@ const Search = () => {
     // if user does not click on the same image, clear layers
     if (!currentImageClickedRef.current) {
       // only remove layers if the user clicked on a different footprint
-      if (clickedFootprintImageLayerRef.current)
+      if (clickedFootprintImageLayerRef.current) {
         clickedFootprintImageLayerRef.current.clearLayers()
-      if (clickedFootprintHighlightRef.current)
+      }
+      if (clickedFootprintHighlightRef.current) {
         clickedFootprintHighlightRef.current.clearLayers()
+      }
     }
 
     // remove existing footprints from map
     resultFootprintsRef.current.clearLayers()
   }
 
-  const getQueryVal = () => ({ 'eo:cloud_cover': { gte: 0, lte: _cloudCover } })
+  const getCloudCoverQueryVal = () => ({
+    'eo:cloud_cover': { gte: 0, lte: _cloudCover }
+  })
+
+  const getPolarizationQueryVal = () => ({
+    'sar:polarizations': { eq: ['VV', 'VH'] }
+  })
 
   async function fetchAPIitems() {
     // build datetime input
@@ -303,11 +316,24 @@ const Search = () => {
       ['limit', API_MAX_ITEMS]
     ])
 
-    if (showCloudSliderRef.current)
+    if (showCloudSliderRef.current) {
       searchParams.set(
         'query',
-        encodeURIComponent(JSON.stringify(getQueryVal()))
+        encodeURIComponent(JSON.stringify(getCloudCoverQueryVal()))
       )
+    }
+    if (_sarPolarizations) {
+      if (searchParams.has('query')) {
+        searchParams
+          .get('query')
+          .push(encodeURIComponent(JSON.stringify(getPolarizationQueryVal())))
+      } else {
+        searchParams.set(
+          'query',
+          encodeURIComponent(JSON.stringify(getPolarizationQueryVal()))
+        )
+      }
+    }
 
     const searchParamsStr = [...searchParams]
       .reduce((obj, x) => {
@@ -322,8 +348,7 @@ const Search = () => {
 
     const response = await fetch(searchURL)
     if (!response.ok) {
-      const message = `An error has occurred: ${response.status}`
-      throw new Error(message)
+      throw new Error(`An error has occurred: ${response.status}`)
     }
     const items = await response.json()
     return items
@@ -437,7 +462,9 @@ const Search = () => {
       max_items: MOSAIC_MAX_ITEMS
     }
 
-    if (showCloudSliderRef.current) createMosaicBody.query = getQueryVal()
+    if (showCloudSliderRef.current) {
+      createMosaicBody.query = getCloudCoverQueryVal()
+    }
 
     const requestOptions = {
       method: 'POST',

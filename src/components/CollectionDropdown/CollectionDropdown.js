@@ -12,7 +12,10 @@ import './CollectionDropdown.css'
 // redux imports
 import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setSelectedCollection } from '../../redux/slices/mainSlice'
+import {
+  setSarPolarizations,
+  setSelectedCollection
+} from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
   const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
@@ -35,6 +38,19 @@ const Dropdown = ({ error }) => {
   }, [API_ENDPOINT])
 
   useEffect(() => {
+    // setup sar:polarizations query parameter, if available
+    fetch(`${API_ENDPOINT}/collections/${value}/queryables`)
+      .then((response) => response.json())
+      .then((actualData) => {
+        const supportsSarPolarizations =
+          !!actualData?.properties['sar:polarizations']
+        dispatch(setSarPolarizations(supportsSarPolarizations))
+      })
+      .catch((err) => {
+        dispatch(setSarPolarizations(false))
+        console.log('Fetch Error: ', err.message)
+      })
+    // update redux with updated collection
     dispatch(setSelectedCollection(value))
     // eslint-disable-next-line
   }, [value])
