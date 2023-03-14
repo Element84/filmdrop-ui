@@ -8,13 +8,14 @@ import {
   envMosaicTilerURL
 } from './envVarSetup'
 import {
-  convertDateTimeForAPI,
+  convertDate,
+  convertDateForURL,
   debounce,
   setupArrayBbox,
   setupCommaSeparatedBbox,
   setupBounds
 } from '../../utils'
-import { MIN_ZOOM, MAX_ITEMS } from '../defaults'
+import { MIN_ZOOM, MOSAIC_MAX_ITEMS, API_MAX_ITEMS } from '../defaults'
 
 import { useSelector, useDispatch, batch } from 'react-redux'
 import {
@@ -61,6 +62,8 @@ const Search = () => {
   const [dateTimeValue, setDateTimeValue] = useState([twoWeeksAgo, new Date()])
   const [collectionError, setCollectionError] = useState(false)
   const [zoomLevelValue, setZoomLevelValue] = useState(0)
+  const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
+    useState()
 
   const dateTimeRef = useRef(dateTimeValue)
   const zoomLevelRef = useRef(0)
@@ -70,6 +73,8 @@ const Search = () => {
   const resultFootprintsRef = useRef()
   const clickedFootprintHighlightRef = useRef()
   const clickedFootprintImageLayerRef = useRef()
+  const currentImageClickBoundsRef = useRef()
+  const currentImageClickedRef = useRef(false)
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -112,6 +117,7 @@ const Search = () => {
       clickedFootprintsHighlightInit.addTo(map)
       clickedFootprintsHighlightInit.id = 'clickedFootprintHighlight'
       clickedFootprintHighlightRef.current = clickedFootprintsHighlightInit
+      setClickedFootprintsHighlightLayer(clickedFootprintsHighlightInit)
 
       // set up layerGroup for image layer and add to map
       const clickedFootprintImageLayerInit = new L.FeatureGroup()
@@ -154,6 +160,7 @@ const Search = () => {
   // when zoom level changes, set in global store to hide/show zoom notice
   // and perform search if within zoom limits
   useEffect(() => {
+    viewModeRef.current = _viewMode
     if (zoomLevelValue >= MIN_ZOOM || _viewMode === 'scene') {
       dispatch(setShowZoomNotice(false))
     } else {
@@ -168,7 +175,12 @@ const Search = () => {
     selectedCollectionRef.current = _collectionSelected
     showCloudSliderRef.current = _showCloudSlider
     viewModeRef.current = _viewMode
-    if (map && Object.keys(map).length > 0) processSearch()
+    if (map && Object.keys(map).length > 0) {
+      currentImageClickedRef.current = false
+      if (clickedFootprintsHighlightLayer)
+        clickedFootprintsHighlightLayer.clearLayers()
+      processSearch()
+    }
   }, [
     dateTimeValue,
     _cloudCover,
@@ -204,12 +216,28 @@ const Search = () => {
 
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
+    // set value to initial click
+    if (!currentImageClickBoundsRef.current) {
+      currentImageClickBoundsRef.current = clickBounds
+    }
+    if (clickedFootprintHighlightRef)
+      clickedFootprintHighlightRef.current.clearLayers()
     const intersectingFeatures = []
 
     if (_searchResults !== null) {
       for (const f in _searchResults.features) {
         const feature = _searchResults.features[f]
         const featureBounds = setupBounds(feature.bbox)
+
+        // preserve current image if clicking on the same image
+        if (clickBounds.intersects(currentImageClickBoundsRef.current)) {
+          currentImageClickedRef.current = true
+        } else {
+          currentImageClickedRef.current = false
+          currentImageClickBoundsRef.current = clickBounds
+          if (clickedFootprintsHighlightLayer)
+            clickedFootprintsHighlightLayer.clearLayers()
+        }
 
         if (featureBounds && clickBounds.intersects(featureBounds)) {
           intersectingFeatures.push(feature)
@@ -246,18 +274,59 @@ const Search = () => {
       dispatch(setClickResults([]))
     })
 
-    // remove clicked footprint highlight
-    if (clickedFootprintHighlightRef.current)
-      clickedFootprintHighlightRef.current.clearLayers()
-
-    // remove image layer
-    if (clickedFootprintImageLayerRef.current)
-      clickedFootprintImageLayerRef.current.clearLayers()
+    // if user does not click on the same image, clear layers
+    if (!currentImageClickedRef.current) {
+      // only remove layers if the user clicked on a different footprint
+      if (clickedFootprintImageLayerRef.current)
+        clickedFootprintImageLayerRef.current.clearLayers()
+      if (clickedFootprintHighlightRef.current)
+        clickedFootprintHighlightRef.current.clearLayers()
+    }
 
     // remove existing footprints from map
-    resultFootprintsRef.current.eachLayer(function (layer) {
-      resultFootprintsRef.current.removeLayer(layer)
-    })
+    resultFootprintsRef.current.clearLayers()
+  }
+
+  const getQueryVal = () => ({ 'eo:cloud_cover': { gte: 0, lte: _cloudCover } })
+
+  async function fetchAPIitems() {
+    // build datetime input
+    const combinedDateRange = convertDateForURL(dateTimeRef.current)
+
+    // get viewport bounds and setup bbox parameter
+    const bbox = setupCommaSeparatedBbox(map)
+
+    const searchParams = new Map([
+      ['bbox', bbox],
+      ['datetime', combinedDateRange],
+      ['collections', selectedCollectionRef.current],
+      ['limit', API_MAX_ITEMS]
+    ])
+
+    if (showCloudSliderRef.current)
+      searchParams.set(
+        'query',
+        encodeURIComponent(JSON.stringify(getQueryVal()))
+      )
+
+    const searchParamsStr = [...searchParams]
+      .reduce((obj, x) => {
+        obj.push(x.join('='))
+        return obj
+      }, [])
+      .join('&')
+
+    dispatch(setSearchParameters(searchParamsStr))
+
+    const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParamsStr}`
+
+    const response = await fetch(searchURL)
+    if (!response.ok) {
+      const message = `An error has occurred: ${response.status}`
+      throw new Error(message)
+    }
+    const items = await response.json()
+    return items
   }
 
   // search throttle set to 1500ms
@@ -293,57 +362,21 @@ const Search = () => {
 
     dispatch(setSearchLoading(true))
 
-    // build datetime input
-    const combinedDateRange = convertDateTimeForAPI(dateTimeRef.current, true)
-
-    // get viewport bounds and setup bbox parameter
-    const bbox = setupCommaSeparatedBbox(map)
-
-    const searchParams = new Map([
-      ['bbox', bbox],
-      ['datetime', combinedDateRange],
-      ['collections', selectedCollectionRef.current],
-      ['limit', 200]
-    ])
-
-    if (showCloudSliderRef.current)
-      searchParams.set(
-        'query',
-        encodeURIComponent(JSON.stringify(getQueryVal()))
-      )
-
-    const searchParamsStr = [...searchParams]
-      .reduce((obj, x) => {
-        obj.push(x.join('='))
-        return obj
-      }, [])
-      .join('&')
-
-    dispatch(setSearchParameters(searchParamsStr))
-
-    const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParamsStr}`
-
     // fetch search results for parameters
-    fetch(searchURL, {
-      method: 'GET'
+    fetchAPIitems().then((response) => {
+      // set search results in store for use in other components
+      dispatch(setSearchResults(response))
+
+      // remove loading spinner
+      dispatch(setSearchLoading(false))
+
+      // add new footprints to map
+      const resultFootprintsFound = L.geoJSON(response, {})
+      resultFootprintsFound.addTo(resultFootprintsRef.current)
     })
-      .then(function (response) {
-        return response.json()
-      })
-      .then(function (json) {
-        // set search results in store for use in other components
-        dispatch(setSearchResults(json))
-
-        // remove loading spinner
-        dispatch(setSearchLoading(false))
-
-        // add new footprints to map
-        const resultFootprintsFound = L.geoJSON(json, {})
-        resultFootprintsFound.addTo(resultFootprintsRef.current)
-      })
   }
 
-  // function to remove old image layer and add new Tiler image layer to map
+  // remove old image layer and add new Tiler image layer to map
   function addImageClicked(feature) {
     // show loading spinner
     dispatch(setSearchLoading(true))
@@ -362,7 +395,7 @@ const Search = () => {
         const tileBounds = setupBounds(json.bbox)
 
         L.tileLayer(
-          `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}${tilerParams}`,
+          `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
           {
             tileSize: 256,
             bounds: tileBounds,
@@ -380,9 +413,7 @@ const Search = () => {
       })
   }
 
-  const getQueryVal = () => ({ 'eo:cloud_cover': { gte: 0, lte: _cloudCover } })
-
-  // function to remove old image layer and add new Tiler image layer to map
+  // add mosaic items to map
   function addMosaic() {
     // clear previous results from map
     clearResultsFromMap()
@@ -391,7 +422,7 @@ const Search = () => {
     dispatch(setSearchLoading(true))
 
     // build date input
-    const datetime = convertDateTimeForAPI(dateTimeRef.current)
+    const datetime = convertDate(dateTimeRef.current)
 
     // get viewport bounds and setup bbox parameter
     const bbox = setupArrayBbox(map)
@@ -403,7 +434,7 @@ const Search = () => {
       collections: [selectedCollectionRef.current],
       datetime,
       bbox,
-      max_items: MAX_ITEMS
+      max_items: MOSAIC_MAX_ITEMS
     }
 
     if (showCloudSliderRef.current) createMosaicBody.query = getQueryVal()
@@ -443,6 +474,10 @@ const Search = () => {
             })
         }
       })
+    // fetch items from API for results notice
+    fetchAPIitems().then((response) => {
+      dispatch(setSearchResults(response))
+    })
   }
 
   return (
