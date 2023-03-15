@@ -33,7 +33,7 @@ const PopupResult = (props) => {
 
   const cloudCover = props.result?.properties['eo:cloud_cover']
   const polarizations = props.result?.properties['sar:polarizations']
-  console.log(props.result)
+
   return (
     <div className="popupResult">
       {props.result ? (
