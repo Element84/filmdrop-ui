@@ -24,7 +24,7 @@ const getMosaicTilerParams = () => {
 // construct assets params from env variables for scene and mosaic
 const constructAssetsParam = (collection, tilerParams) => {
   const assets = tilerParams[collection]?.assets || []
-  if (!assets) {
+  if (!assets || assets.length < 1) {
     console.log(`Assets not defined for ${collection}`)
     return [null, '']
   }
