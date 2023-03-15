@@ -21,6 +21,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  max-height: 95vh;
+  overflow: auto;
 }
 
 .launchModalContent {

@@ -32,6 +32,7 @@ const PopupResult = (props) => {
   )?.href
 
   const cloudCover = props.result?.properties['eo:cloud_cover']
+  const polarizations = props.result?.properties['sar:polarizations']
 
   return (
     <div className="popupResult">
@@ -55,16 +56,20 @@ const PopupResult = (props) => {
               <label>Title: </label>
               <span>{props.result.id}</span>
             </div>
-            <div
-              className={cloudCover ? 'detailRow' : 'detailRow finalDetailRow'}
-            >
+            <div className="detailRow">
               <label>Collection Date: </label>
               <span>{props.result.properties.datetime}</span>
             </div>
             {cloudCover ? (
-              <div className="detailRow finalDetailRow">
+              <div className="detailRow">
                 <label>Cloud Cover: </label>
                 <span>{`${cloudCover?.toFixed(2)}%`}</span>
+              </div>
+            ) : null}
+            {polarizations ? (
+              <div className="detailRow">
+                <label>Polarizations: </label>
+                <span>{`${polarizations}`}</span>
               </div>
             ) : null}
           </div>

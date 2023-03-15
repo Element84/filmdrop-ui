@@ -37,6 +37,9 @@
 .detailRow {
   width: 340px;
   padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  line-height: 1.6;
 }
 
 .detailRow label {
@@ -46,9 +49,10 @@
 
 .detailRow span {
   font-size: 14px;
+  word-wrap: break-word;
 }
 
-.finalDetailRow {
+.detailRow:last-of-type {
   margin-bottom: 20px;
 }
 /* width */
