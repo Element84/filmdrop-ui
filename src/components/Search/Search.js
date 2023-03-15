@@ -418,23 +418,27 @@ const Search = () => {
       })
       .then(function (json) {
         const tileBounds = setupBounds(json.bbox)
-
-        L.tileLayer(
-          `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
-          {
-            tileSize: 256,
-            bounds: tileBounds,
-            pane: 'imagery'
-          }
-        )
-          .addTo(clickedFootprintImageLayerRef.current)
-          .on('load', function () {
-            // hide loading spinner
-            dispatch(setSearchLoading(false))
-          })
-          .on('tileerror', function () {
-            console.log('Tile Error')
-          })
+        if (tilerURL.length > 0) {
+          L.tileLayer(
+            `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
+            {
+              tileSize: 256,
+              bounds: tileBounds,
+              pane: 'imagery'
+            }
+          )
+            .addTo(clickedFootprintImageLayerRef.current)
+            .on('load', function () {
+              // hide loading spinner
+              dispatch(setSearchLoading(false))
+            })
+            .on('tileerror', function () {
+              console.log('Tile Error')
+            })
+        } else {
+          dispatch(setSearchLoading(false))
+          console.log('REACT_APP_TILER_URL is not set in env variables.')
+        }
       })
   }
 
