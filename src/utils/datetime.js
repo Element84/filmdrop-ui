@@ -20,9 +20,5 @@ export const convertDate = (dateTimeRef) => {
 }
 
 // date used for STAC API request for scene view
-export const convertDateForURL = (dateTimeRef) => {
-  const fromDate = convertDateTime(dateTimeRef[0])
-  const toDate = convertDateTime(dateTimeRef[1])
-
-  return encodeURIComponent(`${fromDate}/${toDate}`)
-}
+export const convertDateForURL = (dateTimeRef) =>
+  encodeURIComponent(convertDate(dateTimeRef))

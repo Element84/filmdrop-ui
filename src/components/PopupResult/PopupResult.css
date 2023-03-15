@@ -48,7 +48,7 @@
   font-size: 14px;
 }
 
-.finalDetailRow {
+.detailRow:last-of-type {
   margin-bottom: 20px;
 }
 /* width */

@@ -17,7 +17,8 @@ const initialState = {
   showZoomNotice: false,
   showLaunchModal: false,
   showLaunchImageModal: false,
-  viewMode: 'scene'
+  viewMode: 'scene',
+  sarPolarizations: false
 }
 
 // next, for every key in the initialState
@@ -72,6 +73,9 @@ export const mainSlice = createSlice({
     },
     setViewMode: (state, action) => {
       state.viewMode = action.payload
+    },
+    setSarPolarizations: (state, action) => {
+      state.sarPolarizations = action.payload
     }
   }
 })
@@ -93,5 +97,6 @@ export const { setShowZoomNotice } = mainSlice.actions
 export const { setShowLaunchModal } = mainSlice.actions
 export const { setShowLaunchImageModal } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
+export const { setSarPolarizations } = mainSlice.actions
 
 export default mainSlice.reducer
