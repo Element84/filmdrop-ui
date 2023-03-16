@@ -1,11 +1,11 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './Search.css'
 import {
-  envTilerURL,
-  constructTilerParams,
+  envSceneTilerURL,
+  constructSceneTilerParams,
+  envMosaicTilerURL,
   constructMosaicTilerParams,
-  constructMosaicAssetVal,
-  envMosaicTilerURL
+  constructMosaicAssetVal
 } from './envVarSetup'
 import {
   convertDate,
@@ -52,7 +52,7 @@ const Search = () => {
   const _sarPolarizations = useSelector(
     (state) => state.mainSlice.sarPolarizations
   )
-  const tilerURL = envTilerURL
+  const sceneTilerURL = envSceneTilerURL
   const mosaicTilerURL = envMosaicTilerURL
 
   // set up map state
@@ -408,7 +408,7 @@ const Search = () => {
 
     clickedFootprintImageLayerRef.current.clearLayers()
     const featureURL = feature.links[0].href
-    const tilerParams = constructTilerParams(selectedCollectionRef.current)
+    const tilerParams = constructSceneTilerParams(selectedCollectionRef.current)
 
     fetch(featureURL, {
       method: 'GET'
@@ -418,9 +418,9 @@ const Search = () => {
       })
       .then(function (json) {
         const tileBounds = setupBounds(json.bbox)
-        if (tilerURL.length > 0) {
+        if (sceneTilerURL) {
           L.tileLayer(
-            `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
+            `${sceneTilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
             {
               tileSize: 256,
               bounds: tileBounds,

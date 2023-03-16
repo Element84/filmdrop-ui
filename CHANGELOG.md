@@ -9,7 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Move mosaic-specific tiler parameters (`mosaic_asset` and `mosaic_color_formula`) into new env variable REACT_APP_MOSAIC_TILER_PARAMS
+- Move mosaic-specific tiler parameters (`mosaic_asset` and `mosaic_color_formula`) into REACT_APP_MOSAIC_TILER_PARAMS (new), and rename them to `assets` and `color_formula` to align with scene view tiler parameters.
+- Rename REACT_APP_TILER_URL to REACT_APP_SCENE_TILER_URL
+- Rename REACT_APP_TILER_PARAMS to REACT_APP_SCENE_TILER_PARAMS
 
 ### Added
 
