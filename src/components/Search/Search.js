@@ -312,9 +312,12 @@ const Search = () => {
     const searchParams = new Map([
       ['bbox', bbox],
       ['datetime', combinedDateRange],
-      ['collections', selectedCollectionRef.current],
       ['limit', API_MAX_ITEMS]
     ])
+
+    if (selectedCollectionRef.current) {
+      searchParams.set('collections', selectedCollectionRef.current)
+    }
 
     if (showCloudSliderRef.current) {
       searchParams.set(
@@ -368,7 +371,8 @@ const Search = () => {
       return
     } else if (
       zoomLevelRef.current >= MIN_ZOOM &&
-      viewModeRef.current === 'mosaic'
+      viewModeRef.current === 'mosaic' &&
+      selectedCollectionRef.current
     ) {
       addMosaic()
       return
