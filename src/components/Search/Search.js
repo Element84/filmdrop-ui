@@ -379,7 +379,7 @@ const Search = () => {
     }
 
     // if a valid collection is not selected, abort search
-    if (!_collectionSelected) {
+    if (!selectedCollectionRef.current) {
       setCollectionError(true)
       return
     } else {
@@ -387,7 +387,7 @@ const Search = () => {
     }
 
     // if the date time field is empty, abort search
-    if (!dateTimeValue) return
+    if (!dateTimeRef.current) return
 
     dispatch(setSearchLoading(true))
 
