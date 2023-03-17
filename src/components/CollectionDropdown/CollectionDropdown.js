@@ -23,17 +23,20 @@ const Dropdown = ({ error }) => {
 
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
-  const [value, setValue] = useState(DEFAULT_COLLECTION)
+  const [value, setValue] = useState()
   const [collectionData, setCollectionData] = useState(null)
 
   useEffect(() => {
     fetch(`${API_ENDPOINT}/collections`)
       .then((response) => response.json())
       .then((actualData) => {
-        setCollectionData(actualData)
+        const sortedData = actualData.collections.sort((a, b) =>
+          a.id > b.id ? 1 : b.id > a.id ? -1 : 0
+        )
+        setCollectionData(sortedData)
       })
       .catch((err) => {
-        console.log('CollectionDropdown.js Fetch Error: ', err.message)
+        console.log('Collections Fetch Error: ', err.message)
       })
   }, [API_ENDPOINT])
 
@@ -54,6 +57,23 @@ const Dropdown = ({ error }) => {
     dispatch(setSelectedCollection(value))
     // eslint-disable-next-line
   }, [value])
+
+  useEffect(() => {
+    // check if REACT_APP_DEFAULT_COLLECTION is available
+    if (collectionData) {
+      const defaultCollectionFound = !!collectionData.find(
+        (o) => o.id === DEFAULT_COLLECTION
+      )
+      if (!defaultCollectionFound) {
+        dispatch(setSelectedCollection(null))
+        console.log(
+          'Configuration Error: REACT_APP_DEFAULT_COLLECTION not found'
+        )
+      } else {
+        setValue(DEFAULT_COLLECTION)
+      }
+    }
+  }, [collectionData])
 
   const handleDropdownChange = (event) => {
     if (event) {
@@ -86,7 +106,7 @@ const Dropdown = ({ error }) => {
           >
             <option value="">Select One</option>
             {collectionData &&
-              collectionData.collections.map(({ id, title }) => (
+              collectionData.map(({ id, title }) => (
                 <option key={id} value={id}>
                   {title}
                 </option>
