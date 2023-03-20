@@ -1,62 +1,24 @@
 // retrieve tiler URLs from env variable
-export const envTilerURL = process.env.REACT_APP_TILER_URL || ''
+export const envSceneTilerURL = process.env.REACT_APP_SCENE_TILER_URL || ''
 export const envMosaicTilerURL = process.env.REACT_APP_MOSAIC_TILER_URL || ''
 
-// function to construct the Titiler tile query parameters from
-// REACT_APP_TILER_PARAMS env var
-export const constructTilerParams = (collection) => {
-  const params = []
+// reusable variables
+const envSceneTilerParams = 'REACT_APP_SCENE_TILER_PARAMS'
+const envMosaicTilerParams = 'REACT_APP_MOSAIC_TILER_PARAMS'
 
-  const tilerParams = getTilerParams()
-
-  const [asset, assetsParam] = constructAssetsParam(collection, tilerParams)
-
-  params.push(assetsParam)
-
-  const colorFormula = tilerParams[collection]?.color_formula
-  if (colorFormula) {
-    params.push(`color_formula=${colorFormula}`)
-  }
-
-  const bidx = tilerParams[collection]?.bidx
-  const assetBidx = asset && bidx ? `${asset}|${bidx}` : null
-  if (assetBidx) {
-    params.push(`asset_bidx=${assetBidx}`)
-  }
-
-  return params.join('&')
-}
-
-export const constructMosaicTilerParams = (collection) => {
-  // retrieve tiler parameters from env variable
-  const tilerParams = getTilerParams()
-
-  const params = []
-
-  const colorFormula = tilerParams[collection]?.mosaic_color_formula
-  if (colorFormula) {
-    params.push(`color_formula=${colorFormula}`)
-  }
-
-  const bidx = tilerParams[collection]?.bidx
-  if (bidx) {
-    params.push(`bidx=${bidx}`)
-  }
-
-  return params.join('&')
-}
-
-const getTilerParams = () => {
+// retrieve tiler params from env variables for scene and mosaic
+const getTilerParams = (configVariable) => {
   try {
-    return JSON.parse(process.env.REACT_APP_TILER_PARAMS)
+    return JSON.parse(process.env[configVariable])
   } catch (e) {
     console.log(`Error parsing tiler params: ${e.message}`)
   }
   return {}
 }
 
-const constructAssetsParam = (collection, tilerParams) => {
-  const assets = tilerParams[collection]?.assets || []
+// construct assets params from env variables for scene mode
+const constructSceneAssetsParam = (collection, tilerParams) => {
+  const assets = tilerParams[collection]?.assets || ''
   if (!assets) {
     console.log(`Assets not defined for ${collection}`)
     return [null, '']
@@ -67,12 +29,102 @@ const constructAssetsParam = (collection, tilerParams) => {
   return [assets[0], `assets=${assets.join('&assets=')}`]
 }
 
+// construct assets params from env variables for mosaic mode
 export const constructMosaicAssetVal = (collection) => {
-  const asset = getTilerParams()[collection]?.mosaic_asset || ''
+  const asset = getTilerParams(envMosaicTilerParams)[collection]?.assets || ''
   if (!asset) {
     console.log(`Assets not defined for ${collection}`)
     return null
   } else {
-    return asset
+    return asset.pop()
   }
+}
+
+// method to construct tiler parameter values for scene and mosaic
+const parameters = {
+  colorFormula: (tilerParams, collection) => {
+    const value = tilerParams[collection]?.color_formula
+    return value && `color_formula=${value}`
+  },
+  expression: (tilerParams, collection) => {
+    const value = tilerParams[collection]?.expression
+    return value && `expression=${value}`
+  },
+  rescale: (tilerParams, collection) => {
+    const value = tilerParams[collection]?.rescale
+    return value && `rescale=${value}`
+  },
+  colormapName: (tilerParams, collection) => {
+    const value = tilerParams[collection]?.colormap_name
+    return value && `colormap_name=${value}`
+  },
+  bidx: (tilerParams, collection, asset) => {
+    const value = tilerParams[collection]?.bidx
+    // for scene tiler
+    if (asset) {
+      const assetBidx = asset && value ? `${asset}|${value}` : null
+      return assetBidx && `asset_bidx=${assetBidx}`
+    } else {
+      return value && `bidx=${value}`
+    }
+  }
+}
+
+// function to construct the Titiler tile query parameters from
+// REACT_APP_SCENE_TILER_PARAMS env var
+export const constructSceneTilerParams = (collection) => {
+  // retrieve mosaic tiler parameters from env variable
+  const tilerParams = getTilerParams(envSceneTilerParams)
+
+  const params = []
+
+  const [asset, assetsParam] = constructSceneAssetsParam(
+    collection,
+    tilerParams
+  )
+
+  params.push(assetsParam)
+
+  const assetBidx = parameters.bidx(tilerParams, collection, asset)
+  if (assetBidx) params.push(assetBidx)
+
+  const colorFormula = parameters.colorFormula(tilerParams, collection)
+  if (colorFormula) params.push(colorFormula)
+
+  const expression = parameters.expression(tilerParams, collection)
+  if (expression) params.push(expression)
+
+  const rescale = parameters.rescale(tilerParams, collection)
+  if (rescale) params.push(rescale)
+
+  const colormapName = parameters.colormapName(tilerParams, collection)
+  if (colormapName) params.push(colormapName)
+
+  return params.join('&')
+}
+
+// function to construct the Titiler tile query parameters from
+// REACT_APP_MOSAIC_TILER_PARAMS env var
+export const constructMosaicTilerParams = (collection) => {
+  // retrieve mosaic tiler parameters from env variable
+  const tilerParams = getTilerParams(envMosaicTilerParams)
+
+  const params = []
+
+  const bidx = parameters.bidx(tilerParams, collection)
+  if (bidx) params.push(bidx)
+
+  const colorFormula = parameters.colorFormula(tilerParams, collection)
+  if (colorFormula) params.push(colorFormula)
+
+  const expression = parameters.expression(tilerParams, collection)
+  if (expression) params.push(expression)
+
+  const rescale = parameters.rescale(tilerParams, collection)
+  if (rescale) params.push(rescale)
+
+  const colormapName = parameters.colormapName(tilerParams, collection)
+  if (colormapName) params.push(colormapName)
+
+  return params.join('&')
 }

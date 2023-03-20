@@ -1,11 +1,11 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './Search.css'
 import {
-  envTilerURL,
-  constructTilerParams,
+  envSceneTilerURL,
+  constructSceneTilerParams,
+  envMosaicTilerURL,
   constructMosaicTilerParams,
-  constructMosaicAssetVal,
-  envMosaicTilerURL
+  constructMosaicAssetVal
 } from './envVarSetup'
 import {
   convertDate,
@@ -52,7 +52,7 @@ const Search = () => {
   const _sarPolarizations = useSelector(
     (state) => state.mainSlice.sarPolarizations
   )
-  const tilerURL = envTilerURL
+  const sceneTilerURL = envSceneTilerURL
   const mosaicTilerURL = envMosaicTilerURL
 
   // set up map state
@@ -412,7 +412,7 @@ const Search = () => {
 
     clickedFootprintImageLayerRef.current.clearLayers()
     const featureURL = feature.links[0].href
-    const tilerParams = constructTilerParams(selectedCollectionRef.current)
+    const tilerParams = constructSceneTilerParams(selectedCollectionRef.current)
 
     fetch(featureURL, {
       method: 'GET'
@@ -422,23 +422,27 @@ const Search = () => {
       })
       .then(function (json) {
         const tileBounds = setupBounds(json.bbox)
-
-        L.tileLayer(
-          `${tilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
-          {
-            tileSize: 256,
-            bounds: tileBounds,
-            pane: 'imagery'
-          }
-        )
-          .addTo(clickedFootprintImageLayerRef.current)
-          .on('load', function () {
-            // hide loading spinner
-            dispatch(setSearchLoading(false))
-          })
-          .on('tileerror', function () {
-            console.log('Tile Error')
-          })
+        if (sceneTilerURL) {
+          L.tileLayer(
+            `${sceneTilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
+            {
+              tileSize: 256,
+              bounds: tileBounds,
+              pane: 'imagery'
+            }
+          )
+            .addTo(clickedFootprintImageLayerRef.current)
+            .on('load', function () {
+              // hide loading spinner
+              dispatch(setSearchLoading(false))
+            })
+            .on('tileerror', function () {
+              console.log('Tile Error')
+            })
+        } else {
+          dispatch(setSearchLoading(false))
+          console.log('REACT_APP_SCENE_TILER_URL is not set in env variables.')
+        }
       })
   }
 

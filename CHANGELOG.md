@@ -5,6 +5,19 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.0.5.0 - TBD
+
+### Changed
+
+- Move mosaic-specific tiler parameters (`mosaic_asset` and `mosaic_color_formula`) into REACT_APP_MOSAIC_TILER_PARAMS (new), and rename them to `assets` and `color_formula` to align with scene view tiler parameters.
+- Rename REACT_APP_TILER_URL to REACT_APP_SCENE_TILER_URL
+- Rename REACT_APP_TILER_PARAMS to REACT_APP_SCENE_TILER_PARAMS
+
+### Added
+
+- Env variable REACT_APP_MOSAIC_TILER_PARAMS
+- `rescale`, `colormap_name`, and `expression` tiler parameters
+
 ## v0.4.0 - 2023-03-14
 
 ### Changed
