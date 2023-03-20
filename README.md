@@ -39,7 +39,7 @@ The file `.env.example` is included in this repository as a representative file.
 | REACT_APP_MIN_ZOOM_LEVEL      | Minimum zoom level for search results. If not set, the default zoom level will be 7.                                                                                                                                              | Optional |
 | REACT_APP_CF_TEMPLATE_URL     | CloudFormation Template URL used to create a new stack. If not set, the Launch Your Own button will not be visible.                                                                                                               | Optional |
 | REACT_APP_MOSAIC_TILER_URL    | URL for mosaic tiling. If not set, the View Mode selector will not be visible. The app requires the use of the [NASA IMPACT TiTiler fork](https://github.com/NASA-IMPACT/titiler) as it contains the mosaicjson endpoints needed. | Optional |
-| REACT_APP_MOSAIC_TILER_PARAMS | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, and `colormap_name` parameters. Example in [.env.example](.env.example)                                                              | Optional |
+| REACT_APP_MOSAIC_TILER_PARAMS | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [.env.example](.env.example)                                                | Optional |
 | REACT_APP_MOSAIC_MAX_ITEMS    | Maximum number of items in mosaic. If not set, the default max items will be 100.                                                                                                                                                 | Optional |
 
 ### Links

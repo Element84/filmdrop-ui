@@ -437,7 +437,7 @@ const Search = () => {
             })
         } else {
           dispatch(setSearchLoading(false))
-          console.log('REACT_APP_TILER_URL is not set in env variables.')
+          console.log('REACT_APP_SCENE_TILER_URL is not set in env variables.')
         }
       })
   }

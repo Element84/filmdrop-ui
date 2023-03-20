@@ -18,8 +18,8 @@ const getTilerParams = (configVariable) => {
 
 // construct assets params from env variables for scene mode
 const constructSceneAssetsParam = (collection, tilerParams) => {
-  const assets = tilerParams[collection]?.assets || []
-  if (!assets || assets.length < 1) {
+  const assets = tilerParams[collection]?.assets || ''
+  if (!assets) {
     console.log(`Assets not defined for ${collection}`)
     return [null, '']
   }
@@ -36,29 +36,29 @@ export const constructMosaicAssetVal = (collection) => {
     console.log(`Assets not defined for ${collection}`)
     return null
   } else {
-    return asset.toString()
+    return asset.pop()
   }
 }
 
 // method to construct tiler parameter values for scene and mosaic
 const parameters = {
-  colorFormula: function (tilerParams, collection) {
+  colorFormula: (tilerParams, collection) => {
     const value = tilerParams[collection]?.color_formula
     return value && `color_formula=${value}`
   },
-  expression: function (tilerParams, collection) {
+  expression: (tilerParams, collection) => {
     const value = tilerParams[collection]?.expression
     return value && `expression=${value}`
   },
-  rescale: function (tilerParams, collection) {
+  rescale: (tilerParams, collection) => {
     const value = tilerParams[collection]?.rescale
     return value && `rescale=${value}`
   },
-  colormap: function (tilerParams, collection) {
+  colormapName: (tilerParams, collection) => {
     const value = tilerParams[collection]?.colormap_name
     return value && `colormap_name=${value}`
   },
-  bidx: function (tilerParams, collection, asset) {
+  bidx: (tilerParams, collection, asset) => {
     const value = tilerParams[collection]?.bidx
     // for scene tiler
     if (asset) {
@@ -97,8 +97,8 @@ export const constructSceneTilerParams = (collection) => {
   const rescale = parameters.rescale(tilerParams, collection)
   if (rescale) params.push(rescale)
 
-  const colormap = parameters.colormap(tilerParams, collection)
-  if (colormap) params.push(colormap)
+  const colormapName = parameters.colormapName(tilerParams, collection)
+  if (colormapName) params.push(colormapName)
 
   return params.join('&')
 }
@@ -123,8 +123,8 @@ export const constructMosaicTilerParams = (collection) => {
   const rescale = parameters.rescale(tilerParams, collection)
   if (rescale) params.push(rescale)
 
-  const colormap = parameters.colormap(tilerParams, collection)
-  if (colormap) params.push(colormap)
+  const colormapName = parameters.colormapName(tilerParams, collection)
+  if (colormapName) params.push(colormapName)
 
   return params.join('&')
 }
