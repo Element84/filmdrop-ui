@@ -18,7 +18,9 @@ const initialState = {
   showLaunchModal: false,
   showLaunchImageModal: false,
   viewMode: 'scene',
-  sarPolarizations: false
+  sarPolarizations: false,
+  collectionTemporalData: null,
+  collectionSpatialData: null
 }
 
 // next, for every key in the initialState
@@ -31,9 +33,6 @@ export const mainSlice = createSlice({
   reducers: {
     setMap: (state, action) => {
       state.map = action.payload
-    },
-    setDateTime: (state, action) => {
-      state.dateTime = action.payload
     },
     setCloudCover: (state, action) => {
       state.cloudCover = action.payload
@@ -76,6 +75,12 @@ export const mainSlice = createSlice({
     },
     setSarPolarizations: (state, action) => {
       state.sarPolarizations = action.payload
+    },
+    setCollectionTemporalData: (state, action) => {
+      state.collectionTemporalData = action.payload
+    },
+    setCollectionSpatialData: (state, action) => {
+      state.collectionSpatialData = action.payload
     }
   }
 })
@@ -83,7 +88,6 @@ export const mainSlice = createSlice({
 // finally, add a new export for the
 // reducer/action info that you added above
 export const { setMap } = mainSlice.actions
-export const { setDateTime } = mainSlice.actions
 export const { setCloudCover } = mainSlice.actions
 export const { setShowCloudSlider } = mainSlice.actions
 export const { setSelectedCollection } = mainSlice.actions
@@ -98,5 +102,7 @@ export const { setShowLaunchModal } = mainSlice.actions
 export const { setShowLaunchImageModal } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
 export const { setSarPolarizations } = mainSlice.actions
+export const { setCollectionTemporalData } = mainSlice.actions
+export const { setCollectionSpatialData } = mainSlice.actions
 
 export default mainSlice.reducer

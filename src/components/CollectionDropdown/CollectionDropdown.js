@@ -14,7 +14,9 @@ import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
 import {
   setSarPolarizations,
-  setSelectedCollection
+  setSelectedCollection,
+  setCollectionTemporalData,
+  setCollectionSpatialData
 } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
@@ -74,6 +76,21 @@ const Dropdown = ({ error }) => {
       }
     }
   }, [collectionData])
+
+  useEffect(() => {
+    if (collectionData) {
+      const temporalData = collectionData?.find((e) => e.id === value).extent
+        .temporal.interval[0]
+      if (temporalData) {
+        dispatch(setCollectionTemporalData(temporalData))
+      }
+      const spatialData = collectionData?.find((e) => e.id === value).extent
+        .spatial.bbox[0]
+      if (spatialData) {
+        dispatch(setCollectionSpatialData(spatialData))
+      }
+    }
+  }, [value])
 
   const handleDropdownChange = (event) => {
     if (event) {
