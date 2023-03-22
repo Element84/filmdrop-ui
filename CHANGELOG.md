@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v0.6.0 - TBD
+
+### Changed
+
+- Move the viewport to include collection spatial bounds if it is outside those bounds
+- Set the date picker to the collection temporal date range if date picker is outside that range
+
 ## v0.5.0 - 2023-03-20
 
 ### Changed
