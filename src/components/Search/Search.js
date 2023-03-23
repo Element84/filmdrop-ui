@@ -90,7 +90,6 @@ const Search = () => {
   const currentImageClickBoundsRef = useRef()
   const currentImageClickedRef = useRef(false)
   const pickerMinDateRef = useRef()
-  const pickerMaxDateRef = useRef()
   const collectionStartDateRef = useRef()
   const collectionEndDateRef = useRef(new Date())
 
@@ -211,13 +210,12 @@ const Search = () => {
   useEffect(() => {
     if (_temporalData) {
       collectionStartDateRef.current = new Date(_temporalData[0])
-      if (_temporalData[1]) {
+      if (_temporalData.length >= 1 && _temporalData[1]) {
         collectionEndDateRef.current = new Date(_temporalData[1])
       } else {
         collectionEndDateRef.current = new Date()
       }
       pickerMinDateRef.current = collectionStartDateRef.current
-      pickerMaxDateRef.current = collectionEndDateRef.current
 
       if (datePickerValue) {
         if (
@@ -245,7 +243,7 @@ const Search = () => {
   // setup viewport based on collection spatial data
   useEffect(() => {
     // move viewport if current bbox is outside of spatial metadata
-    if (_spatialData) {
+    if (_spatialData && _spatialData.length >= 1) {
       const collectionBounds = setupBounds(_spatialData)
       const viewportBounds = setupBounds(setupArrayBbox(map))
       if (!collectionBounds.contains(viewportBounds)) {
@@ -586,15 +584,19 @@ const Search = () => {
       <div className="searchContainer datePicker">
         <label>
           Date Range{' '}
-          <a data-tooltip-id="dateRange-tooltip">
-            <InfoOutlinedIcon />
-          </a>
-          <Tooltip id="dateRange-tooltip">
-            <strong>Collection dates:</strong>
-            <br />
-            {new Date(collectionStartDateRef.current).toDateString()} -{' '}
-            {new Date(collectionEndDateRef.current).toDateString()}
-          </Tooltip>
+          {_temporalData && (
+            <>
+              <a data-tooltip-id="dateRange-tooltip">
+                <InfoOutlinedIcon />
+              </a>
+              <Tooltip id="dateRange-tooltip">
+                <strong>Collection dates:</strong>
+                <br />
+                {new Date(collectionStartDateRef.current).toDateString()} -{' '}
+                {new Date(collectionEndDateRef.current).toDateString()}
+              </Tooltip>
+            </>
+          )}
           {!datePickerRef.current && (
             <span className="error-true">
               <em>Required</em>
@@ -609,7 +611,6 @@ const Search = () => {
           disableClock={true}
           required={true}
           minDate={pickerMinDateRef.current}
-          maxDate={pickerMaxDateRef.current}
           onChange={setDatePickerValue}
           value={datePickerValue}
         ></DateTimeRangePicker>
