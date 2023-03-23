@@ -78,6 +78,10 @@ const Dropdown = ({ error }) => {
   }, [collectionData])
 
   useEffect(() => {
+    /**
+     * Only the first entry from the temporal and spatial properties are used
+     * despite there possibly being more ranges available in the collection
+     */
     if (collectionData) {
       const temporalData = getCollection(collectionData, collectionId).extent
         ?.temporal?.interval
