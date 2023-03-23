@@ -14,7 +14,9 @@ import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
 import {
   setSarPolarizations,
-  setSelectedCollection
+  setSelectedCollection,
+  setCollectionTemporalData,
+  setCollectionSpatialData
 } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
@@ -23,7 +25,7 @@ const Dropdown = ({ error }) => {
 
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
-  const [value, setValue] = useState()
+  const [collectionId, setCollectionId] = useState()
   const [collectionData, setCollectionData] = useState(null)
 
   useEffect(() => {
@@ -42,7 +44,7 @@ const Dropdown = ({ error }) => {
 
   useEffect(() => {
     // setup sar:polarizations query parameter, if available
-    fetch(`${API_ENDPOINT}/collections/${value}/queryables`)
+    fetch(`${API_ENDPOINT}/collections/${collectionId}/queryables`)
       .then((response) => response.json())
       .then((actualData) => {
         const supportsSarPolarizations =
@@ -54,9 +56,9 @@ const Dropdown = ({ error }) => {
         console.log('Fetch Error: ', err.message)
       })
     // update redux with updated collection
-    dispatch(setSelectedCollection(value))
+    dispatch(setSelectedCollection(collectionId))
     // eslint-disable-next-line
-  }, [value])
+  }, [collectionId])
 
   useEffect(() => {
     // check if REACT_APP_DEFAULT_COLLECTION is available
@@ -70,16 +72,39 @@ const Dropdown = ({ error }) => {
           'Configuration Error: REACT_APP_DEFAULT_COLLECTION not found in API'
         )
       } else {
-        setValue(DEFAULT_COLLECTION)
+        setCollectionId(DEFAULT_COLLECTION)
       }
     }
   }, [collectionData])
 
+  useEffect(() => {
+    /**
+     * Only the first entry from the temporal and spatial properties are used
+     * despite there possibly being more ranges available in the collection
+     */
+    if (collectionData) {
+      const temporalData = getCollection(collectionData, collectionId).extent
+        ?.temporal?.interval
+      if (temporalData && temporalData.length >= 1) {
+        dispatch(setCollectionTemporalData(temporalData[0]))
+      }
+      const spatialData = getCollection(collectionData, collectionId).extent
+        ?.spatial?.bbox
+      if (spatialData && spatialData.length >= 1) {
+        dispatch(setCollectionSpatialData(spatialData[0]))
+      }
+    }
+  }, [collectionId])
+
+  const getCollection = (collectionData, collectionId) => {
+    return collectionData?.find((e) => e.id === collectionId)
+  }
+
   const handleDropdownChange = (event) => {
     if (event) {
-      setValue(event.target.value)
+      setCollectionId(event.target.value)
     } else {
-      setValue('')
+      setCollectionId('')
     }
   }
 
@@ -97,7 +122,7 @@ const Dropdown = ({ error }) => {
         <Grid item xs>
           <NativeSelect
             id="collectionDropdown"
-            value={value}
+            value={collectionId}
             label="Collection"
             onChange={handleDropdownChange}
             sx={{

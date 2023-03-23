@@ -20,7 +20,6 @@ import { MIN_ZOOM, MOSAIC_MAX_ITEMS, API_MAX_ITEMS } from '../defaults'
 import { useSelector, useDispatch, batch } from 'react-redux'
 import {
   setSearchResults,
-  setDateTime,
   setClickResults,
   setSearchLoading,
   setSearchParameters,
@@ -29,6 +28,9 @@ import {
 
 import * as L from 'leaflet'
 import 'leaflet-draw'
+import 'react-tooltip/dist/react-tooltip.css'
+import { Tooltip } from 'react-tooltip'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
@@ -52,6 +54,12 @@ const Search = () => {
   const _sarPolarizations = useSelector(
     (state) => state.mainSlice.sarPolarizations
   )
+  const _temporalData = useSelector(
+    (state) => state.mainSlice.collectionTemporalData
+  )
+  const _spatialData = useSelector(
+    (state) => state.mainSlice.collectionSpatialData
+  )
   const sceneTilerURL = envSceneTilerURL
   const mosaicTilerURL = envMosaicTilerURL
 
@@ -62,13 +70,16 @@ const Search = () => {
   const twoWeeksAgo = new Date(Date.now() - 24 * 60 * 60 * 1000 * 14)
 
   // set up local state
-  const [dateTimeValue, setDateTimeValue] = useState([twoWeeksAgo, new Date()])
+  const [datePickerValue, setDatePickerValue] = useState([
+    twoWeeksAgo,
+    new Date()
+  ])
   const [collectionError, setCollectionError] = useState(false)
   const [zoomLevelValue, setZoomLevelValue] = useState(0)
   const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
     useState()
 
-  const dateTimeRef = useRef(dateTimeValue)
+  const datePickerRef = useRef(datePickerValue)
   const zoomLevelRef = useRef(0)
   const selectedCollectionRef = useRef(_collectionSelected)
   const showCloudSliderRef = useRef(_showCloudSlider)
@@ -78,6 +89,9 @@ const Search = () => {
   const clickedFootprintImageLayerRef = useRef()
   const currentImageClickBoundsRef = useRef()
   const currentImageClickedRef = useRef(false)
+  const pickerMinDateRef = useRef()
+  const collectionStartDateRef = useRef()
+  const collectionEndDateRef = useRef(new Date())
 
   // override leaflet draw tooltips
   // eslint-disable-next-line no-import-assign
@@ -173,8 +187,7 @@ const Search = () => {
 
   // when there are changes, update store and perform new search
   useEffect(() => {
-    dispatch(setDateTime(dateTimeValue))
-    dateTimeRef.current = dateTimeValue
+    datePickerRef.current = datePickerValue
     selectedCollectionRef.current = _collectionSelected
     showCloudSliderRef.current = _showCloudSlider
     viewModeRef.current = _viewMode
@@ -186,12 +199,58 @@ const Search = () => {
       processSearch()
     }
   }, [
-    dateTimeValue,
+    datePickerValue,
     _cloudCover,
     _collectionSelected,
     _showCloudSlider,
     _viewMode
   ])
+
+  // setup datepicker based on collection temporal data
+  useEffect(() => {
+    if (_temporalData) {
+      collectionStartDateRef.current = new Date(_temporalData[0])
+      if (_temporalData.length >= 1 && _temporalData[1]) {
+        collectionEndDateRef.current = new Date(_temporalData[1])
+      } else {
+        collectionEndDateRef.current = new Date()
+      }
+      pickerMinDateRef.current = collectionStartDateRef.current
+
+      if (datePickerValue) {
+        if (
+          // set picker if picker date range falls outside of collection date range
+          (datePickerValue[0] < collectionStartDateRef.current &&
+            datePickerValue[1] < collectionStartDateRef.current) ||
+          (datePickerValue[0] > collectionEndDateRef.current &&
+            datePickerValue[1] > collectionEndDateRef.current)
+        ) {
+          setDatePickerValue([
+            collectionStartDateRef.current,
+            collectionEndDateRef.current
+          ])
+        }
+      } else {
+        // set date range to collection date range if date picker is empty
+        setDatePickerValue([
+          collectionStartDateRef.current,
+          collectionEndDateRef.current
+        ])
+      }
+    }
+  }, [_collectionSelected, _temporalData])
+
+  // setup viewport based on collection spatial data
+  useEffect(() => {
+    // move viewport if current bbox is outside of spatial metadata
+    if (_spatialData && _spatialData.length >= 1) {
+      const collectionBounds = setupBounds(_spatialData)
+      const viewportBounds = setupBounds(setupArrayBbox(map))
+      if (!collectionBounds.contains(viewportBounds)) {
+        map.fitBounds(collectionBounds)
+      }
+    }
+  }, [_collectionSelected, _spatialData])
 
   // when search results change, if map loaded, set new mapClickHandler
   useEffect(() => {
@@ -303,8 +362,8 @@ const Search = () => {
   })
 
   async function fetchAPIitems() {
-    // build datetime input
-    const combinedDateRange = convertDateForURL(dateTimeRef.current)
+    // build date input
+    const combinedDateRange = convertDateForURL(datePickerRef.current)
 
     // get viewport bounds and setup bbox parameter
     const bbox = setupCommaSeparatedBbox(map)
@@ -358,7 +417,7 @@ const Search = () => {
   }
 
   // search throttle set to 1500ms
-  const processSearch = () => debounce(searchAPI(), 1500)
+  const processSearch = () => debounce(searchAPI(), 2000)
 
   // function called when search is initiated
   function searchAPI() {
@@ -386,8 +445,8 @@ const Search = () => {
       setCollectionError(false)
     }
 
-    // if the date time field is empty, abort search
-    if (!dateTimeRef.current) return
+    // if the date picker is empty, abort search
+    if (!datePickerRef.current) return
 
     dispatch(setSearchLoading(true))
 
@@ -455,7 +514,7 @@ const Search = () => {
     dispatch(setSearchLoading(true))
 
     // build date input
-    const datetime = convertDate(dateTimeRef.current)
+    const datetime = convertDate(datePickerRef.current)
 
     // get viewport bounds and setup bbox parameter
     const bbox = setupArrayBbox(map)
@@ -525,7 +584,20 @@ const Search = () => {
       <div className="searchContainer datePicker">
         <label>
           Date Range{' '}
-          {!dateTimeValue && (
+          {_temporalData && (
+            <>
+              <a data-tooltip-id="dateRange-tooltip">
+                <InfoOutlinedIcon />
+              </a>
+              <Tooltip id="dateRange-tooltip">
+                <strong>Collection dates:</strong>
+                <br />
+                {new Date(collectionStartDateRef.current).toDateString()} -{' '}
+                {new Date(collectionEndDateRef.current).toDateString()}
+              </Tooltip>
+            </>
+          )}
+          {!datePickerRef.current && (
             <span className="error-true">
               <em>Required</em>
             </span>
@@ -533,11 +605,14 @@ const Search = () => {
         </label>
         <DateTimeRangePicker
           className="dateTimePicker"
-          onChange={setDateTimeValue}
           format={'yy-MM-dd'}
-          maxDate={new Date()}
+          calendarType="US"
+          showLeadingZeros={false}
+          disableClock={true}
           required={true}
-          value={dateTimeValue}
+          minDate={pickerMinDateRef.current}
+          onChange={setDatePickerValue}
+          value={datePickerValue}
         ></DateTimeRangePicker>
       </div>
       <div className="searchContainer cloudSlider">
