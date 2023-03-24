@@ -124,7 +124,7 @@ const Search = () => {
   })
 
   const searchControl = new SearchControl({
-    style: 'button',
+    style: 'bar',
     notFoundMessage: 'Sorry, that address could not be found.',
     provider: new OpenStreetMapProvider(),
     marker: {

@@ -87,3 +87,7 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   height: 10px !important;
   width: 10px !important;
 }
+
+.leaflet-control-geosearch.leaflet-geosearch-bar {
+  margin-left: 50px;
+}
