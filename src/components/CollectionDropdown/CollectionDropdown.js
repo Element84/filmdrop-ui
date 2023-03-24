@@ -82,7 +82,7 @@ const Dropdown = ({ error }) => {
      * Only the first entry from the temporal and spatial properties are used
      * despite there possibly being more ranges available in the collection
      */
-    if (collectionData) {
+    if (collectionData && collectionId) {
       const temporalData = getCollection(collectionData, collectionId).extent
         ?.temporal?.interval
       if (temporalData && temporalData.length >= 1) {
