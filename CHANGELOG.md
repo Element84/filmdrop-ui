@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Move the viewport to include collection spatial bounds if it is outside those bounds
 - Set the date picker to the collection temporal date range if date picker is outside that range
 
+### Added
+
+- Search by geolocation
+
 ## v0.5.0 - 2023-03-20
 
 ### Changed

@@ -4,7 +4,9 @@
   color: #222;
   width: 100%;
   background-color: lightblue;
+  position: relative;
 }
+
 .mainMap {
   height: 100%;
   width: 100%;
@@ -16,10 +18,44 @@
   width: 100%;
   background-color: lightblue;
 }
+
 .mainMap {
   height: 100%;
   width: 100%;
 }
+
 .map-tiles {
   filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
+}
+
+.mapAttribution {
+  font-size: 12px;
+  color: #bbb;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #12171a;
+  padding: 2px 6px;
+}
+
+.mapAttribution a {
+  color: #19a1d7;
+  text-decoration: none;
+}
+
+.mapAttribution a:hover {
+  text-decoration: underline;
+}
+
+a[data-tooltip-id='attribution-tooltip'] {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  z-index: 1;
+  color: #a9b0c1;
+}
+
+div#attribution-tooltip {
+  z-index: 999;
+  white-space: nowrap;
 }

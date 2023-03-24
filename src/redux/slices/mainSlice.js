@@ -20,7 +20,8 @@ const initialState = {
   viewMode: 'scene',
   sarPolarizations: false,
   collectionTemporalData: null,
-  collectionSpatialData: null
+  collectionSpatialData: null,
+  mapAttribution: null
 }
 
 // next, for every key in the initialState
@@ -81,6 +82,9 @@ export const mainSlice = createSlice({
     },
     setCollectionSpatialData: (state, action) => {
       state.collectionSpatialData = action.payload
+    },
+    setMapAttribution: (state, action) => {
+      state.mapAttribution = action.payload
     }
   }
 })
@@ -104,5 +108,6 @@ export const { setViewMode } = mainSlice.actions
 export const { setSarPolarizations } = mainSlice.actions
 export const { setCollectionTemporalData } = mainSlice.actions
 export const { setCollectionSpatialData } = mainSlice.actions
+export const { setMapAttribution } = mainSlice.actions
 
 export default mainSlice.reducer

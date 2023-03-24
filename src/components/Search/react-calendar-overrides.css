@@ -156,10 +156,11 @@
   display: flex;
   flex-direction: row;
   align-items: baseline;
-  padding-bottom: 1px;
+  padding-bottom: 2px;
 }
 
 .react-datetimerange-picker__inputGroup:hover {
+  padding-bottom: 1px;
   border-bottom: 2px solid rgba(0, 0, 0, 0.87);
 }
 
