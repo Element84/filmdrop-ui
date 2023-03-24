@@ -74,3 +74,16 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   font-family: 'Inter', Arial, Helvetica, sans-serif !important;
   color: white !important;
 }
+
+/* Leaflet Search Icon Overrides */
+
+.leaflet-control-geosearch a.leaflet-bar-part:before {
+  top: 17px !important;
+  left: 15px !important;
+  width: 7px !important;
+}
+
+.leaflet-control-geosearch a.leaflet-bar-part:after {
+  height: 10px !important;
+  width: 10px !important;
+}

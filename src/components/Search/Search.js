@@ -31,6 +31,9 @@ import 'leaflet-draw'
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import 'leaflet-geosearch/dist/geosearch.css'
+import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
+
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
@@ -112,6 +115,23 @@ const Search = () => {
     }
   }
 
+  const mapMarkerIcon = L.icon({
+    iconSize: [25, 41],
+    iconAnchor: [10, 41],
+    popupAnchor: [2, -40],
+    iconUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-shadow.png'
+  })
+
+  const searchControl = new SearchControl({
+    style: 'button',
+    notFoundMessage: 'Sorry, that address could not be found.',
+    provider: new OpenStreetMapProvider(),
+    marker: {
+      icon: mapMarkerIcon
+    }
+  })
+
   // when map is set (will only happen once), set up more controls/layers
   useEffect(() => {
     // if map full loaded
@@ -122,6 +142,8 @@ const Search = () => {
           position: 'topleft'
         })
         .addTo(map)
+
+      map.addControl(searchControl)
 
       // set up layerGroup for footprints and add to map
       const resultFootprintsInit = new L.FeatureGroup()
