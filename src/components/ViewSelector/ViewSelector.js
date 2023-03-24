@@ -34,7 +34,7 @@ const ViewSelector = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ width: 250 }} className="viewSelector">
+      <Box sx={{ width: 165 }} className="viewSelector">
         <label>View Mode</label>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
