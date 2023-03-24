@@ -10,7 +10,10 @@
   border-color: white;
   color: white;
   background-color: #353d4f;
-  padding: 2px 4px;
+}
+
+#collectionDropdown option {
+  background-color: #353d4f !important;
 }
 
 .collectionDropdown.error-true select {
