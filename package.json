@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.6",
-    "@mui/icons-material": "^5.10.14",
+    "@mui/icons-material": "^5.11.11",
     "@mui/material": "^5.11.14",
     "@reduxjs/toolkit": "^1.9.0",
     "@wojtekmaj/react-datetimerange-picker": "^4.1.1",
