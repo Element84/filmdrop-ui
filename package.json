@@ -28,7 +28,7 @@
     "@typescript-eslint/parser": "^5.55.0",
     "better-npm-audit": "^3.7.3",
     "env-cmd": "^10.1.0",
-    "eslint": "^8.34.0",
+    "eslint": "^8.36.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-config-standard": "^17.0.0",
     "eslint-plugin-import": "^2.27.5",
