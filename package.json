@@ -9,7 +9,7 @@
     "@mui/material": "^5.11.14",
     "@reduxjs/toolkit": "^1.9.0",
     "@wojtekmaj/react-datetimerange-picker": "^4.1.1",
-    "leaflet": "^1.9.2",
+    "leaflet": "^1.9.3",
     "leaflet-draw": "^1.0.4",
     "leaflet-geosearch": "^3.7.0",
     "react": "^18.2.0",
