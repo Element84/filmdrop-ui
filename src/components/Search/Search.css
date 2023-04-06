@@ -37,10 +37,6 @@ span.error-true {
   top: 2px;
 }
 
-.searchContainer.searchButton {
-  border-right: 0 none;
-}
-
 /* Date Range Picker */
 
 .datePicker {

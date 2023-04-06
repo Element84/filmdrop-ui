@@ -647,11 +647,6 @@ const Search = () => {
           <ViewSelector></ViewSelector>
         </div>
       )}
-      <div className="searchContainer searchButton">
-        <button className="actionButton" onClick={() => processSearch()}>
-          Search
-        </button>
-      </div>
     </div>
   )
 }
