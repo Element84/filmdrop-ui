@@ -3,38 +3,102 @@ import './LeafMap.css'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
-// you need to import each action you need to use
 import { setMap, setMapAttribution } from '../../redux/slices/mainSlice'
 
+import * as L from 'leaflet'
+import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
+import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
+import 'leaflet-geosearch/dist/geosearch.css'
+
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
+import 'react-tooltip/dist/react-tooltip.css'
 
 const LeafMap = () => {
   // set map ref to itself with useRef
   const mapRef = useRef()
-  // if you are setting redux state, call dispatch
+
   const dispatch = useDispatch()
   const _mapAttribution = useSelector((state) => state.mainSlice.mapAttribution)
 
   // set up local state
   const [map, setLocalMap] = useState({})
 
+  // override leaflet draw tooltips
+  // eslint-disable-next-line no-import-assign
+  L.drawLocal = {
+    draw: {
+      handlers: {
+        rectangle: {
+          tooltip: {
+            start: 'Click and drag to draw bounding box.'
+          }
+        },
+        simpleshape: {
+          tooltip: {
+            end: 'Release mouse to finish drawing.'
+          }
+        }
+      }
+    }
+  }
+
+  const mapMarkerIcon = L.icon({
+    iconSize: [25, 41],
+    iconAnchor: [10, 41],
+    popupAnchor: [2, -40],
+    iconUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-icon.png',
+    shadowUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-shadow.png'
+  })
+
+  const searchControl = new SearchControl({
+    style: 'bar',
+    notFoundMessage: 'Sorry, that address could not be found.',
+    provider: new OpenStreetMapProvider(),
+    marker: {
+      icon: mapMarkerIcon
+    }
+  })
+
   useEffect(() => {
     if (mapRef) {
       setLocalMap(mapRef.current)
     }
-    // eslint-disable-next-line
   }, [mapRef.current])
 
   useEffect(() => {
-    // update the shared map context when the map loads
-    dispatch(setMap(map))
+    if (map && Object.keys(map).length > 0) {
+      // add geosearch function
+      map.addControl(searchControl)
 
-    // eslint-disable-next-line
-  }, [map]) // this will give a linter error only because setting context API in useEffect, but context has to be set outside
+      // override position of zoom controls
+      L.control
+        .zoom({
+          position: 'topleft'
+        })
+        .addTo(map)
+
+      // setup custom pane for tiler image result
+      map.createPane('imagery')
+      map.getPane('imagery').style.zIndex = 650
+      map.getPane('imagery').style.pointerEvents = 'none'
+
+      // setup max map bounds
+      const southWest = L.latLng(-90, -180)
+      const northEast = L.latLng(90, 180)
+      const bounds = L.latLngBounds(southWest, northEast)
+      map.setMaxBounds(bounds)
+
+      map.on('drag', function () {
+        map.panInsideBounds(bounds, { animate: false })
+      })
+
+      // update the shared map context when the map loads
+      dispatch(setMap(map))
+    }
+  }, [map])
 
   useEffect(() => {
     const defaultMapAttribution = [

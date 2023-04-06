@@ -75,10 +75,16 @@ const BottomContent = () => {
           </button>
         )}
       </div>
-      {_searchResults !== null ? (
+      {_searchResults !== null && !!_searchResults.context?.matched ? (
         <div className="resultCount">
           Showing {_searchResults.features.length} of{' '}
           {_searchResults.context.matched} Scenes
+        </div>
+      ) : null}
+      {_searchResults !== null && !!_searchResults.context?.total_buckets ? (
+        <div className="resultCount">
+          Showing {_searchResults.features.length} Cells ={' '}
+          {_searchResults.context.total_buckets} Total Scenes
         </div>
       ) : null}
       {_clickResults.length > 0 ? (

@@ -16,8 +16,8 @@
 }
 
 .popupResultThumbnail {
-  height: 325px;
   width: 325px;
+  max-width: 100%;
 }
 
 .popupResultCaption {
