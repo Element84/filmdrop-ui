@@ -55,7 +55,7 @@ export const fetchAggregatedItems = async (
     (el) => el.name === 'grid_code_frequency'
   )
   const context = {
-    total_buckets: apiResponse?.aggregations?.find(
+    total_scenes: apiResponse?.aggregations?.find(
       (el) => el.name === 'total_count'
     )?.value
   }

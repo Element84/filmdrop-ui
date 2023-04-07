@@ -81,10 +81,10 @@ const BottomContent = () => {
           {_searchResults.context.matched} Scenes
         </div>
       ) : null}
-      {_searchResults !== null && !!_searchResults.context?.total_buckets ? (
+      {_searchResults !== null && !!_searchResults.context?.total_scenes ? (
         <div className="resultCount">
-          Showing {_searchResults.features.length} Cells ={' '}
-          {_searchResults.context.total_buckets} Total Scenes
+          Showing {_searchResults.features.length} Cells,{' '}
+          {_searchResults.context.total_scenes} Total Scenes
         </div>
       ) : null}
       {_clickResults.length > 0 ? (
