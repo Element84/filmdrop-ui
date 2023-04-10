@@ -1,7 +1,7 @@
 import React from 'react'
 import './BottomContent.css'
 import { MIN_ZOOM, APP_NAME } from '../../../defaults'
-import LeafMap from '../../../LeafMap/LeafMap.js'
+// import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
 
@@ -14,6 +14,7 @@ import {
   setShowPublishModal,
   setShowLaunchModal
 } from '../../../../redux/slices/mainSlice'
+import MapLibre from '../../../MapLibre/MapLibre'
 
 const BottomContent = () => {
   // set up useSelector to get value from store
@@ -49,7 +50,8 @@ const BottomContent = () => {
 
   return (
     <div className="BottomContent">
-      <LeafMap></LeafMap>
+      {/* <LeafMap></LeafMap> */}
+      <MapLibre></MapLibre>
       {_showZoomNotice && (
         <div className="ZoomNotice">
           Images are not visible at this zoom level.

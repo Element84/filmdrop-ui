@@ -1,4 +1,4 @@
-@import '~leaflet-draw/dist/leaflet.draw.css';
+@import '~maplibre-gl/dist/maplibre-gl.css';
 
 .App {
   height: 100%;

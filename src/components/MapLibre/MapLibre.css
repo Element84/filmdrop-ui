@@ -1,0 +1,22 @@
+@import '~maplibre-gl/dist/maplibre-gl.css';
+
+.MapLibre {
+  color: #222;
+  width: 100%;
+  background-color: #222;
+  z-index: 1;
+}
+
+.testButton {
+  position: absolute;
+  top: 50px;
+  right: 50px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  background-color: #fff;
+  padding: 10px;
+}
+.testButton button {
+  margin: 5px;
+}
