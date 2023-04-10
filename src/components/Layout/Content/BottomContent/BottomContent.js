@@ -83,7 +83,7 @@ const BottomContent = () => {
       ) : null}
       {_searchResults !== null && !!_searchResults.context?.total_buckets ? (
         <div className="resultCount">
-          Showing {_searchResults.features.length} Cells ={' '}
+          Showing {_searchResults.features.length} Cells,{' '}
           {_searchResults.context.total_buckets} Total Scenes
         </div>
       ) : null}

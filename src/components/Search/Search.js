@@ -32,6 +32,7 @@ import * as L from 'leaflet'
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import Switch from '@mui/material/Switch'
 
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker'
 import CloudSlider from '../CloudSlider/CloudSlider'
@@ -80,6 +81,7 @@ const Search = () => {
   const [zoomLevelValue, setZoomLevelValue] = useState(0)
   const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
     useState()
+  const [autoSearchSwitch, setAutoSearchSwitch] = useState(true)
 
   const searchResultsRef = useRef(_searchResults)
   const datePickerRef = useRef(datePickerValue)
@@ -95,6 +97,7 @@ const Search = () => {
   const collectionStartDateRef = useRef()
   const collectionEndDateRef = useRef(new Date())
   const searchTypeRef = useRef('scene')
+  const autoSearchSwitchRef = useRef(true)
 
   // when map is set (will only happen once), set up layers and map functions
   useEffect(() => {
@@ -231,6 +234,11 @@ const Search = () => {
     }
   }, [_currentPopupResult])
 
+  const handleSwitchChange = (event) => {
+    setAutoSearchSwitch(event.target.checked)
+    autoSearchSwitchRef.current = event.target.checked
+  }
+
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
@@ -343,7 +351,13 @@ const Search = () => {
   }
 
   // search throttle set to 1500ms
-  const processSearch = () => debounce(searchAPI(), 3000)
+  const processSearch = debounce(function () {
+    if (autoSearchSwitchRef.current) {
+      searchAPI()
+    }
+  }, 1500)
+
+  const processSearchBtn = debounce(() => searchAPI())
 
   // function called when search is initiated
   async function searchAPI() {
@@ -382,8 +396,8 @@ const Search = () => {
       (zoomLevelRef.current <= 8 && selectedCollectionRef.current === 'naip')
     ) {
       // LOW ZOOM - HEATMAP HEXGRID VIEW
-      typeOfSearch = { type: 'scene' }
-      searchTypeRef.current = 'scene'
+      typeOfSearch = { type: 'aggregated' }
+      searchTypeRef.current = 'aggregated'
     } else if (
       zoomLevelRef.current > 4 &&
       zoomLevelRef.current <= 7 &&
@@ -647,6 +661,21 @@ const Search = () => {
           <ViewSelector></ViewSelector>
         </div>
       )}
+      <div className="searchContainer searchButton">
+        {!autoSearchSwitch && (
+          <button className="actionButton" onClick={() => processSearchBtn()}>
+            Search
+          </button>
+        )}
+        <div className="autoSearchContainer">
+          <label>Auto Search</label>
+          <Switch
+            checked={autoSearchSwitch}
+            onChange={handleSwitchChange}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

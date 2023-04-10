@@ -37,6 +37,21 @@ span.error-true {
   top: 2px;
 }
 
+.searchContainer.searchButton {
+  border-right: 0 none;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.searchContainer.searchButton button {
+  margin-right: 30px;
+}
+
+.autoSearchContainer {
+  padding-top: 5px;
+}
+
 /* Date Range Picker */
 
 .datePicker {
