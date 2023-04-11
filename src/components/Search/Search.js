@@ -34,7 +34,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import 'leaflet-geosearch/dist/geosearch.css'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 
-import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker'
+import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
