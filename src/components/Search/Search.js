@@ -80,6 +80,7 @@ const Search = () => {
   const [zoomLevelValue, setZoomLevelValue] = useState(0)
   const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
     useState()
+  const [gridCellData, setGridCellData] = useState({})
 
   const searchResultsRef = useRef(_searchResults)
   const datePickerRef = useRef(datePickerValue)
@@ -135,6 +136,24 @@ const Search = () => {
       processSearch()
     }
   }, [map])
+
+  // fetch grid cell json data files
+  useEffect(() => {
+    const cache = {}
+    const dataFiles = ['cdem', 'landsat', 'naip', 'sentinel']
+    const fetchData = async (fileName) => {
+      if (!cache[fileName]) {
+        const response = await fetch(`/data/${fileName}.json`)
+        if (!response.ok) {
+          throw new Error(`An error has occurred: ${response.status}`)
+        }
+        const data = await response.json()
+        cache[fileName] = data // set response in gridCellData cache;
+      }
+    }
+    dataFiles.map((d) => fetchData(d))
+    setGridCellData(cache)
+  }, [])
 
   // when zoom level changes, set in global store to hide/show zoom notice
   // and perform search if within zoom limits
@@ -461,7 +480,8 @@ const Search = () => {
         dispatch(setSearchParameters(aggregatedSearchParamsStr))
         fetchAggregatedItems(
           aggregatedSearchParamsStr,
-          selectedCollectionRef.current
+          selectedCollectionRef.current,
+          gridCellData
         ).then((aggregatedResponse) => {
           if (aggregatedResponse) {
             response = aggregatedResponse

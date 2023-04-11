@@ -75,13 +75,13 @@ const BottomContent = () => {
           </button>
         )}
       </div>
-      {_searchResults !== null && !!_searchResults.context?.matched ? (
+      {_searchResults?.context?.matched ? (
         <div className="resultCount">
           Showing {_searchResults.features.length} of{' '}
           {_searchResults.context.matched} Scenes
         </div>
       ) : null}
-      {_searchResults !== null && !!_searchResults.context?.total_scenes ? (
+      {_searchResults?.context?.total_scenes ? (
         <div className="resultCount">
           Showing {_searchResults.features.length} Cells,{' '}
           {_searchResults.context.total_scenes} Total Scenes

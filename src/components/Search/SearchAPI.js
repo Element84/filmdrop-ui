@@ -11,10 +11,11 @@ export const fetchAPIitems = async (searchParamsStr) => {
 
 export const fetchAggregatedItems = async (
   searchParamsStr,
-  selectedCollection
+  selectedCollection,
+  gridCellData
 ) => {
   let preKey = ''
-  if (selectedCollection.startsWith('sentinel')) {
+  if (selectedCollection.startsWith('sentinel-2')) {
     selectedCollection = 'sentinel'
   } else if (selectedCollection === 'cop-dem-glo-30') {
     selectedCollection = 'cdem'
@@ -24,21 +25,18 @@ export const fetchAggregatedItems = async (
     preKey = '30'
   } else if (selectedCollection.startsWith('landsat')) {
     selectedCollection = 'landsat'
+  } else if (selectedCollection.startsWith('naip')) {
+    selectedCollection = 'naip'
   }
 
-  const responseData = await fetch(`/data/${selectedCollection}.json`)
-  if (!responseData.ok) {
-    throw new Error(`An error has occurred: ${responseData.status}`)
-  }
-  const dataFile = await responseData.json()
   // map grid keys and coordinates
   const mappedDataFile = new Map()
-  const prefix = dataFile.prefix
-  for (const key in dataFile.cells) {
+  const prefix = gridCellData[selectedCollection].prefix
+  for (const key in gridCellData[selectedCollection].cells) {
     const gridKey = `${prefix}-${preKey}${key}`
     const geometries = {
-      type: dataFile.type,
-      coordinates: dataFile.cells[key]
+      type: gridCellData[selectedCollection].type,
+      coordinates: gridCellData[selectedCollection].cells[key]
     }
     mappedDataFile.set(gridKey, geometries)
   }
