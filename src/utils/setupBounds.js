@@ -8,7 +8,7 @@ export function setupBounds(bbox) {
 }
 
 export function setupGeometryBounds(coordinates) {
-  if (coordinates[0].length !== 5) {
+  if (coordinates[0].length === 1) {
     coordinates = coordinates[0][0]
   } else {
     coordinates = coordinates[0]

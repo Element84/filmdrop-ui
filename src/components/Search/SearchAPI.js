@@ -49,9 +49,17 @@ export const fetchAggregatedItems = async (
   }
   const apiResponse = await response.json()
 
-  const apikeys = apiResponse.aggregations?.find(
-    (el) => el.name === 'grid_code_frequency'
-  )
+  let apikeys = null
+  if (selectedCollection === 'landsat') {
+    apikeys = apiResponse.aggregations?.find(
+      (el) => el.name === 'grid_code_landsat_frequency'
+    )
+  } else {
+    apikeys = apiResponse.aggregations?.find(
+      (el) => el.name === 'grid_code_frequency'
+    )
+  }
+
   const context = {
     total_scenes: apiResponse?.aggregations?.find(
       (el) => el.name === 'total_count'
