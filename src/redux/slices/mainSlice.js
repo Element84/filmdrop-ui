@@ -22,8 +22,7 @@ const initialState = {
   sarPolarizations: false,
   collectionTemporalData: null,
   collectionSpatialData: null,
-  mapAttribution: null,
-  gridCode: false
+  mapAttribution: null
 }
 
 // next, for every key in the initialState
@@ -90,9 +89,6 @@ export const mainSlice = createSlice({
     },
     setMapAttribution: (state, action) => {
       state.mapAttribution = action.payload
-    },
-    setGridCode: (state, action) => {
-      state.gridCode = action.payload
     }
   }
 })
@@ -118,6 +114,5 @@ export const { setSarPolarizations } = mainSlice.actions
 export const { setCollectionTemporalData } = mainSlice.actions
 export const { setCollectionSpatialData } = mainSlice.actions
 export const { setMapAttribution } = mainSlice.actions
-export const { setGridCode } = mainSlice.actions
 
 export default mainSlice.reducer

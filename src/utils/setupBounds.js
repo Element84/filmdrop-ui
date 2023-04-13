@@ -13,8 +13,8 @@ export function setupGeometryBounds(coordinates) {
   } else {
     coordinates = coordinates[0]
   }
-  const swCorner = L.latLng(coordinates[3][1], coordinates[0][0])
-  const neCorner = L.latLng(coordinates[1][1], coordinates[2][0])
+  const swCorner = L.latLng(coordinates[5][1], coordinates[2][0])
+  const neCorner = L.latLng(coordinates[3][1], coordinates[4][0])
   const featureBounds = L.latLngBounds(swCorner, neCorner)
   return featureBounds
 }

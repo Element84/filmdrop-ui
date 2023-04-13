@@ -2,12 +2,13 @@ import { convertDateForURL, setupCommaSeparatedBbox } from '../../utils'
 import { API_MAX_ITEMS } from '../defaults'
 
 export const getCloudCoverQueryVal = (_cloudCover) => ({
-  'eo:cloud_cover': { gte: 0, lte: _cloudCover }
+  gte: 0,
+  lte: _cloudCover
 })
 
-export const getPolarizationQueryVal = () => ({
-  'sar:polarizations': { in: ['VV', 'VH'] }
-})
+export const getPolarizationQueryVal = () => ({ in: ['VV', 'VH'] })
+
+export const getGridCode = (gridCode) => ({ eq: gridCode })
 
 export const getSearchParams = ({
   datePickerRef,
@@ -16,7 +17,8 @@ export const getSearchParams = ({
   showCloudSliderRef,
   _cloudCover,
   _sarPolarizations,
-  aggregated
+  aggregated,
+  gridCode
 }) => {
   const aggregatedResults = aggregated || false
 
@@ -43,25 +45,18 @@ export const getSearchParams = ({
     searchParams.set('collections', selectedCollectionRef.current)
   }
 
+  const query = {}
   if (showCloudSliderRef.current) {
-    searchParams.set(
-      'query',
-      encodeURIComponent(JSON.stringify(getCloudCoverQueryVal(_cloudCover)))
-    )
+    query['eo:cloud_cover'] = getCloudCoverQueryVal(_cloudCover)
+  }
+  if (_sarPolarizations) {
+    query['sar:polarizations'] = getPolarizationQueryVal()
+  }
+  if (gridCode) {
+    query['grid:code'] = getGridCode(gridCode)
   }
 
-  if (_sarPolarizations) {
-    if (searchParams.has('query')) {
-      searchParams
-        .get('query')
-        .push(encodeURIComponent(JSON.stringify(getPolarizationQueryVal())))
-    } else {
-      searchParams.set(
-        'query',
-        encodeURIComponent(JSON.stringify(getPolarizationQueryVal()))
-      )
-    }
-  }
+  searchParams.set('query', encodeURIComponent(JSON.stringify(query)))
 
   const searchParamsStr = [...searchParams]
     .reduce((obj, x) => {
