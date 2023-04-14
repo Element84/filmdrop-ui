@@ -75,16 +75,17 @@ const BottomContent = () => {
           </button>
         )}
       </div>
-      {_searchResults !== null && !!_searchResults.context?.matched ? (
+      {_searchResults?.numberMatched &&
+      _searchResults?.type !== 'AggregatedResults' ? (
         <div className="resultCount">
-          Showing {_searchResults.features.length} of{' '}
-          {_searchResults.context.matched} Scenes
+          Showing {_searchResults.numberReturned} of{' '}
+          {_searchResults.numberMatched} Scenes
         </div>
       ) : null}
-      {_searchResults !== null && !!_searchResults.context?.total_buckets ? (
+      {_searchResults?.type === 'AggregatedResults' ? (
         <div className="resultCount">
           Showing {_searchResults.features.length} Cells,{' '}
-          {_searchResults.context.total_buckets} Total Scenes
+          {_searchResults.numberMatched} Total Scenes
         </div>
       ) : null}
       {_clickResults.length > 0 ? (

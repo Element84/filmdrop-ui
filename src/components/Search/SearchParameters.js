@@ -2,11 +2,8 @@ import { convertDateForURL, setupCommaSeparatedBbox } from '../../utils'
 import { API_MAX_ITEMS } from '../defaults'
 
 export const getCloudCoverQueryVal = (_cloudCover) => ({
-  'eo:cloud_cover': { gte: 0, lte: _cloudCover }
-})
-
-export const getPolarizationQueryVal = () => ({
-  'sar:polarizations': { in: ['VV', 'VH'] }
+  gte: 0,
+  lte: _cloudCover
 })
 
 export const getSearchParams = ({
@@ -16,7 +13,8 @@ export const getSearchParams = ({
   showCloudSliderRef,
   _cloudCover,
   _sarPolarizations,
-  aggregated
+  aggregated,
+  gridCode
 }) => {
   const aggregatedResults = aggregated || false
 
@@ -43,25 +41,24 @@ export const getSearchParams = ({
     searchParams.set('collections', selectedCollectionRef.current)
   }
 
+  const query = {}
   if (showCloudSliderRef.current) {
-    searchParams.set(
-      'query',
-      encodeURIComponent(JSON.stringify(getCloudCoverQueryVal(_cloudCover)))
-    )
+    query['eo:cloud_cover'] = getCloudCoverQueryVal(_cloudCover)
   }
-
   if (_sarPolarizations) {
-    if (searchParams.has('query')) {
-      searchParams
-        .get('query')
-        .push(encodeURIComponent(JSON.stringify(getPolarizationQueryVal())))
+    query['sar:polarizations'] = { in: ['VV', 'VH'] }
+  }
+  if (gridCode) {
+    if (selectedCollectionRef.current.includes('landsat')) {
+      const gridCodeSplit = gridCode.split('-')[1]
+      query['landsat:wrs_path'] = { eq: gridCodeSplit.substring(0, 3) }
+      query['landsat:wrs_row'] = { eq: gridCodeSplit.slice(-3) }
     } else {
-      searchParams.set(
-        'query',
-        encodeURIComponent(JSON.stringify(getPolarizationQueryVal()))
-      )
+      query['grid:code'] = { eq: gridCode }
     }
   }
+
+  searchParams.set('query', encodeURIComponent(JSON.stringify(query)))
 
   const searchParamsStr = [...searchParams]
     .reduce((obj, x) => {
@@ -69,5 +66,6 @@ export const getSearchParams = ({
       return obj
     }, [])
     .join('&')
+
   return searchParamsStr
 }

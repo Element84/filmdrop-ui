@@ -7,14 +7,7 @@ import {
   constructMosaicTilerParams,
   constructMosaicAssetVal
 } from './envVarSetup'
-import {
-  convertDate,
-  debounce,
-  setupArrayBbox,
-  setupBounds,
-  setupGeometryBounds,
-  boundsToBbox
-} from '../../utils'
+import { convertDate, debounce, setupArrayBbox, setupBounds } from '../../utils'
 import { MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
 import { fetchAPIitems, fetchAggregatedItems } from './SearchAPI'
 import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
@@ -98,6 +91,7 @@ const Search = () => {
   const collectionEndDateRef = useRef(new Date())
   const searchTypeRef = useRef('scene')
   const autoSearchSwitchRef = useRef(true)
+  const gridCellDataRef = useRef(null)
 
   // when map is set (will only happen once), set up layers and map functions
   useEffect(() => {
@@ -138,6 +132,24 @@ const Search = () => {
       processSearch()
     }
   }, [map])
+
+  // fetch grid cell json data files
+  useEffect(() => {
+    const cache = {}
+    const dataFiles = ['cdem', 'doqq', 'mgrs', 'wrs2']
+    const fetchData = async (fileName) => {
+      if (!cache[fileName]) {
+        const response = await fetch(`/data/${fileName}.json`)
+        if (!response.ok) {
+          throw new Error(`An error has occurred: ${response.status}`)
+        }
+        const data = await response.json()
+        cache[fileName] = data // set response in gridCellData cache;
+      }
+    }
+    dataFiles.map((d) => fetchData(d))
+    gridCellDataRef.current = cache
+  }, [])
 
   // when zoom level changes, set in global store to hide/show zoom notice
   // and perform search if within zoom limits
@@ -242,7 +254,7 @@ const Search = () => {
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
-  function mapClickHandler(e) {
+  async function mapClickHandler(e) {
     // if double-clicking the image, zoom in, otherwise process click
     // disable click function in mosaic view
     if (e.originalEvent.detail === 2 || viewModeRef.current === 'mosaic') return
@@ -269,63 +281,44 @@ const Search = () => {
     if (searchResultsRef.current !== null) {
       for (const f in searchResultsRef.current.features) {
         const feature = searchResultsRef.current.features[f]
-        if (searchTypeRef.current === 'scene') {
-          const featureBounds = setupBounds(feature.bbox)
-          if (featureBounds && clickBounds.intersects(featureBounds)) {
-            intersectingFeatures.push(feature)
-            const clickedFootprintsFound = L.geoJSON(feature, {
-              style: clickedFootprintsSelectedStyle
-            })
-            clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
-          }
-          // if at least one feature found, push to store else clear store
-          if (intersectingFeatures.length > 0) {
-            dispatch(setClickResults(intersectingFeatures))
-            // push to store
-          } else {
-            // clear store
-            dispatch(setClickResults([]))
-          }
-        } else if (searchTypeRef.current === 'aggregated') {
-          const featureBounds = setupGeometryBounds(
-            feature.geometry.coordinates
-          )
-          if (featureBounds && featureBounds.intersects(clickBounds)) {
-            // highlight layer
-            const clickedFootprintsFound = L.geoJSON(feature, {
-              style: clickedFootprintsSelectedStyle
-            })
-            clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
-            const bbox = boundsToBbox(featureBounds)
-            // fetch all scenes from API with matching grid code
-            const results = getAggregatedScenes(
-              feature.properties['grid:code'],
-              bbox
-            )
-            results.then(function (finalResults) {
-              dispatch(setClickResults(finalResults))
-            })
-          }
-        }
-      }
-    }
-  }
+        const featureBounds = L.geoJSON(feature).getBounds()
+        if (featureBounds && featureBounds.intersects(clickBounds)) {
+          // highlight layer
+          const clickedFootprintsFound = L.geoJSON(feature, {
+            style: clickedFootprintsSelectedStyle
+          })
+          clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
 
-  // fetch all scenes from API with the grid cell bounding box and filter results by grid:code
-  async function getAggregatedScenes(gridCode, bbox) {
-    const matchedFeatures = []
-    try {
-      const { response } = await getResults({ type: 'sceneAggregated' }, bbox)
-      for (const f in response.features) {
-        const feature = response.features[f]
-        if (feature.properties['grid:code'] === gridCode) {
-          matchedFeatures.push(feature)
+          if (searchTypeRef.current === 'scene') {
+            // if at least one feature found, push to store else clear store
+            intersectingFeatures.push(feature)
+            if (intersectingFeatures.length > 0) {
+              dispatch(setClickResults(intersectingFeatures))
+              // push to store
+            } else {
+              // clear store
+              dispatch(setClickResults([]))
+            }
+          } else if (searchTypeRef.current === 'aggregated') {
+            // fetch all scenes from API with matching grid code
+            try {
+              getResults(
+                { type: 'sceneAggregated' },
+                feature.properties['grid:code']
+              ).then((aggregatedResponse) => {
+                if (aggregatedResponse) {
+                  dispatch(
+                    setClickResults(aggregatedResponse.response.features)
+                  )
+                }
+              })
+            } catch (error) {
+              console.log('Error: ', error)
+            }
+          }
         }
       }
-    } catch (error) {
-      console.log('Error: ', error)
     }
-    return matchedFeatures
   }
 
   // clears search results and empties out all the layers on the map
@@ -438,7 +431,7 @@ const Search = () => {
     }
   }
 
-  function getResults(typeOfSearch, bbox) {
+  function getResults(typeOfSearch, gridCode) {
     const promise = new Promise(function (resolve, reject) {
       let response = {}
       let options = {}
@@ -446,14 +439,14 @@ const Search = () => {
         typeOfSearch.type === 'scene' ||
         typeOfSearch.type === 'sceneAggregated'
       ) {
-        const userMap = bbox || map
         const searchParamsStr = getSearchParams({
           datePickerRef,
-          map: userMap,
+          map,
           selectedCollectionRef,
           showCloudSliderRef,
           _cloudCover,
-          _sarPolarizations
+          _sarPolarizations,
+          gridCode
         })
         dispatch(setSearchParameters(searchParamsStr))
         fetchAPIitems(searchParamsStr).then((sceneResponse) => {
@@ -475,7 +468,8 @@ const Search = () => {
         dispatch(setSearchParameters(aggregatedSearchParamsStr))
         fetchAggregatedItems(
           aggregatedSearchParamsStr,
-          selectedCollectionRef.current
+          selectedCollectionRef.current,
+          gridCellDataRef.current
         ).then((aggregatedResponse) => {
           if (aggregatedResponse) {
             response = aggregatedResponse

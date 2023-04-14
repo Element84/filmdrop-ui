@@ -26,31 +26,12 @@ const LeafMap = () => {
   // set up local state
   const [map, setLocalMap] = useState({})
 
-  // override leaflet draw tooltips
-  // eslint-disable-next-line no-import-assign
-  L.drawLocal = {
-    draw: {
-      handlers: {
-        rectangle: {
-          tooltip: {
-            start: 'Click and drag to draw bounding box.'
-          }
-        },
-        simpleshape: {
-          tooltip: {
-            end: 'Release mouse to finish drawing.'
-          }
-        }
-      }
-    }
-  }
-
   const mapMarkerIcon = L.icon({
     iconSize: [25, 41],
     iconAnchor: [10, 41],
     popupAnchor: [2, -40],
-    iconUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-shadow.png'
+    iconUrl: '/marker-icon.png',
+    shadowUrl: '/marker-shadow.png'
   })
 
   const searchControl = new SearchControl({
@@ -69,7 +50,7 @@ const LeafMap = () => {
   }, [mapRef.current])
 
   useEffect(() => {
-    if (map && Object.keys(map).length > 0) {
+    if (map && Object.keys(map).length) {
       // add geosearch function
       map.addControl(searchControl)
 
