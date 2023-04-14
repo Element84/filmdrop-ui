@@ -74,7 +74,7 @@ const Search = () => {
   const [zoomLevelValue, setZoomLevelValue] = useState(0)
   const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
     useState()
-  const [autoSearchSwitch, setAutoSearchSwitch] = useState(true)
+  const [autoSearchSwitch, setAutoSearchSwitch] = useState(false)
 
   const searchResultsRef = useRef(_searchResults)
   const datePickerRef = useRef(datePickerValue)
@@ -90,7 +90,7 @@ const Search = () => {
   const collectionStartDateRef = useRef()
   const collectionEndDateRef = useRef(new Date())
   const searchTypeRef = useRef('scene')
-  const autoSearchSwitchRef = useRef(true)
+  const autoSearchSwitchRef = useRef(false)
   const gridCellDataRef = useRef(null)
 
   // when map is set (will only happen once), set up layers and map functions
@@ -418,14 +418,16 @@ const Search = () => {
 
     try {
       const { response, options } = await getResults(typeOfSearch)
-      dispatch(setSearchResults(response))
-      searchResultsRef.current = response
-      dispatch(setSearchLoading(false))
+      if (response) {
+        dispatch(setSearchResults(response))
+        searchResultsRef.current = response
+        dispatch(setSearchLoading(false))
 
-      // add new footprints to map
-      const resultFootprintsFound = L.geoJSON(response, options)
-      resultFootprintsFound.id = 'resultLayer'
-      resultFootprintsFound.addTo(resultFootprintsRef.current)
+        // add new footprints to map
+        const resultFootprintsFound = L.geoJSON(response, options)
+        resultFootprintsFound.id = 'resultLayer'
+        resultFootprintsFound.addTo(resultFootprintsRef.current)
+      }
     } catch (error) {
       console.log('Error: ', error)
     }

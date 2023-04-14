@@ -76,13 +76,13 @@ const BottomContent = () => {
         )}
       </div>
       {_searchResults?.numberMatched &&
-      _searchResults?.type !== 'AggregatedResults' ? (
+      _searchResults?.searchType !== 'AggregatedResults' ? (
         <div className="resultCount">
           Showing {_searchResults.numberReturned} of{' '}
           {_searchResults.numberMatched} Scenes
         </div>
       ) : null}
-      {_searchResults?.type === 'AggregatedResults' ? (
+      {_searchResults?.searchType === 'AggregatedResults' ? (
         <div className="resultCount">
           Showing {_searchResults.features.length} Cells,{' '}
           {_searchResults.numberMatched} Total Scenes
