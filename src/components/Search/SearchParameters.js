@@ -66,6 +66,6 @@ export const getSearchParams = ({
       return obj
     }, [])
     .join('&')
-  console.log(searchParamsStr)
+    
   return searchParamsStr
 }
