@@ -10,7 +10,7 @@ import {
 import { convertDate, debounce, setupArrayBbox, setupBounds } from '../../utils'
 import { MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
 import { fetchAPIitems, fetchAggregatedItems } from './SearchAPI'
-import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
+import { getSearchParams } from './SearchParameters'
 
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -249,6 +249,9 @@ const Search = () => {
   const handleSwitchChange = (event) => {
     setAutoSearchSwitch(event.target.checked)
     autoSearchSwitchRef.current = event.target.checked
+    if (event.target.checked) {
+      processSearch()
+    }
   }
 
   // when a user clicks on a search result tile, highlight the tile
@@ -348,7 +351,7 @@ const Search = () => {
     if (autoSearchSwitchRef.current) {
       searchAPI()
     }
-  }, 1500)
+  }, 800)
 
   const processSearchBtn = debounce(() => searchAPI())
 
@@ -563,7 +566,12 @@ const Search = () => {
     }
 
     if (showCloudSliderRef.current) {
-      createMosaicBody.query = getCloudCoverQueryVal(_cloudCover)
+      createMosaicBody.query = {
+        'eo:cloud_cover': {
+          gte: 0,
+          lte: _cloudCover
+        }
+      }
     }
 
     const requestOptions = {

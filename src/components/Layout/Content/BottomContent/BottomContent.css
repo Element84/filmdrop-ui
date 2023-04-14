@@ -8,13 +8,12 @@
 
 .ZoomNotice {
   position: absolute;
-  top: 11px;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 54px;
+  left: 52px;
   z-index: 1;
   background: #353d4f;
-  padding: 10px 30px;
-  border-radius: 6px;
+  padding: 6px 22px;
+  border-radius: 2px;
   font-size: 0.75em;
   animation: fadeIn 0.45s ease-in-out 0.4s forwards;
   opacity: 0;
