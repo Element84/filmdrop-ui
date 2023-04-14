@@ -6,10 +6,6 @@ export const getCloudCoverQueryVal = (_cloudCover) => ({
   lte: _cloudCover
 })
 
-export const getPolarizationQueryVal = () => ({ in: ['VV', 'VH'] })
-
-export const getGridCode = (gridCode) => ({ eq: gridCode })
-
 export const getSearchParams = ({
   datePickerRef,
   map,
@@ -50,10 +46,16 @@ export const getSearchParams = ({
     query['eo:cloud_cover'] = getCloudCoverQueryVal(_cloudCover)
   }
   if (_sarPolarizations) {
-    query['sar:polarizations'] = getPolarizationQueryVal()
+    query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
   if (gridCode) {
-    query['grid:code'] = getGridCode(gridCode)
+    if (selectedCollectionRef.current.includes('landsat')) {
+      const gridCodeSplit = gridCode.split('-')[1]
+      query['landsat:wrs_path'] = { eq: gridCodeSplit.substring(0, 3) }
+      query['landsat:wrs_row'] = { eq: gridCodeSplit.slice(-3) }
+    } else {
+      query['grid:code'] = { eq: gridCode }
+    }
   }
 
   searchParams.set('query', encodeURIComponent(JSON.stringify(query)))
@@ -64,5 +66,6 @@ export const getSearchParams = ({
       return obj
     }, [])
     .join('&')
+  console.log(searchParamsStr)
   return searchParamsStr
 }

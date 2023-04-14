@@ -273,32 +273,25 @@ const Search = () => {
     if (searchResultsRef.current !== null) {
       for (const f in searchResultsRef.current.features) {
         const feature = searchResultsRef.current.features[f]
-        if (searchTypeRef.current === 'scene') {
-          const featureBounds = setupBounds(feature.bbox)
-          if (featureBounds && clickBounds.intersects(featureBounds)) {
-            intersectingFeatures.push(feature)
-            const clickedFootprintsFound = L.geoJSON(feature, {
-              style: clickedFootprintsSelectedStyle
-            })
-            clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
-          }
-          // if at least one feature found, push to store else clear store
-          if (intersectingFeatures.length > 0) {
-            dispatch(setClickResults(intersectingFeatures))
-            // push to store
-          } else {
-            // clear store
-            dispatch(setClickResults([]))
-          }
-        } else if (searchTypeRef.current === 'aggregated') {
-          const featureBounds = L.geoJSON(feature).getBounds()
-          if (featureBounds && featureBounds.intersects(clickBounds)) {
-            // highlight layer
-            const clickedFootprintsFound = L.geoJSON(feature, {
-              style: clickedFootprintsSelectedStyle
-            })
-            clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
+        const featureBounds = L.geoJSON(feature).getBounds()
+        if (featureBounds && featureBounds.intersects(clickBounds)) {
+          // highlight layer
+          const clickedFootprintsFound = L.geoJSON(feature, {
+            style: clickedFootprintsSelectedStyle
+          })
+          clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
 
+          if (searchTypeRef.current === 'scene') {
+            // if at least one feature found, push to store else clear store
+            intersectingFeatures.push(feature)
+            if (intersectingFeatures.length > 0) {
+              dispatch(setClickResults(intersectingFeatures))
+              // push to store
+            } else {
+              // clear store
+              dispatch(setClickResults([]))
+            }
+          } else if (searchTypeRef.current === 'aggregated') {
             // fetch all scenes from API with matching grid code
             try {
               getResults(
