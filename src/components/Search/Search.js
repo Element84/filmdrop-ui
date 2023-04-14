@@ -7,32 +7,24 @@ import {
   constructMosaicTilerParams,
   constructMosaicAssetVal
 } from './envVarSetup'
-import {
-  convertDate,
-  convertDateForURL,
-  debounce,
-  setupArrayBbox,
-  setupCommaSeparatedBbox,
-  setupBounds
-} from '../../utils'
-import { MIN_ZOOM, MOSAIC_MAX_ITEMS, API_MAX_ITEMS } from '../defaults'
+import { convertDate, debounce, setupArrayBbox, setupBounds } from '../../utils'
+import { MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
+import { fetchAPIitems, fetchAggregatedItems } from './SearchAPI'
+import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
 
-import { useSelector, useDispatch, batch } from 'react-redux'
+import { useSelector, useDispatch } from 'react-redux'
 import {
   setSearchResults,
   setClickResults,
   setSearchLoading,
-  setSearchParameters,
-  setShowZoomNotice
+  setShowZoomNotice,
+  setSearchParameters
 } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
-import 'leaflet-draw'
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import 'leaflet-geosearch/dist/geosearch.css'
-import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import CloudSlider from '../CloudSlider/CloudSlider'
@@ -82,6 +74,7 @@ const Search = () => {
   const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
     useState()
 
+  const searchResultsRef = useRef(_searchResults)
   const datePickerRef = useRef(datePickerValue)
   const zoomLevelRef = useRef(0)
   const selectedCollectionRef = useRef(_collectionSelected)
@@ -90,61 +83,17 @@ const Search = () => {
   const resultFootprintsRef = useRef()
   const clickedFootprintHighlightRef = useRef()
   const clickedFootprintImageLayerRef = useRef()
-  const currentImageClickBoundsRef = useRef()
   const currentImageClickedRef = useRef(false)
   const pickerMinDateRef = useRef()
   const collectionStartDateRef = useRef()
   const collectionEndDateRef = useRef(new Date())
+  const searchTypeRef = useRef('scene')
+  const gridCellDataRef = useRef(null)
 
-  // override leaflet draw tooltips
-  // eslint-disable-next-line no-import-assign
-  L.drawLocal = {
-    draw: {
-      handlers: {
-        rectangle: {
-          tooltip: {
-            start: 'Click and drag to draw bounding box.'
-          }
-        },
-        simpleshape: {
-          tooltip: {
-            end: 'Release mouse to finish drawing.'
-          }
-        }
-      }
-    }
-  }
-
-  const mapMarkerIcon = L.icon({
-    iconSize: [25, 41],
-    iconAnchor: [10, 41],
-    popupAnchor: [2, -40],
-    iconUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.6/dist/images/marker-shadow.png'
-  })
-
-  const searchControl = new SearchControl({
-    style: 'bar',
-    notFoundMessage: 'Sorry, that address could not be found.',
-    provider: new OpenStreetMapProvider(),
-    marker: {
-      icon: mapMarkerIcon
-    }
-  })
-
-  // when map is set (will only happen once), set up more controls/layers
+  // when map is set (will only happen once), set up layers and map functions
   useEffect(() => {
     // if map full loaded
     if (map && Object.keys(map).length > 0) {
-      // override position of zoom controls
-      L.control
-        .zoom({
-          position: 'topleft'
-        })
-        .addTo(map)
-
-      map.addControl(searchControl)
-
       // set up layerGroup for footprints and add to map
       const resultFootprintsInit = new L.FeatureGroup()
       resultFootprintsInit.addTo(map)
@@ -164,21 +113,6 @@ const Search = () => {
       clickedFootprintImageLayerInit.id = 'clickedFootprintImageLayer'
       clickedFootprintImageLayerRef.current = clickedFootprintImageLayerInit
 
-      // setup custom pane for tiler image result
-      map.createPane('imagery')
-      map.getPane('imagery').style.zIndex = 650
-      map.getPane('imagery').style.pointerEvents = 'none'
-
-      // setup max map bounds
-      const southWest = L.latLng(-90, -180)
-      const northEast = L.latLng(90, 180)
-      const bounds = L.latLngBounds(southWest, northEast)
-      map.setMaxBounds(bounds)
-
-      map.on('drag', function () {
-        map.panInsideBounds(bounds, { animate: false })
-      })
-
       map.on('zoomend', function () {
         zoomLevelRef.current = map.getZoom()
         setZoomLevelValue(map.getZoom())
@@ -195,6 +129,24 @@ const Search = () => {
       processSearch()
     }
   }, [map])
+
+  // fetch grid cell json data files
+  useEffect(() => {
+    const cache = {}
+    const dataFiles = ['cdem', 'doqq', 'mgrs', 'wrs2']
+    const fetchData = async (fileName) => {
+      if (!cache[fileName]) {
+        const response = await fetch(`/data/${fileName}.json`)
+        if (!response.ok) {
+          throw new Error(`An error has occurred: ${response.status}`)
+        }
+        const data = await response.json()
+        cache[fileName] = data // set response in gridCellData cache;
+      }
+    }
+    dataFiles.map((d) => fetchData(d))
+    gridCellDataRef.current = cache
+  }, [])
 
   // when zoom level changes, set in global store to hide/show zoom notice
   // and perform search if within zoom limits
@@ -294,155 +246,100 @@ const Search = () => {
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
-  function mapClickHandler(e) {
+  async function mapClickHandler(e) {
     // if double-clicking the image, zoom in, otherwise process click
     // disable click function in mosaic view
     if (e.originalEvent.detail === 2 || viewModeRef.current === 'mosaic') return
 
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
-    // set value to initial click
-    if (!currentImageClickBoundsRef.current) {
-      currentImageClickBoundsRef.current = clickBounds
-    }
     if (clickedFootprintHighlightRef) {
       clickedFootprintHighlightRef.current.clearLayers()
     }
+    if (clickedFootprintImageLayerRef) {
+      clickedFootprintImageLayerRef.current.clearLayers()
+    }
+
+    // styling for clickedHighlight layer
+    const clickedFootprintsSelectedStyle = {
+      color: '#ff7800',
+      weight: 5,
+      opacity: 0.65,
+      fillOpacity: 0
+    }
+
+    // pull all items from search results that intersect with the click bounds
     const intersectingFeatures = []
-
-    if (_searchResults !== null) {
-      for (const f in _searchResults.features) {
-        const feature = _searchResults.features[f]
-        const featureBounds = setupBounds(feature.bbox)
-
-        // preserve current image if clicking on the same image
-        if (clickBounds.intersects(currentImageClickBoundsRef.current)) {
-          currentImageClickedRef.current = true
-        } else {
-          currentImageClickedRef.current = false
-          currentImageClickBoundsRef.current = clickBounds
-          if (clickedFootprintsHighlightLayer)
-            clickedFootprintsHighlightLayer.clearLayers()
-        }
-
-        if (featureBounds && clickBounds.intersects(featureBounds)) {
-          intersectingFeatures.push(feature)
-          // add features to clickedHighlight layer
-          const clickedFootprintsSelectedStyle = {
-            color: '#ff7800',
-            weight: 5,
-            opacity: 0.65,
-            fillOpacity: 0
-          }
+    if (searchResultsRef.current !== null) {
+      for (const f in searchResultsRef.current.features) {
+        const feature = searchResultsRef.current.features[f]
+        const featureBounds = L.geoJSON(feature).getBounds()
+        if (featureBounds && featureBounds.intersects(clickBounds)) {
+          // highlight layer
           const clickedFootprintsFound = L.geoJSON(feature, {
             style: clickedFootprintsSelectedStyle
           })
           clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
+
+          if (searchTypeRef.current === 'scene') {
+            // if at least one feature found, push to store else clear store
+            intersectingFeatures.push(feature)
+            if (intersectingFeatures.length > 0) {
+              dispatch(setClickResults(intersectingFeatures))
+              // push to store
+            } else {
+              // clear store
+              dispatch(setClickResults([]))
+            }
+          } else if (searchTypeRef.current === 'aggregated') {
+            // fetch all scenes from API with matching grid code
+            try {
+              getResults(
+                { type: 'sceneAggregated' },
+                feature.properties['grid:code']
+              ).then((aggregatedResponse) => {
+                if (aggregatedResponse) {
+                  dispatch(
+                    setClickResults(aggregatedResponse.response.features)
+                  )
+                }
+              })
+            } catch (error) {
+              console.log('Error: ', error)
+            }
+          }
         }
       }
-    }
-
-    // if at least one feature found, push to store else clear store
-    if (intersectingFeatures.length > 0) {
-      dispatch(setClickResults(intersectingFeatures))
-      // push to store
-    } else {
-      // clear store
-      dispatch(setClickResults([]))
     }
   }
 
   // clears search results and empties out all the layers on the map
   function clearResultsFromMap() {
     // show loading spinner, clear previous results
-    batch(() => {
-      dispatch(setSearchResults(null))
-      dispatch(setClickResults([]))
-    })
+    dispatch(setSearchResults(null))
+    dispatch(setClickResults([]))
 
-    // if user does not click on the same image, clear layers
-    if (!currentImageClickedRef.current) {
-      // only remove layers if the user clicked on a different footprint
-      if (clickedFootprintImageLayerRef.current) {
-        clickedFootprintImageLayerRef.current.clearLayers()
-      }
-      if (clickedFootprintHighlightRef.current) {
-        clickedFootprintHighlightRef.current.clearLayers()
-      }
+    // only remove layers if the user clicked on a different footprint
+    if (clickedFootprintImageLayerRef.current) {
+      clickedFootprintImageLayerRef.current.clearLayers()
     }
-
+    if (clickedFootprintHighlightRef.current) {
+      clickedFootprintHighlightRef.current.clearLayers()
+    }
     // remove existing footprints from map
-    resultFootprintsRef.current.clearLayers()
-  }
-
-  const getCloudCoverQueryVal = () => ({
-    'eo:cloud_cover': { gte: 0, lte: _cloudCover }
-  })
-
-  const getPolarizationQueryVal = () => ({
-    'sar:polarizations': { in: ['VV', 'VH'] }
-  })
-
-  async function fetchAPIitems() {
-    // build date input
-    const combinedDateRange = convertDateForURL(datePickerRef.current)
-
-    // get viewport bounds and setup bbox parameter
-    const bbox = setupCommaSeparatedBbox(map)
-
-    const searchParams = new Map([
-      ['bbox', bbox],
-      ['datetime', combinedDateRange],
-      ['limit', API_MAX_ITEMS]
-    ])
-
-    if (selectedCollectionRef.current) {
-      searchParams.set('collections', selectedCollectionRef.current)
+    if (resultFootprintsRef.current) {
+      resultFootprintsRef.current.eachLayer(function (layer) {
+        map.removeLayer(layer)
+      })
+      resultFootprintsRef.current.clearLayers()
     }
-
-    if (showCloudSliderRef.current) {
-      searchParams.set(
-        'query',
-        encodeURIComponent(JSON.stringify(getCloudCoverQueryVal()))
-      )
-    }
-    if (_sarPolarizations) {
-      if (searchParams.has('query')) {
-        searchParams
-          .get('query')
-          .push(encodeURIComponent(JSON.stringify(getPolarizationQueryVal())))
-      } else {
-        searchParams.set(
-          'query',
-          encodeURIComponent(JSON.stringify(getPolarizationQueryVal()))
-        )
-      }
-    }
-
-    const searchParamsStr = [...searchParams]
-      .reduce((obj, x) => {
-        obj.push(x.join('='))
-        return obj
-      }, [])
-      .join('&')
-
-    dispatch(setSearchParameters(searchParamsStr))
-
-    const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParamsStr}`
-
-    const response = await fetch(searchURL)
-    if (!response.ok) {
-      throw new Error(`An error has occurred: ${response.status}`)
-    }
-    const items = await response.json()
-    return items
   }
 
   // search throttle set to 1500ms
-  const processSearch = () => debounce(searchAPI(), 2000)
+  const processSearch = () => debounce(searchAPI(), 3000)
 
   // function called when search is initiated
-  function searchAPI() {
+  async function searchAPI() {
     // clear previous results from map
     clearResultsFromMap()
 
@@ -472,18 +369,116 @@ const Search = () => {
 
     dispatch(setSearchLoading(true))
 
-    // fetch search results for parameters
-    fetchAPIitems().then((response) => {
-      // set search results in store for use in other components
-      dispatch(setSearchResults(response))
+    let typeOfSearch = { type: 'scene' }
+    if (
+      (zoomLevelRef.current <= 4 && selectedCollectionRef.current !== 'naip') ||
+      (zoomLevelRef.current <= 8 && selectedCollectionRef.current === 'naip')
+    ) {
+      // LOW ZOOM - HEATMAP HEXGRID VIEW
+      typeOfSearch = { type: 'scene' }
+      searchTypeRef.current = 'scene'
+    } else if (
+      zoomLevelRef.current > 4 &&
+      zoomLevelRef.current <= 7 &&
+      selectedCollectionRef.current !== 'naip'
+    ) {
+      // MEDIUM ZOOM - AGGREGATED RESULTS VIEW
+      typeOfSearch = { type: 'aggregated' }
+      searchTypeRef.current = 'aggregated'
+    } else if (
+      zoomLevelRef.current > 8 &&
+      zoomLevelRef.current <= 10 &&
+      selectedCollectionRef.current === 'naip'
+    ) {
+      // MEDIUM ZOOM - AGGREGATED RESULTS VIEW
+      typeOfSearch = { type: 'aggregated' }
+      searchTypeRef.current = 'aggregated'
+    } else if (
+      (zoomLevelRef.current > 7 && selectedCollectionRef.current !== 'naip') ||
+      (zoomLevelRef.current > 10 && selectedCollectionRef.current === 'naip')
+    ) {
+      // HIGH ZOOM - SCENE VIEW
+      typeOfSearch = { type: 'scene' }
+      searchTypeRef.current = 'scene'
+    }
 
-      // remove loading spinner
+    try {
+      const { response, options } = await getResults(typeOfSearch)
+      dispatch(setSearchResults(response))
+      searchResultsRef.current = response
       dispatch(setSearchLoading(false))
 
       // add new footprints to map
-      const resultFootprintsFound = L.geoJSON(response, {})
+      const resultFootprintsFound = L.geoJSON(response, options)
+      resultFootprintsFound.id = 'resultLayer'
       resultFootprintsFound.addTo(resultFootprintsRef.current)
+    } catch (error) {
+      console.log('Error: ', error)
+    }
+  }
+
+  function getResults(typeOfSearch, gridCode) {
+    const promise = new Promise(function (resolve, reject) {
+      let response = {}
+      let options = {}
+      if (
+        typeOfSearch.type === 'scene' ||
+        typeOfSearch.type === 'sceneAggregated'
+      ) {
+        const searchParamsStr = getSearchParams({
+          datePickerRef,
+          map,
+          selectedCollectionRef,
+          showCloudSliderRef,
+          _cloudCover,
+          _sarPolarizations,
+          gridCode
+        })
+        dispatch(setSearchParameters(searchParamsStr))
+        fetchAPIitems(searchParamsStr).then((sceneResponse) => {
+          if (sceneResponse) {
+            response = sceneResponse
+          }
+          resolve({ response })
+        })
+      } else if (typeOfSearch.type === 'aggregated') {
+        const aggregatedSearchParamsStr = getSearchParams({
+          datePickerRef,
+          map,
+          selectedCollectionRef,
+          showCloudSliderRef,
+          _cloudCover,
+          _sarPolarizations,
+          aggregated: true
+        })
+        dispatch(setSearchParameters(aggregatedSearchParamsStr))
+        fetchAggregatedItems(
+          aggregatedSearchParamsStr,
+          selectedCollectionRef.current,
+          gridCellDataRef.current
+        ).then((aggregatedResponse) => {
+          if (aggregatedResponse) {
+            response = aggregatedResponse
+            options = {
+              onEachFeature: function (feature, layer) {
+                layer.bindTooltip(
+                  feature.properties.frequency.toString() +
+                    '<span>scenes</span>',
+                  {
+                    permanent: false,
+                    direction: 'top',
+                    className: 'tooltip_style',
+                    interactive: false
+                  }
+                )
+              }
+            }
+            resolve({ response, options })
+          }
+        })
+      }
     })
+    return promise
   }
 
   // remove old image layer and add new Tiler image layer to map
@@ -552,7 +547,7 @@ const Search = () => {
     }
 
     if (showCloudSliderRef.current) {
-      createMosaicBody.query = getCloudCoverQueryVal()
+      createMosaicBody.query = getCloudCoverQueryVal(_cloudCover)
     }
 
     const requestOptions = {
@@ -593,6 +588,7 @@ const Search = () => {
     // fetch items from API for results notice
     fetchAPIitems().then((response) => {
       dispatch(setSearchResults(response))
+      searchResultsRef.current = response
     })
   }
 

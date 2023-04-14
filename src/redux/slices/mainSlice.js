@@ -8,6 +8,7 @@ const initialState = {
   cloudCover: 0,
   showCloudSlider: true,
   selectedCollection: process.env.REACT_APP_DEFAULT_COLLECTION || null,
+  collectionError: false,
   searchResults: null,
   clickResults: [],
   searchLoading: false,
@@ -43,6 +44,9 @@ export const mainSlice = createSlice({
     },
     setSelectedCollection: (state, action) => {
       state.selectedCollection = action.payload
+    },
+    setCollectionError: (state, action) => {
+      state.collectionError = action.payload
     },
     setSearchResults: (state, action) => {
       state.searchResults = action.payload
@@ -95,6 +99,7 @@ export const { setMap } = mainSlice.actions
 export const { setCloudCover } = mainSlice.actions
 export const { setShowCloudSlider } = mainSlice.actions
 export const { setSelectedCollection } = mainSlice.actions
+export const { setCollectionError } = mainSlice.actions
 export const { setSearchResults } = mainSlice.actions
 export const { setClickResults } = mainSlice.actions
 export const { setSearchLoading } = mainSlice.actions

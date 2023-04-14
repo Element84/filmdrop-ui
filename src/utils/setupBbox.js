@@ -19,3 +19,13 @@ export const setupCommaSeparatedBbox = (map) => {
     viewportBounds._northEast.lat
   ].join(',')
 }
+
+// setup bbox used in the aggregated scenes search
+export const boundsToBbox = (bounds) => {
+  return [
+    bounds._southWest.lng,
+    bounds._southWest.lat,
+    bounds._northEast.lng,
+    bounds._northEast.lat
+  ].join(',')
+}

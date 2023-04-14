@@ -93,12 +93,13 @@
   display: flex;
   flex-direction: row;
   background-color: #222;
-  padding: 10px 30px;
+  padding: 10px 20px;
   border-radius: 5px;
-  opacity: 0.6;
+  opacity: 0.75;
   color: #fff;
-  height: 44px;
   align-items: center;
+  font-size: 0.75em;
+  letter-spacing: 0.025em;
 }
 
 .loadingSpinnerContainer {

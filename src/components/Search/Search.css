@@ -91,3 +91,28 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
 .leaflet-control-geosearch.leaflet-geosearch-bar {
   margin-left: 50px;
 }
+
+.tooltip_style {
+  font-weight: 600;
+  background-color: #6cc24a;
+  border: 0 none;
+  text-align: center;
+  line-height: 15px;
+  font-size: 1.25em;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.tooltip_style:before {
+  border-top-color: #6cc24a;
+}
+
+.tooltip_style:after {
+  border-bottom-color: #6cc24a;
+}
+
+.tooltip_style span {
+  font-size: 0.675em;
+}
