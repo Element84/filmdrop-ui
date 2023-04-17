@@ -7,7 +7,7 @@
     "@emotion/styled": "^11.10.6",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.11.15",
-    "@reduxjs/toolkit": "^1.9.3",
+    "@reduxjs/toolkit": "^1.9.4",
     "@wojtekmaj/react-datetimerange-picker": "^5.0.1",
     "leaflet": "^1.9.3",
     "leaflet-draw": "^1.0.4",
