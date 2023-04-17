@@ -1,6 +1,11 @@
 import { convertDateForURL, setupCommaSeparatedBbox } from '../../utils'
 import { API_MAX_ITEMS } from '../defaults'
 
+export const getCloudCoverQueryVal = (_cloudCover) => ({
+  gte: 0,
+  lte: _cloudCover
+})
+
 export const getSearchParams = ({
   datePickerRef,
   map,
@@ -38,10 +43,7 @@ export const getSearchParams = ({
 
   const query = {}
   if (showCloudSliderRef.current) {
-    query['eo:cloud_cover'] = {
-      gte: 0,
-      lte: _cloudCover
-    }
+    query['eo:cloud_cover'] = getCloudCoverQueryVal(_cloudCover)
   }
   if (_sarPolarizations) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }

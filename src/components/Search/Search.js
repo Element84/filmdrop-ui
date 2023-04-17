@@ -10,7 +10,7 @@ import {
 import { convertDate, debounce, setupArrayBbox, setupBounds } from '../../utils'
 import { MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
 import { fetchAPIitems, fetchAggregatedItems } from './SearchAPI'
-import { getSearchParams } from './SearchParameters'
+import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
 
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -567,10 +567,7 @@ const Search = () => {
 
     if (showCloudSliderRef.current) {
       createMosaicBody.query = {
-        'eo:cloud_cover': {
-          gte: 0,
-          lte: _cloudCover
-        }
+        'eo:cloud_cover': getCloudCoverQueryVal(_cloudCover)
       }
     }
 
@@ -581,6 +578,7 @@ const Search = () => {
       },
       body: JSON.stringify(createMosaicBody)
     }
+    console.log(requestOptions)
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
       .then((r) => r.json())
       .then((body) => {
