@@ -52,5 +52,10 @@ export const fetchAggregatedItems = async (
     })
     .filter((x) => x)
 
-  return { type: 'AggregatedResults', features: mappedKeys, numberMatched }
+  return {
+    type: 'FeatureCollection',
+    features: mappedKeys,
+    numberMatched,
+    searchType: 'AggregatedResults'
+  }
 }
