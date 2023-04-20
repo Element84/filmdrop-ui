@@ -105,6 +105,7 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
 
 .leaflet-control-geosearch.leaflet-geosearch-bar {
   margin-left: 50px;
+  max-width: 30%;
 }
 
 .tooltip_style {
@@ -130,4 +131,50 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
 
 .tooltip_style span {
   font-size: 0.675em;
+  letter-spacing: 0.05em;
+}
+
+.label_style {
+  font-weight: 400;
+  border: 0 none;
+  text-align: center;
+  line-height: 15px;
+  font-size: 1.25em;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  color: #fff;
+  box-shadow: none;
+  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
+}
+
+.label_style span {
+  font-size: 0.675em;
+  letter-spacing: 0.05em;
+}
+
+svg path[class^='color-'] {
+  transition: fill-opacity 0.33s ease-in-out;
+}
+
+svg path.color-low {
+  fill: #67cdeb;
+  stroke: #67cdeb;
+}
+
+svg path.color-mid {
+  fill: #3ba0bd;
+  stroke: #3ba0bd;
+}
+
+svg path.color-high {
+  fill: #6cc24a;
+  stroke: #6cc24a;
+}
+
+svg path.color-max {
+  fill: #378916;
+  stroke: #378916;
 }

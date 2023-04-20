@@ -9,26 +9,27 @@ import './CollectionDropdown.css'
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-select/#native-select
 
-// redux imports
 import { useDispatch } from 'react-redux'
-// you need to import each action you need to use
 import {
   setSarPolarizations,
   setSelectedCollection,
   setCollectionTemporalData,
-  setCollectionSpatialData
+  setCollectionSpatialData,
+  setFullCollectionData,
+  setShowAppLoading
 } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
   const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
   const DEFAULT_COLLECTION = process.env.REACT_APP_DEFAULT_COLLECTION
 
-  // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState()
   const [collectionData, setCollectionData] = useState(null)
+  const [collectionComplete, setCollectionComplete] = useState(null)
 
   useEffect(() => {
+    // fetch all available collections from API
     fetch(`${API_ENDPOINT}/collections`)
       .then((response) => response.json())
       .then((actualData) => {
@@ -43,22 +44,81 @@ const Dropdown = ({ error }) => {
   }, [API_ENDPOINT])
 
   useEffect(() => {
-    // setup sar:polarizations query parameter, if available
-    fetch(`${API_ENDPOINT}/collections/${collectionId}/queryables`)
+    if (collectionData) {
+      mapCollection(collectionData).then((data) => {
+        setCollectionComplete(data)
+        dispatch(setFullCollectionData(data))
+        dispatch(setShowAppLoading(false))
+      })
+    }
+  }, [collectionData])
+
+  function fetchQueryables(collectionId) {
+    return fetch(`${API_ENDPOINT}/collections/${collectionId}/queryables`)
       .then((response) => response.json())
-      .then((actualData) => {
-        const supportsSarPolarizations =
-          !!actualData?.properties['sar:polarizations']
-        dispatch(setSarPolarizations(supportsSarPolarizations))
+      .then((data) => {
+        return { 'sar:polarizations': !!data?.properties['sar:polarizations'] }
       })
       .catch((err) => {
-        dispatch(setSarPolarizations(false))
         console.log('Fetch Error: ', err.message)
       })
-    // update redux with updated collection
-    dispatch(setSelectedCollection(collectionId))
-    // eslint-disable-next-line
-  }, [collectionId])
+  }
+
+  function fetchAggregations(collectionId) {
+    // fetch geo-aggregations or grid aggregation support by collection
+    return fetch(`${API_ENDPOINT}/collections/${collectionId}/aggregations`)
+      .then((response) => response.json())
+      .then((data) => {
+        const geoObject = {}
+        geoObject.grid_code_frequency = !!data?.aggregations.find(
+          (el) => el.name === 'grid_code_frequency'
+        )
+        geoObject.grid_code_landsat_frequency = !!data?.aggregations.find(
+          (el) => el.name === 'grid_code_landsat_frequency'
+        )
+        geoObject.grid_geohex_frequency = !!data?.aggregations.find(
+          (el) => el.name === 'grid_geohex_frequency'
+        )
+        return geoObject
+      })
+      .catch((err) => {
+        console.log('Fetch Error: ', err.message)
+      })
+  }
+
+  async function mapCollection(sortedData) {
+    for (const i in sortedData) {
+      const polarizationObj = await fetchQueryables(sortedData[i].id)
+      const gridHexObj = await fetchAggregations(sortedData[i].id)
+      sortedData[i].queryables = { ...polarizationObj, ...gridHexObj }
+    }
+    return sortedData
+  }
+
+  useEffect(() => {
+    /**
+     * Only the first entry from the temporal and spatial properties are used
+     * despite there possibly being more ranges available in the collection
+     */
+    if (collectionComplete && collectionId) {
+      const temporalData = getCollection(collectionData, collectionId).extent
+        ?.temporal?.interval
+      if (temporalData && temporalData.length >= 1) {
+        dispatch(setCollectionTemporalData(temporalData[0]))
+      }
+      const spatialData = getCollection(collectionData, collectionId).extent
+        ?.spatial?.bbox
+      if (spatialData && spatialData.length >= 1) {
+        dispatch(setCollectionSpatialData(spatialData[0]))
+      }
+      // set support for sar:polarization property if available for collection
+      const supportsSarPolarizations = getCollection(
+        collectionComplete,
+        collectionId
+      ).queryables['sar:polarizations']
+      dispatch(setSarPolarizations(supportsSarPolarizations))
+    }
+  }, [collectionComplete, collectionId])
 
   useEffect(() => {
     // check if REACT_APP_DEFAULT_COLLECTION is available
@@ -78,22 +138,8 @@ const Dropdown = ({ error }) => {
   }, [collectionData])
 
   useEffect(() => {
-    /**
-     * Only the first entry from the temporal and spatial properties are used
-     * despite there possibly being more ranges available in the collection
-     */
-    if (collectionData && collectionId) {
-      const temporalData = getCollection(collectionData, collectionId).extent
-        ?.temporal?.interval
-      if (temporalData && temporalData.length >= 1) {
-        dispatch(setCollectionTemporalData(temporalData[0]))
-      }
-      const spatialData = getCollection(collectionData, collectionId).extent
-        ?.spatial?.bbox
-      if (spatialData && spatialData.length >= 1) {
-        dispatch(setCollectionSpatialData(spatialData[0]))
-      }
-    }
+    // update redux with updated collection
+    dispatch(setSelectedCollection(collectionId))
   }, [collectionId])
 
   const getCollection = (collectionData, collectionId) => {

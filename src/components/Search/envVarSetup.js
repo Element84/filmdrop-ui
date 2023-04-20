@@ -7,7 +7,7 @@ const envSceneTilerParams = 'REACT_APP_SCENE_TILER_PARAMS'
 const envMosaicTilerParams = 'REACT_APP_MOSAIC_TILER_PARAMS'
 
 // retrieve tiler params from env variables for scene and mosaic
-const getTilerParams = (configVariable) => {
+export const getTilerParams = (configVariable) => {
   try {
     return JSON.parse(process.env[configVariable])
   } catch (e) {

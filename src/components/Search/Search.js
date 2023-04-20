@@ -8,9 +8,14 @@ import {
   constructMosaicAssetVal
 } from './envVarSetup'
 import { convertDate, debounce, setupArrayBbox, setupBounds } from '../../utils'
-import { MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
-import { fetchAPIitems, fetchAggregatedItems } from './SearchAPI'
+import { MOSAIC_MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
+import {
+  fetchAPIitems,
+  fetchAggregatedItems,
+  fetchGeoHexItems
+} from './SearchAPI'
 import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
+import { setSearchType } from './SearchTypeSetup'
 
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -18,6 +23,8 @@ import {
   setClickResults,
   setSearchLoading,
   setShowZoomNotice,
+  setZoomLevelNeeded,
+  setTypeOfSearch,
   setSearchParameters
 } from '../../redux/slices/mainSlice'
 
@@ -34,6 +41,7 @@ import ViewSelector from '../ViewSelector/ViewSelector'
 
 const Search = () => {
   const dispatch = useDispatch()
+  const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _map = useSelector((state) => state.mainSlice.map)
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _showCloudSlider = useSelector(
@@ -55,6 +63,9 @@ const Search = () => {
   )
   const _spatialData = useSelector(
     (state) => state.mainSlice.collectionSpatialData
+  )
+  const _fullCollectionData = useSelector(
+    (state) => state.mainSlice.fullCollectionData
   )
   const sceneTilerURL = envSceneTilerURL
   const mosaicTilerURL = envMosaicTilerURL
@@ -79,6 +90,8 @@ const Search = () => {
   const searchResultsRef = useRef(_searchResults)
   const datePickerRef = useRef(datePickerValue)
   const zoomLevelRef = useRef(0)
+  const fullCollectionDataRef = useRef(_fullCollectionData)
+  const showAppLoadingRef = useRef(_showAppLoading)
   const selectedCollectionRef = useRef(_collectionSelected)
   const showCloudSliderRef = useRef(_showCloudSlider)
   const viewModeRef = useRef(_viewMode)
@@ -155,7 +168,7 @@ const Search = () => {
   // and perform search if within zoom limits
   useEffect(() => {
     viewModeRef.current = _viewMode
-    if (zoomLevelValue >= MIN_ZOOM || _viewMode === 'scene') {
+    if (zoomLevelValue >= MOSAIC_MIN_ZOOM || _viewMode === 'scene') {
       dispatch(setShowZoomNotice(false))
     } else {
       dispatch(setShowZoomNotice(true))
@@ -168,6 +181,7 @@ const Search = () => {
     selectedCollectionRef.current = _collectionSelected
     showCloudSliderRef.current = _showCloudSlider
     viewModeRef.current = _viewMode
+    showAppLoadingRef.current = _showAppLoading
     if (map && Object.keys(map).length > 0) {
       currentImageClickedRef.current = false
       if (clickedFootprintsHighlightLayer) {
@@ -180,8 +194,15 @@ const Search = () => {
     _cloudCover,
     _collectionSelected,
     _showCloudSlider,
-    _viewMode
+    _viewMode,
+    _showAppLoading
   ])
+
+  useEffect(() => {
+    if (_fullCollectionData) {
+      fullCollectionDataRef.current = _fullCollectionData
+    }
+  }, [_fullCollectionData])
 
   // setup datepicker based on collection temporal data
   useEffect(() => {
@@ -260,7 +281,13 @@ const Search = () => {
   async function mapClickHandler(e) {
     // if double-clicking the image, zoom in, otherwise process click
     // disable click function in mosaic view
-    if (e.originalEvent.detail === 2 || viewModeRef.current === 'mosaic') return
+    if (
+      e.originalEvent.detail === 2 ||
+      viewModeRef.current === 'mosaic' ||
+      searchTypeRef.current === 'hex'
+    ) {
+      return
+    }
 
     const clickBounds = L.latLngBounds(e.latlng, e.latlng)
 
@@ -280,7 +307,7 @@ const Search = () => {
     }
 
     // pull all items from search results that intersect with the click bounds
-    const intersectingFeatures = []
+    let intersectingFeatures = []
     if (searchResultsRef.current !== null) {
       for (const f in searchResultsRef.current.features) {
         const feature = searchResultsRef.current.features[f]
@@ -294,7 +321,7 @@ const Search = () => {
 
           if (searchTypeRef.current === 'scene') {
             // if at least one feature found, push to store else clear store
-            intersectingFeatures.push(feature)
+            intersectingFeatures = [...intersectingFeatures, feature]
             if (intersectingFeatures.length > 0) {
               dispatch(setClickResults(intersectingFeatures))
               // push to store
@@ -305,10 +332,10 @@ const Search = () => {
           } else if (searchTypeRef.current === 'aggregated') {
             // fetch all scenes from API with matching grid code
             try {
-              getResults(
-                { type: 'sceneAggregated' },
-                feature.properties['grid:code']
-              ).then((aggregatedResponse) => {
+              getResults({
+                typeOfSearch: 'sceneAggregated',
+                gridCode: feature.properties['grid:code']
+              }).then((aggregatedResponse) => {
                 if (aggregatedResponse) {
                   dispatch(
                     setClickResults(aggregatedResponse.response.features)
@@ -357,15 +384,20 @@ const Search = () => {
 
   // function called when search is initiated
   async function searchAPI() {
+    if (showAppLoadingRef.current) return
+
     // clear previous results from map
     clearResultsFromMap()
 
     // if the zoom level is too high in mosaic view, abort search
     // otherwise, move to the mosaic search
-    if (zoomLevelRef.current < MIN_ZOOM && viewModeRef.current === 'mosaic') {
+    if (
+      zoomLevelRef.current < MOSAIC_MIN_ZOOM &&
+      viewModeRef.current === 'mosaic'
+    ) {
       return
     } else if (
-      zoomLevelRef.current >= MIN_ZOOM &&
+      zoomLevelRef.current >= MOSAIC_MIN_ZOOM &&
       viewModeRef.current === 'mosaic' &&
       selectedCollectionRef.current
     ) {
@@ -386,64 +418,46 @@ const Search = () => {
 
     dispatch(setSearchLoading(true))
 
-    let typeOfSearch = { type: 'scene' }
-    if (
-      (zoomLevelRef.current <= 4 && selectedCollectionRef.current !== 'naip') ||
-      (zoomLevelRef.current <= 8 && selectedCollectionRef.current === 'naip')
-    ) {
-      // LOW ZOOM - HEATMAP HEXGRID VIEW
-      typeOfSearch = { type: 'aggregated' }
-      searchTypeRef.current = 'aggregated'
-    } else if (
-      zoomLevelRef.current > 4 &&
-      zoomLevelRef.current <= 7 &&
-      selectedCollectionRef.current !== 'naip'
-    ) {
-      // MEDIUM ZOOM - AGGREGATED RESULTS VIEW
-      typeOfSearch = { type: 'aggregated' }
-      searchTypeRef.current = 'aggregated'
-    } else if (
-      zoomLevelRef.current > 8 &&
-      zoomLevelRef.current <= 10 &&
-      selectedCollectionRef.current === 'naip'
-    ) {
-      // MEDIUM ZOOM - AGGREGATED RESULTS VIEW
-      typeOfSearch = { type: 'aggregated' }
-      searchTypeRef.current = 'aggregated'
-    } else if (
-      (zoomLevelRef.current > 7 && selectedCollectionRef.current !== 'naip') ||
-      (zoomLevelRef.current > 10 && selectedCollectionRef.current === 'naip')
-    ) {
-      // HIGH ZOOM - SCENE VIEW
-      typeOfSearch = { type: 'scene' }
-      searchTypeRef.current = 'scene'
+    // determine search type
+    const { typeOfSearch, zoomLevelNeeded } = setSearchType(
+      zoomLevelRef,
+      selectedCollectionRef,
+      fullCollectionDataRef
+    )
+    searchTypeRef.current = typeOfSearch
+    dispatch(setTypeOfSearch(typeOfSearch))
+
+    if (zoomLevelNeeded) {
+      dispatch(setShowZoomNotice(true))
+      dispatch(setZoomLevelNeeded(zoomLevelNeeded))
+      dispatch(setSearchLoading(false))
     }
 
-    try {
-      const { response, options } = await getResults(typeOfSearch)
-      if (response) {
-        dispatch(setSearchResults(response))
-        searchResultsRef.current = response
-        dispatch(setSearchLoading(false))
+    if (typeOfSearch) {
+      try {
+        const { response, options } = await getResults({ typeOfSearch })
+        if (response) {
+          dispatch(setSearchResults(response))
+          searchResultsRef.current = response
+          dispatch(setSearchLoading(false))
 
-        // add new footprints to map
-        const resultFootprintsFound = L.geoJSON(response, options)
-        resultFootprintsFound.id = 'resultLayer'
-        resultFootprintsFound.addTo(resultFootprintsRef.current)
+          // add new footprints to map
+          const resultFootprintsFound = L.geoJSON(response, options)
+          resultFootprintsFound.id = 'resultLayer'
+          resultFootprintsFound.addTo(resultFootprintsRef.current)
+        }
+      } catch (error) {
+        console.log('Error: ', error)
       }
-    } catch (error) {
-      console.log('Error: ', error)
     }
   }
 
-  function getResults(typeOfSearch, gridCode) {
+  function getResults({ typeOfSearch, gridCode }) {
+    if (typeOfSearch === null) return
     const promise = new Promise(function (resolve, reject) {
       let response = {}
       let options = {}
-      if (
-        typeOfSearch.type === 'scene' ||
-        typeOfSearch.type === 'sceneAggregated'
-      ) {
+      if (typeOfSearch === 'scene' || typeOfSearch === 'sceneAggregated') {
         const searchParamsStr = getSearchParams({
           datePickerRef,
           map,
@@ -451,7 +465,8 @@ const Search = () => {
           showCloudSliderRef,
           _cloudCover,
           _sarPolarizations,
-          gridCode
+          gridCode,
+          typeOfSearch
         })
         dispatch(setSearchParameters(searchParamsStr))
         fetchAPIitems(searchParamsStr).then((sceneResponse) => {
@@ -460,7 +475,7 @@ const Search = () => {
           }
           resolve({ response })
         })
-      } else if (typeOfSearch.type === 'aggregated') {
+      } else if (typeOfSearch === 'aggregated') {
         const aggregatedSearchParamsStr = getSearchParams({
           datePickerRef,
           map,
@@ -468,7 +483,7 @@ const Search = () => {
           showCloudSliderRef,
           _cloudCover,
           _sarPolarizations,
-          aggregated: true
+          typeOfSearch
         })
         dispatch(setSearchParameters(aggregatedSearchParamsStr))
         fetchAggregatedItems(
@@ -495,9 +510,59 @@ const Search = () => {
             resolve({ response, options })
           }
         })
+      } else if (typeOfSearch === 'hex') {
+        const aggregatedSearchParamsStr = getSearchParams({
+          datePickerRef,
+          map,
+          selectedCollectionRef,
+          showCloudSliderRef,
+          _cloudCover,
+          _sarPolarizations,
+          typeOfSearch
+        })
+        dispatch(setSearchParameters(aggregatedSearchParamsStr))
+        fetchGeoHexItems(aggregatedSearchParamsStr, zoomLevelRef.current).then(
+          (aggregatedResponse) => {
+            if (aggregatedResponse) {
+              response = aggregatedResponse
+              options = {
+                onEachFeature: styleLayers
+              }
+              resolve({ response, options })
+            }
+          }
+        )
       }
     })
     return promise
+  }
+
+  function styleLayers(feature, layer) {
+    layer.setStyle({
+      className: `color-${feature.properties.colorLevel}`,
+      fillOpacity: 0.5,
+      weight: 1,
+      opacity: 0.6
+    })
+    layer.bindTooltip(
+      feature.properties.frequency.toString() + '<span>scenes</span>',
+      {
+        permanent: true,
+        direction: 'center',
+        className: 'label_style',
+        interactive: false
+      }
+    )
+    layer.on('mouseover', function (e) {
+      layer.setStyle({
+        fillOpacity: 0.1
+      })
+    })
+    layer.on('mouseout', function (e) {
+      layer.setStyle({
+        fillOpacity: 0.5
+      })
+    })
   }
 
   // remove old image layer and add new Tiler image layer to map
@@ -578,7 +643,7 @@ const Search = () => {
       },
       body: JSON.stringify(createMosaicBody)
     }
-    console.log(requestOptions)
+
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
       .then((r) => r.json())
       .then((body) => {

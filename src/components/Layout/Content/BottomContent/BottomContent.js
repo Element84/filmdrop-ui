@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { MIN_ZOOM, APP_NAME } from '../../../defaults'
+import { MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
@@ -18,10 +18,16 @@ import {
 const BottomContent = () => {
   // set up useSelector to get value from store
   const _map = useSelector((state) => state.mainSlice.map)
+  const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
   const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
   const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
+  const _zoomLevelNeeded = useSelector(
+    (state) => state.mainSlice.zoomLevelNeeded
+  )
+  const _searchType = useSelector((state) => state.mainSlice.typeOfSearch)
+  const _viewMode = useSelector((state) => state.mainSlice.viewMode)
 
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
@@ -30,6 +36,8 @@ const BottomContent = () => {
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
   const CF_TEMPLATE_URL = process.env.REACT_APP_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
+
+  const resultType = _searchType === 'hex' ? 'Hex Cells' : 'Grid Cells'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -44,7 +52,11 @@ const BottomContent = () => {
   }
 
   function onZoomClick() {
-    _map.setZoom(MIN_ZOOM)
+    if (_viewMode === 'mosaic') {
+      _map.setZoom(MOSAIC_MIN_ZOOM)
+    } else if (_zoomLevelNeeded) {
+      _map.setZoom(_zoomLevelNeeded)
+    }
   }
 
   return (
@@ -84,7 +96,8 @@ const BottomContent = () => {
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' ? (
         <div className="resultCount">
-          Showing {_searchResults.features.length} Cells,{' '}
+          <strong>Showing Aggregated Results</strong>
+          {_searchResults.features.length} {resultType},{' '}
           {_searchResults.numberMatched} Total Scenes
         </div>
       ) : null}
@@ -96,6 +109,23 @@ const BottomContent = () => {
           <LoadingAnimation></LoadingAnimation>
         </div>
       ) : null}
+      {_showAppLoading && (
+        <div className="appLoadingContainer">
+          <LoadingAnimation></LoadingAnimation>
+          <span>Loading {APP_NAME}</span>
+        </div>
+      )}
+      {_searchType === 'hex' &&
+        _searchResults?.searchType === 'AggregatedResults' && (
+          <div className="heatMapLegend">
+            <div className="gradient" />
+            <div className="values">
+              <div className="min">{_searchResults.properties.freqMin}</div>
+              <div className="mid" />
+              <div className="max">{_searchResults.properties.freqMax}</div>
+            </div>
+          </div>
+        )}
     </div>
   )
 }
