@@ -8,6 +8,8 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 span.error-true {
@@ -16,8 +18,8 @@ span.error-true {
 
 .searchContainer {
   height: 100px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 2%;
+  padding-right: 2%;
   background-color: #353d4f;
   border-right: 1px solid #757a85;
   color: #ffffff;
@@ -37,19 +39,53 @@ span.error-true {
   top: 2px;
 }
 
+.searchContainer .cloudSlider {
+  min-width: 155px;
+}
+
 .searchContainer.searchButton {
   border-right: 0 none;
   display: flex;
-  flex-direction: row;
-  align-items: center;
+  flex-direction: column;
 }
 
 .searchContainer.searchButton button {
-  margin-right: 30px;
+  margin-left: 0px;
+  margin-top: 10px;
+  height: 40px;
 }
 
-.autoSearchContainer {
-  padding-top: 5px;
+.searchContainer.searchButton button.disabled-true {
+  opacity: 0.2;
+  cursor: default;
+  background: #a9b0c1;
+}
+
+.searchContainer.searchButton button.disabled-true:hover {
+  opacity: 0.2;
+  cursor: default;
+  background: #a9b0c1;
+  color: #12171a;
+}
+
+@media screen and (min-width: 1300px) {
+  .searchContainer.searchButton {
+    flex-direction: row;
+    align-items: center;
+  }
+  .searchContainer.searchButton button {
+    margin-top: 0;
+    height: 50px;
+  }
+}
+
+.searchContainer .autoSearchContainer {
+  transform: scale(0.875);
+  display: flex;
+  flex-direction: row;
+  min-width: 160px;
+  align-items: center;
+  padding-top: 2px;
 }
 
 /* Date Range Picker */

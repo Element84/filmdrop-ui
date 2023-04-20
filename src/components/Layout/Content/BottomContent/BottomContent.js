@@ -22,6 +22,7 @@ const BottomContent = () => {
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
   const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
   const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
+  const _showPopupModal = useSelector((state) => state.mainSlice.showPopupModal)
 
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
@@ -88,7 +89,7 @@ const BottomContent = () => {
           {_searchResults.numberMatched} Total Scenes
         </div>
       ) : null}
-      {_clickResults.length > 0 ? (
+      {_showPopupModal && _clickResults.length > 0 ? (
         <PopupResults results={_clickResults}></PopupResults>
       ) : null}
       {_searchLoading ? (

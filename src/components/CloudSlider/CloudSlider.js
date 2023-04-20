@@ -78,10 +78,7 @@ const CloudSlider = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box
-        sx={{ width: 250 }}
-        className={`cloudSlider ${disabled && 'disabled'}`}
-      >
+      <Box className={`cloudSlider ${disabled && 'disabled'}`}>
         <label>Max Cloud Cover %</label>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>

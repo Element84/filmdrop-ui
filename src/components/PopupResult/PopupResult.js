@@ -5,7 +5,10 @@ import './PopupResult.css'
 // redux imports
 import { useDispatch } from 'react-redux'
 // you need to import each action you need to use
-import { setCurrentPopupResult } from '../../redux/slices/mainSlice'
+import {
+  setCurrentPopupResult,
+  setShowPopupModal
+} from '../../redux/slices/mainSlice'
 
 const PopupResult = (props) => {
   // if you are setting redux state, call dispatch
@@ -33,6 +36,10 @@ const PopupResult = (props) => {
 
   const cloudCover = props.result?.properties['eo:cloud_cover']
   const polarizations = props.result?.properties['sar:polarizations']
+
+  function onCloseClick() {
+    dispatch(setShowPopupModal(false))
+  }
 
   return (
     <div className="popupResult">
@@ -73,6 +80,9 @@ const PopupResult = (props) => {
               </div>
             ) : null}
           </div>
+          <button className="closePopupModal" onClick={() => onCloseClick()}>
+            ✕
+          </button>
         </div>
       ) : null}
     </div>

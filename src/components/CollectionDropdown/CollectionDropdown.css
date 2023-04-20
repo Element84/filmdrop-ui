@@ -25,4 +25,5 @@
 .collectionDropdown div[label='Collection'] {
   top: -2.5px;
   padding-top: 1px;
+  min-width: 180px;
 }
