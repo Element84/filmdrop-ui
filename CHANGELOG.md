@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Aggregated results view at medium zoom levels
+- Toggle to enable auto-search or manual search with Search Button
 
 ## v1.0.0 - 2023-03-24
 

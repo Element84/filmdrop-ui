@@ -18,13 +18,15 @@ import {
   setClickResults,
   setSearchLoading,
   setShowZoomNotice,
-  setSearchParameters
+  setSearchParameters,
+  setShowPopupModal
 } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import Switch from '@mui/material/Switch'
 
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import CloudSlider from '../CloudSlider/CloudSlider'
@@ -73,6 +75,7 @@ const Search = () => {
   const [zoomLevelValue, setZoomLevelValue] = useState(0)
   const [clickedFootprintsHighlightLayer, setClickedFootprintsHighlightLayer] =
     useState()
+  const [autoSearchSwitch, setAutoSearchSwitch] = useState(false)
 
   const searchResultsRef = useRef(_searchResults)
   const datePickerRef = useRef(datePickerValue)
@@ -88,6 +91,7 @@ const Search = () => {
   const collectionStartDateRef = useRef()
   const collectionEndDateRef = useRef(new Date())
   const searchTypeRef = useRef('scene')
+  const autoSearchSwitchRef = useRef(false)
   const gridCellDataRef = useRef(null)
 
   // when map is set (will only happen once), set up layers and map functions
@@ -243,6 +247,14 @@ const Search = () => {
     }
   }, [_currentPopupResult])
 
+  const handleSwitchChange = (event) => {
+    setAutoSearchSwitch(event.target.checked)
+    autoSearchSwitchRef.current = event.target.checked
+    if (event.target.checked) {
+      processSearch()
+    }
+  }
+
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
@@ -285,8 +297,9 @@ const Search = () => {
             // if at least one feature found, push to store else clear store
             intersectingFeatures.push(feature)
             if (intersectingFeatures.length > 0) {
-              dispatch(setClickResults(intersectingFeatures))
               // push to store
+              dispatch(setClickResults(intersectingFeatures))
+              dispatch(setShowPopupModal(true))
             } else {
               // clear store
               dispatch(setClickResults([]))
@@ -336,7 +349,13 @@ const Search = () => {
   }
 
   // search throttle set to 1500ms
-  const processSearch = () => debounce(searchAPI(), 3000)
+  const processSearch = debounce(function () {
+    if (autoSearchSwitchRef.current) {
+      searchAPI()
+    }
+  }, 800)
+
+  const processSearchBtn = debounce(() => searchAPI(), { immediate: true })
 
   // function called when search is initiated
   async function searchAPI() {
@@ -375,8 +394,8 @@ const Search = () => {
       (zoomLevelRef.current <= 8 && selectedCollectionRef.current === 'naip')
     ) {
       // LOW ZOOM - HEATMAP HEXGRID VIEW
-      typeOfSearch = { type: 'scene' }
-      searchTypeRef.current = 'scene'
+      typeOfSearch = { type: 'aggregated' }
+      searchTypeRef.current = 'aggregated'
     } else if (
       zoomLevelRef.current > 4 &&
       zoomLevelRef.current <= 7 &&
@@ -404,14 +423,16 @@ const Search = () => {
 
     try {
       const { response, options } = await getResults(typeOfSearch)
-      dispatch(setSearchResults(response))
-      searchResultsRef.current = response
-      dispatch(setSearchLoading(false))
+      if (response) {
+        dispatch(setSearchResults(response))
+        searchResultsRef.current = response
+        dispatch(setSearchLoading(false))
 
-      // add new footprints to map
-      const resultFootprintsFound = L.geoJSON(response, options)
-      resultFootprintsFound.id = 'resultLayer'
-      resultFootprintsFound.addTo(resultFootprintsRef.current)
+        // add new footprints to map
+        const resultFootprintsFound = L.geoJSON(response, options)
+        resultFootprintsFound.id = 'resultLayer'
+        resultFootprintsFound.addTo(resultFootprintsRef.current)
+      }
     } catch (error) {
       console.log('Error: ', error)
     }
@@ -547,7 +568,9 @@ const Search = () => {
     }
 
     if (showCloudSliderRef.current) {
-      createMosaicBody.query = getCloudCoverQueryVal(_cloudCover)
+      createMosaicBody.query = {
+        'eo:cloud_cover': getCloudCoverQueryVal(_cloudCover)
+      }
     }
 
     const requestOptions = {
@@ -557,6 +580,7 @@ const Search = () => {
       },
       body: JSON.stringify(createMosaicBody)
     }
+    console.log(requestOptions)
     fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
       .then((r) => r.json())
       .then((body) => {
@@ -641,6 +665,24 @@ const Search = () => {
           <ViewSelector></ViewSelector>
         </div>
       )}
+      <div className="searchContainer searchButton">
+        <button
+          className={`actionButton disabled-${autoSearchSwitch}`}
+          onClick={() => processSearchBtn()}
+          disabled={autoSearchSwitch}
+        >
+          Search
+        </button>
+
+        <div className="autoSearchContainer">
+          <label>Auto Search</label>
+          <Switch
+            checked={autoSearchSwitch}
+            onChange={handleSwitchChange}
+            inputProps={{ 'aria-label': 'controlled' }}
+          />
+        </div>
+      </div>
     </div>
   )
 }

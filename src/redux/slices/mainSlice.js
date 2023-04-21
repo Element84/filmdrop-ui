@@ -13,6 +13,7 @@ const initialState = {
   clickResults: [],
   searchLoading: false,
   currentPopupResult: null,
+  showPopupModal: false,
   showPublishModal: false,
   searchParameters: 'need to run search',
   showZoomNotice: false,
@@ -60,6 +61,9 @@ export const mainSlice = createSlice({
     setCurrentPopupResult: (state, action) => {
       state.currentPopupResult = action.payload
     },
+    setShowPopupModal: (state, action) => {
+      state.showPopupModal = action.payload
+    },
     setShowPublishModal: (state, action) => {
       state.showPublishModal = action.payload
     },
@@ -104,6 +108,7 @@ export const { setSearchResults } = mainSlice.actions
 export const { setClickResults } = mainSlice.actions
 export const { setSearchLoading } = mainSlice.actions
 export const { setCurrentPopupResult } = mainSlice.actions
+export const { setShowPopupModal } = mainSlice.actions
 export const { setShowPublishModal } = mainSlice.actions
 export const { setSearchParameters } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions

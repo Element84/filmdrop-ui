@@ -1,12 +1,22 @@
 // throttle function to prevent map from rendering too quickly
-export default function debounce(func, waitInMillis) {
+export default function debounce(func, wait, immediate) {
   let timeout
-  return function executedFunction(...args) {
-    const later = () => {
-      clearTimeout(timeout)
-      func(...args)
+
+  return function executedFunction() {
+    const context = this
+    const args = arguments
+
+    const later = function () {
+      timeout = null
+      if (!immediate) func.apply(context, args)
     }
+
+    const callNow = immediate && !timeout
+
     clearTimeout(timeout)
-    timeout = setTimeout(later, waitInMillis)
+
+    timeout = setTimeout(later, wait)
+
+    if (callNow) func.apply(context, args)
   }
 }
