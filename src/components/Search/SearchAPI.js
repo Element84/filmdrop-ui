@@ -1,3 +1,5 @@
+import * as h3 from 'h3-js'
+
 export const fetchAPIitems = async (searchParamsStr) => {
   const searchURL = `${process.env.REACT_APP_STAC_API_URL}/search?${searchParamsStr}`
 
@@ -90,11 +92,39 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
   const frequencyMax = Math.max.apply(null, frequencyArr)
   const frequencyMin = Math.min.apply(null, frequencyArr)
 
-  const h3 = require('h3-js')
-
   const convertedItems = buckets.map((feature) => {
-    const hexBoundary = h3.cellToBoundary(feature.key)
+    const hexBoundary = h3.cellToBoundary(feature.key, true)
 
+    // fix coordinates that cross anti-meridian
+    const longArray = hexBoundary.map((element) => element[0])
+
+    // get general location of polygon points above/below zero
+    let posPoints = 0
+    let negPoints = 0
+    for (const n in longArray) {
+      if (longArray[n] > 100) {
+        posPoints++
+      } else if (longArray[n] < -100) {
+        negPoints++
+      }
+    }
+    const positive = posPoints > negPoints
+    // adjust coordinate to join the rest of the polygon on the same side of the meridian
+    for (const n in hexBoundary) {
+      if (!positive && posPoints > 0 && hexBoundary[n][0] > -100) {
+        hexBoundary[n][0] = hexBoundary[n][0] - 360
+        if (hexBoundary[n][0] < -180) {
+          hexBoundary[n][0] = -180
+        }
+      } else if (positive && negPoints > 0 && hexBoundary[n][0] < -100) {
+        hexBoundary[n][0] = hexBoundary[n][0] + 360
+        if (hexBoundary[n][0] > 180) {
+          hexBoundary[n][0] = 180
+        }
+      }
+    }
+
+    // calculate heat map color based on frequency
     const frequencyScale =
       1 - (frequencyMax - feature.frequency) / (frequencyMax - frequencyMin)
     let colorLevel = 'low'

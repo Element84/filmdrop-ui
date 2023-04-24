@@ -495,9 +495,10 @@ const Search = () => {
             response = aggregatedResponse
             options = {
               onEachFeature: function (feature, layer) {
+                const scenes =
+                  feature.properties.frequency > 1 ? 'scenes' : 'scene'
                 layer.bindTooltip(
-                  feature.properties.frequency.toString() +
-                    '<span>scenes</span>',
+                  `${feature.properties.frequency.toString()} <span>${scenes}</span>`,
                   {
                     permanent: false,
                     direction: 'top',
@@ -526,7 +527,7 @@ const Search = () => {
             if (aggregatedResponse) {
               response = aggregatedResponse
               options = {
-                onEachFeature: styleLayers
+                onEachFeature: styleHexGridLayers
               }
               resolve({ response, options })
             }
@@ -537,30 +538,27 @@ const Search = () => {
     return promise
   }
 
-  function styleLayers(feature, layer) {
+  function styleHexGridLayers(feature, layer) {
     layer.setStyle({
       className: `color-${feature.properties.colorLevel}`,
-      fillOpacity: 0.5,
+      fillOpacity: 0.2,
       weight: 1,
-      opacity: 0.6
+      opacity: 0.3
     })
-    layer.bindTooltip(
-      feature.properties.frequency.toString() + '<span>scenes</span>',
-      {
-        permanent: true,
-        direction: 'center',
-        className: 'label_style',
-        interactive: false
-      }
-    )
+    layer.bindTooltip(feature.properties.frequency.toString(), {
+      permanent: true,
+      direction: 'center',
+      className: 'label_style',
+      interactive: false
+    })
     layer.on('mouseover', function (e) {
       layer.setStyle({
-        fillOpacity: 0.1
+        fillOpacity: 0
       })
     })
     layer.on('mouseout', function (e) {
       layer.setStyle({
-        fillOpacity: 0.5
+        fillOpacity: 0.2
       })
     })
   }

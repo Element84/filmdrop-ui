@@ -20,6 +20,7 @@
   padding: 15px;
   display: flex;
   align-items: center;
+  width: 50%;
 }
 
 .dashboardLink {
