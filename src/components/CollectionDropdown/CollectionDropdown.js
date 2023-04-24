@@ -155,7 +155,7 @@ const Dropdown = ({ error }) => {
   }
 
   return (
-    <Box sx={{ width: 250 }}>
+    <Box>
       <label>
         Collection{' '}
         {error && (
@@ -164,16 +164,13 @@ const Dropdown = ({ error }) => {
           </span>
         )}
       </label>
-      <Grid container spacing={2} alignItems="center">
+      <Grid container alignItems="center">
         <Grid item xs>
           <NativeSelect
             id="collectionDropdown"
             value={collectionId}
             label="Collection"
             onChange={handleDropdownChange}
-            sx={{
-              width: 250
-            }}
           >
             <option value="">Select One</option>
             {collectionData &&

@@ -3,11 +3,12 @@
 @import 'react-clock/dist/Clock.css';
 
 .Search {
-  height: 100%;
+  height: auto;
   width: 100%;
   display: flex;
   flex-direction: row;
   align-items: center;
+  transition: max-height 0.33s ease-in-out;
 }
 
 span.error-true {
@@ -16,15 +17,16 @@ span.error-true {
 
 .searchContainer {
   height: 100px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 2%;
+  padding-right: 2%;
   background-color: #353d4f;
-  border-right: 1px solid #757a85;
   color: #ffffff;
   font-size: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  flex-grow: 1;
+  width: 100%;
 }
 
 .searchContainer label {
@@ -37,19 +39,66 @@ span.error-true {
   top: 2px;
 }
 
+.autoSearchContainer {
+  padding-top: 5px;
+}
+
+.searchContainer .cloudSlider {
+  min-width: 155px;
+}
+
 .searchContainer.searchButton {
   border-right: 0 none;
   display: flex;
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
 }
 
 .searchContainer.searchButton button {
-  margin-right: 30px;
+  margin-left: 0px;
+  height: 50px;
 }
 
-.autoSearchContainer {
-  padding-top: 5px;
+.searchContainer.searchButton button.disabled-true {
+  opacity: 0.2;
+  cursor: default;
+  background: #a9b0c1;
+}
+
+.searchContainer.searchButton button.disabled-true:hover {
+  opacity: 0.2;
+  cursor: default;
+  background: #a9b0c1;
+  color: #12171a;
+}
+
+.searchContainer .autoSearchContainer {
+  transform: scale(0.875);
+  display: flex;
+  flex-direction: row;
+  min-width: 160px;
+  align-items: center;
+  padding-top: 2px;
+}
+
+@media screen and (min-width: 731px) {
+  .Search {
+    height: 100%;
+  }
+  .searchContainer {
+    width: unset;
+    border-right: 2px solid rgba(0, 0, 0, 0.2);
+  }
+}
+
+@media screen and (max-width: 1299px) {
+  .Search {
+    flex-wrap: wrap;
+  }
+  .searchContainer {
+    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* Date Range Picker */
@@ -57,6 +106,7 @@ span.error-true {
 .datePicker {
   z-index: 4;
   font-size: 16px;
+  min-width: 270px;
 }
 
 .datePicker label a svg {
@@ -108,6 +158,14 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   max-width: 30%;
 }
 
+@media screen and (max-width: 730px) {
+  .leaflet-control-geosearch.leaflet-geosearch-bar {
+    max-width: 80%;
+  }
+}
+
+/* Hover layer labels for grid cell search results */
+
 .tooltip_style {
   font-weight: 600;
   background-color: #6cc24a;
@@ -133,6 +191,8 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   font-size: 0.675em;
   letter-spacing: 0.05em;
 }
+
+/* Layer styles for geo hex search results */
 
 .label_style {
   font-weight: 400;

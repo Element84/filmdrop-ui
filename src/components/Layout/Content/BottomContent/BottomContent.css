@@ -57,7 +57,7 @@
   border-radius: 6px;
   font-size: 18px;
   font-weight: bold;
-  height: 50px;
+  height: 44px;
   padding-left: 30px;
   padding-right: 30px;
   margin-left: 10px;
@@ -180,4 +180,22 @@
   top: 0;
   left: 50%;
   height: 13px;
+}
+
+@media screen and (max-width: 730px) {
+  .BottomContent {
+    height: calc(100% - 60px);
+    margin-top: 60px;
+  }
+
+  .resultCount {
+    width: 70%;
+    top: 50px;
+    left: 52px;
+    transform: none;
+  }
+
+  .ZoomNotice {
+    width: 70%;
+  }
 }

@@ -6,7 +6,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import { setMap, setMapAttribution } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
-import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'

@@ -25,7 +25,8 @@ import {
   setShowZoomNotice,
   setZoomLevelNeeded,
   setTypeOfSearch,
-  setSearchParameters
+  setSearchParameters,
+  setShowPopupModal
 } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
@@ -323,8 +324,9 @@ const Search = () => {
             // if at least one feature found, push to store else clear store
             intersectingFeatures = [...intersectingFeatures, feature]
             if (intersectingFeatures.length > 0) {
-              dispatch(setClickResults(intersectingFeatures))
               // push to store
+              dispatch(setClickResults(intersectingFeatures))
+              dispatch(setShowPopupModal(true))
             } else {
               // clear store
               dispatch(setClickResults([]))
@@ -380,7 +382,7 @@ const Search = () => {
     }
   }, 800)
 
-  const processSearchBtn = debounce(() => searchAPI())
+  const processSearchBtn = debounce(() => searchAPI(), { immediate: true })
 
   // function called when search is initiated
   async function searchAPI() {
@@ -727,11 +729,14 @@ const Search = () => {
         </div>
       )}
       <div className="searchContainer searchButton">
-        {!autoSearchSwitch && (
-          <button className="actionButton" onClick={() => processSearchBtn()}>
-            Search
-          </button>
-        )}
+        <button
+          className={`actionButton disabled-${autoSearchSwitch}`}
+          onClick={() => processSearchBtn()}
+          disabled={autoSearchSwitch}
+        >
+          Search
+        </button>
+
         <div className="autoSearchContainer">
           <label>Auto Search</label>
           <Switch

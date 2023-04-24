@@ -75,3 +75,22 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
+
+.closePopupModal {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 0px;
+  font-size: 28px;
+  font-weight: bold;
+  height: 40px;
+  padding-left: 10px;
+  padding-right: 10px;
+  cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
