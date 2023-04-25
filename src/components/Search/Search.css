@@ -216,26 +216,6 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   letter-spacing: 0.05em;
 }
 
-svg path[class^='color-'] {
+svg path.leaflet-interactive {
   transition: fill-opacity 0.33s ease-in-out;
-}
-
-svg path.color-low {
-  fill: #3ba0bd;
-  stroke: #3ba0bd;
-}
-
-svg path.color-mid {
-  fill: #6cc24a;
-  stroke: #6cc24a;
-}
-
-svg path.color-high {
-  fill: rgb(233, 235, 83);
-  stroke: #e9eb53;
-}
-
-svg path.color-max {
-  fill: #ff9494;
-  stroke: #ff9494;
 }

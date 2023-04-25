@@ -7,7 +7,13 @@ import {
   constructMosaicTilerParams,
   constructMosaicAssetVal
 } from './envVarSetup'
-import { convertDate, debounce, setupArrayBbox, setupBounds } from '../../utils'
+import {
+  convertDate,
+  debounce,
+  setupArrayBbox,
+  setupBounds,
+  colorMap
+} from '../../utils'
 import { MOSAIC_MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
 import {
   fetchAPIitems,
@@ -70,6 +76,7 @@ const Search = () => {
   )
   const sceneTilerURL = envSceneTilerURL
   const mosaicTilerURL = envMosaicTilerURL
+  let colors = null
 
   // set up map state
   const map = _map
@@ -528,6 +535,7 @@ const Search = () => {
           (aggregatedResponse) => {
             if (aggregatedResponse) {
               response = aggregatedResponse
+              colors = colorMap(response.properties.largestRatio)
               options = {
                 onEachFeature: styleHexGridLayers
               }
@@ -542,10 +550,11 @@ const Search = () => {
 
   function styleHexGridLayers(feature, layer) {
     layer.setStyle({
-      className: `color-${feature.properties.colorLevel}`,
-      fillOpacity: 0.2,
+      fillColor: colors[Math.round(feature.properties.colorRatio)],
+      fillOpacity: 0.4,
       weight: 1,
-      opacity: 0.3
+      color: colors[Math.round(feature.properties.colorRatio)],
+      opacity: 1
     })
     layer.bindTooltip(feature.properties.frequency.toString(), {
       permanent: true,
@@ -560,7 +569,7 @@ const Search = () => {
     })
     layer.on('mouseout', function (e) {
       layer.setStyle({
-        fillOpacity: 0.2
+        fillOpacity: 0.4
       })
     })
   }

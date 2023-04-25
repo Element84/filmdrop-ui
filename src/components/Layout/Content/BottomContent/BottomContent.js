@@ -6,6 +6,7 @@ import LeafMap from '../../../LeafMap/LeafMap.js'
 import PopupResults from '../../../PopupResults/PopupResults'
 
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
+import Legend from '../../../Legend/Legend'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -118,14 +119,7 @@ const BottomContent = () => {
       )}
       {_searchType === 'hex' &&
         _searchResults?.searchType === 'AggregatedResults' && (
-          <div className="heatMapLegend">
-            <div className="gradient" />
-            <div className="values">
-              <div className="min">{_searchResults.properties.freqMin}</div>
-              <div className="mid" />
-              <div className="max">{_searchResults.properties.freqMax}</div>
-            </div>
-          </div>
+          <Legend results={_searchResults}></Legend>
         )}
     </div>
   )

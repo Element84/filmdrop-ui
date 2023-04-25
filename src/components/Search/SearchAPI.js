@@ -70,6 +70,7 @@ export const fetchAggregatedItems = async (
 }
 
 export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
+  let largestRatio = 0
   const precision = Math.round(zoomLevel / 3)
 
   // fetch frequency and counts from API
@@ -86,11 +87,6 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
   const numberMatched = apiResponse?.aggregations?.find(
     (el) => el.name === 'total_count'
   )?.value
-
-  // set up the max and min values for frequency results
-  const frequencyArr = buckets.map((feature) => feature.frequency)
-  const frequencyMax = Math.max.apply(null, frequencyArr)
-  const frequencyMin = Math.min.apply(null, frequencyArr)
 
   const convertedItems = buckets.map((feature) => {
     const hexBoundary = h3.cellToBoundary(feature.key, true)
@@ -124,17 +120,10 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
       }
     }
 
-    // calculate heat map color based on frequency
-    const frequencyScale =
-      1 - (frequencyMax - feature.frequency) / (frequencyMax - frequencyMin)
-    let colorLevel = 'low'
-    if (frequencyScale > 0.25 && frequencyScale <= 0.5) {
-      colorLevel = 'mid'
-    } else if (frequencyScale > 0.5 && frequencyScale <= 0.75) {
-      colorLevel = 'high'
-    } else if (frequencyScale > 0.75) {
-      colorLevel = 'max'
-    }
+    // calculate heat map color ratio
+    const colorRatio = (feature.frequency / numberMatched) * 1000
+    // capture largest ratio value to set the total number of color variations in colormap
+    largestRatio = colorRatio > largestRatio ? colorRatio : largestRatio
 
     return {
       type: 'Feature',
@@ -142,7 +131,7 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
         type: 'Polygon',
         coordinates: [hexBoundary]
       },
-      properties: { frequency: feature.frequency, colorLevel }
+      properties: { frequency: feature.frequency, colorRatio }
     }
   })
 
@@ -151,6 +140,6 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
     features: convertedItems,
     numberMatched,
     searchType: 'AggregatedResults',
-    properties: { freqMax: frequencyMax, freqMin: frequencyMin }
+    properties: { largestRatio }
   }
 }
