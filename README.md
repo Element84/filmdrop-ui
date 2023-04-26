@@ -42,6 +42,7 @@ The file `.env.example` is included in this repository as a representative file.
 | REACT_APP_MOSAIC_TILER_PARAMS    | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [.env.example](.env.example)                                                | Optional |
 | REACT_APP_MOSAIC_MAX_ITEMS       | Maximum number of items in mosaic. If not set, the default max items will be 100.                                                                                                                                                 | Optional |
 | REACT_APP_SEARCH_MIN_ZOOM_LEVELS | Per-collection configuration for minimum zoom levels needed for grid code aggregated results (medium zoom level) and single scene search results (high zoom level). Example in [.env.example](.env.example)                       | Optional |
+| REACT_APP_COLORMAP               | Color map used in low level hex grid search results. Complete list of colormaps are available here: [bpostlethwaite/colormap](https://github.com/bpostlethwaite/colormap). If not set, the default colormap will be "viridis".    | Optional |
 
 ### Links
 

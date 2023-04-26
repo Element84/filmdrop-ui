@@ -16,27 +16,32 @@ export const fetchAggregatedItems = async (
   selectedCollection,
   _gridCellData
 ) => {
-  const frequency = selectedCollection.includes('landsat')
+  const gridAggName = selectedCollection.includes('landsat')
     ? 'grid_code_landsat_frequency'
     : 'grid_code_frequency'
 
   // fetch frequency and counts from API
-  const searchURL = `${process.env.REACT_APP_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=${frequency},total_count`
+  const searchURL = `${process.env.REACT_APP_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=${gridAggName},total_count`
   const response = await fetch(searchURL)
   if (!response.ok) {
     throw new Error(`An error has occurred: ${response.status}`)
   }
   const apiResponse = await response.json()
-  const apiKeys = apiResponse.aggregations?.find(
-    (el) => el.name === frequency
+  const buckets = apiResponse.aggregations?.find(
+    (el) => el.name === gridAggName
   ).buckets
 
   const numberMatched = apiResponse?.aggregations?.find(
     (el) => el.name === 'total_count'
   )?.value
+  const overflow = apiResponse?.aggregations.find(
+    (el) =>
+      el.name === 'grid_code_frequency' ||
+      el.name === 'grid_code_landsat_frequency'
+  ).overflow
 
   // create Geojson file with matched geometry and frequency
-  const mappedKeysToGrid = apiKeys
+  const mappedKeysToGrid = buckets
     .map((feature) => {
       let coordinates =
         _gridCellData[feature.key.split('-')[0].toLowerCase()].cells[
@@ -65,8 +70,42 @@ export const fetchAggregatedItems = async (
     type: 'FeatureCollection',
     features: mappedKeysToGrid,
     numberMatched,
-    searchType: 'AggregatedResults'
+    searchType: 'AggregatedResults',
+    properties: { overflow }
   }
+}
+
+function fixAntiMeridianPoints(hexBoundary) {
+  // Example: [-170.6193233947984, -161.63482061718392, -165.41674992858836, -176.05696384421353, 175.98600155652952, 177.51613498805204, -170.6193233947984]
+  const longArray = hexBoundary.map((element) => element[0])
+
+  // get general location of polygon points above/below zero
+  let posPoints = 0
+  let negPoints = 0
+  for (const n in longArray) {
+    if (longArray[n] > 100) {
+      posPoints++
+    } else if (longArray[n] < -100) {
+      negPoints++
+    }
+  }
+  const positive = posPoints > negPoints
+
+  // adjust coordinate to join the rest of the polygon on the same side of the meridian
+  for (const n in hexBoundary) {
+    if (!positive && posPoints > 0 && hexBoundary[n][0] > -100) {
+      hexBoundary[n][0] = hexBoundary[n][0] - 360
+      if (hexBoundary[n][0] < -180) {
+        hexBoundary[n][0] = -180
+      }
+    } else if (positive && negPoints > 0 && hexBoundary[n][0] < -100) {
+      hexBoundary[n][0] = hexBoundary[n][0] + 360
+      if (hexBoundary[n][0] > 180) {
+        hexBoundary[n][0] = 180
+      }
+    }
+  }
+  return hexBoundary
 }
 
 export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
@@ -84,42 +123,18 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
   const buckets = apiResponse.aggregations?.find(
     (el) => el.name === 'grid_geohex_frequency'
   ).buckets
-
   const numberMatched = apiResponse?.aggregations?.find(
     (el) => el.name === 'total_count'
   )?.value
+  const overflow = apiResponse?.aggregations.find(
+    (el) => el.name === 'grid_geohex_frequency'
+  ).overflow
 
   const convertedItems = buckets.map((feature) => {
     const hexBoundary = h3.cellToBoundary(feature.key, true)
 
     // fix coordinates that cross anti-meridian
-    const longArray = hexBoundary.map((element) => element[0])
-
-    // get general location of polygon points above/below zero
-    let posPoints = 0
-    let negPoints = 0
-    for (const n in longArray) {
-      if (longArray[n] > 100) {
-        posPoints++
-      } else if (longArray[n] < -100) {
-        negPoints++
-      }
-    }
-    const positive = posPoints > negPoints
-    // adjust coordinate to join the rest of the polygon on the same side of the meridian
-    for (const n in hexBoundary) {
-      if (!positive && posPoints > 0 && hexBoundary[n][0] > -100) {
-        hexBoundary[n][0] = hexBoundary[n][0] - 360
-        if (hexBoundary[n][0] < -180) {
-          hexBoundary[n][0] = -180
-        }
-      } else if (positive && negPoints > 0 && hexBoundary[n][0] < -100) {
-        hexBoundary[n][0] = hexBoundary[n][0] + 360
-        if (hexBoundary[n][0] > 180) {
-          hexBoundary[n][0] = 180
-        }
-      }
-    }
+    const fixedBoundaries = fixAntiMeridianPoints(hexBoundary)
 
     // calculate heat map color ratio
     const colorRatio = (feature.frequency / numberMatched) * 1000
@@ -135,7 +150,7 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
       type: 'Feature',
       geometry: {
         type: 'Polygon',
-        coordinates: [hexBoundary]
+        coordinates: [fixedBoundaries]
       },
       properties: { frequency: feature.frequency, colorRatio, largestRatio }
     }
@@ -146,6 +161,6 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
     features: convertedItems,
     numberMatched,
     searchType: 'AggregatedResults',
-    properties: { largestRatio, largestFrequency }
+    properties: { largestRatio, largestFrequency, overflow }
   }
 }

@@ -341,10 +341,10 @@ const Search = () => {
           } else if (searchTypeRef.current === 'aggregated') {
             // fetch all scenes from API with matching grid code
             try {
-              getResults({
-                typeOfSearch: 'sceneAggregated',
-                gridCode: feature.properties['grid:code']
-              }).then((aggregatedResponse) => {
+              getResults(
+                'sceneAggregated',
+                feature.properties['grid:code']
+              ).then((aggregatedResponse) => {
                 if (aggregatedResponse) {
                   dispatch(
                     setClickResults(aggregatedResponse.response.features)
@@ -446,7 +446,7 @@ const Search = () => {
 
     if (typeOfSearch) {
       try {
-        const { response, options } = await getResults({ typeOfSearch })
+        const { response, options } = await getResults(typeOfSearch)
         if (response) {
           dispatch(setSearchResults(response))
           searchResultsRef.current = response
@@ -463,7 +463,7 @@ const Search = () => {
     }
   }
 
-  function getResults({ typeOfSearch, gridCode }) {
+  function getResults(typeOfSearch, gridCode) {
     if (typeOfSearch === null) return
     const promise = new Promise(function (resolve, reject) {
       let response = {}

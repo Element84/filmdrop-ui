@@ -39,7 +39,7 @@ const BottomContent = () => {
   const CF_TEMPLATE_URL = process.env.REACT_APP_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
-  const resultType = _searchType === 'hex' ? 'Hex Cells' : 'Grid Cells'
+  const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -93,14 +93,16 @@ const BottomContent = () => {
       _searchResults?.searchType !== 'AggregatedResults' ? (
         <div className="resultCount">
           Showing {_searchResults.numberReturned} of{' '}
-          {_searchResults.numberMatched} Scenes
+          {_searchResults.numberMatched} scenes
         </div>
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' ? (
         <div className="resultCount">
           <strong>Showing Aggregated Results</strong>
           {_searchResults.features.length} {resultType},{' '}
-          {_searchResults.numberMatched} Total Scenes
+          {_searchResults.numberMatched} total scenes
+          {_searchResults.properties.overflow > 0 &&
+            `, ${_searchResults.properties.overflow} scenes not represented`}
         </div>
       ) : null}
       {_showPopupModal && _clickResults.length > 0 ? (

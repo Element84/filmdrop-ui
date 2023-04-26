@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Toggle to enable auto-search or manual search with Search Button
 - Geo hex aggregated results view at low zoom levels
 - Env variable REACT_APP_SEARCH_MIN_ZOOM_LEVELS
+- Env variable REACT_APP_COLORMAP
 
 ## v1.0.0 - 2023-03-24
 

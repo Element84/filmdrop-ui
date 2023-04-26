@@ -4,3 +4,4 @@ export const MOSAIC_MAX_ITEMS = process.env.REACT_APP_MOSAIC_MAX_ITEMS || 100
 export const API_MAX_ITEMS = process.env.REACT_APP_API_MAX_ITEMS || 200
 export const DEFAULT_MED_ZOOM = 4
 export const DEFAULT_HIGH_ZOOM = 7
+export const COLORMAP = process.env.REACT_APP_COLORMAP || 'viridis'
