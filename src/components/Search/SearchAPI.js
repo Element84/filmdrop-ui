@@ -80,25 +80,27 @@ function fixAntiMeridianPoints(hexBoundary) {
   const longArray = hexBoundary.map((element) => element[0])
 
   // get general location of polygon points above/below zero
-  let posPoints = 0
-  let negPoints = 0
-  for (const n in longArray) {
-    if (longArray[n] > 100) {
-      posPoints++
-    } else if (longArray[n] < -100) {
-      negPoints++
-    }
-  }
-  const positive = posPoints > negPoints
+  const lessThanNegative100 = longArray.filter((lng) => lng < -100)
+  const greaterThanPositive100 = longArray.filter((lng) => lng > 100)
+  const hasMorePositive =
+    greaterThanPositive100.length > lessThanNegative100.length
 
   // adjust coordinate to join the rest of the polygon on the same side of the meridian
   for (const n in hexBoundary) {
-    if (!positive && posPoints > 0 && hexBoundary[n][0] > -100) {
+    if (
+      !hasMorePositive &&
+      greaterThanPositive100.length > 0 &&
+      hexBoundary[n][0] > -100
+    ) {
       hexBoundary[n][0] = hexBoundary[n][0] - 360
       if (hexBoundary[n][0] < -180) {
         hexBoundary[n][0] = -180
       }
-    } else if (positive && negPoints > 0 && hexBoundary[n][0] < -100) {
+    } else if (
+      hasMorePositive &&
+      lessThanNegative100.length > 0 &&
+      hexBoundary[n][0] < -100
+    ) {
       hexBoundary[n][0] = hexBoundary[n][0] + 360
       if (hexBoundary[n][0] > 180) {
         hexBoundary[n][0] = 180
