@@ -440,6 +440,8 @@ const Search = () => {
       dispatch(setShowZoomNotice(true))
       dispatch(setZoomLevelNeeded(zoomLevelNeeded))
       dispatch(setSearchLoading(false))
+    } else {
+      dispatch(setShowZoomNotice(false))
     }
 
     if (typeOfSearch) {
@@ -549,22 +551,27 @@ const Search = () => {
   }
 
   function styleHexGridLayers(feature, layer) {
+    const colorIndex =
+      Math.round(feature.properties.colorRatio) ===
+      Math.round(feature.properties.largestRatio)
+        ? Math.round(feature.properties.largestRatio) - 1
+        : Math.round(feature.properties.colorRatio)
     layer.setStyle({
-      fillColor: colors[Math.round(feature.properties.colorRatio)],
+      fillColor: colors[colorIndex],
       fillOpacity: 0.4,
       weight: 1,
-      color: colors[Math.round(feature.properties.colorRatio)],
+      color: colors[colorIndex],
       opacity: 1
     })
     layer.bindTooltip(feature.properties.frequency.toString(), {
-      permanent: true,
+      permanent: false,
       direction: 'center',
       className: 'label_style',
       interactive: false
     })
     layer.on('mouseover', function (e) {
       layer.setStyle({
-        fillOpacity: 0
+        fillOpacity: 0.1
       })
     })
     layer.on('mouseout', function (e) {

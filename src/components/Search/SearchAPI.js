@@ -71,6 +71,7 @@ export const fetchAggregatedItems = async (
 
 export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
   let largestRatio = 0
+  let largestFrequency = 0
   const precision = Math.round(zoomLevel / 3)
 
   // fetch frequency and counts from API
@@ -124,6 +125,11 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
     const colorRatio = (feature.frequency / numberMatched) * 1000
     // capture largest ratio value to set the total number of color variations in colormap
     largestRatio = colorRatio > largestRatio ? colorRatio : largestRatio
+    // capture largest frequency value to use in the legend and colormap
+    largestFrequency =
+      feature.frequency > largestFrequency
+        ? feature.frequency
+        : largestFrequency
 
     return {
       type: 'Feature',
@@ -131,7 +137,7 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
         type: 'Polygon',
         coordinates: [hexBoundary]
       },
-      properties: { frequency: feature.frequency, colorRatio }
+      properties: { frequency: feature.frequency, colorRatio, largestRatio }
     }
   })
 
@@ -140,6 +146,6 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
     features: convertedItems,
     numberMatched,
     searchType: 'AggregatedResults',
-    properties: { largestRatio }
+    properties: { largestRatio, largestFrequency }
   }
 }

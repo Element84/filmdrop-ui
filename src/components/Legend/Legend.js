@@ -21,7 +21,7 @@ const Legend = ({ results }) => {
       <div className="values">
         <div className="min">0</div>
         <div className="mid" />
-        <div className="max">{results.numberMatched}</div>
+        <div className="max">{results.properties.largestFrequency}</div>
       </div>
     </div>
   )
