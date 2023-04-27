@@ -1,11 +1,12 @@
 import React from 'react'
 import './BottomContent.css'
-import { MIN_ZOOM, APP_NAME } from '../../../defaults'
+import { MOSAIC_MIN_ZOOM, APP_NAME, SearchTypes } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
 
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
+import Legend from '../../../Legend/Legend'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -18,10 +19,16 @@ import {
 const BottomContent = () => {
   // set up useSelector to get value from store
   const _map = useSelector((state) => state.mainSlice.map)
+  const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
   const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
   const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
+  const _zoomLevelNeeded = useSelector(
+    (state) => state.mainSlice.zoomLevelNeeded
+  )
+  const _searchType = useSelector((state) => state.mainSlice.typeOfSearch)
+  const _viewMode = useSelector((state) => state.mainSlice.viewMode)
   const _showPopupModal = useSelector((state) => state.mainSlice.showPopupModal)
 
   // if you are setting redux state, call dispatch
@@ -31,6 +38,9 @@ const BottomContent = () => {
   const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
   const CF_TEMPLATE_URL = process.env.REACT_APP_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
+
+  const resultType =
+    _searchType === SearchTypes.GeoHex ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -45,7 +55,11 @@ const BottomContent = () => {
   }
 
   function onZoomClick() {
-    _map.setZoom(MIN_ZOOM)
+    if (_viewMode === 'mosaic') {
+      _map.setZoom(MOSAIC_MIN_ZOOM)
+    } else if (_zoomLevelNeeded) {
+      _map.setZoom(_zoomLevelNeeded)
+    }
   }
 
   return (
@@ -80,13 +94,16 @@ const BottomContent = () => {
       _searchResults?.searchType !== 'AggregatedResults' ? (
         <div className="resultCount">
           Showing {_searchResults.numberReturned} of{' '}
-          {_searchResults.numberMatched} Scenes
+          {_searchResults.numberMatched} scenes
         </div>
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' ? (
         <div className="resultCount">
-          Showing {_searchResults.features.length} Cells,{' '}
-          {_searchResults.numberMatched} Total Scenes
+          <strong>Showing Aggregated Results</strong>
+          {_searchResults.features.length} {resultType},{' '}
+          {_searchResults.numberMatched} total scenes
+          {_searchResults.properties.overflow > 0 &&
+            `, ${_searchResults.properties.overflow} scenes not represented`}
         </div>
       ) : null}
       {_showPopupModal && _clickResults.length > 0 ? (
@@ -97,6 +114,16 @@ const BottomContent = () => {
           <LoadingAnimation></LoadingAnimation>
         </div>
       ) : null}
+      {_showAppLoading && (
+        <div className="appLoadingContainer">
+          <LoadingAnimation></LoadingAnimation>
+          <span>Loading {APP_NAME}</span>
+        </div>
+      )}
+      {_searchType === SearchTypes.GeoHex &&
+        _searchResults?.searchType === 'AggregatedResults' && (
+          <Legend results={_searchResults}></Legend>
+        )}
     </div>
   )
 }

@@ -17,13 +17,17 @@ const initialState = {
   showPublishModal: false,
   searchParameters: 'need to run search',
   showZoomNotice: false,
+  zoomLevelNeeded: null,
+  typeOfSearch: null,
   showLaunchModal: false,
   showLaunchImageModal: false,
   viewMode: 'scene',
   sarPolarizations: false,
   collectionTemporalData: null,
   collectionSpatialData: null,
-  mapAttribution: null
+  fullCollectionData: null,
+  mapAttribution: null,
+  showAppLoading: true
 }
 
 // next, for every key in the initialState
@@ -73,6 +77,12 @@ export const mainSlice = createSlice({
     setShowZoomNotice: (state, action) => {
       state.showZoomNotice = action.payload
     },
+    setZoomLevelNeeded: (state, action) => {
+      state.zoomLevelNeeded = action.payload
+    },
+    setTypeOfSearch: (state, action) => {
+      state.typeOfSearch = action.payload
+    },
     setShowLaunchModal: (state, action) => {
       state.showLaunchModal = action.payload
     },
@@ -91,8 +101,14 @@ export const mainSlice = createSlice({
     setCollectionSpatialData: (state, action) => {
       state.collectionSpatialData = action.payload
     },
+    setFullCollectionData: (state, action) => {
+      state.fullCollectionData = action.payload
+    },
     setMapAttribution: (state, action) => {
       state.mapAttribution = action.payload
+    },
+    setShowAppLoading: (state, action) => {
+      state.showAppLoading = action.payload
     }
   }
 })
@@ -112,12 +128,16 @@ export const { setShowPopupModal } = mainSlice.actions
 export const { setShowPublishModal } = mainSlice.actions
 export const { setSearchParameters } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions
+export const { setZoomLevelNeeded } = mainSlice.actions
+export const { setTypeOfSearch } = mainSlice.actions
 export const { setShowLaunchModal } = mainSlice.actions
 export const { setShowLaunchImageModal } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
 export const { setSarPolarizations } = mainSlice.actions
 export const { setCollectionTemporalData } = mainSlice.actions
 export const { setCollectionSpatialData } = mainSlice.actions
+export const { setFullCollectionData } = mainSlice.actions
 export const { setMapAttribution } = mainSlice.actions
+export const { setShowAppLoading } = mainSlice.actions
 
 export default mainSlice.reducer

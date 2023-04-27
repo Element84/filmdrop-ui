@@ -1,5 +1,5 @@
 import { convertDateForURL, setupCommaSeparatedBbox } from '../../utils'
-import { API_MAX_ITEMS } from '../defaults'
+import { API_MAX_ITEMS, SearchTypes } from '../defaults'
 
 export const getCloudCoverQueryVal = (_cloudCover) => ({
   gte: 0,
@@ -13,11 +13,9 @@ export const getSearchParams = ({
   showCloudSliderRef,
   _cloudCover,
   _sarPolarizations,
-  aggregated,
+  typeOfSearch,
   gridCode
 }) => {
-  const aggregatedResults = aggregated || false
-
   // build date input
   const combinedDateRange = convertDateForURL(datePickerRef.current)
 
@@ -33,7 +31,7 @@ export const getSearchParams = ({
     ['datetime', combinedDateRange]
   ])
 
-  if (!aggregatedResults) {
+  if (typeOfSearch === SearchTypes.Scene) {
     searchParams.set('limit', API_MAX_ITEMS)
   }
 
@@ -50,9 +48,9 @@ export const getSearchParams = ({
   }
   if (gridCode) {
     if (selectedCollectionRef.current.includes('landsat')) {
-      const gridCodeSplit = gridCode.split('-')[1]
-      query['landsat:wrs_path'] = { eq: gridCodeSplit.substring(0, 3) }
-      query['landsat:wrs_row'] = { eq: gridCodeSplit.slice(-3) }
+      // extract the path and row from gridcode value, e.g., WRS2-123123
+      query['landsat:wrs_path'] = { eq: gridCode.substring(5, 8) }
+      query['landsat:wrs_row'] = { eq: gridCode.slice(-3) }
     } else {
       query['grid:code'] = { eq: gridCode }
     }

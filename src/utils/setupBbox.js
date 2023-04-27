@@ -12,20 +12,14 @@ export const setupArrayBbox = (map) => {
 // setup bbox used in the searchAPI function
 export const setupCommaSeparatedBbox = (map) => {
   const viewportBounds = map.getBounds()
+  const neLng =
+    viewportBounds._northEast.lng > 180 ? 180 : viewportBounds._northEast.lng
+  const swLng =
+    viewportBounds._southWest.lng < -180 ? -180 : viewportBounds._southWest.lng
   return [
-    viewportBounds._southWest.lng,
+    swLng,
     viewportBounds._southWest.lat,
-    viewportBounds._northEast.lng,
+    neLng,
     viewportBounds._northEast.lat
-  ].join(',')
-}
-
-// setup bbox used in the aggregated scenes search
-export const boundsToBbox = (bounds) => {
-  return [
-    bounds._southWest.lng,
-    bounds._southWest.lat,
-    bounds._northEast.lng,
-    bounds._northEast.lat
   ].join(',')
 }

@@ -1,7 +1,7 @@
 .BottomContent {
   width: 100%;
   height: calc(100% - 103px);
-  background-color: #222;
+  background-color: #12171a;
   display: flex;
   position: relative;
 }
@@ -90,15 +90,19 @@
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  flex-direction: row;
-  background-color: #222;
+  flex-direction: column;
+  background-color: rgba(34, 34, 34, 0.8);
   padding: 10px 20px;
   border-radius: 5px;
-  opacity: 0.75;
   color: #fff;
   align-items: center;
   font-size: 0.75em;
   letter-spacing: 0.025em;
+  line-height: 1.8;
+}
+
+.resultCount strong {
+  color: #a9b0c1;
 }
 
 .loadingSpinnerContainer {
@@ -107,4 +111,37 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+}
+
+.appLoadingContainer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgb(53, 61, 79);
+  z-index: 99999;
+  opacity: 0.75;
+}
+
+@media screen and (max-width: 730px) {
+  .BottomContent {
+    height: calc(100% - 60px);
+    margin-top: 60px;
+  }
+
+  .resultCount {
+    width: 70%;
+    top: 50px;
+    left: 52px;
+    transform: none;
+  }
+
+  .ZoomNotice {
+    width: 70%;
+  }
 }
