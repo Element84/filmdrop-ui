@@ -11,7 +11,7 @@ export const fetchAPIitems = async (searchParamsStr) => {
   return items
 }
 
-export const fetchAggregatedItems = async (
+export const fetchGridCodeItems = async (
   searchParamsStr,
   selectedCollection,
   _gridCellData
@@ -43,18 +43,14 @@ export const fetchAggregatedItems = async (
   // create Geojson file with matched geometry and frequency
   const mappedKeysToGrid = buckets
     .map((feature) => {
-      let coordinates =
+      const coordinates =
         _gridCellData[feature.key.split('-')[0].toLowerCase()].cells[
           feature.key.split('-')[1]
         ]
 
-      // for multipolygon grid cells, extract the next array
-      if (coordinates && coordinates[0].length === 1) {
-        coordinates = coordinates[0]
-      }
       return {
         geometry: {
-          type: 'Polygon',
+          type: _gridCellData[feature.key.split('-')[0].toLowerCase()].type,
           coordinates
         },
         type: 'Feature',

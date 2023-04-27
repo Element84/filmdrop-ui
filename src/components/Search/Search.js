@@ -17,7 +17,7 @@ import {
 import { MOSAIC_MIN_ZOOM, MOSAIC_MAX_ITEMS, SearchTypes } from '../defaults'
 import {
   fetchAPIitems,
-  fetchAggregatedItems,
+  fetchGridCodeItems,
   fetchGeoHexItems
 } from './SearchAPI'
 import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
@@ -501,7 +501,7 @@ const Search = () => {
           typeOfSearch
         })
         dispatch(setSearchParameters(aggregatedSearchParamsStr))
-        fetchAggregatedItems(
+        fetchGridCodeItems(
           aggregatedSearchParamsStr,
           selectedCollectionRef.current,
           gridCellDataRef.current
