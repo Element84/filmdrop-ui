@@ -14,7 +14,8 @@ export const getSearchParams = ({
   _cloudCover,
   _sarPolarizations,
   typeOfSearch,
-  gridCode
+  gridCode,
+  mosaicLimit
 }) => {
   // build date input
   const combinedDateRange = convertDateForURL(datePickerRef.current)
@@ -33,6 +34,10 @@ export const getSearchParams = ({
 
   if (typeOfSearch === SearchTypes.Scene) {
     searchParams.set('limit', API_MAX_ITEMS)
+  }
+
+  if (mosaicLimit) {
+    searchParams.set('limit', mosaicLimit)
   }
 
   if (selectedCollectionRef.current) {

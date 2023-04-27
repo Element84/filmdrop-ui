@@ -647,7 +647,7 @@ const Search = () => {
       collections: [selectedCollectionRef.current],
       datetime,
       bbox,
-      max_items: MOSAIC_MAX_ITEMS
+      limit: MOSAIC_MAX_ITEMS
     }
 
     if (showCloudSliderRef.current) {
@@ -692,8 +692,18 @@ const Search = () => {
             })
         }
       })
+
+    const searchParamsStr = getSearchParams({
+      datePickerRef,
+      map,
+      selectedCollectionRef,
+      showCloudSliderRef,
+      _cloudCover,
+      mosaicLimit: MOSAIC_MAX_ITEMS
+    })
+
     // fetch items from API for results notice
-    fetchAPIitems().then((response) => {
+    fetchAPIitems(searchParamsStr).then((response) => {
       dispatch(setSearchResults(response))
       searchResultsRef.current = response
     })
