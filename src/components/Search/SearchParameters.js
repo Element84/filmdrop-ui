@@ -1,5 +1,5 @@
 import { convertDateForURL, setupCommaSeparatedBbox } from '../../utils'
-import { API_MAX_ITEMS } from '../defaults'
+import { API_MAX_ITEMS, SearchTypes } from '../defaults'
 
 export const getCloudCoverQueryVal = (_cloudCover) => ({
   gte: 0,
@@ -31,7 +31,7 @@ export const getSearchParams = ({
     ['datetime', combinedDateRange]
   ])
 
-  if (typeOfSearch === 'scene') {
+  if (typeOfSearch === SearchTypes.Scene) {
     searchParams.set('limit', API_MAX_ITEMS)
   }
 

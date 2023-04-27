@@ -79,7 +79,7 @@ function fixAntiMeridianPoints(hexBoundary) {
   // Example: [-170.6193233947984, -161.63482061718392, -165.41674992858836, -176.05696384421353, 175.98600155652952, 177.51613498805204, -170.6193233947984]
   const longArray = hexBoundary.map((element) => element[0])
 
-  // get general location of polygon points above/below zero
+  // get general location of polygon points east or west of antimeridian
   const lessThanNegative100 = longArray.filter((lng) => lng < -100)
   const greaterThanPositive100 = longArray.filter((lng) => lng > 100)
   const hasMorePositive =

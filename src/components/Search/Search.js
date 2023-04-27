@@ -14,7 +14,7 @@ import {
   setupBounds,
   colorMap
 } from '../../utils'
-import { MOSAIC_MIN_ZOOM, MOSAIC_MAX_ITEMS } from '../defaults'
+import { MOSAIC_MIN_ZOOM, MOSAIC_MAX_ITEMS, SearchTypes } from '../defaults'
 import {
   fetchAPIitems,
   fetchAggregatedItems,
@@ -110,7 +110,7 @@ const Search = () => {
   const pickerMinDateRef = useRef()
   const collectionStartDateRef = useRef()
   const collectionEndDateRef = useRef(new Date())
-  const searchTypeRef = useRef('scene')
+  const searchTypeRef = useRef(SearchTypes.Scene)
   const autoSearchSwitchRef = useRef(false)
   const gridCellDataRef = useRef(null)
 
@@ -292,7 +292,7 @@ const Search = () => {
     if (
       e.originalEvent.detail === 2 ||
       viewModeRef.current === 'mosaic' ||
-      searchTypeRef.current === 'hex'
+      searchTypeRef.current === SearchTypes.GeoHex
     ) {
       return
     }
@@ -327,7 +327,7 @@ const Search = () => {
           })
           clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
 
-          if (searchTypeRef.current === 'scene') {
+          if (searchTypeRef.current === SearchTypes.Scene) {
             // if at least one feature found, push to store else clear store
             intersectingFeatures = [...intersectingFeatures, feature]
             if (intersectingFeatures.length > 0) {
@@ -338,17 +338,18 @@ const Search = () => {
               // clear store
               dispatch(setClickResults([]))
             }
-          } else if (searchTypeRef.current === 'aggregated') {
+          } else if (searchTypeRef.current === SearchTypes.GridCode) {
             // fetch all scenes from API with matching grid code
             try {
               getResults(
-                'sceneAggregated',
+                SearchTypes.GridCodeScenes,
                 feature.properties['grid:code']
               ).then((aggregatedResponse) => {
                 if (aggregatedResponse) {
                   dispatch(
                     setClickResults(aggregatedResponse.response.features)
                   )
+                  dispatch(setShowPopupModal(true))
                 }
               })
             } catch (error) {
@@ -468,7 +469,10 @@ const Search = () => {
     const promise = new Promise(function (resolve, reject) {
       let response = {}
       let options = {}
-      if (typeOfSearch === 'scene' || typeOfSearch === 'sceneAggregated') {
+      if (
+        typeOfSearch === SearchTypes.Scene ||
+        typeOfSearch === SearchTypes.GridCodeScenes
+      ) {
         const searchParamsStr = getSearchParams({
           datePickerRef,
           map,
@@ -486,7 +490,7 @@ const Search = () => {
           }
           resolve({ response })
         })
-      } else if (typeOfSearch === 'aggregated') {
+      } else if (typeOfSearch === SearchTypes.GridCode) {
         const aggregatedSearchParamsStr = getSearchParams({
           datePickerRef,
           map,
@@ -522,7 +526,7 @@ const Search = () => {
             resolve({ response, options })
           }
         })
-      } else if (typeOfSearch === 'hex') {
+      } else if (typeOfSearch === SearchTypes.GeoHex) {
         const aggregatedSearchParamsStr = getSearchParams({
           datePickerRef,
           map,

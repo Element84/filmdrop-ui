@@ -5,3 +5,9 @@ export const API_MAX_ITEMS = process.env.REACT_APP_API_MAX_ITEMS || 200
 export const DEFAULT_MED_ZOOM = 4
 export const DEFAULT_HIGH_ZOOM = 7
 export const COLORMAP = process.env.REACT_APP_COLORMAP || 'viridis'
+export const SearchTypes = Object.freeze({
+  Scene: Symbol('scene'),
+  GridCode: Symbol('gridCode'),
+  GridCodeScenes: Symbol('gridCodeScene'),
+  GeoHex: Symbol('geoHex')
+})

@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
+import { MOSAIC_MIN_ZOOM, APP_NAME, SearchTypes } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap.js'
 
 import PopupResults from '../../../PopupResults/PopupResults'
@@ -39,7 +39,8 @@ const BottomContent = () => {
   const CF_TEMPLATE_URL = process.env.REACT_APP_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
-  const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
+  const resultType =
+    _searchType === SearchTypes.GeoHex ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -119,7 +120,7 @@ const BottomContent = () => {
           <span>Loading {APP_NAME}</span>
         </div>
       )}
-      {_searchType === 'hex' &&
+      {_searchType === SearchTypes.GeoHex &&
         _searchResults?.searchType === 'AggregatedResults' && (
           <Legend results={_searchResults}></Legend>
         )}

@@ -1,5 +1,5 @@
 import { getTilerParams } from './envVarSetup'
-import { DEFAULT_MED_ZOOM, DEFAULT_HIGH_ZOOM } from '../defaults'
+import { DEFAULT_MED_ZOOM, DEFAULT_HIGH_ZOOM, SearchTypes } from '../defaults'
 
 export const setSearchType = (
   zoomLevelRef,
@@ -25,12 +25,12 @@ export const setSearchType = (
   const gridCodeLandsatSearch =
     thisCollection.queryables?.grid_code_landsat_frequency
 
-  let typeOfSearch = 'scene'
+  let typeOfSearch = SearchTypes.Scene
   let zoomLevelNeeded = null
   if (zoomLevelRef.current < mediumZoom) {
     // Low Zoom Level - Geo Hex Aggregated Results View
     if (geoHexSearch) {
-      typeOfSearch = 'hex'
+      typeOfSearch = SearchTypes.GeoHex
     } else if (gridCodeSearch) {
       zoomLevelNeeded = mediumZoom
       typeOfSearch = null
@@ -47,16 +47,16 @@ export const setSearchType = (
   ) {
     // Medium Zoom Level - Grid Code Aggregated Results View
     if (gridCodeSearch) {
-      typeOfSearch = 'aggregated'
+      typeOfSearch = SearchTypes.GridCode
     } else if (gridCodeLandsatSearch) {
-      typeOfSearch = 'aggregated'
+      typeOfSearch = SearchTypes.GridCode
     } else {
       zoomLevelNeeded = highZoom
       typeOfSearch = null
     }
   } else if (zoomLevelRef.current >= highZoom) {
     // High Zoom Level - Scene View
-    typeOfSearch = 'scene'
+    typeOfSearch = SearchTypes.Scene
   }
 
   return { typeOfSearch, zoomLevelNeeded }
