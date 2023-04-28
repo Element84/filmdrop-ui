@@ -102,6 +102,7 @@ const Search = () => {
   const showAppLoadingRef = useRef(_showAppLoading)
   const selectedCollectionRef = useRef(_collectionSelected)
   const showCloudSliderRef = useRef(_showCloudSlider)
+  const sarPolarizationsRef = useRef(_sarPolarizations)
   const viewModeRef = useRef(_viewMode)
   const resultFootprintsRef = useRef()
   const clickedFootprintHighlightRef = useRef()
@@ -211,6 +212,12 @@ const Search = () => {
       fullCollectionDataRef.current = _fullCollectionData
     }
   }, [_fullCollectionData])
+
+  useEffect(() => {
+    if (_sarPolarizations) {
+      sarPolarizationsRef.current = _sarPolarizations
+    }
+  }, [_sarPolarizations])
 
   // setup datepicker based on collection temporal data
   useEffect(() => {
@@ -479,7 +486,7 @@ const Search = () => {
           selectedCollectionRef,
           showCloudSliderRef,
           _cloudCover,
-          _sarPolarizations,
+          sarPolarizationsRef,
           gridCode,
           typeOfSearch
         })
@@ -497,7 +504,7 @@ const Search = () => {
           selectedCollectionRef,
           showCloudSliderRef,
           _cloudCover,
-          _sarPolarizations,
+          sarPolarizationsRef,
           typeOfSearch
         })
         dispatch(setSearchParameters(aggregatedSearchParamsStr))
@@ -533,7 +540,7 @@ const Search = () => {
           selectedCollectionRef,
           showCloudSliderRef,
           _cloudCover,
-          _sarPolarizations,
+          sarPolarizationsRef,
           typeOfSearch
         })
         dispatch(setSearchParameters(aggregatedSearchParamsStr))
