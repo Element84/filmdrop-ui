@@ -647,7 +647,7 @@ const Search = () => {
       collections: [selectedCollectionRef.current],
       datetime,
       bbox,
-      limit: MOSAIC_MAX_ITEMS
+      max_items: MOSAIC_MAX_ITEMS
     }
 
     if (showCloudSliderRef.current) {
