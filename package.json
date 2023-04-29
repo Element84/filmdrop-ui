@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "license": "Apache-2.0",
   "dependencies": {
-    "@emotion/react": "^11.9.3",
+    "@emotion/react": "^11.10.6",
     "@emotion/styled": "^11.9.3",
     "@mui/icons-material": "^5.11.16",
     "@mui/material": "^5.12.0",
