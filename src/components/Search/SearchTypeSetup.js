@@ -7,14 +7,14 @@ export const setSearchType = (
   fullCollectionDataRef
 ) => {
   // Setup Zoom levels from ENV VARIABLES
+  const envSearchMinZoomLevels =
+    import.meta.env.VITE_SEARCH_MIN_ZOOM_LEVELS || ''
   const mediumZoom =
-    getTilerParams('REACT_APP_SEARCH_MIN_ZOOM_LEVELS')[
-      selectedCollectionRef.current
-    ]?.medium || DEFAULT_MED_ZOOM
+    getTilerParams(envSearchMinZoomLevels)[selectedCollectionRef.current]
+      ?.medium || DEFAULT_MED_ZOOM
   const highZoom =
-    getTilerParams('REACT_APP_SEARCH_MIN_ZOOM_LEVELS')[
-      selectedCollectionRef.current
-    ]?.high || DEFAULT_HIGH_ZOOM
+    getTilerParams(envSearchMinZoomLevels)[selectedCollectionRef.current]
+      ?.high || DEFAULT_HIGH_ZOOM
 
   // Setup collection values for different searches
   const thisCollection = fullCollectionDataRef.current?.find(

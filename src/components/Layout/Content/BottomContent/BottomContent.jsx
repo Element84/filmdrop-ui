@@ -1,7 +1,7 @@
 import React from 'react'
 import './BottomContent.css'
 import { MOSAIC_MIN_ZOOM, APP_NAME, SearchTypes } from '../../../defaults'
-import LeafMap from '../../../LeafMap/LeafMap.js'
+import LeafMap from '../../../LeafMap/LeafMap'
 
 import PopupResults from '../../../PopupResults/PopupResults'
 
@@ -34,9 +34,9 @@ const BottomContent = () => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
-  const ANALYZE_LINK = process.env.REACT_APP_ANALYZE_BTN_URL
-  const SHOW_PUBLISH_BTN = process.env.REACT_APP_SHOW_PUBLISH_BTN
-  const CF_TEMPLATE_URL = process.env.REACT_APP_CF_TEMPLATE_URL
+  const ANALYZE_LINK = import.meta.env.VITE_ANALYZE_BTN_URL
+  const SHOW_PUBLISH_BTN = import.meta.env.VITE_SHOW_PUBLISH_BTN
+  const CF_TEMPLATE_URL = import.meta.env.VITE_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
   const resultType =

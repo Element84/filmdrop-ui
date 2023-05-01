@@ -1,15 +1,15 @@
 // retrieve tiler URLs from env variable
-export const envSceneTilerURL = process.env.REACT_APP_SCENE_TILER_URL || ''
-export const envMosaicTilerURL = process.env.REACT_APP_MOSAIC_TILER_URL || ''
+export const envSceneTilerURL = import.meta.env.VITE_SCENE_TILER_URL || ''
+export const envMosaicTilerURL = import.meta.env.VITE_MOSAIC_TILER_URL || ''
 
 // reusable variables
-const envSceneTilerParams = 'REACT_APP_SCENE_TILER_PARAMS'
-const envMosaicTilerParams = 'REACT_APP_MOSAIC_TILER_PARAMS'
+const envSceneTilerParams = import.meta.env.VITE_SCENE_TILER_PARAMS || ''
+const envMosaicTilerParams = import.meta.env.VITE_MOSAIC_TILER_PARAMS || ''
 
 // retrieve tiler params from env variables for scene and mosaic
 export const getTilerParams = (configVariable) => {
   try {
-    return JSON.parse(process.env[configVariable])
+    return JSON.parse(configVariable)
   } catch (e) {
     console.log(`Error parsing tiler params: ${e.message}`)
   }
@@ -71,7 +71,7 @@ const parameters = {
 }
 
 // function to construct the Titiler tile query parameters from
-// REACT_APP_SCENE_TILER_PARAMS env var
+// VITE_SCENE_TILER_PARAMS env var
 export const constructSceneTilerParams = (collection) => {
   // retrieve mosaic tiler parameters from env variable
   const tilerParams = getTilerParams(envSceneTilerParams)
@@ -104,7 +104,7 @@ export const constructSceneTilerParams = (collection) => {
 }
 
 // function to construct the Titiler tile query parameters from
-// REACT_APP_MOSAIC_TILER_PARAMS env var
+// VITE_MOSAIC_TILER_PARAMS env var
 export const constructMosaicTilerParams = (collection) => {
   // retrieve mosaic tiler parameters from env variable
   const tilerParams = getTilerParams(envMosaicTilerParams)

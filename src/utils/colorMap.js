@@ -1,5 +1,5 @@
 import { COLORMAP } from '../components/defaults'
-const colormap = require('colormap')
+import * as colormap from 'colormap'
 
 export const colorMap = (largestRatio) => {
   return colormap({
