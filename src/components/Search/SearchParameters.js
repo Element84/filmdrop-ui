@@ -12,7 +12,7 @@ export const getSearchParams = ({
   selectedCollectionRef,
   showCloudSliderRef,
   _cloudCover,
-  _sarPolarizations,
+  sarPolarizationsRef,
   typeOfSearch,
   gridCode,
   mosaicLimit
@@ -48,7 +48,7 @@ export const getSearchParams = ({
   if (showCloudSliderRef.current) {
     query['eo:cloud_cover'] = getCloudCoverQueryVal(_cloudCover)
   }
-  if (_sarPolarizations) {
+  if (sarPolarizationsRef.current) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
   if (gridCode) {
