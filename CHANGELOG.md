@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 
 - Rename REACT_APP_MIN_ZOOM_LEVEL to REACT_APP_MOSAIC_MIN_ZOOM_LEVEL
+- **Migrate from create-react-app to vite:**
+  - Changed npm start, build, and test commands in package.json
+  - Rename REACT_APP\_ in .env's to be VITE\_
+  - Rename process.env. to be import.meta.env.
+  - Moved index.html into project root
+  - Rename index.html link references, title and src
+  - Updated readme to remove cra references
+  - Renamed react component files to be .jsx instead of .js
+  - Updated leaflet css import path
+  - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
+  - Change from 'require' to ES6 module import in `colormap.js`
 
 ### Added
 
@@ -18,6 +29,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Geo hex aggregated results view at low zoom levels
 - Env variable REACT_APP_SEARCH_MIN_ZOOM_LEVELS
 - Env variable REACT_APP_COLORMAP
+- **Migrate from create-react-app to vite:**
+  - Added `vite.config.js`
+  - Added eslint-plugin-jsx-a11y
+  - Vitest and related testing library libs
+  - Added NPM `coverage` and `serve` commands
 
 ## v1.0.0 - 2023-03-24
 
