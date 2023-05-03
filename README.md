@@ -53,7 +53,7 @@ This project contains several NPM scripts for common tasks.
 
 ### `npm start`
 
-Runs the app for local dev: at [http://localhost:5173](http://localhost:5173)
+Runs the app locally at <http://localhost:5173>
 
 This uses the env vars found in `.env`.
 
