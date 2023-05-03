@@ -7,7 +7,7 @@ const initialState = {
   dateTime: [],
   cloudCover: 0,
   showCloudSlider: true,
-  selectedCollection: process.env.REACT_APP_DEFAULT_COLLECTION || null,
+  selectedCollection: import.meta.env.VITE_DEFAULT_COLLECTION || null,
   collectionError: false,
   searchResults: null,
   clickResults: [],

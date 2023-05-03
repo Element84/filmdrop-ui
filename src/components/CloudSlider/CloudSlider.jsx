@@ -19,7 +19,7 @@ const Input = styled(MuiInput)`
 `
 
 const CloudSlider = () => {
-  const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
+  const API_ENDPOINT = import.meta.env.VITE_STAC_API_URL
   const _collectionSelected = useSelector(
     (state) => state.mainSlice.selectedCollection
   )

@@ -14,7 +14,7 @@ const LaunchModal = () => {
   const dispatch = useDispatch()
   const [copyButtonText, setCopyButtonText] = useState('Copy URL')
   const [copyButtonState, setCopyButtonState] = useState('default')
-  const templateURL = process.env.REACT_APP_CF_TEMPLATE_URL
+  const templateURL = import.meta.env.VITE_CF_TEMPLATE_URL
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))

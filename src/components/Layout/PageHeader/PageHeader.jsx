@@ -5,9 +5,9 @@ import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 
 const PageHeader = () => {
-  const DASHBOARD_LINK = process.env.REACT_APP_DASHBOARD_BTN_URL
-  const LOGO = process.env.REACT_APP_LOGO_URL
-  const ALT_TEXT = process.env.REACT_APP_LOGO_ALT
+  const DASHBOARD_LINK = import.meta.env.VITE_DASHBOARD_BTN_URL
+  const LOGO = import.meta.env.VITE_LOGO_URL
+  const ALT_TEXT = import.meta.env.VITE_LOGO_ALT
 
   function onDashboardClick() {
     window.open(DASHBOARD_LINK, '_blank')
@@ -20,7 +20,7 @@ const PageHeader = () => {
           <img src={LOGO} alt={ALT_TEXT} className="headerLogoImage"></img>
         ) : (
           <img
-            src={process.env.PUBLIC_URL + '/logo.png'}
+            src={import.meta.env.PUBLIC_URL + '/logo.png'}
             alt="FilmDrop by Element 84"
             className="headerLogoImage"
           />

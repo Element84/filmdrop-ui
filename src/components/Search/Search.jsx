@@ -630,7 +630,7 @@ const Search = () => {
             })
         } else {
           dispatch(setSearchLoading(false))
-          console.log('REACT_APP_SCENE_TILER_URL is not set in env variables.')
+          console.log('VITE_SCENE_TILER_URL is not set in env variables.')
         }
       })
   }
@@ -651,7 +651,7 @@ const Search = () => {
     const mosaicBounds = setupBounds(bbox)
 
     const createMosaicBody = {
-      stac_api_root: process.env.REACT_APP_STAC_API_URL,
+      stac_api_root: import.meta.env.VITE_STAC_API_URL,
       asset_name: constructMosaicAssetVal(selectedCollectionRef.current),
       collections: [selectedCollectionRef.current],
       datetime,

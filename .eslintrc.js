@@ -10,7 +10,12 @@ module.exports = {
     es2021: true,
     jest: true
   },
-  extends: ['plugin:react/recommended', 'standard', 'prettier'],
+  extends: [
+    'plugin:react/recommended',
+    'plugin:jsx-a11y/recommended',
+    'standard',
+    'prettier'
+  ],
   overrides: [
     {
       // 3) Now we enable eslint-plugin-testing-library rules or preset only for matching testing files!

@@ -20,8 +20,8 @@ import {
 } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
-  const API_ENDPOINT = process.env.REACT_APP_STAC_API_URL
-  const DEFAULT_COLLECTION = process.env.REACT_APP_DEFAULT_COLLECTION
+  const API_ENDPOINT = import.meta.env.VITE_STAC_API_URL
+  const DEFAULT_COLLECTION = import.meta.env.VITE_DEFAULT_COLLECTION
 
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState()
@@ -121,7 +121,7 @@ const Dropdown = ({ error }) => {
   }, [collectionComplete, collectionId])
 
   useEffect(() => {
-    // check if REACT_APP_DEFAULT_COLLECTION is available
+    // check if VITE_DEFAULT_COLLECTION is available
     if (collectionData) {
       const defaultCollectionFound = !!collectionData.find(
         (o) => o.id === DEFAULT_COLLECTION
@@ -129,7 +129,7 @@ const Dropdown = ({ error }) => {
       if (!defaultCollectionFound) {
         dispatch(setSelectedCollection(null))
         console.log(
-          'Configuration Error: REACT_APP_DEFAULT_COLLECTION not found in API'
+          'Configuration Error: VITE_DEFAULT_COLLECTION not found in API'
         )
       } else {
         setCollectionId(DEFAULT_COLLECTION)
