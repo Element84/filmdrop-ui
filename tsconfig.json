@@ -21,7 +21,6 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "importsNotUsedAsValues": "error",
     "typeRoots": ["./@types", "node_modules/@types"]
   },
   "include": ["src", "tests"]
