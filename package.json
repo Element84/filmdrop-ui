@@ -62,7 +62,7 @@
   "scripts": {
     "start": "env-cmd -f .env vite",
     "build": "env-cmd -f .env tsc && vite build",
-    "serve": "vite preview",
+    "serve": "vite preview --outDir build",
     "test": "vitest --passWithNoTests",
     "coverage": "vitest --passWithNoTests run --coverage ",
     "lint": "eslint ./src --ext .js,.ts && echo \"👍  Passed linting check.\n\"",
