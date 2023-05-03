@@ -215,7 +215,9 @@ const Search = () => {
 
   useEffect(() => {
     if (_sarPolarizations) {
-      sarPolarizationsRef.current = _sarPolarizations
+      sarPolarizationsRef.current = true
+    } else {
+      sarPolarizationsRef.current = false
     }
   }, [_sarPolarizations])
 
