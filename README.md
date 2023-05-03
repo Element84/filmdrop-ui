@@ -9,6 +9,8 @@
     - [`npm start`](#npm-start)
     - [`npm test`](#npm-test)
     - [`npm run build`](#npm-run-build)
+    - [`npm run coverage`](#npm-run-coverage)
+    - [`npm run serve`](#npm-run-serve)
 
 ## Summary
 
@@ -66,3 +68,11 @@ Launches the test runner.
 This builds using the env vars found in `.env`.
 
 Builds the app for production to the `build` folder.
+
+### `npm run coverage`
+
+Runs tests and outputs a coverage report into console.
+
+### `npm run serve`
+
+Starts a local web server that serves the built solution from `build` folder.
