@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **Migrate from create-react-app to vite:**
   - Changed npm start, build, and test commands in package.json
   - Rename REACT_APP\_ in .env's to be VITE\_
-  - Rename process.env. to be import.meta.env.
+  - Rename process.env. to be configEnv (and import ./public/config.json).
   - Moved index.html into project root
   - Rename index.html link references, title and src
   - Updated readme to remove cra references
@@ -28,6 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Updated leaflet css import path
   - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
   - Change from 'require' to ES6 module import in `colormap.js`
+- Migrated from '.env' to '/public/config.json', so that we can change the contents at deploy time
 
 ### Added
 

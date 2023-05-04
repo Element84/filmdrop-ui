@@ -1,5 +1,7 @@
 import { getTilerParams } from './envVarSetup'
 import { DEFAULT_MED_ZOOM, DEFAULT_HIGH_ZOOM, SearchTypes } from '../defaults'
+// eslint-disable-next-line import/no-absolute-path
+import configEnv from '/public/config.json'
 
 export const setSearchType = (
   zoomLevelRef,
@@ -7,8 +9,7 @@ export const setSearchType = (
   fullCollectionDataRef
 ) => {
   // Setup Zoom levels from ENV VARIABLES
-  const envSearchMinZoomLevels =
-    import.meta.env.VITE_SEARCH_MIN_ZOOM_LEVELS || ''
+  const envSearchMinZoomLevels = configEnv.VITE_SEARCH_MIN_ZOOM_LEVELS || ''
   const mediumZoom =
     getTilerParams(envSearchMinZoomLevels)[selectedCollectionRef.current]
       ?.medium || DEFAULT_MED_ZOOM

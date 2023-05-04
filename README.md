@@ -20,8 +20,8 @@ FilmDrop UI is a browser-based interface for displaying results from a STAC API.
 
 ### Environment Files
 
-For local development, you should create an `.env` file with the appropriate configuration outlined in the table below.
-The file `.env.example` is included in this repository as a representative file.
+For local development, you should create a `/public/config.json` file with the appropriate configuration outlined in the table below.
+The file `/public/config.example.json` is included in this repository as a representative file.
 
 | Variable                    | Description                                                                                                                                                                                                                       | Required |
 | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -36,13 +36,13 @@ The file `.env.example` is included in this repository as a representative file.
 | VITE_API_MAX_ITEMS          | Maximum number of items requested from API. If not set, the default max items will be 200.                                                                                                                                        | Optional |
 | VITE_DEFAULT_COLLECTION     | Default collection option for collection dropdown                                                                                                                                                                                 | Optional |
 | VITE_SCENE_TILER_URL        | URL for map tiling                                                                                                                                                                                                                | Required |
-| VITE_SCENE_TILER_PARAMS     | Per-collection configuration of TiTiler `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [.env.example](.env.example)                                                       | Optional |
+| VITE_SCENE_TILER_PARAMS     | Per-collection configuration of TiTiler `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [config.example.json](/public/config.example.json)                                 | Optional |
 | VITE_MOSAIC_MIN_ZOOM_LEVEL  | Minimum zoom level for mosaic view search results. If not set, the default zoom level will be 7.                                                                                                                                  | Optional |
 | VITE_CF_TEMPLATE_URL        | CloudFormation Template URL used to create a new stack. If not set, the Launch Your Own button will not be visible.                                                                                                               | Optional |
 | VITE_MOSAIC_TILER_URL       | URL for mosaic tiling. If not set, the View Mode selector will not be visible. The app requires the use of the [NASA IMPACT TiTiler fork](https://github.com/NASA-IMPACT/titiler) as it contains the mosaicjson endpoints needed. | Optional |
-| VITE_MOSAIC_TILER_PARAMS    | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [.env.example](.env.example)                                                | Optional |
+| VITE_MOSAIC_TILER_PARAMS    | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [config.example.json](/public/config.example.json)                          | Optional |
 | VITE_MOSAIC_MAX_ITEMS       | Maximum number of items in mosaic. If not set, the default max items will be 100.                                                                                                                                                 | Optional |
-| VITE_SEARCH_MIN_ZOOM_LEVELS | Per-collection configuration for minimum zoom levels needed for grid code aggregated results (medium zoom level) and single scene search results (high zoom level). Example in [.env.example](.env.example)                       | Optional |
+| VITE_SEARCH_MIN_ZOOM_LEVELS | Per-collection configuration for minimum zoom levels needed for grid code aggregated results (medium zoom level) and single scene search results (high zoom level). Example in [config.example.json](/public/config.example.json) | Optional |
 | VITE_COLORMAP               | Color map used in low level hex grid search results. Complete list of colormaps are available here: [bpostlethwaite/colormap](https://github.com/bpostlethwaite/colormap). If not set, the default colormap will be "viridis".    | Optional |
 
 ### Links
@@ -57,7 +57,7 @@ This project contains several NPM scripts for common tasks.
 
 Runs the app locally at <http://localhost:5173>
 
-This uses the env vars found in `.env`.
+This uses the env vars found in `/public/config.json`.
 
 ### `npm test`
 
@@ -65,7 +65,7 @@ Launches the test runner.
 
 ### `npm run build`
 
-This builds using the env vars found in `.env`.
+This builds using the env vars found in `/public/config.json`.
 
 Builds the app for production to the `build` folder.
 
