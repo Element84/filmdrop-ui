@@ -5,14 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased - TBD
+## v2.0.0 - 2023-05-04
 
-## Fixed
+### Fixed
 
 - Datetime search now searches from midnight UTC on the start date to immediately before midnight
   on the day after the end date (i.e., the last instant on the end date)
-
-## v1.1.0 - TBD
 
 ### Changed
 
