@@ -30,8 +30,7 @@ export const VITE_SCENE_TILER_PARAMS = {
     colormap_name: 'plasma'
   }
 }
-export const VITE_MOSAIC_TILER_URL =
-  'https://titiler-mosaic.example.com'
+export const VITE_MOSAIC_TILER_URL = 'https://titiler-mosaic.example.com'
 export const VITE_MOSAIC_TILER_PARAMS = {
   'sentinel-2-l2a': { assets: ['visual'] },
   'landsat-c2-l2': {
@@ -68,6 +67,5 @@ export const VITE_SEARCH_MIN_ZOOM_LEVELS = {
   'sentinel-1-grd': { medium: 4, high: 7 }
 }
 export const VITE_APP_NAME = 'App Name'
-export const VITE_CF_TEMPLATE_URL =
-  'https://cf-template.example.com'
+export const VITE_CF_TEMPLATE_URL = 'https://cf-template.example.com'
 export const VITE_LOGO_URL = './logo.png'
