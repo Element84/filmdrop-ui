@@ -20,7 +20,7 @@ FilmDrop UI is a browser-based interface for displaying results from a STAC API.
 
 ### Environment Files
 
-For local development, you should create a `/public/config.json` file with the appropriate configuration outlined in the table below.
+For local development, you should create a `./public/config.json` file with the appropriate configuration outlined in the table below.
 The file `/public/config.example.json` is included in this repository as a representative file.
 
 | Variable                    | Description                                                                                                                                                                                                                       | Required |
@@ -57,7 +57,7 @@ This project contains several NPM scripts for common tasks.
 
 Runs the app locally at <http://localhost:5173>
 
-This uses the env vars found in `/public/config.json`.
+This uses the env vars found in `./public/config.json`.
 
 ### `npm test`
 
@@ -65,7 +65,7 @@ Launches the test runner.
 
 ### `npm run build`
 
-This builds using the env vars found in `/public/config.json`.
+This builds using the env vars found in `./public/config.json`.
 
 Builds the app for production to the `build` folder.
 

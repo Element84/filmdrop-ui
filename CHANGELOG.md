@@ -28,7 +28,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Updated leaflet css import path
   - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
   - Change from 'require' to ES6 module import in `colormap.js`
-- Migrated from '.env' to '/public/config.json', so that we can change the contents at deploy time
+- Migrated from '.env' to './public/config.json', so that we can change the contents at deploy time
 
 ### Added
 

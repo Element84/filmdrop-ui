@@ -181,5 +181,9 @@
     "transformIgnorePatterns": [
       "node_modules/(?!react-leaflet)/"
     ]
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8"
   }
 }
