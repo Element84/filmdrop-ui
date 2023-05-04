@@ -1,13 +1,18 @@
-// eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import {
+  VITE_MOSAIC_TILER_PARAMS,
+  VITE_SCENE_TILER_PARAMS,
+  VITE_MOSAIC_TILER_URL,
+  VITE_SCENE_TILER_URL
+  // eslint-disable-next-line import/no-absolute-path
+} from '/config.js'
 
 // retrieve tiler URLs from env variable
-export const envSceneTilerURL = configEnv.VITE_SCENE_TILER_URL || ''
-export const envMosaicTilerURL = configEnv.VITE_MOSAIC_TILER_URL || ''
+export const envSceneTilerURL = VITE_SCENE_TILER_URL || ''
+export const envMosaicTilerURL = VITE_MOSAIC_TILER_URL || ''
 
 // reusable variables
-const envSceneTilerParams = configEnv.VITE_SCENE_TILER_PARAMS || ''
-const envMosaicTilerParams = configEnv.VITE_MOSAIC_TILER_PARAMS || ''
+const envSceneTilerParams = VITE_SCENE_TILER_PARAMS || ''
+const envMosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
 
 // retrieve tiler params from env variables for scene and mosaic
 export const getTilerParams = (configVariable) => {

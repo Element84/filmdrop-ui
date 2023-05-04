@@ -46,7 +46,7 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
 // eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import { VITE_STAC_API_URL } from '/config.js'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -653,7 +653,7 @@ const Search = () => {
     const mosaicBounds = setupBounds(bbox)
 
     const createMosaicBody = {
-      stac_api_root: configEnv.VITE_STAC_API_URL,
+      stac_api_root: VITE_STAC_API_URL,
       asset_name: constructMosaicAssetVal(selectedCollectionRef.current),
       collections: [selectedCollectionRef.current],
       datetime,

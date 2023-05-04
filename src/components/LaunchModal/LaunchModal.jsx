@@ -4,7 +4,7 @@ import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
 import { APP_NAME } from '../defaults'
 // eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import { VITE_CF_TEMPLATE_URL } from '/config.js'
 
 import { useDispatch } from 'react-redux'
 import {
@@ -16,7 +16,7 @@ const LaunchModal = () => {
   const dispatch = useDispatch()
   const [copyButtonText, setCopyButtonText] = useState('Copy URL')
   const [copyButtonState, setCopyButtonState] = useState('default')
-  const templateURL = configEnv.VITE_CF_TEMPLATE_URL
+  const templateURL = VITE_CF_TEMPLATE_URL
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))

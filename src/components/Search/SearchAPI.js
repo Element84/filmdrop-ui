@@ -1,9 +1,9 @@
 import * as h3 from 'h3-js'
 // eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import { VITE_STAC_API_URL } from '/config.js'
 
 export const fetchAPIitems = async (searchParamsStr) => {
-  const searchURL = `${configEnv.VITE_STAC_API_URL}/search?${searchParamsStr}`
+  const searchURL = `${VITE_STAC_API_URL}/search?${searchParamsStr}`
 
   const response = await fetch(searchURL)
   if (!response.ok) {
@@ -23,7 +23,7 @@ export const fetchGridCodeItems = async (
     : 'grid_code_frequency'
 
   // fetch frequency and counts from API
-  const searchURL = `${configEnv.VITE_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=${gridAggName},total_count`
+  const searchURL = `${VITE_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=${gridAggName},total_count`
   const response = await fetch(searchURL)
   if (!response.ok) {
     throw new Error(`An error has occurred: ${response.status}`)
@@ -114,7 +114,7 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
   const precision = Math.round(zoomLevel / 3)
 
   // fetch frequency and counts from API
-  const searchURL = `${configEnv.VITE_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=grid_geohex_frequency,total_count&grid_geohex_frequency_precision=${precision}`
+  const searchURL = `${VITE_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=grid_geohex_frequency,total_count&grid_geohex_frequency_precision=${precision}`
   const response = await fetch(searchURL)
   if (!response.ok) {
     throw new Error(`An error has occurred: ${response.status}`)

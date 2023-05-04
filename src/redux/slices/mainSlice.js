@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 // eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import { VITE_DEFAULT_COLLECTION } from '/config.js'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want
@@ -9,7 +9,7 @@ const initialState = {
   dateTime: [],
   cloudCover: 0,
   showCloudSlider: true,
-  selectedCollection: configEnv.VITE_DEFAULT_COLLECTION || null,
+  selectedCollection: VITE_DEFAULT_COLLECTION || null,
   collectionError: false,
   searchResults: null,
   clickResults: [],

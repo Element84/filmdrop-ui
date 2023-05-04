@@ -6,7 +6,7 @@ import NativeSelect from '@mui/material/NativeSelect'
 
 import './CollectionDropdown.css'
 // eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import { VITE_DEFAULT_COLLECTION, VITE_STAC_API_URL } from '/config.js'
 
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-select/#native-select
@@ -22,8 +22,8 @@ import {
 } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
-  const API_ENDPOINT = configEnv.VITE_STAC_API_URL
-  const DEFAULT_COLLECTION = configEnv.VITE_DEFAULT_COLLECTION
+  const API_ENDPOINT = VITE_STAC_API_URL
+  const DEFAULT_COLLECTION = VITE_DEFAULT_COLLECTION
 
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState()

@@ -8,7 +8,11 @@ import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import Legend from '../../../Legend/Legend'
 // eslint-disable-next-line import/no-absolute-path
-import configEnv from '/public/config.json'
+import {
+  VITE_CF_TEMPLATE_URL,
+  VITE_SHOW_PUBLISH_BTN,
+  VITE_ANALYZE_BTN_URL
+} from '/config.js'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
@@ -36,9 +40,9 @@ const BottomContent = () => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
-  const ANALYZE_LINK = configEnv.VITE_ANALYZE_BTN_URL
-  const SHOW_PUBLISH_BTN = configEnv.VITE_SHOW_PUBLISH_BTN
-  const CF_TEMPLATE_URL = configEnv.VITE_CF_TEMPLATE_URL
+  const ANALYZE_LINK = VITE_ANALYZE_BTN_URL
+  const SHOW_PUBLISH_BTN = VITE_SHOW_PUBLISH_BTN
+  const CF_TEMPLATE_URL = VITE_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
   const resultType =
