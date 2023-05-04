@@ -12,7 +12,7 @@ const envMosaicTilerParams = configEnv.VITE_MOSAIC_TILER_PARAMS || ''
 // retrieve tiler params from env variables for scene and mosaic
 export const getTilerParams = (configVariable) => {
   try {
-    return JSON.parse(configVariable)
+    return JSON.parse(JSON.stringify(configVariable))
   } catch (e) {
     console.log(`Error parsing tiler params: ${e.message}`)
   }

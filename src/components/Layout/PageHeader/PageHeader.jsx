@@ -3,6 +3,7 @@ import './PageHeader.css'
 
 import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
+// eslint-disable-next-line import/no-absolute-path
 import configEnv from '/public/config.json'
 
 const PageHeader = () => {

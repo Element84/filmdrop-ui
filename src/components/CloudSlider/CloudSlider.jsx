@@ -6,6 +6,7 @@ import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
 
 import './CloudSlider.css'
+// eslint-disable-next-line import/no-absolute-path
 import configEnv from '/public/config.json'
 
 // most of this component comes from the material core UI started code

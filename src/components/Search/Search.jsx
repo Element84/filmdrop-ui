@@ -45,6 +45,7 @@ import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
+// eslint-disable-next-line import/no-absolute-path
 import configEnv from '/public/config.json'
 
 const Search = () => {

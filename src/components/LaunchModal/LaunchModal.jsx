@@ -3,6 +3,7 @@ import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
 import { APP_NAME } from '../defaults'
+// eslint-disable-next-line import/no-absolute-path
 import configEnv from '/public/config.json'
 
 import { useDispatch } from 'react-redux'

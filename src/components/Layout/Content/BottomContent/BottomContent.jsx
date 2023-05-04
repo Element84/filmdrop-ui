@@ -7,6 +7,7 @@ import PopupResults from '../../../PopupResults/PopupResults'
 
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import Legend from '../../../Legend/Legend'
+// eslint-disable-next-line import/no-absolute-path
 import configEnv from '/public/config.json'
 
 // redux imports
