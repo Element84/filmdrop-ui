@@ -37,6 +37,6 @@ jobs:
       - name: Run unit tests
         run: npm run test
       - name: Copy config file
-        run: cp ./public/config.example.json ./public/config.json
+        run: cp ./public/config.example.js ./public/config.js
       - name: Run dev build
         run: npm run build
