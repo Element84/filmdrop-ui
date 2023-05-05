@@ -28,7 +28,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Updated leaflet css import path
   - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
   - Change from 'require' to ES6 module import in `colormap.js`
-- Migrated from '.env' to './public/config.js', so that we can change the contents at deploy time
+- **Migrated from '.env' to './public/config.js'**
+  - This allows a "build once" strategy, swapping in a different config at deploy time
+  - This structure means the config is at '/public/config.js' running locally, but at '/config.js' when built
+  - A 'prod_build.sh' script was added to apply this different during the build process
 
 ### Added
 
