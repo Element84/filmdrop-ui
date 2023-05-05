@@ -8,7 +8,7 @@
   - [Scripts](#scripts)
     - [`npm start`](#npm-start)
     - [`npm test`](#npm-test)
-    - [`npm run build`](#npm-run-build)
+    - [`prod build`](#prod-build)
     - [`npm run coverage`](#npm-run-coverage)
     - [`npm run serve`](#npm-run-serve)
 
@@ -47,7 +47,7 @@ The file `/public/config.example.js` is included in this repository as a represe
 
 ### Links
 
-Static files are built with `npm run build` then moved to overwrite files in existing S3 buckets.
+Static files are built with `./prod_build.sh` then moved to overwrite files in existing S3 buckets.
 
 ## Scripts
 
@@ -63,11 +63,13 @@ This uses the env vars found in `./public/config.js`.
 
 Launches the test runner.
 
-### `npm run build`
+### `prod build`
 
-This builds using the env vars found in `./public/config.js`.
+Running `./prod_build.sh` will create a build using the env vars found in `./public/config.js`.
 
-Builds the app for production to the `build` folder.
+The result will appear in the `build` folder.
+
+The `config.js` file will not be minimized, and can be replaced dynamically during deployment.
 
 ### `npm run coverage`
 
