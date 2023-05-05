@@ -45,8 +45,7 @@ const Dropdown = ({ error }) => {
 
   useEffect(() => {
     if (collectionData) {
-      const collectionDataMap = new Map(Object.entries(collectionData))
-      mapCollection(collectionDataMap).then((data) => {
+      mapCollection(collectionData).then((data) => {
         setCollectionComplete(data)
         dispatch(setFullCollectionData(data))
         dispatch(setShowAppLoading(false))
