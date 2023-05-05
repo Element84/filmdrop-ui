@@ -87,12 +87,13 @@ const Dropdown = ({ error }) => {
   }
 
   async function mapCollection(sortedData) {
-    for (const i in sortedData) {
-      const polarizationObj = await fetchQueryables(sortedData[i].id)
-      const gridHexObj = await fetchAggregations(sortedData[i].id)
-      sortedData[i].queryables = { ...polarizationObj, ...gridHexObj }
+    const sortedDataMap = new Map(Object.entries(sortedData))
+    for (const i in sortedDataMap) {
+      const polarizationObj = await fetchQueryables(sortedDataMap[i].id)
+      const gridHexObj = await fetchAggregations(sortedDataMap[i].id)
+      sortedDataMap[i].queryables = { ...polarizationObj, ...gridHexObj }
     }
-    return sortedData
+    return sortedDataMap
   }
 
   useEffect(() => {
