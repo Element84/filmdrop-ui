@@ -7,11 +7,11 @@ import PopupResults from '../../../PopupResults/PopupResults'
 
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import Legend from '../../../Legend/Legend'
-// eslint-disable-next-line import/no-absolute-path
 import {
   VITE_CF_TEMPLATE_URL,
   VITE_SHOW_PUBLISH_BTN,
   VITE_ANALYZE_BTN_URL
+  // eslint-disable-next-line import/no-absolute-path
 } from '/config.js'
 
 // redux imports

@@ -3,12 +3,12 @@ import './PageHeader.css'
 
 import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
-// eslint-disable-next-line import/no-absolute-path
 import {
   PUBLIC_URL,
   VITE_LOGO_ALT,
   VITE_LOGO_URL,
   VITE_DASHBOARD_BTN_URL
+  // eslint-disable-next-line import/no-absolute-path
 } from '/config.js'
 
 const PageHeader = () => {
