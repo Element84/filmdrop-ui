@@ -4,7 +4,7 @@ import {
   VITE_MOSAIC_TILER_URL,
   VITE_SCENE_TILER_URL
   // eslint-disable-next-line import/no-absolute-path
-} from '/config.js'
+} from '/public/config.js'
 
 // retrieve tiler URLs from env variable
 export const envSceneTilerURL = VITE_SCENE_TILER_URL || ''

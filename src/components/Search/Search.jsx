@@ -46,7 +46,7 @@ import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
 // eslint-disable-next-line import/no-absolute-path
-import { VITE_STAC_API_URL } from '/config.js'
+import { VITE_STAC_API_URL } from '/public/config.js'
 
 const Search = () => {
   const dispatch = useDispatch()

@@ -9,7 +9,7 @@ import {
   VITE_LOGO_URL,
   VITE_DASHBOARD_BTN_URL
   // eslint-disable-next-line import/no-absolute-path
-} from '/config.js'
+} from '/public/config.js'
 
 const PageHeader = () => {
   const DASHBOARD_LINK = VITE_DASHBOARD_BTN_URL

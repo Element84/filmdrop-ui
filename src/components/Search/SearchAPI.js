@@ -1,6 +1,6 @@
 import * as h3 from 'h3-js'
 // eslint-disable-next-line import/no-absolute-path
-import { VITE_STAC_API_URL } from '/config.js'
+import { VITE_STAC_API_URL } from '/public/config.js'
 
 export const fetchAPIitems = async (searchParamsStr) => {
   const searchURL = `${VITE_STAC_API_URL}/search?${searchParamsStr}`

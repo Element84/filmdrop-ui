@@ -12,7 +12,7 @@ import {
   VITE_SHOW_PUBLISH_BTN,
   VITE_ANALYZE_BTN_URL
   // eslint-disable-next-line import/no-absolute-path
-} from '/config.js'
+} from '/public/config.js'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'
