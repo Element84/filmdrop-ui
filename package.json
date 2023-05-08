@@ -70,7 +70,7 @@
     "format-fix": "npx prettier . --write .",
     "fix": "npm run format-fix && npm run lint-fix",
     "typecheck": "tsc --jsx react",
-    "audit-all": "npx better-npm-audit audit --exclude GHSA-rp65-9cf3-cjxr",
+    "audit-all": "npx better-npm-audit audit",
     "audit-prod": "npx better-npm-audit audit --production",
     "pre-commit": "./node_modules/pre-commit/hook",
     "check-markdown": "remark . --frail"
