@@ -88,11 +88,11 @@ const Dropdown = ({ error }) => {
 
   async function mapCollection(collections) {
     for (const collection of collections) {
-      const polarizationObj = await fetchQueryables(collections[collection].id)
-      const gridHexObj = await fetchAggregations(collections[collection].id)
-      collections[collection] = Object.assign({}, collections[collection], {
-        queryables: [...polarizationObj, ...gridHexObj]
-      })
+      const [polarizationObj, gridHexObj] = await Promise.all([
+        fetchQueryables(collection.id),
+        fetchAggregations(collection.id)
+      ])
+      collection.queryables = { ...polarizationObj, ...gridHexObj }
     }
     return collections
   }
