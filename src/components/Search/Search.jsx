@@ -464,6 +464,7 @@ const Search = () => {
           dispatch(setSearchLoading(false))
 
           // add new footprints to map
+          clearResultsFromMap()
           const resultFootprintsFound = L.geoJSON(response, options)
           resultFootprintsFound.id = 'resultLayer'
           resultFootprintsFound.addTo(resultFootprintsRef.current)

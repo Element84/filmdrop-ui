@@ -2,6 +2,7 @@
 
 - [FilmDrop UI](#filmdrop-ui)
   - [Summary](#summary)
+  - [Screenshots](#screenshots)
   - [Running](#running)
     - [Environment Files](#environment-files)
     - [Links](#links)
@@ -15,6 +16,40 @@
 ## Summary
 
 FilmDrop UI is a browser-based interface for displaying results from a STAC API. Additional information can be found in the [CHANGELOG](CHANGELOG.md).
+
+## Screenshots
+
+Sentinel-1 L1C H3 Geohex View
+
+![Sentinel-1 L1C H3 Geohex View](/screenshots/s1-hex.jpg)
+
+Copernicus DEM H3 Geohex Aggregation View
+
+![Copernicus DEM H3 Geohex Aggregation View](/screenshots/cop-dem-hex.jpg)
+
+NAIP Grid View
+
+![NAIP Grid View](/screenshots/naip-grid.jpg)
+
+Sentinel-2 L2A Grid View
+
+![Sentinel-2 L2A Grid View](/screenshots/s2-l2a-grid.jpg)
+
+Sentinel-1 L1C Scene View
+
+![Sentinel-1 L1C Scene View](/screenshots/s1-scene.jpg)
+
+NAIP Scene View
+
+![NAIP Scene View](/screenshots/naip-scene.jpg)
+
+Copernicus DEM Mosaic View
+
+![Copernicus DEM Mosaic View](/screenshots/cop-dem-mosaic.jpg)
+
+Sentinel-2 L2A Mosaic View
+
+![Sentinel-2 L2A Mosaic View](/screenshots/s2-l2a-mosaic.jpg)
 
 ## Running
 

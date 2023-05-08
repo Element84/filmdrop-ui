@@ -90,13 +90,15 @@ const Dropdown = ({ error }) => {
       })
   }
 
-  async function mapCollection(sortedData) {
-    for (const i in sortedData) {
-      const polarizationObj = await fetchQueryables(sortedData[i].id)
-      const gridHexObj = await fetchAggregations(sortedData[i].id)
-      sortedData[i].queryables = { ...polarizationObj, ...gridHexObj }
+  async function mapCollection(collections) {
+    for (const collection of collections) {
+      const [polarizationObj, gridHexObj] = await Promise.all([
+        fetchQueryables(collection.id),
+        fetchAggregations(collection.id)
+      ])
+      collection.queryables = { ...polarizationObj, ...gridHexObj }
     }
-    return sortedData
+    return collections
   }
 
   useEffect(() => {
