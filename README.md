@@ -20,7 +20,7 @@ FilmDrop UI is a browser-based interface for displaying results from a STAC API.
 
 ### Environment Files
 
-For local development, you should create an `.env` file as well as a `./src/assets/config.js` file with the appropriate configuration variables outlined in the table below.
+For local development, you should create an `.env` & `./src/assets/config.js` file with appropriate variables outlined in the table below.
 The files `.env.example` and `./src/assets/config.example.js` are included in this repository as representative files.
 
 | Variable                    | Description                                                                                                                                                                                                                       | Required |
@@ -42,7 +42,7 @@ The files `.env.example` and `./src/assets/config.example.js` are included in th
 | VITE_MOSAIC_TILER_URL       | URL for mosaic tiling. If not set, the View Mode selector will not be visible. The app requires the use of the [NASA IMPACT TiTiler fork](https://github.com/NASA-IMPACT/titiler) as it contains the mosaicjson endpoints needed. | Optional |
 | VITE_MOSAIC_TILER_PARAMS    | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [config.example.js](./src/assets/config.example.js)                         | Optional |
 | VITE_MOSAIC_MAX_ITEMS       | Maximum number of items in mosaic. If not set, the default max items will be 100.                                                                                                                                                 | Optional |
-| VITE_SEARCH_MIN_ZOOM_LEVELS | Per-collection configuration for minimum zoom levels needed for grid code aggregated results (medium zoom level) and single scene search results (high zoom level). Example in [config.example.js](./src/assets/config.example.js)| Optional |
+| VITE_SEARCH_MIN_ZOOM_LEVELS | Per-collection configuration for minimum zoom levels needed for grid code aggregated results (medium zoom level) and single scene search results (high zoom level). Example: [config.example.js](./src/assets/config.example.js)  | Optional |
 | VITE_COLORMAP               | Color map used in low level hex grid search results. Complete list of colormaps are available here: [bpostlethwaite/colormap](https://github.com/bpostlethwaite/colormap). If not set, the default colormap will be "viridis".    | Optional |
 
 ### Links
