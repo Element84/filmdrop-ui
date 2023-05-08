@@ -3,8 +3,7 @@ import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
 import { APP_NAME } from '../defaults'
-// eslint-disable-next-line import/no-absolute-path
-import { VITE_CF_TEMPLATE_URL } from '/public/config.js'
+import { VITE_CF_TEMPLATE_URL } from '../../assets/config.js'
 
 import { useDispatch } from 'react-redux'
 import {

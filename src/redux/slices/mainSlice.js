@@ -1,6 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-// eslint-disable-next-line import/no-absolute-path
-import { VITE_DEFAULT_COLLECTION } from '/public/config.js'
+import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want

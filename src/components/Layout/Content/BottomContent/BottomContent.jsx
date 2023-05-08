@@ -11,8 +11,7 @@ import {
   VITE_CF_TEMPLATE_URL,
   VITE_SHOW_PUBLISH_BTN,
   VITE_ANALYZE_BTN_URL
-  // eslint-disable-next-line import/no-absolute-path
-} from '/public/config.js'
+} from '../../../../assets/config.js'
 
 // redux imports
 import { useSelector, useDispatch } from 'react-redux'

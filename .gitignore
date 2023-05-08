@@ -1,7 +1,9 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-/public/config*.js
-!/public/config.example.js
+.env*
+!.env.example
+/src/assets/config*.js
+!/src/assets/config.example.js
 
 # dependencies
 /node_modules

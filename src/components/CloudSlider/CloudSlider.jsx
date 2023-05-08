@@ -6,8 +6,7 @@ import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
 
 import './CloudSlider.css'
-// eslint-disable-next-line import/no-absolute-path
-import { VITE_STAC_API_URL } from '/public/config.js'
+import { VITE_STAC_API_URL } from '../../assets/config.js'
 
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-slider/#slider-with-input-field

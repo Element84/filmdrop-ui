@@ -9,10 +9,7 @@ import svgrPlugin from 'vite-plugin-svgr'
 export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
-    outDir: 'build',
-    rollupOptions: {
-      external: ['/config.js']
-    }
+    outDir: 'build'
   },
   server: {
     open: true,

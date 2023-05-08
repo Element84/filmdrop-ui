@@ -4,8 +4,7 @@ import {
   VITE_MOSAIC_MAX_ITEMS,
   VITE_APP_NAME,
   VITE_MOSAIC_MIN_ZOOM_LEVEL
-  // eslint-disable-next-line import/no-absolute-path
-} from '/public/config.js'
+} from '../assets/config.js'
 
 export const MOSAIC_MIN_ZOOM = VITE_MOSAIC_MIN_ZOOM_LEVEL || 7
 export const APP_NAME = VITE_APP_NAME || 'FilmDrop Console'
