@@ -67,8 +67,9 @@
     "start": "env-cmd -f .env vite",
     "build": "env-cmd -f .env tsc && vite build",
     "serve": "vite preview --outDir build",
-    "test": "vitest --passWithNoTests",
-    "coverage": "vitest --passWithNoTests run --coverage ",
+    "test": "vitest",
+    "test-pre-commit": "vitest --run",
+    "coverage": "vitest run --coverage ",
     "lint": "eslint ./src --ext .js,.ts && echo \"👍  Passed linting check.\n\"",
     "lint-fix": "eslint ./src --ext .js,.ts --fix",
     "format": "npx prettier --check . && echo \"👍  Passed formatting check.\n\"",
@@ -88,6 +89,7 @@
       "lint",
       "audit-all",
       "audit-prod",
+      "test-pre-commit",
       "build"
     ]
   },
