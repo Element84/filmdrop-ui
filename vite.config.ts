@@ -1,11 +1,12 @@
 /// <reference types="vitest" />
+/// <reference types="vite/client" />
+/// <reference types="vite-plugin-svgr/client" />
 
-import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
+import { defineConfig, configDefaults } from 'vitest/config'
 import svgrPlugin from 'vite-plugin-svgr'
 
-// https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
@@ -18,8 +19,13 @@ export default defineConfig({
     }
   },
   test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/setupTests.js'],
     coverage: {
-      reporter: ['text']
+      provider: 'c8',
+      reporter: ['text'],
+      exclude: [...configDefaults.coverage.exclude, 'src/redux/*'] // ignore the redux boilerplate for coverage report
     }
   }
 })

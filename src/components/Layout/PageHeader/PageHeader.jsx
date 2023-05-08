@@ -14,7 +14,7 @@ const PageHeader = () => {
   }
 
   return (
-    <div className="PageHeader">
+    <div className="PageHeader" data-testid="testPageHeader">
       <div className="pageHeaderLeft">
         {LOGO ? (
           <img src={LOGO} alt={ALT_TEXT} className="headerLogoImage"></img>
