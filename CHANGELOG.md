@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Datetime search now searches from midnight UTC on the start date to immediately before midnight
   on the day after the end date (i.e., the last instant on the end date)
 
+## Added
+
+- For high DPI screens (e.g., Retina), scene image tiling is now done at scale of 2 (previously, scale of 1).
+
 ## v1.1.0 - TBD
 
 ### Changed
