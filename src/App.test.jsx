@@ -15,10 +15,6 @@ describe('App', () => {
     )
 
   describe('on app render', () => {
-    it('should do something', () => {
-      const boolTest = true
-      expect(boolTest).toBeTruthy()
-    })
     it('should render the PageHeader component', () => {
       // TODO: this will be cause errors since fetch API calls are nested in child component renders
       // recommend refactor to move api calls into services directory to setup cleaner testing
