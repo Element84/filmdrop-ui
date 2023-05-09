@@ -14,14 +14,14 @@ const PageHeader = () => {
   }
 
   return (
-    <div className="PageHeader">
+    <div className="PageHeader" data-testid="testPageHeader">
       <div className="pageHeaderLeft">
         {LOGO ? (
           <img src={LOGO} alt={ALT_TEXT} className="headerLogoImage"></img>
         ) : (
           <img
             src={import.meta.env.PUBLIC_URL + '/logo.png'}
-            alt="FilmDrop by Element 84"
+            alt="FilmDrop default app name logo"
             className="headerLogoImage"
           />
         )}
