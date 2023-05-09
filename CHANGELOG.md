@@ -12,26 +12,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Datetime search now searches from midnight UTC on the start date to immediately before midnight
   on the day after the end date (i.e., the last instant on the end date)
 
-### Added
-
-- Added types for react, react-dom, testing-library\_\_jest-dom, and vite-plugin-react-svg
-- Set coverage provider to use c8
-- Added setup under test in `vite.config.ts`
-- Added `tsconfig.node.json`
-- Added reference and excludes sections in `tsconfig.json`
-- Reducer to reset redux state back to initialization state for use between tests
-- Test ids added for `Content` and `PageHeader` components
-- Example tests for `App.jsx` in `App.test.jsx`
-
-### Changed
-
-- Pre-commit hook for test changed to use test-pre-commit with `--run` flag
-
-### Removed
-
-- Types declaration from `tsconfig.json`
-- Tests directory from include section in `tsconfig.json`
-
 ## v1.1.0 - TBD
 
 ### Changed
