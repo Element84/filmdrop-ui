@@ -21,7 +21,7 @@ const PageHeader = () => {
         ) : (
           <img
             src={import.meta.env.PUBLIC_URL + '/logo.png'}
-            alt="FilmDrop by Element 84"
+            alt="FilmDrop default app name logo"
             className="headerLogoImage"
           />
         )}
