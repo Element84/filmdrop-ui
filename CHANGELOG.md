@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
   - Change from 'require' to ES6 module import in `colormap.js`
 - Pre-commit hook for test changed to use test-pre-commit with `--run` flag
+- Bump vite-plugin-svgr from 2.4.0 to 3.2.0
 
 ### Fixed
 
