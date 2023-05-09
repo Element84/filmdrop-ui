@@ -50,6 +50,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Reducer to reset redux state back to initialization state for use between tests
 - Test ids added for `Content` and `PageHeader` components
 - Example tests for `App.jsx` in `App.test.jsx`
+- Example test for `PageHeader.jsx` in `PageHeader.test.jsx`
 
 ### Removed
 
