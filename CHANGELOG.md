@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased - TBD
 
-## Fixed
-
-- Datetime search now searches from midnight UTC on the start date to immediately before midnight
-  on the day after the end date (i.e., the last instant on the end date)
-
-## v1.1.0 - TBD
-
 ### Changed
 
 - Rename REACT_APP_MIN_ZOOM_LEVEL to REACT_APP_MOSAIC_MIN_ZOOM_LEVEL
@@ -29,8 +22,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
   - Change from 'require' to ES6 module import in `colormap.js`
 
-### Added
+## Fixed
 
+- Datetime search now searches from midnight UTC on the start date to immediately before midnight
+  on the day after the end date (i.e., the last instant on the end date)
+
+## Added
+
+- For high DPI screens (e.g., Retina), scene image tiling is now done at scale of 2 (previously, scale of 1).
 - Grid code aggregated results view at medium zoom levels
 - Toggle to enable auto-search or manual search with Search Button
 - Geo hex aggregated results view at low zoom levels
@@ -41,6 +40,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Added eslint-plugin-jsx-a11y
   - Vitest and related testing library libs
   - Added NPM `coverage` and `serve` commands
+
+## v1.1.0 - 2023-05-05
+
+### Added
+
+- Grid code aggregated results view at medium zoom levels
+- Toggle to enable auto-search or manual search with Search Button
+- Geo hex aggregated results view at low zoom levels
 
 ## v1.0.0 - 2023-03-24
 
