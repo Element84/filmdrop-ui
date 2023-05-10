@@ -39,6 +39,7 @@ export const mainSlice = createSlice({
   name: 'mainSlice',
   initialState,
   reducers: {
+    mainSliceReset: () => initialState,
     setMap: (state, action) => {
       state.map = action.payload
     },
@@ -116,6 +117,7 @@ export const mainSlice = createSlice({
 
 // finally, add a new export for the
 // reducer/action info that you added above
+export const { mainSliceReset } = mainSlice.actions
 export const { setMap } = mainSlice.actions
 export const { setCloudCover } = mainSlice.actions
 export const { setShowCloudSlider } = mainSlice.actions

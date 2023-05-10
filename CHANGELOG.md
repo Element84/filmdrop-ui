@@ -7,13 +7,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased - TBD
 
-## Fixed
-
-- Datetime search now searches from midnight UTC on the start date to immediately before midnight
-  on the day after the end date (i.e., the last instant on the end date)
-
-## v1.1.0 - TBD
-
 ### Changed
 
 - Rename REACT_APP_MIN_ZOOM_LEVEL to REACT_APP_MOSAIC_MIN_ZOOM_LEVEL
@@ -27,12 +20,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Updated leaflet css import path
   - Refactor inputs to `getTilerParams` to reference full .env object before passing into function
   - Change from 'require' to ES6 module import in `colormap.js`
+- Pre-commit hook for test changed to use test-pre-commit with `--run` flag
+- Bump vite-plugin-svgr from 2.4.0 to 3.2.0
 - **Migrated from '.env' to './assets/config.js'**
   - Config vars are now in JSON format
   - You can specify new values when running locally, or during the build process
 
+### Fixed
+
+- Datetime search now searches from midnight UTC on the start date to immediately before midnight
+  on the day after the end date (i.e., the last instant on the end date)
+
 ### Added
 
+- For high DPI screens (e.g., Retina), scene image tiling is now done at scale of 2 (previously, scale of 1).
 - Grid code aggregated results view at medium zoom levels
 - Toggle to enable auto-search or manual search with Search Button
 - Geo hex aggregated results view at low zoom levels
@@ -43,6 +44,28 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Added eslint-plugin-jsx-a11y
   - Vitest and related testing library libs
   - Added NPM `coverage` and `serve` commands
+- Added types for react, react-dom, testing-library\_\_jest-dom, and vite-plugin-react-svg
+- Set coverage provider to use c8
+- Added setup under test in `vite.config.ts`
+- Added `tsconfig.node.json`
+- Added reference and excludes sections in `tsconfig.json`
+- Reducer to reset redux state back to initialization state for use between tests
+- Test ids added for `Content` and `PageHeader` components
+- Example tests for `App.jsx` in `App.test.jsx`
+- Example test for `PageHeader.jsx` in `PageHeader.test.jsx`
+
+### Removed
+
+- Types declaration from `tsconfig.json`
+- Tests directory from include section in `tsconfig.json`
+
+## v1.1.0 - 2023-05-05
+
+### Added
+
+- Grid code aggregated results view at medium zoom levels
+- Toggle to enable auto-search or manual search with Search Button
+- Geo hex aggregated results view at low zoom levels
 
 ## v1.0.0 - 2023-03-24
 

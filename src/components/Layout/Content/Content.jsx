@@ -5,7 +5,7 @@ import TopContent from './TopContent/TopContent'
 
 const Content = () => {
   return (
-    <div className="Content">
+    <div className="Content" data-testid="testContent">
       <TopContent></TopContent>
       <BottomContent></BottomContent>
     </div>

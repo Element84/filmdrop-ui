@@ -596,6 +596,12 @@ const Search = () => {
     })
   }
 
+  const scale = () =>
+    (window.devicePixelRatio && window.devicePixelRatio >= 2) ||
+    (window.matchMedia && window.matchMedia('(min-resolution: 192dpi)').matches)
+      ? 2
+      : 1
+
   // remove old image layer and add new Tiler image layer to map
   function addImageClicked(feature) {
     // show loading spinner
@@ -615,7 +621,7 @@ const Search = () => {
         const tileBounds = setupBounds(json.bbox)
         if (sceneTilerURL) {
           L.tileLayer(
-            `${sceneTilerURL}/stac/tiles/{z}/{x}/{y}.png?url=${featureURL}&${tilerParams}`,
+            `${sceneTilerURL}/stac/tiles/{z}/{x}/{y}@${scale()}x.png?url=${featureURL}&${tilerParams}`,
             {
               tileSize: 256,
               bounds: tileBounds,
