@@ -13,7 +13,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **Migrate from create-react-app to vite:**
   - Changed npm start, build, and test commands in package.json
   - Rename REACT_APP\_ in .env's to be VITE\_
-  - Rename process.env. to be import.meta.env.
   - Moved index.html into project root
   - Rename index.html link references, title and src
   - Updated readme to remove cra references
@@ -23,6 +22,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Change from 'require' to ES6 module import in `colormap.js`
 - Pre-commit hook for test changed to use test-pre-commit with `--run` flag
 - Bump vite-plugin-svgr from 2.4.0 to 3.2.0
+- **Migrated from '.env' to './assets/config.js'**
+  - Config vars are now in JSON format
+  - You can specify new values when running locally, or during the build process
 
 ### Fixed
 

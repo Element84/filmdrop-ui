@@ -6,6 +6,7 @@ import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
 
 import './CloudSlider.css'
+import { VITE_STAC_API_URL } from '../../assets/config.js'
 
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-slider/#slider-with-input-field
@@ -19,7 +20,7 @@ const Input = styled(MuiInput)`
 `
 
 const CloudSlider = () => {
-  const API_ENDPOINT = import.meta.env.VITE_STAC_API_URL
+  const API_ENDPOINT = VITE_STAC_API_URL
   const _collectionSelected = useSelector(
     (state) => state.mainSlice.selectedCollection
   )

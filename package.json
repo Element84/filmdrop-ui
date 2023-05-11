@@ -34,7 +34,6 @@
     "@typescript-eslint/parser": "^5.59.2",
     "@vitest/coverage-c8": "^0.31.0",
     "better-npm-audit": "^3.7.3",
-    "env-cmd": "^10.1.0",
     "eslint": "^8.40.0",
     "eslint-config-prettier": "^8.8.0",
     "eslint-config-standard": "^17.0.0",
@@ -64,8 +63,8 @@
     "vitest": "^0.31.0"
   },
   "scripts": {
-    "start": "env-cmd -f .env vite",
-    "build": "env-cmd -f .env tsc && vite build",
+    "start": "vite",
+    "build": "tsc && vite build",
     "serve": "vite preview --outDir build",
     "test": "vitest",
     "test-pre-commit": "vitest --run",
@@ -187,5 +186,9 @@
     "transformIgnorePatterns": [
       "node_modules/(?!react-leaflet)/"
     ]
+  },
+  "engines": {
+    "node": ">=18",
+    "npm": ">=8"
   }
 }

@@ -45,6 +45,7 @@ import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
+import { VITE_STAC_API_URL } from '../../assets/config.js'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -658,7 +659,7 @@ const Search = () => {
     const mosaicBounds = setupBounds(bbox)
 
     const createMosaicBody = {
-      stac_api_root: import.meta.env.VITE_STAC_API_URL,
+      stac_api_root: VITE_STAC_API_URL,
       asset_name: constructMosaicAssetVal(selectedCollectionRef.current),
       collections: [selectedCollectionRef.current],
       datetime,

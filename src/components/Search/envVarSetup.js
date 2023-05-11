@@ -1,15 +1,22 @@
+import {
+  VITE_MOSAIC_TILER_PARAMS,
+  VITE_SCENE_TILER_PARAMS,
+  VITE_MOSAIC_TILER_URL,
+  VITE_SCENE_TILER_URL
+} from '../../assets/config.js'
+
 // retrieve tiler URLs from env variable
-export const envSceneTilerURL = import.meta.env.VITE_SCENE_TILER_URL || ''
-export const envMosaicTilerURL = import.meta.env.VITE_MOSAIC_TILER_URL || ''
+export const envSceneTilerURL = VITE_SCENE_TILER_URL || ''
+export const envMosaicTilerURL = VITE_MOSAIC_TILER_URL || ''
 
 // reusable variables
-const envSceneTilerParams = import.meta.env.VITE_SCENE_TILER_PARAMS || ''
-const envMosaicTilerParams = import.meta.env.VITE_MOSAIC_TILER_PARAMS || ''
+const envSceneTilerParams = VITE_SCENE_TILER_PARAMS || ''
+const envMosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
 
 // retrieve tiler params from env variables for scene and mosaic
 export const getTilerParams = (configVariable) => {
   try {
-    return JSON.parse(configVariable)
+    return JSON.parse(JSON.stringify(configVariable))
   } catch (e) {
     console.log(`Error parsing tiler params: ${e.message}`)
   }

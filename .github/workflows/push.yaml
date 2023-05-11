@@ -34,9 +34,11 @@ jobs:
         run: npm run audit-all
       - name: Run audit (prod, no exclusions)
         run: npm run audit-prod
-      - name: Run unit tests
-        run: npm run test
       - name: Copy env file
         run: cp .env.example .env
+      - name: Copy config file
+        run: cp ./src/assets/config.example.js ./src/assets/config.js
+      - name: Run unit tests
+        run: npm run test
       - name: Run dev build
         run: npm run build

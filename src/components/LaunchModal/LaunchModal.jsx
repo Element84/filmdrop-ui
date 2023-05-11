@@ -3,6 +3,7 @@ import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
 import { APP_NAME } from '../defaults'
+import { VITE_CF_TEMPLATE_URL } from '../../assets/config.js'
 
 import { useDispatch } from 'react-redux'
 import {
@@ -14,7 +15,7 @@ const LaunchModal = () => {
   const dispatch = useDispatch()
   const [copyButtonText, setCopyButtonText] = useState('Copy URL')
   const [copyButtonState, setCopyButtonState] = useState('default')
-  const templateURL = import.meta.env.VITE_CF_TEMPLATE_URL
+  const templateURL = VITE_CF_TEMPLATE_URL
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))

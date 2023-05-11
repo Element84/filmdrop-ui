@@ -3,11 +3,17 @@ import './PageHeader.css'
 
 import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
+import {
+  PUBLIC_URL,
+  VITE_LOGO_ALT,
+  VITE_LOGO_URL,
+  VITE_DASHBOARD_BTN_URL
+} from '../../../assets/config.js'
 
 const PageHeader = () => {
-  const DASHBOARD_LINK = import.meta.env.VITE_DASHBOARD_BTN_URL
-  const LOGO = import.meta.env.VITE_LOGO_URL
-  const ALT_TEXT = import.meta.env.VITE_LOGO_ALT
+  const DASHBOARD_LINK = VITE_DASHBOARD_BTN_URL
+  const LOGO = VITE_LOGO_URL
+  const ALT_TEXT = VITE_LOGO_ALT
 
   function onDashboardClick() {
     window.open(DASHBOARD_LINK, '_blank')
@@ -20,7 +26,7 @@ const PageHeader = () => {
           <img src={LOGO} alt={ALT_TEXT} className="headerLogoImage"></img>
         ) : (
           <img
-            src={import.meta.env.PUBLIC_URL + '/logo.png'}
+            src={PUBLIC_URL + '/logo.png'}
             alt="FilmDrop default app name logo"
             className="headerLogoImage"
           />

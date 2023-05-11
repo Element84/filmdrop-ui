@@ -5,6 +5,10 @@ import Grid from '@mui/material/Grid'
 import NativeSelect from '@mui/material/NativeSelect'
 
 import './CollectionDropdown.css'
+import {
+  VITE_DEFAULT_COLLECTION,
+  VITE_STAC_API_URL
+} from '../../assets/config.js'
 
 // most of this component comes from the material core UI started code
 // https://mui.com/material-ui/react-select/#native-select
@@ -20,8 +24,8 @@ import {
 } from '../../redux/slices/mainSlice'
 
 const Dropdown = ({ error }) => {
-  const API_ENDPOINT = import.meta.env.VITE_STAC_API_URL
-  const DEFAULT_COLLECTION = import.meta.env.VITE_DEFAULT_COLLECTION
+  const API_ENDPOINT = VITE_STAC_API_URL
+  const DEFAULT_COLLECTION = VITE_DEFAULT_COLLECTION
 
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState()

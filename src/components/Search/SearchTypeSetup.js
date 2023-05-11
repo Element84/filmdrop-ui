@@ -1,5 +1,6 @@
 import { getTilerParams } from './envVarSetup'
 import { DEFAULT_MED_ZOOM, DEFAULT_HIGH_ZOOM, SearchTypes } from '../defaults'
+import { VITE_SEARCH_MIN_ZOOM_LEVELS } from '../../assets/config.js'
 
 export const setSearchType = (
   zoomLevelRef,
@@ -7,8 +8,7 @@ export const setSearchType = (
   fullCollectionDataRef
 ) => {
   // Setup Zoom levels from ENV VARIABLES
-  const envSearchMinZoomLevels =
-    import.meta.env.VITE_SEARCH_MIN_ZOOM_LEVELS || ''
+  const envSearchMinZoomLevels = VITE_SEARCH_MIN_ZOOM_LEVELS || ''
   const mediumZoom =
     getTilerParams(envSearchMinZoomLevels)[selectedCollectionRef.current]
       ?.medium || DEFAULT_MED_ZOOM
