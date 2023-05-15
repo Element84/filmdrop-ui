@@ -2,8 +2,8 @@ import { React, useEffect, useState, useRef } from 'react'
 import './LeafMap.css'
 
 // redux imports
-import { useSelector, useDispatch } from 'react-redux'
-import { setMap, setMapAttribution } from '../../redux/slices/mainSlice'
+import { useDispatch } from 'react-redux'
+import { setMap } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import { MapContainer } from 'react-leaflet/MapContainer'
@@ -15,15 +15,22 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
 
+import {
+  VITE_BASEMAP_URL,
+  VITE_BASEMAP_HTML_ATTRIBUTION
+} from '../../assets/config.js'
+
+import DOMPurify from 'dompurify'
+
 const LeafMap = () => {
   // set map ref to itself with useRef
   const mapRef = useRef()
 
   const dispatch = useDispatch()
-  const _mapAttribution = useSelector((state) => state.mainSlice.mapAttribution)
 
   // set up local state
   const [map, setLocalMap] = useState({})
+  const [mapAttribution, setmapAttribution] = useState('')
 
   const mapMarkerIcon = L.icon({
     iconSize: [25, 41],
@@ -81,16 +88,22 @@ const LeafMap = () => {
   }, [map])
 
   useEffect(() => {
-    const defaultMapAttribution = [
-      {
-        label: '',
-        linkText: 'OpenStreetMap',
-        linkUrl: 'https://www.openstreetmap.org/copyright',
-        postText: 'contributors'
-      }
-    ]
-    dispatch(setMapAttribution(defaultMapAttribution))
+    if (VITE_BASEMAP_HTML_ATTRIBUTION) {
+      const output = sanitize(String(VITE_BASEMAP_HTML_ATTRIBUTION))
+      setmapAttribution(output)
+    }
   }, [])
+
+  function sanitize(dirty) {
+    const clean = {
+      __html: DOMPurify.sanitize(dirty, {
+        USE_PROFILES: { html: true },
+        ALLOWED_TAGS: ['a'],
+        ALLOWED_ATTR: ['href', 'target']
+      })
+    }
+    return clean
+  }
 
   return (
     <div className="LeafMap" data-testid="LeafMap">
@@ -106,8 +119,10 @@ const LeafMap = () => {
       >
         {/* set basemap layers here: */}
         <TileLayer
-          className="map-tiles"
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          className={VITE_BASEMAP_URL ? '' : 'map-tiles'}
+          url={
+            VITE_BASEMAP_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+          }
         />
       </MapContainer>
       <div className="attributionTooltipContainer">
@@ -134,14 +149,17 @@ const LeafMap = () => {
             >
               Leaflet
             </a>{' '}
-            <span aria-hidden="true">|</span>
-            {_mapAttribution &&
-              _mapAttribution.map((item) => (
-                <span key={item.label}>
-                  {item.label} &copy; <a href={item.linkUrl}>{item.linkText}</a>{' '}
-                  {item.postText}
-                </span>
-              ))}
+            <span aria-hidden="true">|</span>{' '}
+            {VITE_BASEMAP_URL && mapAttribution ? (
+              <span dangerouslySetInnerHTML={mapAttribution}></span>
+            ) : (
+              <span>
+                &copy;{' '}
+                <a href="https://www.openstreetmap.org/copyright">
+                  OpenStreetMap
+                </a>
+              </span>
+            )}
           </div>
         </Tooltip>
       </div>

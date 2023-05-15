@@ -67,3 +67,7 @@ export const VITE_SEARCH_MIN_ZOOM_LEVELS = {
   'cop-dem-glo-90': { medium: 6, high: 8 },
   'sentinel-1-grd': { medium: 4, high: 7 }
 }
+export const VITE_BASEMAP_URL =
+  'https://tile-provider.example.com/{z}/{x}/{y}.png'
+export const VITE_BASEMAP_HTML_ATTRIBUTION =
+  '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>'
