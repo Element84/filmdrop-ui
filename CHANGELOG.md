@@ -25,11 +25,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **Migrated from '.env' to './assets/config.js'**
   - Config vars are now in JSON format
   - You can specify new values when running locally, or during the build process
+- Update precision for hex geo-aggregate to be defined per zoom levels instead of set based on a quotient
 
 ### Fixed
 
 - Datetime search now searches from midnight UTC on the start date to immediately before midnight
   on the day after the end date (i.e., the last instant on the end date)
+- Set ref for `zoomLevelRef.current` on initial map load
 
 ### Added
 
