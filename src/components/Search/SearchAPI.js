@@ -110,7 +110,25 @@ function fixAntiMeridianPoints(hexBoundary) {
 export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
   let largestRatio = 0
   let largestFrequency = 0
-  const precision = Math.round(zoomLevel / 3)
+  let precision
+
+  switch (true) {
+    case zoomLevel === 0:
+      precision = 1
+      break
+    case zoomLevel >= 1 && zoomLevel <= 3:
+      precision = 2
+      break
+    case zoomLevel >= 4 && zoomLevel <= 6:
+      precision = 3
+      break
+    case zoomLevel >= 7 && zoomLevel <= 8:
+      precision = 4
+      break
+    case zoomLevel >= 9:
+      precision = 5
+      break
+  }
 
   // fetch frequency and counts from API
   const searchURL = `${VITE_STAC_API_URL}/aggregate?${searchParamsStr}&aggregations=grid_geohex_frequency,total_count&grid_geohex_frequency_precision=${precision}`
@@ -136,7 +154,7 @@ export const fetchGeoHexItems = async (searchParamsStr, zoomLevel) => {
     const fixedBoundaries = fixAntiMeridianPoints(hexBoundary)
 
     // calculate heat map color ratio
-    const colorRatio = (feature.frequency / numberMatched) * 1000
+    const colorRatio = (feature.frequency / numberMatched) * 5000
     // capture largest ratio value to set the total number of color variations in colormap
     largestRatio = colorRatio > largestRatio ? colorRatio : largestRatio
     // capture largest frequency value to use in the legend and colormap

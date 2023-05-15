@@ -139,6 +139,9 @@ const Search = () => {
       clickedFootprintImageLayerInit.id = 'clickedFootprintImageLayer'
       clickedFootprintImageLayerRef.current = clickedFootprintImageLayerInit
 
+      zoomLevelRef.current = map.getZoom()
+      setZoomLevelValue(map.getZoom())
+
       map.on('zoomend', function () {
         zoomLevelRef.current = map.getZoom()
         setZoomLevelValue(map.getZoom())
