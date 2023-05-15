@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - **Migrated from '.env' to './assets/config.js'**
   - Config vars are now in JSON format
   - You can specify new values when running locally, or during the build process
+- Change default styles for gridCode and footprint layers to be defined in `Search.jsx`
 
 ### Fixed
 
