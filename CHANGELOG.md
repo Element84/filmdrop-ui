@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Config vars are now in JSON format
   - You can specify new values when running locally, or during the build process
 - Update precision for hex geo-aggregate to be defined per zoom levels instead of set based on a quotient
+- Change default styles for gridCode and footprint layers to be defined in `Search.jsx`
 
 ### Fixed
 

@@ -296,6 +296,31 @@ const Search = () => {
     }
   }
 
+  // map layer styles
+
+  const footprintLayerStyle = {
+    color: '#3183f5',
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.1,
+    fillColor: '#3183f5'
+  }
+
+  const gridCodeLayerStyle = {
+    color: '#3183f5',
+    weight: 1,
+    opacity: 1,
+    fillOpacity: 0.1,
+    fillColor: '#3183f5'
+  }
+
+  const clickedFootprintLayerStyle = {
+    color: '#ff7800',
+    weight: 4,
+    opacity: 0.65,
+    fillOpacity: 0
+  }
+
   // when a user clicks on a search result tile, highlight the tile
   // or remove the image preview and clear popup result if
   // the user clicks just on the map
@@ -319,14 +344,6 @@ const Search = () => {
       clickedFootprintImageLayerRef.current.clearLayers()
     }
 
-    // styling for clickedHighlight layer
-    const clickedFootprintsSelectedStyle = {
-      color: '#ff7800',
-      weight: 5,
-      opacity: 0.65,
-      fillOpacity: 0
-    }
-
     // pull all items from search results that intersect with the click bounds
     let intersectingFeatures = []
     if (searchResultsRef.current !== null) {
@@ -336,7 +353,7 @@ const Search = () => {
         if (featureBounds && featureBounds.intersects(clickBounds)) {
           // highlight layer
           const clickedFootprintsFound = L.geoJSON(feature, {
-            style: clickedFootprintsSelectedStyle
+            style: clickedFootprintLayerStyle
           })
           clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
 
@@ -501,8 +518,9 @@ const Search = () => {
         fetchAPIitems(searchParamsStr).then((sceneResponse) => {
           if (sceneResponse) {
             response = sceneResponse
+            options = { style: footprintLayerStyle }
           }
-          resolve({ response })
+          resolve({ response, options })
         })
       } else if (typeOfSearch === SearchTypes.GridCode) {
         const aggregatedSearchParamsStr = getSearchParams({
@@ -523,6 +541,7 @@ const Search = () => {
           if (aggregatedResponse) {
             response = aggregatedResponse
             options = {
+              style: gridCodeLayerStyle,
               onEachFeature: function (feature, layer) {
                 const scenes =
                   feature.properties.frequency > 1 ? 'scenes' : 'scene'
