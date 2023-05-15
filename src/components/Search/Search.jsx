@@ -311,7 +311,7 @@ const Search = () => {
     fillColor: '#3183f5'
   }
 
-  const clickedFootprintStyle = {
+  const clickedFootprintLayerStyle = {
     color: '#ff7800',
     weight: 4,
     opacity: 0.65,
@@ -350,7 +350,7 @@ const Search = () => {
         if (featureBounds && featureBounds.intersects(clickBounds)) {
           // highlight layer
           const clickedFootprintsFound = L.geoJSON(feature, {
-            style: clickedFootprintStyle
+            style: clickedFootprintLayerStyle
           })
           clickedFootprintsFound.addTo(clickedFootprintHighlightRef.current)
 
