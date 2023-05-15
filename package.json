@@ -42,7 +42,7 @@
     "eslint-plugin-n": "^15.7.0",
     "eslint-plugin-promise": "^6.1.1",
     "eslint-plugin-react": "^7.32.2",
-    "eslint-plugin-testing-library": "^5.10.3",
+    "eslint-plugin-testing-library": "^5.11.0",
     "jsdom": "^21.1.2",
     "pre-commit": "^1.2.2",
     "prettier": "2.8.8",
