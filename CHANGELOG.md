@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - You can specify new values when running locally, or during the build process
 - Update precision for hex geo-aggregate to be defined per zoom levels instead of set based on a quotient
 - Change default styles for gridCode and footprint layers to be defined in `Search.jsx`
+- Updated leaflet basemap to try to read from config if set, else default to OpenStreetMap with css darkmode
 
 ### Fixed
 
@@ -56,6 +57,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Test ids added for `Content` and `PageHeader` components
 - Example tests for `App.jsx` in `App.test.jsx`
 - Example test for `PageHeader.jsx` in `PageHeader.test.jsx`
+- Added dompurify library for sanitizing before rendering configurable HTML
 
 ### Removed
 
