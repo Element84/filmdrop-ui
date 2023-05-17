@@ -479,12 +479,12 @@ const Search = () => {
       try {
         const { response, options } = await getResults(typeOfSearch)
         if (response) {
+          clearResultsFromMap()
           dispatch(setSearchResults(response))
           searchResultsRef.current = response
           dispatch(setSearchLoading(false))
 
           // add new footprints to map
-          clearResultsFromMap()
           const resultFootprintsFound = L.geoJSON(response, options)
           resultFootprintsFound.id = 'resultLayer'
           resultFootprintsFound.addTo(resultFootprintsRef.current)
