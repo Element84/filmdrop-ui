@@ -84,7 +84,7 @@ const BottomContent = () => {
             Analyze
           </button>
         )}
-        {SHOW_PUBLISH_BTN === 'true' && (
+        {SHOW_PUBLISH_BTN === true && (
           <button className="actionButton" onClick={() => onPublishClick()}>
             Publish
           </button>
