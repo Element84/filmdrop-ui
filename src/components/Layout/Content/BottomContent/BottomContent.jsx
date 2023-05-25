@@ -21,6 +21,8 @@ import {
   setShowLaunchModal
 } from '../../../../redux/slices/mainSlice'
 
+import { setMapZoomLevel } from '../../../../utils/mapHelper'
+
 const BottomContent = () => {
   // set up useSelector to get value from store
   const _map = useSelector((state) => state.mainSlice.map)
@@ -62,8 +64,9 @@ const BottomContent = () => {
   function onZoomClick() {
     if (_viewMode === 'mosaic') {
       _map.setZoom(MOSAIC_MIN_ZOOM)
+      setMapZoomLevel(MOSAIC_MIN_ZOOM)
     } else if (_zoomLevelNeeded) {
-      _map.setZoom(_zoomLevelNeeded)
+      setMapZoomLevel(_zoomLevelNeeded)
     }
   }
 

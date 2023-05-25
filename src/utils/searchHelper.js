@@ -11,10 +11,17 @@ import {
 } from './mapHelper'
 import { convertDateForURL } from './datetime'
 import { SearchService } from '../services/get-search-service'
-import { setSearchLoading } from '../redux/slices/mainSlice'
+import { AggregateSearchService } from '../services/get-aggregate-service'
+import {
+  setSearchLoading,
+  setShowZoomNotice,
+  setZoomLevelNeeded
+} from '../redux/slices/mainSlice'
+import * as h3 from 'h3-js'
 
 export function newSearch() {
   clearAllLayers()
+  store.dispatch(setShowZoomNotice(false))
 
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
@@ -40,7 +47,8 @@ export function newSearch() {
 
   if (store.getState().mainSlice.viewMode !== 'scene') {
     if (currentMapZoomLevel < 7) {
-      console.log('need to zoom in')
+      store.dispatch(setZoomLevelNeeded(7))
+      store.dispatch(setShowZoomNotice(true))
       return
     }
     // buildSearchMosaicParams()
@@ -54,31 +62,34 @@ export function newSearch() {
     // show Loading Spinner
     store.dispatch(setSearchLoading(true))
     SearchService(searchScenesParams)
-    // call search service
     console.log('call scene search service')
     return
   }
   if (includesGeoHex && currentMapZoomLevel < midZoomLevel) {
     const searchAggregateParams = buildSearchAggregateParams('hex')
     console.log(searchAggregateParams)
-    // call agg service
+    store.dispatch(setSearchLoading(true))
+    AggregateSearchService(searchAggregateParams, 'hex')
     console.log('call agg hex service')
     return
   }
   if (includesGridCode || includesGridCodeLandsat) {
     if (currentMapZoomLevel < midZoomLevel) {
-      console.log('need to zoom in')
+      store.dispatch(setZoomLevelNeeded(midZoomLevel))
+      store.dispatch(setShowZoomNotice(true))
       return
     }
-
     const searchAggregateParams = buildSearchAggregateParams('grid-code')
     console.log(searchAggregateParams)
+    store.dispatch(setSearchLoading(true))
+    AggregateSearchService(searchAggregateParams, 'grid-code')
     // call agg service
     console.log('call agg grid service')
     return
   }
   if (currentMapZoomLevel < highZoomLevel) {
-    console.log('need to zoom in')
+    store.dispatch(setZoomLevelNeeded(highZoomLevel))
+    store.dispatch(setShowZoomNotice(true))
   }
 }
 
@@ -188,4 +199,149 @@ function buildUrlParamFromBBOX() {
   const neLng = viewportBounds[2] > 180 ? 180 : viewportBounds[2]
   const swLng = viewportBounds[0] < -180 ? -180 : viewportBounds[0]
   return [swLng, viewportBounds[1], neLng, viewportBounds[3]].join(',')
+}
+
+export function mapHexGridFromJson(json) {
+  let largestRatio = 0
+  let largestFrequency = 0
+  const buckets = json.aggregations?.find(
+    (el) => el.name === 'grid_geohex_frequency'
+  ).buckets
+  const numberMatched = json?.aggregations?.find(
+    (el) => el.name === 'total_count'
+  )?.value
+  const overflow = json?.aggregations.find(
+    (el) => el.name === 'grid_geohex_frequency'
+  ).overflow
+
+  const convertedItems = buckets.map((feature) => {
+    const hexBoundary = h3.cellToBoundary(feature.key, true)
+
+    // fix coordinates that cross anti-meridian
+    const fixedBoundaries = fixAntiMeridianPoints(hexBoundary)
+
+    // calculate heat map color ratio
+    const colorRatio = (feature.frequency / numberMatched) * 5000
+    // capture largest ratio value to set the total number of color variations in colormap
+    largestRatio = colorRatio > largestRatio ? colorRatio : largestRatio
+    // capture largest frequency value to use in the legend and colormap
+    largestFrequency =
+      feature.frequency > largestFrequency
+        ? feature.frequency
+        : largestFrequency
+
+    return {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [fixedBoundaries]
+      },
+      properties: { frequency: feature.frequency, colorRatio, largestRatio }
+    }
+  })
+
+  return {
+    type: 'FeatureCollection',
+    features: convertedItems,
+    numberMatched,
+    searchType: 'AggregatedResults',
+    properties: { largestRatio, largestFrequency, overflow }
+  }
+}
+
+function fixAntiMeridianPoints(hexBoundary) {
+  // Example: [-170.6193233947984, -161.63482061718392, -165.41674992858836, -176.05696384421353, 175.98600155652952, 177.51613498805204, -170.6193233947984]
+  const longArray = hexBoundary.map((element) => element[0])
+
+  // get general location of polygon points east or west of antimeridian
+  const lessThanNegative100 = longArray.filter((lng) => lng < -100)
+  const greaterThanPositive100 = longArray.filter((lng) => lng > 100)
+  const hasMorePositive =
+    greaterThanPositive100.length > lessThanNegative100.length
+
+  // adjust coordinate to join the rest of the polygon on the same side of the meridian
+  for (const n in hexBoundary) {
+    if (
+      !hasMorePositive &&
+      greaterThanPositive100.length > 0 &&
+      hexBoundary[n][0] > -100
+    ) {
+      hexBoundary[n][0] = hexBoundary[n][0] - 360
+      if (hexBoundary[n][0] < -180) {
+        hexBoundary[n][0] = -180
+      }
+    } else if (
+      hasMorePositive &&
+      lessThanNegative100.length > 0 &&
+      hexBoundary[n][0] < -100
+    ) {
+      hexBoundary[n][0] = hexBoundary[n][0] + 360
+      if (hexBoundary[n][0] > 180) {
+        hexBoundary[n][0] = 180
+      }
+    }
+  }
+  return hexBoundary
+}
+
+export function mapGridCodeFromJson(json) {
+  const _selectedCollection = store.getState().mainSlice.selectedCollectionData
+  const _gridCellData = store.getState().mainSlice.localGridData
+
+  const gridAggName = _selectedCollection.id.includes('landsat')
+    ? 'grid_code_landsat_frequency'
+    : 'grid_code_frequency'
+  const buckets = json.aggregations?.find(
+    (el) => el.name === gridAggName
+  ).buckets
+
+  const numberMatched = json?.aggregations?.find(
+    (el) => el.name === 'total_count'
+  )?.value
+  const overflow = json?.aggregations.find(
+    (el) =>
+      el.name === 'grid_code_frequency' ||
+      el.name === 'grid_code_landsat_frequency'
+  ).overflow
+
+  // create Geojson file with matched geometry and frequency
+  const mappedKeysToGrid = buckets
+    .map((feature) => {
+      let gridCellDataIndex
+      for (let i = 0; i < _gridCellData.length; i++) {
+        if (
+          Object.keys(_gridCellData[i])[0] ===
+          feature.key.split('-')[0].toLowerCase()
+        ) {
+          gridCellDataIndex = i
+        }
+      }
+      const coordinates =
+        _gridCellData[gridCellDataIndex][
+          feature.key.split('-')[0].toLowerCase()
+        ].cells[feature.key.split('-')[1]]
+
+      return {
+        geometry: {
+          type: _gridCellData[gridCellDataIndex][
+            feature.key.split('-')[0].toLowerCase()
+          ].type,
+          coordinates
+        },
+        type: 'Feature',
+        properties: {
+          'grid:code': feature.key,
+          frequency: feature.frequency
+        }
+      }
+    })
+    .filter((feature) => feature.geometry.coordinates)
+
+  return {
+    type: 'FeatureCollection',
+    features: mappedKeysToGrid,
+    numberMatched,
+    searchType: 'AggregatedResults',
+    properties: { overflow }
+  }
 }

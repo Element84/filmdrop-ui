@@ -1,5 +1,6 @@
 import * as L from 'leaflet'
 import { store } from '../redux/store'
+import { colorMap } from './colorMap'
 
 export function mapClickHandler(e) {
   const map = store.getState().mainSlice.map
@@ -81,6 +82,13 @@ function zoomToBounds(bounds) {
   }
 }
 
+export function setMapZoomLevel(level) {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    map.setZoom(level)
+  }
+}
+
 function leafletBoundsFromBBOX(bbox) {
   const swCorner = L.latLng(bbox[1], bbox[0])
   const neCorner = L.latLng(bbox[3], bbox[2])
@@ -121,5 +129,66 @@ export function getCurrentMapZoomLevel() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
     return map.getZoom()
+  }
+}
+
+export const footprintLayerStyle = {
+  color: '#3183f5',
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.1,
+  fillColor: '#3183f5'
+}
+
+export const gridCodeLayerStyle = {
+  color: '#3183f5',
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.1,
+  fillColor: '#3183f5'
+}
+
+export const clickedFootprintLayerStyle = {
+  color: '#ff7800',
+  weight: 4,
+  opacity: 0.65,
+  fillOpacity: 0
+}
+
+export function buildHexGridLayerOptions(largestRatio) {
+  const colors = colorMap(largestRatio)
+  function styleHexGridLayers(feature, layer) {
+    const colorIndex =
+      Math.round(feature.properties.colorRatio) ===
+      Math.round(feature.properties.largestRatio)
+        ? Math.round(feature.properties.largestRatio) - 1
+        : Math.round(feature.properties.colorRatio)
+    layer.setStyle({
+      fillColor: colors[colorIndex],
+      fillOpacity: 0.4,
+      weight: 1,
+      color: colors[colorIndex],
+      opacity: 1
+    })
+    layer.bindTooltip(feature.properties.frequency.toString(), {
+      permanent: false,
+      direction: 'center',
+      className: 'label_style',
+      interactive: false
+    })
+    layer.on('mouseover', function (e) {
+      layer.setStyle({
+        fillOpacity: 0.1
+      })
+    })
+    layer.on('mouseout', function (e) {
+      layer.setStyle({
+        fillOpacity: 0.4
+      })
+    })
+  }
+
+  return {
+    onEachFeature: styleHexGridLayers
   }
 }

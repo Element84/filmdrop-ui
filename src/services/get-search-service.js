@@ -1,7 +1,7 @@
 import { store } from '../redux/store'
 import { setSearchLoading } from '../redux/slices/mainSlice'
 import { VITE_STAC_API_URL } from '../assets/config'
-import { addDataToLayer } from '../utils/mapHelper'
+import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
 export async function SearchService(searchParams) {
   // get searchType from redux state
@@ -16,11 +16,12 @@ export async function SearchService(searchParams) {
       throw new Error()
     })
     .then((json) => {
-      // format layer geojson?
-      // set results in map layer
-      // set results in redux state
+      const options = {
+        style: footprintLayerStyle
+      }
       store.dispatch(setSearchLoading(false))
-      addDataToLayer(json, 'searchResultsLayer')
+      addDataToLayer(json, 'searchResultsLayer', options)
+      // set results in redux state
       //   store.dispatch(setClickedOrganizationDetails(json))
     })
     .catch((error) => {

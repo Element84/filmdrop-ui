@@ -6,7 +6,10 @@ import Grid from '@mui/material/Grid'
 import NativeSelect from '@mui/material/NativeSelect'
 import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
 import { useDispatch, useSelector } from 'react-redux'
-import { setSelectedCollectionData } from '../../redux/slices/mainSlice'
+import {
+  setSelectedCollectionData,
+  setShowZoomNotice
+} from '../../redux/slices/mainSlice'
 import { zoomToCollectionExtent, clearAllLayers } from '../../utils/mapHelper'
 
 const Dropdown = ({ error }) => {
@@ -40,6 +43,7 @@ const Dropdown = ({ error }) => {
     )
     if (selectedCollection) {
       dispatch(setSelectedCollectionData(selectedCollection))
+      dispatch(setShowZoomNotice(false))
       zoomToCollectionExtent(selectedCollection)
       clearAllLayers()
     }
