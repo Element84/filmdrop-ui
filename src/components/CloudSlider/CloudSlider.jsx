@@ -1,18 +1,12 @@
 import { React, useState, useEffect } from 'react'
+import './CloudSlider.css'
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
-
-import './CloudSlider.css'
-import { VITE_STAC_API_URL } from '../../assets/config.js'
-
-// most of this component comes from the material core UI started code
-// https://mui.com/material-ui/react-slider/#slider-with-input-field
-
 import { useDispatch, useSelector } from 'react-redux'
-import { setCloudCover, setShowCloudSlider } from '../../redux/slices/mainSlice'
+import { setCloudCover } from '../../redux/slices/mainSlice'
 
 const Input = styled(MuiInput)`
   width: 42px;
@@ -20,9 +14,8 @@ const Input = styled(MuiInput)`
 `
 
 const CloudSlider = () => {
-  const API_ENDPOINT = VITE_STAC_API_URL
-  const _collectionSelected = useSelector(
-    (state) => state.mainSlice.selectedCollection
+  const _selectedCollectionData = useSelector(
+    (state) => state.mainSlice.selectedCollectionData
   )
 
   const dispatch = useDispatch()
@@ -30,21 +23,16 @@ const CloudSlider = () => {
   const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
-    if (_collectionSelected) {
-      fetch(`${API_ENDPOINT}/collections/${_collectionSelected}/queryables`)
-        .then((response) => response.json())
-        .then((actualData) => {
-          const supportsCloudCover = !!actualData?.properties['eo:cloud_cover']
-          dispatch(setShowCloudSlider(supportsCloudCover))
-          setDisabled(!supportsCloudCover)
-        })
-        .catch((err) => {
-          dispatch(setShowCloudSlider(false))
-          setDisabled(true)
-          console.log('Fetch Error: ', err.message)
-        })
+    if (_selectedCollectionData) {
+      const supportsCloudCover =
+        _selectedCollectionData.queryables['eo:cloud_cover']
+      if (supportsCloudCover) {
+        setDisabled(!supportsCloudCover)
+      } else {
+        setDisabled(true)
+      }
     }
-  }, [_collectionSelected])
+  }, [_selectedCollectionData])
 
   useEffect(() => {
     dispatch(setCloudCover(value))

@@ -27,7 +27,12 @@ const initialState = {
   collectionTemporalData: null,
   collectionSpatialData: null,
   fullCollectionData: null,
-  showAppLoading: true
+  showAppLoading: true,
+  searchType: null,
+  collectionsData: [],
+  selectedCollectionData: null,
+  searchDateRangeValue: null,
+  localGridData: []
 }
 
 // next, for every key in the initialState
@@ -107,6 +112,21 @@ export const mainSlice = createSlice({
     },
     setShowAppLoading: (state, action) => {
       state.showAppLoading = action.payload
+    },
+    setSearchType: (state, action) => {
+      state.searchType = action.payload
+    },
+    setCollectionsData: (state, action) => {
+      state.collectionsData = action.payload
+    },
+    setSelectedCollectionData: (state, action) => {
+      state.selectedCollectionData = action.payload
+    },
+    setSearchDateRangeValue: (state, action) => {
+      state.searchDateRangeValue = action.payload
+    },
+    setLocalGridData: (state, action) => {
+      state.localGridData = action.payload
     }
   }
 })
@@ -137,5 +157,10 @@ export const { setCollectionTemporalData } = mainSlice.actions
 export const { setCollectionSpatialData } = mainSlice.actions
 export const { setFullCollectionData } = mainSlice.actions
 export const { setShowAppLoading } = mainSlice.actions
+export const { setSearchType } = mainSlice.actions
+export const { setCollectionsData } = mainSlice.actions
+export const { setSelectedCollectionData } = mainSlice.actions
+export const { setSearchDateRangeValue } = mainSlice.actions
+export const { setLocalGridData } = mainSlice.actions
 
 export default mainSlice.reducer

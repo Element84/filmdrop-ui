@@ -1,7 +1,3 @@
-@import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker';
-@import './react-calendar-overrides.css';
-@import 'react-clock/dist/Clock.css';
-
 .Search {
   height: auto;
   width: 100%;

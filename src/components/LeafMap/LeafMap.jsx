@@ -3,7 +3,7 @@ import './LeafMap.css'
 
 // redux imports
 import { useDispatch } from 'react-redux'
-import { setMap } from '../../redux/slices/mainSlice'
+import { setMap, setTypeOfSearch } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import { MapContainer } from 'react-leaflet/MapContainer'
@@ -21,6 +21,8 @@ import {
 } from '../../assets/config.js'
 
 import DOMPurify from 'dompurify'
+
+import { mapClickHandler } from '../../utils/mapHelper'
 
 const LeafMap = () => {
   // set map ref to itself with useRef
@@ -81,6 +83,38 @@ const LeafMap = () => {
       map.on('drag', function () {
         map.panInsideBounds(bounds, { animate: false })
       })
+
+      // map init
+
+      const resultFootprintsInit = new L.FeatureGroup()
+      resultFootprintsInit.addTo(map)
+      resultFootprintsInit.layer_name = 'searchResultsLayer'
+
+      // set up layerGroup for highlight footprints and add to map
+      const clickedFootprintsHighlightInit = new L.FeatureGroup()
+      clickedFootprintsHighlightInit.addTo(map)
+      clickedFootprintsHighlightInit.layer_name = 'clickedSceneHighlightLayer'
+
+      // set up layerGroup for image layer and add to map
+      const clickedFootprintImageLayerInit = new L.FeatureGroup()
+      clickedFootprintImageLayerInit.addTo(map)
+      clickedFootprintImageLayerInit.layer_name = 'clickedSceneImageLayer'
+
+      // set initial zoom state here? // setZoomLevelValue(map.getZoom())
+
+      map.on('zoomend', function () {
+        // TODO: setZoomLevel in redux state // setZoomLevelValue(map.getZoom())
+        // processSearch()
+        // dispatch(setSearchType());
+        console.log('zoomend')
+      })
+
+      map.on('dragend', function () {
+        // processSearch()
+        console.log('dragend')
+      })
+
+      map.on('click', mapClickHandler)
 
       // update the shared map context when the map loads
       dispatch(setMap(map))

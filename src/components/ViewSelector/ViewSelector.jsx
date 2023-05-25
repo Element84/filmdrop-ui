@@ -8,9 +8,6 @@ import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
 
-// most of this component comes from the material core UI started code
-// https://mui.com/material-ui/react-button-group/
-
 const ViewSelector = () => {
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
 
