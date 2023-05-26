@@ -14,14 +14,18 @@ import { SearchService } from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
 import {
   setSearchLoading,
+  setSearchType,
   setShowZoomNotice,
-  setZoomLevelNeeded
+  setZoomLevelNeeded,
+  setShowPopupModal
 } from '../redux/slices/mainSlice'
 import * as h3 from 'h3-js'
+import debounce from './debounce'
 
 export function newSearch() {
   clearAllLayers()
   store.dispatch(setShowZoomNotice(false))
+  store.dispatch(setShowPopupModal(false))
 
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
@@ -59,9 +63,10 @@ export function newSearch() {
   if (currentMapZoomLevel >= highZoomLevel) {
     const searchScenesParams = buildSearchScenesParams()
     console.log(searchScenesParams)
-    // show Loading Spinner
+    // searchType = scene | grid_code | geohex
+    store.dispatch(setSearchType('scene'))
     store.dispatch(setSearchLoading(true))
-    SearchService(searchScenesParams)
+    SearchService(searchScenesParams, 'scene')
     console.log('call scene search service')
     return
   }
@@ -69,6 +74,8 @@ export function newSearch() {
     const searchAggregateParams = buildSearchAggregateParams('hex')
     console.log(searchAggregateParams)
     store.dispatch(setSearchLoading(true))
+    // searchType = scene | grid_code | geohex
+    store.dispatch(setSearchType('hex'))
     AggregateSearchService(searchAggregateParams, 'hex')
     console.log('call agg hex service')
     return
@@ -81,6 +88,8 @@ export function newSearch() {
     }
     const searchAggregateParams = buildSearchAggregateParams('grid-code')
     console.log(searchAggregateParams)
+    // searchType = scene | grid_code | geohex
+    store.dispatch(setSearchType('grid-code'))
     store.dispatch(setSearchLoading(true))
     AggregateSearchService(searchAggregateParams, 'grid-code')
     // call agg service
@@ -93,7 +102,7 @@ export function newSearch() {
   }
 }
 
-function buildSearchScenesParams() {
+function buildSearchScenesParams(gridCodeToSearchIn) {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
   const bbox = buildUrlParamFromBBOX()
@@ -110,23 +119,46 @@ function buildSearchScenesParams() {
     ['collections', collections]
   ])
 
-  const searchParamsStr = [...searchParams]
-    .reduce((obj, x) => {
-      obj.push(x.join('='))
-      return obj
-    }, [])
-    .join('&')
-
+  const query = {}
   if (_selectedCollection.queryables['eo:cloud_cover']) {
-    const cloudCover = `{"eo:cloud_cover":{"gte":0,"lte":${
-      store.getState().mainSlice.cloudCover
-    }}}`
-    const encodedQueryString = encodeURIComponent(cloudCover)
-    const combinedParamString = searchParamsStr + `&query=` + encodedQueryString
-    return combinedParamString
-  } else {
-    return searchParamsStr
+    query['eo:cloud_cover'] = {
+      gte: 0,
+      lte: store.getState().mainSlice.cloudCover
+    }
   }
+  if (_selectedCollection.queryables['sar:polarizations']) {
+    query['sar:polarizations'] = { in: ['VV', 'VH'] }
+  }
+  if (gridCodeToSearchIn) {
+    if (_selectedCollection.id.includes('landsat')) {
+      // extract the path and row from gridcode value, e.g., WRS2-123123
+      query['landsat:wrs_path'] = { eq: gridCodeToSearchIn.substring(5, 8) }
+      query['landsat:wrs_row'] = { eq: gridCodeToSearchIn.slice(-3) }
+    } else {
+      query['grid:code'] = { eq: gridCodeToSearchIn }
+    }
+  }
+
+  let searchParamsStr
+  if (Object.keys(query).length > 0) {
+    searchParams.set('query', encodeURIComponent(JSON.stringify(query)))
+
+    searchParamsStr = [...searchParams]
+      .reduce((obj, x) => {
+        obj.push(x.join('='))
+        return obj
+      }, [])
+      .join('&')
+  } else {
+    searchParamsStr = [...searchParams]
+      .reduce((obj, x) => {
+        obj.push(x.join('='))
+        return obj
+      }, [])
+      .join('&')
+  }
+
+  return searchParamsStr
 }
 
 function buildSearchAggregateParams(gridType) {
@@ -174,24 +206,36 @@ function buildSearchAggregateParams(gridType) {
     ['aggregations', aggregations]
   ])
 
-  const aggregateParamsStr = [...searchParams]
-    .reduce((obj, x) => {
-      obj.push(x.join('='))
-      return obj
-    }, [])
-    .join('&')
-
+  const query = {}
   if (_selectedCollection.queryables['eo:cloud_cover']) {
-    const cloudCover = `{"eo:cloud_cover":{"gte":0,"lte":${
-      store.getState().mainSlice.cloudCover
-    }}}`
-    const encodedQueryString = encodeURIComponent(cloudCover)
-    const combinedParamString =
-      aggregateParamsStr + `&query=` + encodedQueryString
-    return combinedParamString
-  } else {
-    return aggregateParamsStr
+    query['eo:cloud_cover'] = {
+      gte: 0,
+      lte: store.getState().mainSlice.cloudCover
+    }
   }
+  if (_selectedCollection.queryables['sar:polarizations']) {
+    query['sar:polarizations'] = { in: ['VV', 'VH'] }
+  }
+
+  let aggregateParamsStr
+  if (Object.keys(query).length > 0) {
+    searchParams.set('query', encodeURIComponent(JSON.stringify(query)))
+
+    aggregateParamsStr = [...searchParams]
+      .reduce((obj, x) => {
+        obj.push(x.join('='))
+        return obj
+      }, [])
+      .join('&')
+  } else {
+    aggregateParamsStr = [...searchParams]
+      .reduce((obj, x) => {
+        obj.push(x.join('='))
+        return obj
+      }, [])
+      .join('&')
+  }
+  return aggregateParamsStr
 }
 
 function buildUrlParamFromBBOX() {
@@ -344,4 +388,16 @@ export function mapGridCodeFromJson(json) {
     searchType: 'AggregatedResults',
     properties: { overflow }
   }
+}
+
+export function searchGridCodeScenes(gridCodeToSearchIn) {
+  const searchScenesParams = buildSearchScenesParams(gridCodeToSearchIn)
+  console.log(searchScenesParams)
+  SearchService(searchScenesParams, 'grid-code')
+}
+
+export function debounceNewSearch() {
+  // TODO: fix snyk error can call in a better way
+  // ALSO: confirm debounce is actually working...
+  debounce(newSearch(), 1200)
 }

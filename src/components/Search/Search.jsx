@@ -1,39 +1,19 @@
-import { React, useEffect, useState, useRef } from 'react'
+import { React, useEffect, useState } from 'react'
 import './Search.css'
 import { envMosaicTilerURL } from './envVarSetup'
-import { debounce } from '../../utils'
-// import { MOSAIC_MIN_ZOOM, MOSAIC_MAX_ITEMS, SearchTypes } from '../defaults'
-// import {
-//   fetchAPIitems,
-//   fetchGridCodeItems,
-//   fetchGeoHexItems
-// } from './SearchAPI'
-// import { getSearchParams, getCloudCoverQueryVal } from './SearchParameters'
-// import { setSearchType } from './SearchTypeSetup'
-
-import { useSelector } from 'react-redux'
-// import {
-//   setSearchResults,
-//   setClickResults,
-//   setSearchLoading,
-//   setShowZoomNotice,
-//   setZoomLevelNeeded,
-//   setTypeOfSearch,
-//   setSearchParameters,
-//   setShowPopupModal
-// } from '../../redux/slices/mainSlice'
-
+import { useDispatch, useSelector } from 'react-redux'
+import { setIsAutoSearchSet } from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
 import Switch from '@mui/material/Switch'
-
 import DateTimeRangeSelector from '../DateTimeRangeSelector/DateTimeRangeSelector'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
 
-import { newSearch } from '../../utils/searchHelper'
+import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
 
 const Search = () => {
+  const dispatch = useDispatch()
   const _selectedCollectionData = useSelector(
     (state) => state.mainSlice._selectedCollectionData
   )
@@ -42,33 +22,29 @@ const Search = () => {
   )
   const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
+  const _isAutoSearchSet = useSelector(
+    (state) => state.mainSlice.isAutoSearchSet
+  )
 
-  const [autoSearchSwitch, setAutoSearchSwitch] = useState(false)
   const [collectionError, setCollectionError] = useState(false)
-
-  const autoSearchSwitchRef = useRef(false)
 
   // when there are changes, update store and perform new search
   useEffect(() => {
     // TODO: clearAllLayers() from mapHelper.js
     // if autoSearchChecked True
     // then call PerformSearch from searchHelper.js
+    if (_isAutoSearchSet) {
+      debounceNewSearch()
+    }
   }, [_selectedCollectionData, _searchDateRangeValue, _cloudCover, _viewMode])
 
   const handleSwitchChange = (event) => {
-    setAutoSearchSwitch(event.target.checked)
-    autoSearchSwitchRef.current = event.target.checked
+    dispatch(setIsAutoSearchSet(event.target.checked))
+    // set autoSearchChecked in redux state
     if (event.target.checked) {
-      processSearch()
+      debounceNewSearch()
     }
   }
-
-  // search throttle set to 1500ms
-  const processSearch = debounce(function () {
-    if (autoSearchSwitchRef.current) {
-      // TODO call search() or searchAPI() from search.js
-    }
-  }, 800)
 
   function processSearchBtn() {
     // TODO call search() or searchAPI() from search.js
@@ -96,9 +72,9 @@ const Search = () => {
       )}
       <div className="searchContainer searchButton">
         <button
-          className={`actionButton disabled-${autoSearchSwitch}`}
+          className={`actionButton disabled-${_isAutoSearchSet}`}
           onClick={() => processSearchBtn()}
-          disabled={autoSearchSwitch}
+          disabled={_isAutoSearchSet}
         >
           Search
         </button>
@@ -106,7 +82,7 @@ const Search = () => {
         <div className="autoSearchContainer">
           <label>Auto Search</label>
           <Switch
-            checked={autoSearchSwitch}
+            checked={_isAutoSearchSet}
             onChange={handleSwitchChange}
             inputProps={{ 'aria-label': 'controlled' }}
           />

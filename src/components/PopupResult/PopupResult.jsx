@@ -10,6 +10,8 @@ import {
   setShowPopupModal
 } from '../../redux/slices/mainSlice'
 
+import { clearMapSelection } from '../../utils/mapHelper'
+
 const PopupResult = (props) => {
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
@@ -38,6 +40,7 @@ const PopupResult = (props) => {
   const polarizations = props.result?.properties['sar:polarizations']
 
   function onCloseClick() {
+    clearMapSelection()
     dispatch(setShowPopupModal(false))
   }
 

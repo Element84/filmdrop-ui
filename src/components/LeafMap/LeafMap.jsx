@@ -3,7 +3,7 @@ import './LeafMap.css'
 
 // redux imports
 import { useDispatch } from 'react-redux'
-import { setMap, setTypeOfSearch } from '../../redux/slices/mainSlice'
+import { setMap } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
 import { MapContainer } from 'react-leaflet/MapContainer'
@@ -22,7 +22,10 @@ import {
 
 import DOMPurify from 'dompurify'
 
-import { mapClickHandler } from '../../utils/mapHelper'
+import {
+  mapClickHandler,
+  mapCallDebounceNewSearch
+} from '../../utils/mapHelper'
 
 const LeafMap = () => {
   // set map ref to itself with useRef
@@ -103,14 +106,12 @@ const LeafMap = () => {
       // set initial zoom state here? // setZoomLevelValue(map.getZoom())
 
       map.on('zoomend', function () {
-        // TODO: setZoomLevel in redux state // setZoomLevelValue(map.getZoom())
-        // processSearch()
-        // dispatch(setSearchType());
+        mapCallDebounceNewSearch()
         console.log('zoomend')
       })
 
       map.on('dragend', function () {
-        // processSearch()
+        mapCallDebounceNewSearch()
         console.log('dragend')
       })
 

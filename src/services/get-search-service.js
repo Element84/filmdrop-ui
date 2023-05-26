@@ -1,11 +1,14 @@
 import { store } from '../redux/store'
-import { setSearchLoading } from '../redux/slices/mainSlice'
+import {
+  setClickResults,
+  setSearchLoading,
+  setSearchResults,
+  setShowPopupModal
+} from '../redux/slices/mainSlice'
 import { VITE_STAC_API_URL } from '../assets/config'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
-export async function SearchService(searchParams) {
-  // get searchType from redux state
-  // searchType = scene | grid_code | geohex
+export async function SearchService(searchParams, typeOfSearch) {
   await fetch(`${VITE_STAC_API_URL}/search?${searchParams}`, {
     method: 'GET'
   })
@@ -16,13 +19,18 @@ export async function SearchService(searchParams) {
       throw new Error()
     })
     .then((json) => {
-      const options = {
-        style: footprintLayerStyle
+      if (typeOfSearch === 'scene') {
+        store.dispatch(setSearchResults(json))
+        const options = {
+          style: footprintLayerStyle
+        }
+        store.dispatch(setSearchLoading(false))
+        addDataToLayer(json, 'searchResultsLayer', options)
+      } else {
+        store.dispatch(setSearchLoading(false))
+        store.dispatch(setClickResults(json.features))
+        store.dispatch(setShowPopupModal(true))
       }
-      store.dispatch(setSearchLoading(false))
-      addDataToLayer(json, 'searchResultsLayer', options)
-      // set results in redux state
-      //   store.dispatch(setClickedOrganizationDetails(json))
     })
     .catch((error) => {
       store.dispatch(setSearchLoading(false))

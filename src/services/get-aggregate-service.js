@@ -1,5 +1,5 @@
 import { store } from '../redux/store'
-import { setSearchLoading } from '../redux/slices/mainSlice'
+import { setSearchLoading, setSearchResults } from '../redux/slices/mainSlice'
 import { VITE_STAC_API_URL } from '../assets/config'
 import {
   addDataToLayer,
@@ -9,8 +9,6 @@ import {
 import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
 
 export async function AggregateSearchService(searchParams, gridType) {
-  // get searchType from redux state
-  // searchType = scene | grid_code | geohex
   await fetch(`${VITE_STAC_API_URL}/aggregate?${searchParams}`, {
     method: 'GET'
   })
@@ -25,10 +23,12 @@ export async function AggregateSearchService(searchParams, gridType) {
       let options
       if (gridType === 'hex') {
         gridFromJson = mapHexGridFromJson(json)
+        store.dispatch(setSearchResults(gridFromJson))
         console.log(json)
         options = buildHexGridLayerOptions(gridFromJson.properties.largestRatio)
       } else {
         gridFromJson = mapGridCodeFromJson(json)
+        store.dispatch(setSearchResults(gridFromJson))
         options = {
           style: gridCodeLayerStyle,
           onEachFeature: function (feature, layer) {

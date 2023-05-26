@@ -8,7 +8,8 @@ import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCollectionData,
-  setShowZoomNotice
+  setShowZoomNotice,
+  setSearchResults
 } from '../../redux/slices/mainSlice'
 import { zoomToCollectionExtent, clearAllLayers } from '../../utils/mapHelper'
 
@@ -46,6 +47,7 @@ const Dropdown = ({ error }) => {
       dispatch(setShowZoomNotice(false))
       zoomToCollectionExtent(selectedCollection)
       clearAllLayers()
+      dispatch(setSearchResults(null))
     }
   }, [collectionId])
 

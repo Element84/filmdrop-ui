@@ -34,7 +34,7 @@ const BottomContent = () => {
   const _zoomLevelNeeded = useSelector(
     (state) => state.mainSlice.zoomLevelNeeded
   )
-  const _searchType = useSelector((state) => state.mainSlice.typeOfSearch)
+  const _searchType = useSelector((state) => state.mainSlice.searchType)
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
   const _showPopupModal = useSelector((state) => state.mainSlice.showPopupModal)
 
@@ -46,8 +46,7 @@ const BottomContent = () => {
   const CF_TEMPLATE_URL = VITE_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
-  const resultType =
-    _searchType === SearchTypes.GeoHex ? 'hex cells' : 'grid cells'
+  const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -128,7 +127,7 @@ const BottomContent = () => {
           <span>Loading {APP_NAME}</span>
         </div>
       )}
-      {_searchType === SearchTypes.GeoHex &&
+      {_searchType === 'hex' &&
         _searchResults?.searchType === 'AggregatedResults' && (
           <Legend results={_searchResults}></Legend>
         )}

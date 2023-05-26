@@ -1,18 +1,65 @@
 import * as L from 'leaflet'
 import { store } from '../redux/store'
 import { colorMap } from './colorMap'
+import { setClickResults, setShowPopupModal } from '../redux/slices/mainSlice'
+import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 
 export function mapClickHandler(e) {
   const map = store.getState().mainSlice.map
   const clickBounds = L.latLngBounds(e.latlng, e.latlng)
-  console.log(clickBounds)
   if (map && Object.keys(map).length > 0) {
-    map.eachLayer(function (layer) {
-      if (layer.layer_name) {
-        console.log(layer.layer_name)
-        console.log(layer.getLayers().length)
+    const _searchResults = store.getState().mainSlice.searchResults
+    const _searchType = store.getState().mainSlice.searchType
+
+    clearMapSelection()
+
+    if (
+      e.originalEvent.detail === 2 ||
+      store.getState().mainSlice.viewMode === 'mosaic' ||
+      _searchType === 'hex'
+    ) {
+      return
+    }
+    console.log(_searchType)
+
+    // pull all items from search results that intersect with the click bounds
+    let intersectingFeatures = []
+    if (_searchResults !== null) {
+      for (const f in _searchResults.features) {
+        const feature = _searchResults.features[f]
+        const featureBounds = L.geoJSON(feature).getBounds()
+        if (featureBounds && featureBounds.intersects(clickBounds)) {
+          // highlight layer
+          const clickedFootprintsFound = L.geoJSON(feature, {
+            style: clickedFootprintLayerStyle
+          })
+          map.eachLayer(function (layer) {
+            if (layer.layer_name === 'clickedSceneHighlightLayer') {
+              clickedFootprintsFound.addTo(layer)
+            }
+          })
+
+          if (_searchType === 'scene') {
+            // if at least one feature found, push to store else clear store
+            intersectingFeatures = [...intersectingFeatures, feature]
+            if (intersectingFeatures.length > 0) {
+              // push to store
+              console.log(intersectingFeatures)
+              store.dispatch(setClickResults(intersectingFeatures))
+              store.dispatch(setShowPopupModal(true))
+            } else {
+              // clear store
+              store.dispatch(setClickResults([]))
+            }
+          } else if (_searchType === 'grid-code') {
+            // fetch all scenes from API with matching grid code
+            console.log('try to get gridCode data to add to map')
+            console.log(feature.properties['grid:code'])
+            searchGridCodeScenes(feature.properties['grid:code'])
+          }
+        }
       }
-    })
+    }
   }
 }
 
@@ -190,5 +237,17 @@ export function buildHexGridLayerOptions(largestRatio) {
 
   return {
     onEachFeature: styleHexGridLayers
+  }
+}
+
+export function clearMapSelection() {
+  clearLayer('clickedSceneHighlightLayer')
+  clearLayer('clickedSceneImageLayer')
+  store.dispatch(setClickResults([]))
+}
+
+export function mapCallDebounceNewSearch() {
+  if (store.getState().mainSlice.isAutoSearchSet) {
+    debounceNewSearch()
   }
 }
