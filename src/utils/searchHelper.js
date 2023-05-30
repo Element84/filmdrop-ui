@@ -1,15 +1,19 @@
 import { store } from '../redux/store'
 import {
   VITE_SEARCH_MIN_ZOOM_LEVELS,
-  VITE_API_MAX_ITEMS
+  VITE_API_MAX_ITEMS,
+  VITE_STAC_API_URL,
+  VITE_MOSAIC_MAX_ITEMS,
+  VITE_MOSAIC_TILER_PARAMS
 } from '../assets/config'
 import { DEFAULT_MED_ZOOM, DEFAULT_HIGH_ZOOM } from '../components/defaults'
 import {
   getCurrentMapZoomLevel,
   clearAllLayers,
-  bboxFromMapBounds
+  bboxFromMapBounds,
+  getTilerParams
 } from './mapHelper'
-import { convertDateForURL } from './datetime'
+import { convertDateForURL, convertDate } from './datetime'
 import { SearchService } from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
 import {
@@ -17,13 +21,16 @@ import {
   setSearchType,
   setShowZoomNotice,
   setZoomLevelNeeded,
-  setShowPopupModal
+  setShowPopupModal,
+  setSearchResults
 } from '../redux/slices/mainSlice'
 import * as h3 from 'h3-js'
 import debounce from './debounce'
+import { AddMosaicService } from '../services/post-mosaic-service'
 
 export function newSearch() {
   clearAllLayers()
+  store.dispatch(setSearchResults(null))
   store.dispatch(setShowZoomNotice(false))
   store.dispatch(setShowPopupModal(false))
 
@@ -55,8 +62,7 @@ export function newSearch() {
       store.dispatch(setShowZoomNotice(true))
       return
     }
-    // buildSearchMosaicParams()
-    // call moasic service
+    newMosaicSearch()
     console.log('call mosaic service')
     return
   }
@@ -396,8 +402,111 @@ export function searchGridCodeScenes(gridCodeToSearchIn) {
   SearchService(searchScenesParams, 'grid-code')
 }
 
-export function debounceNewSearch() {
-  // TODO: fix snyk error can call in a better way
-  // ALSO: confirm debounce is actually working...
-  debounce(newSearch(), 1200)
+export const debounceNewSearch = debounce(() => newSearch(), 800)
+
+function newMosaicSearch() {
+  clearAllLayers()
+  store.dispatch(setSearchResults(null))
+  store.dispatch(setShowZoomNotice(false))
+  store.dispatch(setShowPopupModal(false))
+  // show loading spinner
+  store.dispatch(setSearchLoading(true))
+  const _selectedCollectionData =
+    store.getState().mainSlice.selectedCollectionData
+  // build date input
+  const datetime = convertDate(store.getState().mainSlice.searchDateRangeValue)
+  // console.log(store.getState().mainSlice.searchDateRangeValue)
+  // get viewport bounds and setup bbox parameter
+  const bbox = buildUrlParamFromBBOX()
+
+  const createMosaicBody = {
+    stac_api_root: VITE_STAC_API_URL,
+    asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
+    collections: [_selectedCollectionData.id],
+    datetime,
+    bbox,
+    max_items: VITE_MOSAIC_MAX_ITEMS || 100
+  }
+
+  if (store.getState().mainSlice.showCloudSlider) {
+    createMosaicBody.query = {
+      'eo:cloud_cover': {
+        gte: 0,
+        lte: store.getState().mainSlice.cloudCover
+      }
+    }
+  }
+
+  const requestOptions = {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/vnd.titiler.stac-api-query+json'
+    },
+    body: JSON.stringify(createMosaicBody)
+  }
+
+  // call post Mosaic Service with requestOptions as params
+  console.log(requestOptions)
+  AddMosaicService(requestOptions)
 }
+
+// construct assets params from env variables for mosaic mode
+const constructMosaicAssetVal = (collection) => {
+  const envMosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
+  const asset = getTilerParams(envMosaicTilerParams)[collection]?.assets || ''
+  if (!asset) {
+    console.log(`Assets not defined for ${collection}`)
+    return null
+  } else {
+    return asset.pop()
+  }
+}
+
+// function addMosaic() {
+
+//   fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
+//     .then((r) => r.json())
+//     .then((body) => {
+//       const imgFormat = 'png'
+//       const baseTileLayerHref = body?.links?.find(
+//         (el) => el.rel === 'tiles'
+//       )?.href
+//       const tilerParams = constructMosaicTilerParams(
+//         selectedCollectionRef.current
+//       )
+//       const tileLayerHref = `${baseTileLayerHref}.${imgFormat}?${tilerParams}`
+
+//       if (tileLayerHref) {
+//         L.tileLayer(tileLayerHref, {
+//           tileSize: 256,
+//           bounds: mosaicBounds,
+//           pane: 'imagery'
+//         })
+//           .addTo(clickedFootprintImageLayerRef.current)
+//           .on('load', function () {
+//             // hide loading spinner
+//             dispatch(setSearchLoading(false))
+//           })
+//           .on('tileerror', function () {
+//             console.log('Tile Error')
+//           })
+//       }
+//     })
+
+//     // TODO: don't think we need this, maybe can remove...
+//  //
+//   // const searchParamsStr = getSearchParams({
+//   //   datePickerRef,
+//   //   map,
+//   //   selectedCollectionRef,
+//   //   showCloudSliderRef,
+//   //   _cloudCover,
+//   //   mosaicLimit: MOSAIC_MAX_ITEMS
+//   // })
+
+//   // // fetch items from API for results notice
+//   // fetchAPIitems(searchParamsStr).then((response) => {
+//   //   dispatch(setSearchResults(response))
+//   //   searchResultsRef.current = response
+//   // })
+// }

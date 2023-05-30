@@ -1,15 +1,3 @@
-// fetch(`${API_ENDPOINT}/collections`)
-// .then((response) => response.json())
-// .then((actualData) => {
-//   const sortedData = actualData.collections.sort((a, b) =>
-//     a.id > b.id ? 1 : b.id > a.id ? -1 : 0
-//   )
-//   setCollectionData(sortedData)
-// })
-// .catch((err) => {
-//   console.log('Collections Fetch Error: ', err.message)
-// })
-
 import { store } from '../redux/store'
 import {
   setCollectionsData,
@@ -19,8 +7,6 @@ import { VITE_STAC_API_URL } from '../assets/config'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 
 export async function GetCollectionsService(searchParams) {
-  // get searchType from redux state
-  // searchType = scene | grid | geohex
   await fetch(`${VITE_STAC_API_URL}/collections`, {
     method: 'GET'
   })

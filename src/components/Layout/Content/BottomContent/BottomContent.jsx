@@ -18,7 +18,8 @@ import { useSelector, useDispatch } from 'react-redux'
 // you need to import each action you need to use
 import {
   setShowPublishModal,
-  setShowLaunchModal
+  setShowLaunchModal,
+  setShowZoomNotice
 } from '../../../../redux/slices/mainSlice'
 
 import { setMapZoomLevel } from '../../../../utils/mapHelper'
@@ -64,6 +65,7 @@ const BottomContent = () => {
     if (_viewMode === 'mosaic') {
       _map.setZoom(MOSAIC_MIN_ZOOM)
       setMapZoomLevel(MOSAIC_MIN_ZOOM)
+      dispatch(setShowZoomNotice(false))
     } else if (_zoomLevelNeeded) {
       setMapZoomLevel(_zoomLevelNeeded)
     }

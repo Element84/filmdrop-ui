@@ -24,7 +24,8 @@ import DOMPurify from 'dompurify'
 
 import {
   mapClickHandler,
-  mapCallDebounceNewSearch
+  mapCallDebounceNewSearch,
+  setMosaicZoomMessage
 } from '../../utils/mapHelper'
 
 const LeafMap = () => {
@@ -107,11 +108,12 @@ const LeafMap = () => {
 
       map.on('zoomend', function () {
         mapCallDebounceNewSearch()
-        console.log('zoomend')
+        setMosaicZoomMessage()
       })
 
       map.on('dragend', function () {
         mapCallDebounceNewSearch()
+        //  TODO: check if showZoomNotice should be set to false?
         console.log('dragend')
       })
 

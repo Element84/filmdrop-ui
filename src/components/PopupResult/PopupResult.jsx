@@ -10,7 +10,10 @@ import {
   setShowPopupModal
 } from '../../redux/slices/mainSlice'
 
-import { clearMapSelection } from '../../utils/mapHelper'
+import {
+  clearMapSelection,
+  debounceTitilerOverlay
+} from '../../utils/mapHelper'
 
 const PopupResult = (props) => {
   // if you are setting redux state, call dispatch
@@ -20,6 +23,9 @@ const PopupResult = (props) => {
     if (props.result) {
       // set image
       dispatch(setCurrentPopupResult(props.result))
+      // set titiler image, debounced
+      debounceTitilerOverlay()
+      console.log('new feature showing')
     }
     // eslint-disable-next-line
   }, [props.result])

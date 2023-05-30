@@ -28,11 +28,7 @@ const Search = () => {
 
   const [collectionError, setCollectionError] = useState(false)
 
-  // when there are changes, update store and perform new search
   useEffect(() => {
-    // TODO: clearAllLayers() from mapHelper.js
-    // if autoSearchChecked True
-    // then call PerformSearch from searchHelper.js
     if (_isAutoSearchSet) {
       debounceNewSearch()
     }
@@ -40,15 +36,12 @@ const Search = () => {
 
   const handleSwitchChange = (event) => {
     dispatch(setIsAutoSearchSet(event.target.checked))
-    // set autoSearchChecked in redux state
     if (event.target.checked) {
       debounceNewSearch()
     }
   }
 
   function processSearchBtn() {
-    // TODO call search() or searchAPI() from search.js
-    // disapatch(setSearchType())
     newSearch()
   }
 
