@@ -6,7 +6,7 @@ import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
 import { useDispatch, useSelector } from 'react-redux'
-import { setCloudCover } from '../../redux/slices/mainSlice'
+import { setCloudCover, setShowCloudSlider } from '../../redux/slices/mainSlice'
 
 const Input = styled(MuiInput)`
   width: 42px;
@@ -28,8 +28,10 @@ const CloudSlider = () => {
         _selectedCollectionData.queryables['eo:cloud_cover']
       if (supportsCloudCover) {
         setDisabled(!supportsCloudCover)
+        dispatch(setShowCloudSlider(true))
       } else {
         setDisabled(true)
+        dispatch(setShowCloudSlider(false))
       }
     }
   }, [_selectedCollectionData])

@@ -29,7 +29,6 @@ const ViewSelector = () => {
 
   useEffect(() => {
     dispatch(setViewMode(selectedBtn))
-    console.log(selectedBtn)
     if (!_showAppLoading) {
       newSearch()
     }

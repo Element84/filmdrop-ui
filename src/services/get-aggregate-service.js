@@ -24,7 +24,6 @@ export async function AggregateSearchService(searchParams, gridType) {
       if (gridType === 'hex') {
         gridFromJson = mapHexGridFromJson(json)
         store.dispatch(setSearchResults(gridFromJson))
-        console.log(json)
         options = buildHexGridLayerOptions(gridFromJson.properties.largestRatio)
       } else {
         gridFromJson = mapGridCodeFromJson(json)
@@ -48,13 +47,10 @@ export async function AggregateSearchService(searchParams, gridType) {
 
       store.dispatch(setSearchLoading(false))
       addDataToLayer(gridFromJson, 'searchResultsLayer', options)
-      // set results in redux state
-      //   store.dispatch(setClickedOrganizationDetails(json))
     })
     .catch((error) => {
       store.dispatch(setSearchLoading(false))
-      const message = 'Error Fetching Search Results'
-      // store.dispatch(setClickedOrganizationDetails(null))
+      const message = 'Error Fetching Aggregate Search Results'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
       //   showApplicationAlert('error', message, 5000)

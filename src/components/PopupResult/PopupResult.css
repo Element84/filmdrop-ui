@@ -5,6 +5,7 @@
   flex-direction: column;
   background-color: #12171a;
   border-bottom: #353d4f 3px solid;
+  margin-top: 35px;
 }
 
 .popupResultThumbnailContainer {
@@ -12,7 +13,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  margin-top: 20px;
+  min-height: 330px;
 }
 
 .popupResultThumbnail {
@@ -78,16 +79,16 @@
 
 .closePopupModal {
   position: absolute;
-  top: 10px;
-  right: 10px;
+  top: 5px;
+  right: 8px;
   background-color: transparent;
   color: #a9b0c1;
   border: 0px;
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   height: 40px;
   padding-left: 10px;
-  padding-right: 10px;
+  padding-right: 5px;
   cursor: pointer;
   transition: color 0.33s ease-in-out;
   -webkit-touch-callout: none;

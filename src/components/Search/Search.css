@@ -7,10 +7,6 @@
   transition: max-height 0.33s ease-in-out;
 }
 
-span.error-true {
-  color: #bc3131;
-}
-
 .searchContainer {
   height: 100px;
   padding-left: 2%;

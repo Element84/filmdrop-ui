@@ -21,14 +21,12 @@ export async function GetCollectionsService(searchParams) {
       return builtCollectionData
     })
     .then((formattedData) => {
-      console.log(formattedData)
       store.dispatch(setCollectionsData(formattedData))
       store.dispatch(setShowAppLoading(false))
       loadLocalGridData()
     })
     .catch((error) => {
       const message = 'Error Fetching Collections'
-      // store.dispatch(setClickedOrganizationDetails(null))
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
       //   showApplicationAlert('error', message, 5000)

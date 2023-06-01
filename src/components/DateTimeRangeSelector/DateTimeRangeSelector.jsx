@@ -12,6 +12,9 @@ const DateTimeRangeSelector = () => {
   const _selectedCollectionData = useSelector(
     (state) => state.mainSlice.selectedCollectionData
   )
+  const _hasCollectionChanged = useSelector(
+    (state) => state.mainSlice.hasCollectionChanged
+  )
 
   const [startDate, setstartDate] = useState()
   // set default date range (current minus 24hrs * 60min * 60sec * 1000ms per day * 14 days)
@@ -23,7 +26,7 @@ const DateTimeRangeSelector = () => {
   const [temporalRangeFound, settemporalRangeFound] = useState(false)
 
   useEffect(() => {
-    if (_selectedCollectionData) {
+    if (_selectedCollectionData && _hasCollectionChanged) {
       const startDateFromCollection = new Date(
         _selectedCollectionData.extent.temporal.interval[0]
       )

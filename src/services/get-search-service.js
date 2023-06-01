@@ -35,7 +35,6 @@ export async function SearchService(searchParams, typeOfSearch) {
     .catch((error) => {
       store.dispatch(setSearchLoading(false))
       const message = 'Error Fetching Search Results'
-      // store.dispatch(setClickedOrganizationDetails(null))
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
       //   showApplicationAlert('error', message, 5000)

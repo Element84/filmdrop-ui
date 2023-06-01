@@ -1,6 +1,6 @@
 import { GetCollectionQueryablesService } from '../services/get-queryables-service'
 import { GetCollectionAggregationsService } from '../services/get-aggregations-service'
-import { loadLocalGridDataService } from '../services/get-local-grid-data-json-service'
+import { LoadLocalGridDataService } from '../services/get-local-grid-data-json-service'
 
 export async function buildCollectionsData(collections) {
   for (const collection of collections.collections) {
@@ -22,6 +22,6 @@ export async function buildCollectionsData(collections) {
 export async function loadLocalGridData() {
   const dataFiles = ['cdem', 'doqq', 'mgrs', 'wrs2']
   dataFiles.map(async function (d) {
-    await loadLocalGridDataService(d)
+    await LoadLocalGridDataService(d)
   })
 }

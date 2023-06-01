@@ -33,7 +33,8 @@ const initialState = {
   selectedCollectionData: null,
   searchDateRangeValue: null,
   localGridData: [],
-  isAutoSearchSet: false
+  isAutoSearchSet: false,
+  hasCollectionChanged: false
 }
 
 // next, for every key in the initialState
@@ -131,6 +132,9 @@ export const mainSlice = createSlice({
     },
     setIsAutoSearchSet: (state, action) => {
       state.isAutoSearchSet = action.payload
+    },
+    sethasCollectionChanged: (state, action) => {
+      state.hasCollectionChanged = action.payload
     }
   }
 })
@@ -167,5 +171,6 @@ export const { setSelectedCollectionData } = mainSlice.actions
 export const { setSearchDateRangeValue } = mainSlice.actions
 export const { setLocalGridData } = mainSlice.actions
 export const { setIsAutoSearchSet } = mainSlice.actions
+export const { sethasCollectionChanged } = mainSlice.actions
 
 export default mainSlice.reducer

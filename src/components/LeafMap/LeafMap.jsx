@@ -29,12 +29,10 @@ import {
 } from '../../utils/mapHelper'
 
 const LeafMap = () => {
+  const dispatch = useDispatch()
   // set map ref to itself with useRef
   const mapRef = useRef()
 
-  const dispatch = useDispatch()
-
-  // set up local state
   const [map, setLocalMap] = useState({})
   const [mapAttribution, setmapAttribution] = useState('')
 
@@ -63,7 +61,7 @@ const LeafMap = () => {
 
   useEffect(() => {
     if (map && Object.keys(map).length) {
-      // add geosearch function
+      // add geosearch/geocoder to map
       map.addControl(searchControl)
 
       // override position of zoom controls
@@ -88,24 +86,24 @@ const LeafMap = () => {
         map.panInsideBounds(bounds, { animate: false })
       })
 
-      // map init
-
+      // set up map layers
       const resultFootprintsInit = new L.FeatureGroup()
       resultFootprintsInit.addTo(map)
       resultFootprintsInit.layer_name = 'searchResultsLayer'
 
-      // set up layerGroup for highlight footprints and add to map
       const clickedFootprintsHighlightInit = new L.FeatureGroup()
       clickedFootprintsHighlightInit.addTo(map)
       clickedFootprintsHighlightInit.layer_name = 'clickedSceneHighlightLayer'
 
-      // set up layerGroup for image layer and add to map
       const clickedFootprintImageLayerInit = new L.FeatureGroup()
       clickedFootprintImageLayerInit.addTo(map)
       clickedFootprintImageLayerInit.layer_name = 'clickedSceneImageLayer'
 
-      // set initial zoom state here? // setZoomLevelValue(map.getZoom())
+      const mosaicImageLayerInit = new L.FeatureGroup()
+      mosaicImageLayerInit.addTo(map)
+      mosaicImageLayerInit.layer_name = 'mosaicImageLayer'
 
+      // set up map events
       map.on('zoomend', function () {
         mapCallDebounceNewSearch()
         setMosaicZoomMessage()
@@ -113,13 +111,11 @@ const LeafMap = () => {
 
       map.on('dragend', function () {
         mapCallDebounceNewSearch()
-        //  TODO: check if showZoomNotice should be set to false?
-        console.log('dragend')
       })
 
       map.on('click', mapClickHandler)
 
-      // update the shared map context when the map loads
+      // push map into redux state
       dispatch(setMap(map))
     }
   }, [map])

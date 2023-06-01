@@ -1,10 +1,8 @@
-import { React, useEffect } from 'react'
+import { React, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResult.css'
 
-// redux imports
 import { useDispatch } from 'react-redux'
-// you need to import each action you need to use
 import {
   setCurrentPopupResult,
   setShowPopupModal
@@ -16,31 +14,39 @@ import {
 } from '../../utils/mapHelper'
 
 const PopupResult = (props) => {
-  // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
-  // props can sometimes be undefined while re-rendering so need to make sure it exists
+  const [thumbnailURL, setthumbnailURL] = useState(null)
+
   useEffect(() => {
     if (props.result) {
-      // set image
       dispatch(setCurrentPopupResult(props.result))
-      // set titiler image, debounced
+
       debounceTitilerOverlay()
-      console.log('new feature showing')
+
+      const thumbnailURLForSelection = props.result?.links?.find(
+        ({ rel }) => rel === 'thumbnail'
+      )?.href
+
+      const image = new Image()
+      image.onload = function () {
+        if (this.width > 0) {
+          setthumbnailURL(thumbnailURLForSelection)
+        }
+      }
+      image.onerror = function () {
+        setthumbnailURL('/ThumbnailNotAvailable.png')
+      }
+      image.src = thumbnailURLForSelection
     }
     // eslint-disable-next-line
   }, [props.result])
 
   useEffect(() => {
     return () => {
-      // set to null when popup not shown anymore
       dispatch(setCurrentPopupResult(null))
     }
     // eslint-disable-next-line
   }, [])
-
-  const thumbnailURL = props.result?.links?.find(
-    ({ rel }) => rel === 'thumbnail'
-  )?.href
 
   const cloudCover = props.result?.properties['eo:cloud_cover']
   const polarizations = props.result?.properties['sar:polarizations']
@@ -55,17 +61,19 @@ const PopupResult = (props) => {
       {props.result ? (
         <div>
           <div className="popupResultThumbnailContainer">
-            <picture>
-              <img
-                src={thumbnailURL}
-                alt="thumbnail"
-                className="popupResultThumbnail"
-                onError={({ currentTarget }) => {
-                  currentTarget.onerror = null // prevents looping
-                  currentTarget.parentElement.remove()
-                }}
-              ></img>
-            </picture>
+            {thumbnailURL ? (
+              <picture>
+                <img
+                  src={thumbnailURL}
+                  alt="thumbnail"
+                  className="popupResultThumbnail"
+                  onError={({ currentTarget }) => {
+                    currentTarget.onerror = null // prevents looping
+                    currentTarget.parentElement.remove()
+                  }}
+                ></img>
+              </picture>
+            ) : null}
           </div>
           <div className="popupResultDetails">
             <div className="detailRow">

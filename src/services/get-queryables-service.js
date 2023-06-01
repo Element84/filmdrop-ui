@@ -15,6 +15,7 @@ export function GetCollectionQueryablesService(collectionId) {
     })
     .catch((error) => {
       const message = 'Error Fetching Aggregations for: ' + collectionId
+      // log full error for diagnosing client side errors if needed
       console.error(message, error)
       //   showApplicationAlert('error', message, 5000)
     })

@@ -1,4 +1,4 @@
-import { React, useEffect, useState } from 'react'
+import { React, useEffect } from 'react'
 import './Search.css'
 import { envMosaicTilerURL } from './envVarSetup'
 import { useDispatch, useSelector } from 'react-redux'
@@ -26,8 +26,6 @@ const Search = () => {
     (state) => state.mainSlice.isAutoSearchSet
   )
 
-  const [collectionError, setCollectionError] = useState(false)
-
   useEffect(() => {
     if (_isAutoSearchSet) {
       debounceNewSearch()
@@ -47,10 +45,8 @@ const Search = () => {
 
   return (
     <div className="Search" data-testid="Search">
-      <div
-        className={`searchContainer collectionDropdown error-${collectionError}`}
-      >
-        <CollectionDropdown error={collectionError}></CollectionDropdown>
+      <div className={`searchContainer collectionDropdown`}>
+        <CollectionDropdown></CollectionDropdown>
       </div>
       <div className="searchContainer datePicker">
         <DateTimeRangeSelector></DateTimeRangeSelector>

@@ -9,11 +9,17 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCollectionData,
   setShowZoomNotice,
-  setSearchResults
+  setSearchResults,
+  setSearchLoading,
+  sethasCollectionChanged
 } from '../../redux/slices/mainSlice'
-import { zoomToCollectionExtent, clearAllLayers } from '../../utils/mapHelper'
+import {
+  zoomToCollectionExtent,
+  clearAllLayers,
+  clearMapSelection
+} from '../../utils/mapHelper'
 
-const Dropdown = ({ error }) => {
+const Dropdown = () => {
   const DEFAULT_COLLECTION = VITE_DEFAULT_COLLECTION
 
   const dispatch = useDispatch()
@@ -45,29 +51,29 @@ const Dropdown = ({ error }) => {
     if (selectedCollection) {
       dispatch(setSelectedCollectionData(selectedCollection))
       dispatch(setShowZoomNotice(false))
-      zoomToCollectionExtent(selectedCollection)
-      clearAllLayers()
       dispatch(setSearchResults(null))
+      dispatch(setSearchLoading(false))
+      zoomToCollectionExtent(selectedCollection)
+      clearMapSelection()
+      clearAllLayers()
     }
   }, [collectionId])
 
+  function onCollectionChanged(e) {
+    dispatch(sethasCollectionChanged(true))
+    setCollectionId(e.target.value)
+  }
+
   return (
     <Box>
-      <label>
-        Collection{' '}
-        {error && (
-          <span className="error-true">
-            <em>Required</em>
-          </span>
-        )}
-      </label>
+      <label>Collection</label>
       <Grid container alignItems="center">
         <Grid item xs>
           <NativeSelect
             id="collectionDropdown"
             value={collectionId}
             label="Collection"
-            onChange={(e) => setCollectionId(e.target.value)}
+            onChange={(e) => onCollectionChanged(e)}
           >
             <option value="selectOne" disabled={true}>
               Select Collection
@@ -83,10 +89,6 @@ const Dropdown = ({ error }) => {
       </Grid>
     </Box>
   )
-}
-
-Dropdown.propTypes = {
-  error: PropTypes.bool
 }
 
 export default Dropdown

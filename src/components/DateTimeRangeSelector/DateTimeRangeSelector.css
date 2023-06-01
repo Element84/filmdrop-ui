@@ -46,3 +46,7 @@ label {
 .dateToolTipIcon {
   cursor: pointer;
 }
+
+span.error-true {
+  color: #bc3131;
+}

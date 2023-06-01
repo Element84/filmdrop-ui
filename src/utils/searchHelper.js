@@ -63,27 +63,20 @@ export function newSearch() {
       return
     }
     newMosaicSearch()
-    console.log('call mosaic service')
     return
   }
   if (currentMapZoomLevel >= highZoomLevel) {
     const searchScenesParams = buildSearchScenesParams()
-    console.log(searchScenesParams)
-    // searchType = scene | grid_code | geohex
     store.dispatch(setSearchType('scene'))
     store.dispatch(setSearchLoading(true))
     SearchService(searchScenesParams, 'scene')
-    console.log('call scene search service')
     return
   }
   if (includesGeoHex && currentMapZoomLevel < midZoomLevel) {
     const searchAggregateParams = buildSearchAggregateParams('hex')
-    console.log(searchAggregateParams)
     store.dispatch(setSearchLoading(true))
-    // searchType = scene | grid_code | geohex
     store.dispatch(setSearchType('hex'))
     AggregateSearchService(searchAggregateParams, 'hex')
-    console.log('call agg hex service')
     return
   }
   if (includesGridCode || includesGridCodeLandsat) {
@@ -93,13 +86,9 @@ export function newSearch() {
       return
     }
     const searchAggregateParams = buildSearchAggregateParams('grid-code')
-    console.log(searchAggregateParams)
-    // searchType = scene | grid_code | geohex
     store.dispatch(setSearchType('grid-code'))
     store.dispatch(setSearchLoading(true))
     AggregateSearchService(searchAggregateParams, 'grid-code')
-    // call agg service
-    console.log('call agg grid service')
     return
   }
   if (currentMapZoomLevel < highZoomLevel) {
@@ -398,7 +387,6 @@ export function mapGridCodeFromJson(json) {
 
 export function searchGridCodeScenes(gridCodeToSearchIn) {
   const searchScenesParams = buildSearchScenesParams(gridCodeToSearchIn)
-  console.log(searchScenesParams)
   SearchService(searchScenesParams, 'grid-code')
 }
 
@@ -415,16 +403,15 @@ function newMosaicSearch() {
     store.getState().mainSlice.selectedCollectionData
   // build date input
   const datetime = convertDate(store.getState().mainSlice.searchDateRangeValue)
-  // console.log(store.getState().mainSlice.searchDateRangeValue)
   // get viewport bounds and setup bbox parameter
-  const bbox = buildUrlParamFromBBOX()
+  const bboxFromMap = bboxFromMapBounds()
 
   const createMosaicBody = {
     stac_api_root: VITE_STAC_API_URL,
     asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
     collections: [_selectedCollectionData.id],
     datetime,
-    bbox,
+    bbox: bboxFromMap,
     max_items: VITE_MOSAIC_MAX_ITEMS || 100
   }
 
@@ -445,8 +432,6 @@ function newMosaicSearch() {
     body: JSON.stringify(createMosaicBody)
   }
 
-  // call post Mosaic Service with requestOptions as params
-  console.log(requestOptions)
   AddMosaicService(requestOptions)
 }
 
@@ -461,52 +446,3 @@ const constructMosaicAssetVal = (collection) => {
     return asset.pop()
   }
 }
-
-// function addMosaic() {
-
-//   fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, requestOptions)
-//     .then((r) => r.json())
-//     .then((body) => {
-//       const imgFormat = 'png'
-//       const baseTileLayerHref = body?.links?.find(
-//         (el) => el.rel === 'tiles'
-//       )?.href
-//       const tilerParams = constructMosaicTilerParams(
-//         selectedCollectionRef.current
-//       )
-//       const tileLayerHref = `${baseTileLayerHref}.${imgFormat}?${tilerParams}`
-
-//       if (tileLayerHref) {
-//         L.tileLayer(tileLayerHref, {
-//           tileSize: 256,
-//           bounds: mosaicBounds,
-//           pane: 'imagery'
-//         })
-//           .addTo(clickedFootprintImageLayerRef.current)
-//           .on('load', function () {
-//             // hide loading spinner
-//             dispatch(setSearchLoading(false))
-//           })
-//           .on('tileerror', function () {
-//             console.log('Tile Error')
-//           })
-//       }
-//     })
-
-//     // TODO: don't think we need this, maybe can remove...
-//  //
-//   // const searchParamsStr = getSearchParams({
-//   //   datePickerRef,
-//   //   map,
-//   //   selectedCollectionRef,
-//   //   showCloudSliderRef,
-//   //   _cloudCover,
-//   //   mosaicLimit: MOSAIC_MAX_ITEMS
-//   // })
-
-//   // // fetch items from API for results notice
-//   // fetchAPIitems(searchParamsStr).then((response) => {
-//   //   dispatch(setSearchResults(response))
-//   //   searchResultsRef.current = response
-//   // })
-// }

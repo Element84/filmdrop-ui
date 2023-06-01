@@ -2,7 +2,7 @@ import { store } from '../redux/store'
 import { setLocalGridData } from '../redux/slices/mainSlice'
 // import { addDataToLayer } from '../utils/mapHelper'
 
-export async function loadLocalGridDataService(fileName) {
+export async function LoadLocalGridDataService(fileName) {
   await fetch(`/data/${fileName}.json`, {
     method: 'GET'
   })
@@ -21,7 +21,7 @@ export async function loadLocalGridDataService(fileName) {
       }
     })
     .catch((error) => {
-      const message = 'Error Fetching Search Results'
+      const message = 'Error Fetching Local Grid Data'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
       //   showApplicationAlert('error', message, 5000)

@@ -4,15 +4,18 @@ import { colorMap } from './colorMap'
 import {
   setClickResults,
   setShowPopupModal,
-  setShowZoomNotice
+  setShowZoomNotice,
+  setSearchLoading
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 import debounce from './debounce'
 import {
   VITE_SCENE_TILER_URL,
   VITE_SCENE_TILER_PARAMS,
-  VITE_MOSAIC_MIN_ZOOM_LEVEL
+  VITE_MOSAIC_MIN_ZOOM_LEVEL,
+  VITE_MOSAIC_TILER_PARAMS
 } from '../assets/config'
+import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
 
 export function mapClickHandler(e) {
   const map = store.getState().mainSlice.map
@@ -30,7 +33,6 @@ export function mapClickHandler(e) {
     ) {
       return
     }
-    console.log(_searchType)
 
     // pull all items from search results that intersect with the click bounds
     let intersectingFeatures = []
@@ -54,7 +56,6 @@ export function mapClickHandler(e) {
             intersectingFeatures = [...intersectingFeatures, feature]
             if (intersectingFeatures.length > 0) {
               // push to store
-              console.log(intersectingFeatures)
               store.dispatch(setClickResults(intersectingFeatures))
               store.dispatch(setShowPopupModal(true))
             } else {
@@ -63,8 +64,6 @@ export function mapClickHandler(e) {
             }
           } else if (_searchType === 'grid-code') {
             // fetch all scenes from API with matching grid code
-            console.log('try to get gridCode data to add to map')
-            console.log(feature.properties['grid:code'])
             searchGridCodeScenes(feature.properties['grid:code'])
           }
         }
@@ -90,7 +89,7 @@ export function addDataToLayer(geojson, layerName, options) {
   }
 }
 
-// searchResultsLayer | clickedSceneHighlightLayer | clickedSceneImageLayer
+// searchResultsLayer | clickedSceneHighlightLayer | clickedSceneImageLayer | mosaicImageLayer
 export function clearLayer(layerName) {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
@@ -427,5 +426,68 @@ export function setMosaicZoomMessage() {
     } else {
       store.dispatch(setShowZoomNotice(true))
     }
+  }
+}
+
+export const constructMosaicTilerParams = (collection) => {
+  const mosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
+  // retrieve mosaic tiler parameters from env variable
+  const tilerParams = getTilerParams(mosaicTilerParams)
+
+  const params = []
+
+  const bidx = parameters.bidx(tilerParams, collection)
+  if (bidx) params.push(bidx)
+
+  const colorFormula = parameters.colorFormula(tilerParams, collection)
+  if (colorFormula) params.push(colorFormula)
+
+  const expression = parameters.expression(tilerParams, collection)
+  if (expression) params.push(expression)
+
+  const rescale = parameters.rescale(tilerParams, collection)
+  if (rescale) params.push(rescale)
+
+  const colormapName = parameters.colormapName(tilerParams, collection)
+  if (colormapName) params.push(colormapName)
+
+  return params.join('&')
+}
+
+export async function addMosaicLayer(json) {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    const _selectedCollectionData =
+      store.getState().mainSlice.selectedCollectionData
+    const imgFormat = 'png'
+    const baseTileLayerHref = json?.links?.find(
+      (el) => el.rel === 'tiles'
+    )?.href
+    const tilerParams = constructMosaicTilerParams(_selectedCollectionData.id)
+    const mosaicURL = `${baseTileLayerHref}.${imgFormat}?${tilerParams}`
+    const baseTileLayerHrefForBounds = json?.links?.find(
+      (el) => el.rel === 'tilejson'
+    )?.href
+    GetMosaicBoundsService(baseTileLayerHrefForBounds).then(function (bounds) {
+      const mosaicBounds = leafletBoundsFromBBOX(bounds)
+      const currentMosaicImageTileLayer = L.tileLayer(mosaicURL, {
+        tileSize: 256,
+        bounds: mosaicBounds,
+        pane: 'imagery'
+      })
+        .on('load', function () {
+          // hide loading spinner
+          store.dispatch(setSearchLoading(false))
+        })
+        .on('tileerror', function () {
+          console.log('Tile Error')
+        })
+
+      map.eachLayer(function (layer) {
+        if (layer.layer_name === 'mosaicImageLayer') {
+          currentMosaicImageTileLayer.addTo(layer)
+        }
+      })
+    })
   }
 }
