@@ -99,7 +99,6 @@ export function newSearch() {
 
 function buildSearchScenesParams(gridCodeToSearchIn) {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
-
   const bbox = buildUrlParamFromBBOX()
   const dateTimeRange = convertDateForURL(
     store.getState().mainSlice.searchDateRangeValue
@@ -158,7 +157,6 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
 
 function buildSearchAggregateParams(gridType) {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
-
   const bbox = buildUrlParamFromBBOX()
   const dateTimeRange = convertDateForURL(
     store.getState().mainSlice.searchDateRangeValue
@@ -397,13 +395,10 @@ function newMosaicSearch() {
   store.dispatch(setSearchResults(null))
   store.dispatch(setShowZoomNotice(false))
   store.dispatch(setShowPopupModal(false))
-  // show loading spinner
   store.dispatch(setSearchLoading(true))
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData
-  // build date input
   const datetime = convertDate(store.getState().mainSlice.searchDateRangeValue)
-  // get viewport bounds and setup bbox parameter
   const bboxFromMap = bboxFromMapBounds()
 
   const createMosaicBody = {
@@ -435,7 +430,6 @@ function newMosaicSearch() {
   AddMosaicService(requestOptions)
 }
 
-// construct assets params from env variables for mosaic mode
 const constructMosaicAssetVal = (collection) => {
   const envMosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
   const asset = getTilerParams(envMosaicTilerParams)[collection]?.assets || ''

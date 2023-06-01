@@ -17,6 +17,29 @@ import {
 } from '../assets/config'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
 
+export const footprintLayerStyle = {
+  color: '#3183f5',
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.1,
+  fillColor: '#3183f5'
+}
+
+export const gridCodeLayerStyle = {
+  color: '#3183f5',
+  weight: 1,
+  opacity: 1,
+  fillOpacity: 0.1,
+  fillColor: '#3183f5'
+}
+
+export const clickedFootprintLayerStyle = {
+  color: '#ff7800',
+  weight: 4,
+  opacity: 0.65,
+  fillOpacity: 0
+}
+
 export function mapClickHandler(e) {
   const map = store.getState().mainSlice.map
   const clickBounds = L.latLngBounds(e.latlng, e.latlng)
@@ -72,7 +95,7 @@ export function mapClickHandler(e) {
   }
 }
 
-// searchResultsLayer | clickedSceneHighlightLayer | clickedSceneImageLayer
+// searchResultsLayer | clickedSceneHighlightLayer
 export function addDataToLayer(geojson, layerName, options) {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
@@ -126,7 +149,6 @@ export function getLayerByName(layerName) {
 }
 
 export function deselectFeature() {
-  // clear redux selectedFeature
   clearLayer('clickedSceneHighlightLayer')
   clearLayer('clickedSceneImageLayer')
 }
@@ -152,7 +174,6 @@ function leafletBoundsFromBBOX(bbox) {
   return leafletBounds
 }
 
-// setup bbox used in the addMosaic function
 export function bboxFromMapBounds() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
@@ -188,29 +209,6 @@ export function getCurrentMapZoomLevel() {
   }
 }
 
-export const footprintLayerStyle = {
-  color: '#3183f5',
-  weight: 1,
-  opacity: 1,
-  fillOpacity: 0.1,
-  fillColor: '#3183f5'
-}
-
-export const gridCodeLayerStyle = {
-  color: '#3183f5',
-  weight: 1,
-  opacity: 1,
-  fillOpacity: 0.1,
-  fillColor: '#3183f5'
-}
-
-export const clickedFootprintLayerStyle = {
-  color: '#ff7800',
-  weight: 4,
-  opacity: 0.65,
-  fillOpacity: 0
-}
-
 export function buildHexGridLayerOptions(largestRatio) {
   const colors = colorMap(largestRatio)
   function styleHexGridLayers(feature, layer) {
@@ -243,7 +241,6 @@ export function buildHexGridLayerOptions(largestRatio) {
       })
     })
   }
-
   return {
     onEachFeature: styleHexGridLayers
   }
@@ -265,13 +262,12 @@ export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
 
 function addImageOverlay() {
   const sceneTilerURL = VITE_SCENE_TILER_URL || ''
-  // get
   const _currentPopupResult = store.getState().mainSlice.currentPopupResult
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData
-  // TODO: show loading spinner
-  // need to change how spinner loads, or not at all
-  // dispatch(setSearchLoading(true))
+  // TODO: consider changing how spinner loads, or not at all?
+  // maybe load spinner in footprint extent? or different loading spinner?
+  store.dispatch(setSearchLoading(true))
 
   clearLayer('clickedSceneImageLayer')
 
@@ -298,10 +294,10 @@ function addImageOverlay() {
             }
           )
             .on('load', function () {
-              // hide loading spinner
-              // dispatch(setSearchLoading(false))
+              store.dispatch(setSearchLoading(false))
             })
             .on('tileerror', function () {
+              store.dispatch(setSearchLoading(false))
               console.log('Tile Error')
             })
 
@@ -312,7 +308,7 @@ function addImageOverlay() {
           })
         }
       } else {
-        // dispatch(setSearchLoading(false))
+        store.dispatch(setSearchLoading(false))
         console.log('VITE_SCENE_TILER_URL is not set in env variables.')
       }
     })
@@ -362,7 +358,6 @@ const constructSceneTilerParams = (collection) => {
   return params.join('&')
 }
 
-// retrieve tiler params from env variables for scene and mosaic
 export const getTilerParams = (configVariable) => {
   try {
     return JSON.parse(JSON.stringify(configVariable))
@@ -372,7 +367,6 @@ export const getTilerParams = (configVariable) => {
   return {}
 }
 
-// construct assets params from env variables for scene mode
 const constructSceneAssetsParam = (collection, tilerParams) => {
   const assets = tilerParams[collection]?.assets || ''
   if (!assets) {
@@ -476,10 +470,10 @@ export async function addMosaicLayer(json) {
         pane: 'imagery'
       })
         .on('load', function () {
-          // hide loading spinner
           store.dispatch(setSearchLoading(false))
         })
         .on('tileerror', function () {
+          store.dispatch(setSearchLoading(false))
           console.log('Tile Error')
         })
 
