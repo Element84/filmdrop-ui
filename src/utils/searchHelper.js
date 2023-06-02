@@ -33,6 +33,7 @@ export function newSearch() {
   store.dispatch(setSearchResults(null))
   store.dispatch(setShowZoomNotice(false))
   store.dispatch(setShowPopupModal(false))
+  store.dispatch(setSearchLoading(false))
 
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
