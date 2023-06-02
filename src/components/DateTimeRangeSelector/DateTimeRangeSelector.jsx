@@ -36,10 +36,27 @@ const DateTimeRangeSelector = () => {
         _selectedCollectionData.extent.temporal.interval[0][1] !== null
           ? new Date(_selectedCollectionData.extent.temporal.interval[0][1])
           : new Date()
-      setDatePickerValue([
-        new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
-        collectionEndDateOrCurrent
-      ])
+
+      if (datePickerValue) {
+        if (
+          (datePickerValue[0] <
+            _selectedCollectionData.extent.temporal.interval[0][0] &&
+            datePickerValue[1] <
+              _selectedCollectionData.extent.temporal.interval[0][0]) ||
+          (datePickerValue[0] > collectionEndDateOrCurrent &&
+            datePickerValue[1] > collectionEndDateOrCurrent)
+        ) {
+          setDatePickerValue([
+            new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
+            collectionEndDateOrCurrent
+          ])
+        }
+      } else {
+        setDatePickerValue([
+          new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
+          collectionEndDateOrCurrent
+        ])
+      }
     }
   }, [_selectedCollectionData])
 

@@ -46,13 +46,13 @@ export function newSearch() {
 
   const currentMapZoomLevel = getCurrentMapZoomLevel()
 
-  const includesGeoHex = _selectedCollection.aggregations.some(
+  const includesGeoHex = _selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_geohex_frequency'
   )
-  const includesGridCode = _selectedCollection.aggregations.some(
+  const includesGridCode = _selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_code_frequency'
   )
-  const includesGridCodeLandsat = _selectedCollection.aggregations.some(
+  const includesGridCodeLandsat = _selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_code_landsat_frequency'
   )
 
