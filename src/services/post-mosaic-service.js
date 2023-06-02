@@ -20,6 +20,5 @@ export async function AddMosaicService(reqParams) {
       const message = 'Error Fetching Mosaic'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
-      //   showApplicationAlert('error', message, 5000)
     })
 }

@@ -53,6 +53,5 @@ export async function AggregateSearchService(searchParams, gridType) {
       const message = 'Error Fetching Aggregate Search Results'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
-      //   showApplicationAlert('error', message, 5000)
     })
 }

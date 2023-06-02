@@ -17,7 +17,6 @@ export function GetMosaicBoundsService(mosaicURL) {
         // log full error for diagnosing client side errors if needed
         console.error(message, error)
         reject(error)
-        //   showApplicationAlert('error', message, 5000)
       })
   })
 }

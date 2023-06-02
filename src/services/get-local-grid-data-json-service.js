@@ -24,6 +24,5 @@ export async function LoadLocalGridDataService(fileName) {
       const message = 'Error Fetching Local Grid Data'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
-      //   showApplicationAlert('error', message, 5000)
     })
 }

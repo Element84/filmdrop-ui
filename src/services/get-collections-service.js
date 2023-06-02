@@ -29,6 +29,5 @@ export async function GetCollectionsService(searchParams) {
       const message = 'Error Fetching Collections'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
-      //   showApplicationAlert('error', message, 5000)
     })
 }

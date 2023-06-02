@@ -37,6 +37,5 @@ export async function SearchService(searchParams, typeOfSearch) {
       const message = 'Error Fetching Search Results'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
-      //   showApplicationAlert('error', message, 5000)
     })
 }
