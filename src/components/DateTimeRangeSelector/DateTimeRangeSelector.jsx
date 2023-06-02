@@ -26,23 +26,44 @@ const DateTimeRangeSelector = () => {
   const [temporalRangeFound, settemporalRangeFound] = useState(false)
 
   useEffect(() => {
-    if (_selectedCollectionData && _hasCollectionChanged) {
+    let collectionEndDateOrCurrent
+
+    if (_selectedCollectionData) {
       const startDateFromCollection = new Date(
         _selectedCollectionData.extent.temporal.interval[0]
       )
       settemporalRangeFound(true)
       setstartDate(startDateFromCollection)
-      const collectionEndDateOrCurrent =
+      collectionEndDateOrCurrent =
         _selectedCollectionData.extent.temporal.interval[0][1] !== null
           ? new Date(_selectedCollectionData.extent.temporal.interval[0][1])
           : new Date()
-
+    }
+    // if temporal range not in last two week on init, set to match collection
+    if (_selectedCollectionData && !_hasCollectionChanged) {
+      if (
+        (datePickerValue[0] <
+          new Date(_selectedCollectionData.extent.temporal.interval[0][0]) &&
+          datePickerValue[1] <
+            new Date(_selectedCollectionData.extent.temporal.interval[0][0])) ||
+        (datePickerValue[0] > collectionEndDateOrCurrent &&
+          datePickerValue[1] > collectionEndDateOrCurrent)
+      ) {
+        setDatePickerValue([
+          new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
+          collectionEndDateOrCurrent
+        ])
+      }
+    }
+    if (_selectedCollectionData && _hasCollectionChanged) {
       if (datePickerValue) {
         if (
           (datePickerValue[0] <
-            _selectedCollectionData.extent.temporal.interval[0][0] &&
+            new Date(_selectedCollectionData.extent.temporal.interval[0][0]) &&
             datePickerValue[1] <
-              _selectedCollectionData.extent.temporal.interval[0][0]) ||
+              new Date(
+                _selectedCollectionData.extent.temporal.interval[0][0]
+              )) ||
           (datePickerValue[0] > collectionEndDateOrCurrent &&
             datePickerValue[1] > collectionEndDateOrCurrent)
         ) {
