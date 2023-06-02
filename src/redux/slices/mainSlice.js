@@ -9,24 +9,17 @@ const initialState = {
   cloudCover: 0,
   showCloudSlider: true,
   selectedCollection: VITE_DEFAULT_COLLECTION || null,
-  collectionError: false,
   searchResults: null,
   clickResults: [],
   searchLoading: false,
   currentPopupResult: null,
   showPopupModal: false,
   showPublishModal: false,
-  searchParameters: 'need to run search',
   showZoomNotice: false,
   zoomLevelNeeded: null,
-  typeOfSearch: null,
   showLaunchModal: false,
   showLaunchImageModal: false,
   viewMode: 'scene',
-  sarPolarizations: false,
-  collectionTemporalData: null,
-  collectionSpatialData: null,
-  fullCollectionData: null,
   showAppLoading: true,
   searchType: null,
   collectionsData: [],
@@ -58,9 +51,6 @@ export const mainSlice = createSlice({
     setSelectedCollection: (state, action) => {
       state.selectedCollection = action.payload
     },
-    setCollectionError: (state, action) => {
-      state.collectionError = action.payload
-    },
     setSearchResults: (state, action) => {
       state.searchResults = action.payload
     },
@@ -79,17 +69,11 @@ export const mainSlice = createSlice({
     setShowPublishModal: (state, action) => {
       state.showPublishModal = action.payload
     },
-    setSearchParameters: (state, action) => {
-      state.searchParameters = action.payload
-    },
     setShowZoomNotice: (state, action) => {
       state.showZoomNotice = action.payload
     },
     setZoomLevelNeeded: (state, action) => {
       state.zoomLevelNeeded = action.payload
-    },
-    setTypeOfSearch: (state, action) => {
-      state.typeOfSearch = action.payload
     },
     setShowLaunchModal: (state, action) => {
       state.showLaunchModal = action.payload
@@ -99,18 +83,6 @@ export const mainSlice = createSlice({
     },
     setViewMode: (state, action) => {
       state.viewMode = action.payload
-    },
-    setSarPolarizations: (state, action) => {
-      state.sarPolarizations = action.payload
-    },
-    setCollectionTemporalData: (state, action) => {
-      state.collectionTemporalData = action.payload
-    },
-    setCollectionSpatialData: (state, action) => {
-      state.collectionSpatialData = action.payload
-    },
-    setFullCollectionData: (state, action) => {
-      state.fullCollectionData = action.payload
     },
     setShowAppLoading: (state, action) => {
       state.showAppLoading = action.payload
@@ -146,24 +118,17 @@ export const { setMap } = mainSlice.actions
 export const { setCloudCover } = mainSlice.actions
 export const { setShowCloudSlider } = mainSlice.actions
 export const { setSelectedCollection } = mainSlice.actions
-export const { setCollectionError } = mainSlice.actions
 export const { setSearchResults } = mainSlice.actions
 export const { setClickResults } = mainSlice.actions
 export const { setSearchLoading } = mainSlice.actions
 export const { setCurrentPopupResult } = mainSlice.actions
 export const { setShowPopupModal } = mainSlice.actions
 export const { setShowPublishModal } = mainSlice.actions
-export const { setSearchParameters } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions
 export const { setZoomLevelNeeded } = mainSlice.actions
-export const { setTypeOfSearch } = mainSlice.actions
 export const { setShowLaunchModal } = mainSlice.actions
 export const { setShowLaunchImageModal } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
-export const { setSarPolarizations } = mainSlice.actions
-export const { setCollectionTemporalData } = mainSlice.actions
-export const { setCollectionSpatialData } = mainSlice.actions
-export const { setFullCollectionData } = mainSlice.actions
 export const { setShowAppLoading } = mainSlice.actions
 export const { setSearchType } = mainSlice.actions
 export const { setCollectionsData } = mainSlice.actions
