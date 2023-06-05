@@ -144,8 +144,8 @@ const LeafMap = () => {
       <MapContainer
         className="mainMap"
         ref={mapRef}
-        center={[30, -30]}
-        zoom={4}
+        center={[30, 0]}
+        zoom={3}
         scrollWheelZoom={true}
         zoomControl={false}
         attributionControl={false}
