@@ -10,7 +10,10 @@ export const VITE_DASHBOARD_BTN_URL = 'https://dashboard.example.com'
 export const VITE_ANALYZE_BTN_URL = 'https://dashboard.example.com'
 export const VITE_CF_TEMPLATE_URL = 'https://cf-template.example.com'
 export const VITE_SCENE_TILER_PARAMS = {
-  'sentinel-2-l2a': { assets: ['visual'] },
+  'sentinel-2-l2a': {
+    assets: ['red', 'green', 'blue'],
+    color_formula: 'Gamma+RGB+3.2+Saturation+0.8+Sigmoidal+RGB+12+0.35'
+  },
   'landsat-c2-l2': {
     assets: ['red', 'green', 'blue'],
     color_formula: 'Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35'
