@@ -7,12 +7,11 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
-
-// most of this component comes from the material core UI started code
-// https://mui.com/material-ui/react-button-group/
+import { newSearch } from '../../utils/searchHelper'
 
 const ViewSelector = () => {
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
+  const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
 
   const dispatch = useDispatch()
   const [selectedBtn, setSelectedBtn] = useState(_viewMode)
@@ -30,6 +29,9 @@ const ViewSelector = () => {
 
   useEffect(() => {
     dispatch(setViewMode(selectedBtn))
+    if (!_showAppLoading) {
+      newSearch()
+    }
   }, [selectedBtn])
 
   return (

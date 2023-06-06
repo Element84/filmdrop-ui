@@ -1,0 +1,52 @@
+@import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker';
+@import './react-calendar-overrides.css';
+@import 'react-clock/dist/Clock.css';
+
+label {
+  position: relative;
+  top: 2px;
+}
+
+/* Date Range Picker */
+
+.datePicker {
+  z-index: 4;
+  font-size: 16px;
+  min-width: 270px;
+}
+
+.datePicker label a svg {
+  height: 16px;
+  width: 16px;
+  position: relative;
+  top: 1px;
+  left: 4px;
+  margin-right: 10px;
+}
+
+.datePicker .react-tooltip {
+  font-weight: normal;
+  line-height: 1.6;
+}
+
+.searchContainer .datePicker {
+  height: 100px;
+  padding-left: 2%;
+  padding-right: 2%;
+  background-color: #353d4f;
+  color: #ffffff;
+  font-size: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.dateToolTipIcon {
+  cursor: pointer;
+}
+
+span.error-true {
+  color: #bc3131;
+}

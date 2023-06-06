@@ -65,7 +65,7 @@ export const VITE_SEARCH_MIN_ZOOM_LEVELS = {
   naip: { medium: 10, high: 14 },
   'cop-dem-glo-30': { medium: 6, high: 8 },
   'cop-dem-glo-90': { medium: 6, high: 8 },
-  'sentinel-1-grd': { medium: 4, high: 7 }
+  'sentinel-1-grd': { medium: 7, high: 7 }
 }
 export const VITE_BASEMAP_URL =
   'https://tile-provider.example.com/{z}/{x}/{y}.png'

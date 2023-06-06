@@ -18,8 +18,11 @@ import { useSelector, useDispatch } from 'react-redux'
 // you need to import each action you need to use
 import {
   setShowPublishModal,
-  setShowLaunchModal
+  setShowLaunchModal,
+  setShowZoomNotice
 } from '../../../../redux/slices/mainSlice'
+
+import { setMapZoomLevel } from '../../../../utils/mapHelper'
 
 const BottomContent = () => {
   // set up useSelector to get value from store
@@ -32,7 +35,7 @@ const BottomContent = () => {
   const _zoomLevelNeeded = useSelector(
     (state) => state.mainSlice.zoomLevelNeeded
   )
-  const _searchType = useSelector((state) => state.mainSlice.typeOfSearch)
+  const _searchType = useSelector((state) => state.mainSlice.searchType)
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
   const _showPopupModal = useSelector((state) => state.mainSlice.showPopupModal)
 
@@ -44,8 +47,7 @@ const BottomContent = () => {
   const CF_TEMPLATE_URL = VITE_CF_TEMPLATE_URL
   const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
 
-  const resultType =
-    _searchType === SearchTypes.GeoHex ? 'hex cells' : 'grid cells'
+  const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
     window.open(ANALYZE_LINK, '_blank')
@@ -62,8 +64,10 @@ const BottomContent = () => {
   function onZoomClick() {
     if (_viewMode === 'mosaic') {
       _map.setZoom(MOSAIC_MIN_ZOOM)
+      setMapZoomLevel(MOSAIC_MIN_ZOOM)
+      dispatch(setShowZoomNotice(false))
     } else if (_zoomLevelNeeded) {
-      _map.setZoom(_zoomLevelNeeded)
+      setMapZoomLevel(_zoomLevelNeeded)
     }
   }
 
@@ -125,7 +129,7 @@ const BottomContent = () => {
           <span>Loading {APP_NAME}</span>
         </div>
       )}
-      {_searchType === SearchTypes.GeoHex &&
+      {_searchType === 'hex' &&
         _searchResults?.searchType === 'AggregatedResults' && (
           <Legend results={_searchResults}></Legend>
         )}

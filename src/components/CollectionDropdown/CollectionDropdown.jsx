@@ -1,139 +1,39 @@
 import { React, useState, useEffect } from 'react'
-import PropTypes from 'prop-types'
+import './CollectionDropdown.css'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import NativeSelect from '@mui/material/NativeSelect'
-
-import './CollectionDropdown.css'
+import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
+import { useDispatch, useSelector } from 'react-redux'
 import {
-  VITE_DEFAULT_COLLECTION,
-  VITE_STAC_API_URL
-} from '../../assets/config.js'
-
-// most of this component comes from the material core UI started code
-// https://mui.com/material-ui/react-select/#native-select
-
-import { useDispatch } from 'react-redux'
-import {
-  setSarPolarizations,
-  setSelectedCollection,
-  setCollectionTemporalData,
-  setCollectionSpatialData,
-  setFullCollectionData,
-  setShowAppLoading
+  setSelectedCollectionData,
+  setShowZoomNotice,
+  setSearchResults,
+  setSearchLoading,
+  sethasCollectionChanged
 } from '../../redux/slices/mainSlice'
+import {
+  zoomToCollectionExtent,
+  clearAllLayers,
+  clearMapSelection
+} from '../../utils/mapHelper'
 
-const Dropdown = ({ error }) => {
-  const API_ENDPOINT = VITE_STAC_API_URL
+const Dropdown = () => {
   const DEFAULT_COLLECTION = VITE_DEFAULT_COLLECTION
 
   const dispatch = useDispatch()
-  const [collectionId, setCollectionId] = useState()
-  const [collectionData, setCollectionData] = useState(null)
-  const [collectionComplete, setCollectionComplete] = useState(null)
+  const [collectionId, setCollectionId] = useState('selectOne')
+
+  const _collectionsData = useSelector(
+    (state) => state.mainSlice.collectionsData
+  )
 
   useEffect(() => {
-    // fetch all available collections from API
-    fetch(`${API_ENDPOINT}/collections`)
-      .then((response) => response.json())
-      .then((actualData) => {
-        const sortedData = actualData.collections.sort((a, b) =>
-          a.id > b.id ? 1 : b.id > a.id ? -1 : 0
-        )
-        setCollectionData(sortedData)
-      })
-      .catch((err) => {
-        console.log('Collections Fetch Error: ', err.message)
-      })
-  }, [API_ENDPOINT])
-
-  useEffect(() => {
-    if (collectionData) {
-      mapCollection(collectionData).then((data) => {
-        setCollectionComplete(data)
-        dispatch(setFullCollectionData(data))
-        dispatch(setShowAppLoading(false))
-      })
-    }
-  }, [collectionData])
-
-  function fetchQueryables(collectionId) {
-    return fetch(`${API_ENDPOINT}/collections/${collectionId}/queryables`)
-      .then((response) => response.json())
-      .then((data) => {
-        return { 'sar:polarizations': !!data?.properties['sar:polarizations'] }
-      })
-      .catch((err) => {
-        console.log('Fetch Error: ', err.message)
-      })
-  }
-
-  function fetchAggregations(collectionId) {
-    // fetch geo-aggregations or grid aggregation support by collection
-    return fetch(`${API_ENDPOINT}/collections/${collectionId}/aggregations`)
-      .then((response) => response.json())
-      .then((data) => {
-        const geoObject = {}
-        geoObject.grid_code_frequency = !!data?.aggregations.find(
-          (el) => el.name === 'grid_code_frequency'
-        )
-        geoObject.grid_code_landsat_frequency = !!data?.aggregations.find(
-          (el) => el.name === 'grid_code_landsat_frequency'
-        )
-        geoObject.grid_geohex_frequency = !!data?.aggregations.find(
-          (el) => el.name === 'grid_geohex_frequency'
-        )
-        return geoObject
-      })
-      .catch((err) => {
-        console.log('Fetch Error: ', err.message)
-      })
-  }
-
-  async function mapCollection(collections) {
-    for (const collection of collections) {
-      const [polarizationObj, gridHexObj] = await Promise.all([
-        fetchQueryables(collection.id),
-        fetchAggregations(collection.id)
-      ])
-      collection.queryables = { ...polarizationObj, ...gridHexObj }
-    }
-    return collections
-  }
-
-  useEffect(() => {
-    /**
-     * Only the first entry from the temporal and spatial properties are used
-     * despite there possibly being more ranges available in the collection
-     */
-    if (collectionComplete && collectionId) {
-      const temporalData = getCollection(collectionData, collectionId).extent
-        ?.temporal?.interval
-      if (temporalData && temporalData.length >= 1) {
-        dispatch(setCollectionTemporalData(temporalData[0]))
-      }
-      const spatialData = getCollection(collectionData, collectionId).extent
-        ?.spatial?.bbox
-      if (spatialData && spatialData.length >= 1) {
-        dispatch(setCollectionSpatialData(spatialData[0]))
-      }
-      // set support for sar:polarization property if available for collection
-      const supportsSarPolarizations = getCollection(
-        collectionComplete,
-        collectionId
-      ).queryables['sar:polarizations']
-      dispatch(setSarPolarizations(supportsSarPolarizations))
-    }
-  }, [collectionComplete, collectionId])
-
-  useEffect(() => {
-    // check if VITE_DEFAULT_COLLECTION is available
-    if (collectionData) {
-      const defaultCollectionFound = !!collectionData.find(
+    if (_collectionsData.length > 0) {
+      const defaultCollectionFound = !!_collectionsData.find(
         (o) => o.id === DEFAULT_COLLECTION
       )
       if (!defaultCollectionFound) {
-        dispatch(setSelectedCollection(null))
         console.log(
           'Configuration Error: VITE_DEFAULT_COLLECTION not found in API'
         )
@@ -141,46 +41,44 @@ const Dropdown = ({ error }) => {
         setCollectionId(DEFAULT_COLLECTION)
       }
     }
-  }, [collectionData])
+  }, [_collectionsData])
 
   useEffect(() => {
-    // update redux with updated collection
-    dispatch(setSelectedCollection(collectionId))
+    const selectedCollection = _collectionsData?.find(
+      (e) => e.id === collectionId
+    )
+    if (selectedCollection) {
+      dispatch(setSelectedCollectionData(selectedCollection))
+      dispatch(setShowZoomNotice(false))
+      dispatch(setSearchResults(null))
+      dispatch(setSearchLoading(false))
+      zoomToCollectionExtent(selectedCollection)
+      clearMapSelection()
+      clearAllLayers()
+    }
   }, [collectionId])
 
-  const getCollection = (collectionData, collectionId) => {
-    return collectionData?.find((e) => e.id === collectionId)
-  }
-
-  const handleDropdownChange = (event) => {
-    if (event) {
-      setCollectionId(event.target.value)
-    } else {
-      setCollectionId('')
-    }
+  function onCollectionChanged(e) {
+    dispatch(sethasCollectionChanged(true))
+    setCollectionId(e.target.value)
   }
 
   return (
     <Box>
-      <label>
-        Collection{' '}
-        {error && (
-          <span className="error-true">
-            <em>Required</em>
-          </span>
-        )}
-      </label>
+      <label>Collection</label>
       <Grid container alignItems="center">
         <Grid item xs>
           <NativeSelect
             id="collectionDropdown"
             value={collectionId}
             label="Collection"
-            onChange={handleDropdownChange}
+            onChange={(e) => onCollectionChanged(e)}
           >
-            <option value="">Select One</option>
-            {collectionData &&
-              collectionData.map(({ id, title }) => (
+            <option value="selectOne" disabled={true}>
+              Select Collection
+            </option>
+            {_collectionsData &&
+              _collectionsData.map(({ id, title }) => (
                 <option key={id} value={id}>
                   {title}
                 </option>
@@ -190,10 +88,6 @@ const Dropdown = ({ error }) => {
       </Grid>
     </Box>
   )
-}
-
-Dropdown.propTypes = {
-  error: PropTypes.bool
 }
 
 export default Dropdown

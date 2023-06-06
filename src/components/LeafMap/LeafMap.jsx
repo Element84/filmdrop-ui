@@ -22,13 +22,17 @@ import {
 
 import DOMPurify from 'dompurify'
 
+import {
+  mapClickHandler,
+  mapCallDebounceNewSearch,
+  setMosaicZoomMessage
+} from '../../utils/mapHelper'
+
 const LeafMap = () => {
+  const dispatch = useDispatch()
   // set map ref to itself with useRef
   const mapRef = useRef()
 
-  const dispatch = useDispatch()
-
-  // set up local state
   const [map, setLocalMap] = useState({})
   const [mapAttribution, setmapAttribution] = useState('')
 
@@ -57,7 +61,7 @@ const LeafMap = () => {
 
   useEffect(() => {
     if (map && Object.keys(map).length) {
-      // add geosearch function
+      // add geosearch/geocoder to map
       map.addControl(searchControl)
 
       // override position of zoom controls
@@ -82,7 +86,36 @@ const LeafMap = () => {
         map.panInsideBounds(bounds, { animate: false })
       })
 
-      // update the shared map context when the map loads
+      // set up map layers
+      const resultFootprintsInit = new L.FeatureGroup()
+      resultFootprintsInit.addTo(map)
+      resultFootprintsInit.layer_name = 'searchResultsLayer'
+
+      const clickedFootprintsHighlightInit = new L.FeatureGroup()
+      clickedFootprintsHighlightInit.addTo(map)
+      clickedFootprintsHighlightInit.layer_name = 'clickedSceneHighlightLayer'
+
+      const clickedFootprintImageLayerInit = new L.FeatureGroup()
+      clickedFootprintImageLayerInit.addTo(map)
+      clickedFootprintImageLayerInit.layer_name = 'clickedSceneImageLayer'
+
+      const mosaicImageLayerInit = new L.FeatureGroup()
+      mosaicImageLayerInit.addTo(map)
+      mosaicImageLayerInit.layer_name = 'mosaicImageLayer'
+
+      // set up map events
+      map.on('zoomend', function () {
+        mapCallDebounceNewSearch()
+        setMosaicZoomMessage()
+      })
+
+      map.on('dragend', function () {
+        mapCallDebounceNewSearch()
+      })
+
+      map.on('click', mapClickHandler)
+
+      // push map into redux state
       dispatch(setMap(map))
     }
   }, [map])
@@ -111,7 +144,7 @@ const LeafMap = () => {
       <MapContainer
         className="mainMap"
         ref={mapRef}
-        center={[30, -0]}
+        center={[30, 0]}
         zoom={3}
         scrollWheelZoom={true}
         zoomControl={false}

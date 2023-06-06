@@ -59,3 +59,7 @@ div#attribution-tooltip {
   z-index: 999;
   white-space: nowrap;
 }
+
+path.leaflet-interactive:focus {
+  outline: none;
+}
