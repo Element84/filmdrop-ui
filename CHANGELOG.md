@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Refactor map code and related files
 - Refactor API calls
+- Moved config reference from `envSetupVars.js` into `search.jsx`
 
 ### Fixed
 
@@ -20,6 +21,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Added 'thumbnail not found' image placeholder
+
+### Removed
+
+- Delete `envSetupVars.js` after moving functions and const into other files
 
 ## 2.0.2 - 2023-05-18
 
