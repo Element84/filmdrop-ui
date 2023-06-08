@@ -1,6 +1,5 @@
 import { React, useEffect } from 'react'
 import './Search.css'
-import { envMosaicTilerURL } from './envVarSetup'
 import { useDispatch, useSelector } from 'react-redux'
 import { setIsAutoSearchSet } from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
@@ -9,6 +8,7 @@ import DateTimeRangeSelector from '../DateTimeRangeSelector/DateTimeRangeSelecto
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
+import { VITE_MOSAIC_TILER_URL } from '../../assets/config'
 
 import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
 
@@ -25,6 +25,8 @@ const Search = () => {
   const _isAutoSearchSet = useSelector(
     (state) => state.mainSlice.isAutoSearchSet
   )
+
+  const mosaicTilerURL = VITE_MOSAIC_TILER_URL || ''
 
   useEffect(() => {
     if (_isAutoSearchSet) {
@@ -54,7 +56,7 @@ const Search = () => {
       <div className="searchContainer cloudSlider">
         <CloudSlider></CloudSlider>
       </div>
-      {envMosaicTilerURL && (
+      {mosaicTilerURL && (
         <div className="searchContainer">
           <ViewSelector></ViewSelector>
         </div>
