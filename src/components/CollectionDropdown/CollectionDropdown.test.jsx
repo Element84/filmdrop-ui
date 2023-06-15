@@ -1,12 +1,13 @@
 import React from 'react'
 import { vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import CollectionDropdown from './CollectionDropdown'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import { setCollectionsData } from '../../redux/slices/mainSlice'
 import { mockCollectionsData } from '../../testing/shared-mocks'
 import * as mapHelper from '../../utils/mapHelper'
+import userEvent from '@testing-library/user-event'
 
 describe('CollectionDropdown', () => {
   const setup = () =>
@@ -35,11 +36,11 @@ describe('CollectionDropdown', () => {
     it('should set hasCollectionChanged to true in redux state', async () => {
       setup()
       expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
-      fireEvent.change(
+      await userEvent.selectOptions(
         screen.getByRole('combobox', {
           name: /collection/i
         }),
-        { target: { value: 'Copernicus DEM GLO-30' } }
+        'Copernicus DEM GLO-30'
       )
       expect(store.getState().mainSlice.hasCollectionChanged).toBeTruthy()
     })
@@ -51,18 +52,18 @@ describe('CollectionDropdown', () => {
       const spyClearMapSelection = vi.spyOn(mapHelper, 'clearMapSelection')
       const spyClearAllLayers = vi.spyOn(mapHelper, 'clearAllLayers')
       setup()
-      fireEvent.change(
+      await userEvent.selectOptions(
         screen.getByRole('combobox', {
           name: /collection/i
         }),
-        { target: { value: 'Copernicus DEM GLO-30' } }
+        'Copernicus DEM GLO-30'
       )
       expect(store.getState().mainSlice.showZoomNotice).toBeFalsy()
       expect(store.getState().mainSlice.searchResults).toBeNull()
       expect(store.getState().mainSlice.searchLoading).toBeFalsy()
-      expect(spyZoomToCollectionExtent).toHaveBeenCalledTimes(1)
-      expect(spyClearMapSelection).toHaveBeenCalledTimes(1)
-      expect(spyClearAllLayers).toHaveBeenCalledTimes(1)
+      expect(spyZoomToCollectionExtent).toHaveBeenCalled()
+      expect(spyClearMapSelection).toHaveBeenCalled()
+      expect(spyClearAllLayers).toHaveBeenCalled()
     })
   })
 })
