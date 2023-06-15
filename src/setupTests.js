@@ -4,6 +4,8 @@ import matchers from '@testing-library/jest-dom/matchers'
 import { mainSliceReset } from './redux/slices/mainSlice'
 import { store } from './redux/store'
 
+window.HTMLCanvasElement.prototype.getContext = () => {}
+
 expect.extend(matchers)
 
 beforeEach(() => {
