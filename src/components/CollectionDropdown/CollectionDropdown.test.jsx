@@ -17,6 +17,7 @@ describe('CollectionDropdown', () => {
     )
 
   beforeEach(() => {
+    vi.mock('../../utils/mapHelper')
     store.dispatch(setCollectionsData(mockCollectionsData))
   })
   afterEach(() => {
@@ -25,7 +26,6 @@ describe('CollectionDropdown', () => {
 
   describe('on render', () => {
     it('should load collections options from collectionsData in redux state', () => {
-      vi.mock('../../utils/mapHelper')
       setup()
       expect(screen.getByText('Copernicus DEM GLO-30')).toBeInTheDocument()
       expect(screen.getByText('Sentinel-2 Level 2A')).toBeInTheDocument()
@@ -33,7 +33,6 @@ describe('CollectionDropdown', () => {
   })
   describe('on collection changed', () => {
     it('should set hasCollectionChanged to true in redux state', async () => {
-      vi.mock('../../utils/mapHelper')
       setup()
       expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
       fireEvent.change(
@@ -44,8 +43,7 @@ describe('CollectionDropdown', () => {
       )
       expect(store.getState().mainSlice.hasCollectionChanged).toBeTruthy()
     })
-    it('should dispatch and call functions to reset map', () => {
-      vi.clearAllMocks()
+    it('should dispatch and call functions to reset map', async () => {
       const spyZoomToCollectionExtent = vi.spyOn(
         mapHelper,
         'zoomToCollectionExtent'
@@ -59,12 +57,13 @@ describe('CollectionDropdown', () => {
         }),
         { target: { value: 'Copernicus DEM GLO-30' } }
       )
+      await screen.findByRole('option', { name: /Copernicus DEM GLO-30/i })
       expect(store.getState().mainSlice.showZoomNotice).toBeFalsy()
       expect(store.getState().mainSlice.searchResults).toBeNull()
       expect(store.getState().mainSlice.searchLoading).toBeFalsy()
-      expect(spyZoomToCollectionExtent).toHaveBeenCalled()
-      expect(spyClearMapSelection).toHaveBeenCalled()
-      expect(spyClearAllLayers).toHaveBeenCalled()
+      expect(spyZoomToCollectionExtent).toHaveBeenCalledTimes(1)
+      expect(spyClearMapSelection).toHaveBeenCalledTimes(1)
+      expect(spyClearAllLayers).toHaveBeenCalledTimes(1)
     })
   })
 })
