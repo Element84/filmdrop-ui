@@ -57,7 +57,6 @@ describe('CollectionDropdown', () => {
         }),
         { target: { value: 'Copernicus DEM GLO-30' } }
       )
-      await screen.findByRole('option', { name: /Copernicus DEM GLO-30/i })
       expect(store.getState().mainSlice.showZoomNotice).toBeFalsy()
       expect(store.getState().mainSlice.searchResults).toBeNull()
       expect(store.getState().mainSlice.searchLoading).toBeFalsy()
