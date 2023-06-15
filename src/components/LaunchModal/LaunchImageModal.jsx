@@ -13,7 +13,7 @@ const LaunchImageModal = () => {
   }
 
   return (
-    <div className="launchModal">
+    <div className="launchModal" data-testid="testLaunchImageModal">
       <div className="launchModalContainer image">
         <button className="closeLaunchModal" onClick={() => onCloseClick()}>
           ✕
