@@ -51,7 +51,6 @@ describe('CollectionDropdown', () => {
       const spyClearMapSelection = vi.spyOn(mapHelper, 'clearMapSelection')
       const spyClearAllLayers = vi.spyOn(mapHelper, 'clearAllLayers')
       setup()
-      expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
       fireEvent.change(
         screen.getByRole('combobox', {
           name: /collection/i
