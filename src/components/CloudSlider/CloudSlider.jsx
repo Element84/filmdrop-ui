@@ -70,7 +70,7 @@ const CloudSlider = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box className={`cloudSlider ${disabled && 'disabled'}`}>
-        <label>Max Cloud Cover %</label>
+        <label htmlFor="cloudSlider">Max Cloud Cover %</label>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
             <Slider

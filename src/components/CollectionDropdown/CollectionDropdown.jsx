@@ -22,7 +22,7 @@ const Dropdown = () => {
   const DEFAULT_COLLECTION = VITE_DEFAULT_COLLECTION
 
   const dispatch = useDispatch()
-  const [collectionId, setCollectionId] = useState('selectOne')
+  const [collectionId, setCollectionId] = useState('Select Collection')
 
   const _collectionsData = useSelector(
     (state) => state.mainSlice.collectionsData
@@ -65,7 +65,7 @@ const Dropdown = () => {
 
   return (
     <Box>
-      <label>Collection</label>
+      <label htmlFor="collectionDropdown">Collection</label>
       <Grid container alignItems="center">
         <Grid item xs>
           <NativeSelect
