@@ -43,7 +43,7 @@ const PublishModal = () => {
   }
 
   return (
-    <div className="publishModal">
+    <div className="publishModal" data-testid="testPublishModal">
       <div className="publishModalContainerBackground"></div>
       <div className="publishModalContainerImage"></div>
       <div className="publishModalContainer">

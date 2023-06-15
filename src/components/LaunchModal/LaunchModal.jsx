@@ -44,7 +44,7 @@ const LaunchModal = () => {
   }
 
   return (
-    <div className="launchModal">
+    <div className="launchModal" data-testid="testLaunchModal">
       <div className="launchModalContainer">
         <button className="closeLaunchModal" onClick={() => onCloseClick()}>
           ✕
