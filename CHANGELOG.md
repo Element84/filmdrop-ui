@@ -15,12 +15,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- map selection and popup now close in unison
-- fix styling of popup results component
+- Map selection and popup now close in unison
+- Fix styling of popup results component
 
 ### Added
 
 - Added 'thumbnail not found' image placeholder
+- Added Config feature flags for Advanced Search Options and Cart
 
 ### Removed
 
