@@ -74,3 +74,5 @@ export const VITE_BASEMAP_URL =
   'https://tile-provider.example.com/{z}/{x}/{y}.png'
 export const VITE_BASEMAP_HTML_ATTRIBUTION =
   '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>'
+export const VITE_ADVANCED_SEARCH_ENABLED = false
+export const VITE_CART_ENABLED = false
