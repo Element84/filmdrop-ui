@@ -3,9 +3,10 @@ import './LeafMap.css'
 
 // redux imports
 import { useDispatch } from 'react-redux'
-import { setMap } from '../../redux/slices/mainSlice'
+import { setMap, setmapDrawPolygonHandler } from '../../redux/slices/mainSlice'
 
 import * as L from 'leaflet'
+import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
@@ -25,7 +26,8 @@ import DOMPurify from 'dompurify'
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,
-  setMosaicZoomMessage
+  setMosaicZoomMessage,
+  customDrawingPolygonStyle
 } from '../../utils/mapHelper'
 
 const LeafMap = () => {
@@ -45,7 +47,7 @@ const LeafMap = () => {
   })
 
   const searchControl = new SearchControl({
-    style: 'bar',
+    style: 'button',
     notFoundMessage: 'Sorry, that address could not be found.',
     provider: new OpenStreetMapProvider(),
     marker: {
@@ -61,15 +63,14 @@ const LeafMap = () => {
 
   useEffect(() => {
     if (map && Object.keys(map).length) {
-      // add geosearch/geocoder to map
-      map.addControl(searchControl)
-
       // override position of zoom controls
       L.control
         .zoom({
           position: 'topleft'
         })
         .addTo(map)
+      // add geosearch/geocoder to map
+      map.addControl(searchControl)
 
       // setup custom pane for tiler image result
       map.createPane('imagery')
@@ -102,6 +103,22 @@ const LeafMap = () => {
       const mosaicImageLayerInit = new L.FeatureGroup()
       mosaicImageLayerInit.addTo(map)
       mosaicImageLayerInit.layer_name = 'mosaicImageLayer'
+
+      const drawBounds = new L.FeatureGroup()
+      drawBounds.addTo(map)
+      drawBounds.layer_name = 'drawBoundsLayer'
+
+      // eslint-disable-next-line no-unused-vars
+      const drawControl = new L.Control.Draw({
+        edit: {
+          featureGroup: drawBounds
+        }
+      })
+      const drawPolygonHandler = new L.Draw.Polygon(map, {
+        shapeOptions: { color: '#00C07B' }
+      })
+
+      dispatch(setmapDrawPolygonHandler(drawPolygonHandler))
 
       // set up map events
       map.on('zoomend', function () {

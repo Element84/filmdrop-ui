@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { MOSAIC_MIN_ZOOM, APP_NAME, SearchTypes } from '../../../defaults'
+import { MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 
 import PopupResults from '../../../PopupResults/PopupResults'
@@ -19,10 +19,14 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowPublishModal,
   setShowLaunchModal,
-  setShowZoomNotice
+  setShowZoomNotice,
+  setisDrawingEnabled
 } from '../../../../redux/slices/mainSlice'
 
-import { setMapZoomLevel } from '../../../../utils/mapHelper'
+import {
+  setMapZoomLevel,
+  disableMapPolyDrawing
+} from '../../../../utils/mapHelper'
 
 const BottomContent = () => {
   // set up useSelector to get value from store
@@ -38,6 +42,9 @@ const BottomContent = () => {
   const _searchType = useSelector((state) => state.mainSlice.searchType)
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
   const _showPopupModal = useSelector((state) => state.mainSlice.showPopupModal)
+  const _isDrawingEnabled = useSelector(
+    (state) => state.mainSlice.isDrawingEnabled
+  )
 
   // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
@@ -71,6 +78,11 @@ const BottomContent = () => {
     }
   }
 
+  function onCancelDrawGeomClicked() {
+    dispatch(setisDrawingEnabled(false))
+    disableMapPolyDrawing()
+  }
+
   return (
     <div className="BottomContent">
       <LeafMap></LeafMap>
@@ -100,13 +112,15 @@ const BottomContent = () => {
         )}
       </div>
       {_searchResults?.numberMatched &&
-      _searchResults?.searchType !== 'AggregatedResults' ? (
+      _searchResults?.searchType !== 'AggregatedResults' &&
+      !_isDrawingEnabled ? (
         <div className="resultCount">
           Showing {_searchResults.numberReturned} of{' '}
           {_searchResults.numberMatched} scenes
         </div>
       ) : null}
-      {_searchResults?.searchType === 'AggregatedResults' ? (
+      {_searchResults?.searchType === 'AggregatedResults' &&
+      !_isDrawingEnabled ? (
         <div className="resultCount">
           <strong>Showing Aggregated Results</strong>
           {_searchResults.features.length} {resultType},{' '}
@@ -133,6 +147,26 @@ const BottomContent = () => {
         _searchResults?.searchType === 'AggregatedResults' && (
           <Legend results={_searchResults}></Legend>
         )}
+      {_isDrawingEnabled ? (
+        <div className="drawGeomMessage">
+          <div className="drawGeomMessageText">
+            <span className="drawGeomMessageTextTitle">
+              Draw Search Boundary
+            </span>
+            <span>
+              Click the map to add points. Click the first point to finish.
+            </span>
+          </div>
+          <div className="drawGeomMessageButtons">
+            <button
+              className="drawGeomMessageCancelButton"
+              onClick={onCancelDrawGeomClicked}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   )
 }

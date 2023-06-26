@@ -1,16 +1,27 @@
 import { React, useEffect } from 'react'
 import './Search.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { setIsAutoSearchSet } from '../../redux/slices/mainSlice'
+import {
+  setIsAutoSearchSet,
+  setshowAdvancedSearchOptions,
+  setisDrawingEnabled
+} from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
 import Switch from '@mui/material/Switch'
 import DateTimeRangeSelector from '../DateTimeRangeSelector/DateTimeRangeSelector'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
-import { VITE_MOSAIC_TILER_URL } from '../../assets/config'
+import {
+  VITE_MOSAIC_TILER_URL,
+  VITE_ADVANCED_SEARCH_ENABLED
+} from '../../assets/config'
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
+import { Box } from '@mui/material'
+import { enableMapPolyDrawing } from '../../utils/mapHelper'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -25,10 +36,16 @@ const Search = () => {
   const _isAutoSearchSet = useSelector(
     (state) => state.mainSlice.isAutoSearchSet
   )
-
+  const _showAdvancedSearchOptions = useSelector(
+    (state) => state.mainSlice.showAdvancedSearchOptions
+  )
+  const _isDrawingEnabled = useSelector(
+    (state) => state.mainSlice.isDrawingEnabled
+  )
   const mosaicTilerURL = VITE_MOSAIC_TILER_URL || ''
 
   useEffect(() => {
+    dispatch(setshowAdvancedSearchOptions(false))
     if (_isAutoSearchSet) {
       debounceNewSearch()
     }
@@ -43,6 +60,18 @@ const Search = () => {
 
   function processSearchBtn() {
     newSearch()
+    dispatch(setshowAdvancedSearchOptions(false))
+  }
+
+  function onAdvancedOptionsClicked() {
+    dispatch(setshowAdvancedSearchOptions(!_showAdvancedSearchOptions))
+  }
+
+  function onDrawBoundaryClicked() {
+    dispatch(setshowAdvancedSearchOptions(!_showAdvancedSearchOptions))
+    dispatch(setisDrawingEnabled(true))
+    enableMapPolyDrawing()
+    // disable search buttons
   }
 
   return (
@@ -61,24 +90,77 @@ const Search = () => {
           <ViewSelector></ViewSelector>
         </div>
       )}
-      <div className="searchContainer searchButton">
-        <button
-          className={`actionButton disabled-${_isAutoSearchSet}`}
-          onClick={() => processSearchBtn()}
-          disabled={_isAutoSearchSet}
-        >
-          Search
-        </button>
 
-        <div className="autoSearchContainer">
-          <label>Auto Search</label>
-          <Switch
-            checked={_isAutoSearchSet}
-            onChange={handleSwitchChange}
-            inputProps={{ 'aria-label': 'controlled' }}
-          />
+      {VITE_ADVANCED_SEARCH_ENABLED ? (
+        <div
+          className={
+            _showAdvancedSearchOptions
+              ? 'searchContainer searchButtonAdvanced ' + 'active'
+              : 'searchContainer searchButtonAdvanced'
+          }
+        >
+          <div className="advancedSearchContent">
+            <button
+              className={`actionButton`}
+              onClick={() => processSearchBtn()}
+            >
+              Search
+            </button>
+            <Box
+              className="advancedSearchOptions"
+              onClick={onAdvancedOptionsClicked}
+            >
+              Advanced
+              {_showAdvancedSearchOptions ? (
+                <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+              ) : (
+                <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
+              )}
+            </Box>
+          </div>
+          {_showAdvancedSearchOptions ? (
+            <Box className="advancedSearchOptionsContainer">
+              <span className="advancedSearchOptionsText">
+                Limit search to boundary
+              </span>
+              <div className="advancedSearchOptionsButtons">
+                <button
+                  className="advancedSearchOptionsButton"
+                  onClick={onDrawBoundaryClicked}
+                >
+                  Draw boundary
+                </button>
+                <button className="advancedSearchOptionsButton">
+                  Upload GeoJSON
+                </button>
+                <button className="advancedSearchOptionsButton advancedSearchOptionsButtonDisabled">
+                  Clear
+                </button>
+              </div>
+            </Box>
+          ) : null}
         </div>
-      </div>
+      ) : (
+        <div className="searchContainer searchButton">
+          <button
+            className={`actionButton disabled-${_isAutoSearchSet}`}
+            onClick={() => processSearchBtn()}
+            disabled={_isAutoSearchSet}
+          >
+            Search
+          </button>
+
+          <div className="autoSearchContainer">
+            <label>Auto Search</label>
+            <Switch
+              checked={_isAutoSearchSet}
+              onChange={handleSwitchChange}
+              inputProps={{ 'aria-label': 'controlled' }}
+            />
+          </div>
+        </div>
+      )}
+      {_isDrawingEnabled ? <div className="disableSearchOverlay"></div> : null}
     </div>
   )
 }
