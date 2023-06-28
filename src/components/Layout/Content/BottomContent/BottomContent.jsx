@@ -2,9 +2,7 @@ import React from 'react'
 import './BottomContent.css'
 import { MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
-
 import PopupResults from '../../../PopupResults/PopupResults'
-
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import Legend from '../../../Legend/Legend'
 import {
@@ -12,22 +10,17 @@ import {
   VITE_SHOW_PUBLISH_BTN,
   VITE_ANALYZE_BTN_URL
 } from '../../../../assets/config.js'
-
-// redux imports
 import { useSelector, useDispatch } from 'react-redux'
-// you need to import each action you need to use
 import {
   setShowPublishModal,
   setShowLaunchModal,
   setShowZoomNotice,
   setisDrawingEnabled
 } from '../../../../redux/slices/mainSlice'
-
 import {
   setMapZoomLevel,
   disableMapPolyDrawing
 } from '../../../../utils/mapHelper'
-
 import Box from '@mui/material/Box'
 
 const BottomContent = () => {

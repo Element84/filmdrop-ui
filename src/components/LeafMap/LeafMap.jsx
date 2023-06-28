@@ -1,28 +1,21 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './LeafMap.css'
-
-// redux imports
 import { useDispatch } from 'react-redux'
 import { setMap, setmapDrawPolygonHandler } from '../../redux/slices/mainSlice'
-
 import * as L from 'leaflet'
 import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
-
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
-
 import {
   VITE_BASEMAP_URL,
   VITE_BASEMAP_HTML_ATTRIBUTION
 } from '../../assets/config.js'
-
 import DOMPurify from 'dompurify'
-
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,

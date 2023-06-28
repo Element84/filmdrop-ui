@@ -19,7 +19,6 @@ import {
 } from '../../assets/config'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-
 import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
 import { Box } from '@mui/material'
 import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
