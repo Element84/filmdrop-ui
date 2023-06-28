@@ -114,12 +114,13 @@ const LeafMap = () => {
       drawBounds.addTo(map)
       drawBounds.layer_name = 'drawBoundsLayer'
 
-      // eslint-disable-next-line no-unused-vars
-      const drawControl = new L.Control.Draw({
+      // eslint-disable-next-line no-new
+      new L.Control.Draw({
         edit: {
           featureGroup: drawBounds
         }
       })
+
       const drawPolygonHandler = new L.Draw.Polygon(map, {
         shapeOptions: { color: '#00C07B' }
       })
