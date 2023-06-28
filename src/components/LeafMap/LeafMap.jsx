@@ -72,10 +72,17 @@ const LeafMap = () => {
       // add geosearch/geocoder to map
       map.addControl(searchControl)
 
-      // setup custom pane for tiler image result
+      // setup custom pane for results
+
+      map.createPane('searchResults')
+      map.getPane('searchResults').style.zIndex = 600
+
       map.createPane('imagery')
       map.getPane('imagery').style.zIndex = 650
       map.getPane('imagery').style.pointerEvents = 'none'
+
+      map.createPane('drawPane')
+      map.getPane('drawPane').style.zIndex = 700
 
       // setup max map bounds
       const southWest = L.latLng(-90, -180)
@@ -105,6 +112,7 @@ const LeafMap = () => {
       mosaicImageLayerInit.layer_name = 'mosaicImageLayer'
 
       const drawBounds = new L.FeatureGroup()
+      drawBounds.pane = 'drawPane'
       drawBounds.addTo(map)
       drawBounds.layer_name = 'drawBoundsLayer'
 
@@ -117,6 +125,9 @@ const LeafMap = () => {
       const drawPolygonHandler = new L.Draw.Polygon(map, {
         shapeOptions: { color: '#00C07B' }
       })
+
+      map.getPane('overlayPane').style.zIndex = 700
+      map.getPane('markerPane').style.zIndex = 700
 
       dispatch(setmapDrawPolygonHandler(drawPolygonHandler))
 

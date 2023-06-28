@@ -30,7 +30,8 @@ const initialState = {
   hasCollectionChanged: false,
   showAdvancedSearchOptions: false,
   isDrawingEnabled: false,
-  mapDrawPolygonHandler: null
+  mapDrawPolygonHandler: null,
+  searchGeojsonBoundary: null
 }
 
 // next, for every key in the initialState
@@ -119,6 +120,9 @@ export const mainSlice = createSlice({
     },
     setmapDrawPolygonHandler: (state, action) => {
       state.mapDrawPolygonHandler = action.payload
+    },
+    setsearchGeojsonBoundary: (state, action) => {
+      state.searchGeojsonBoundary = action.payload
     }
   }
 })
@@ -152,5 +156,6 @@ export const { sethasCollectionChanged } = mainSlice.actions
 export const { setshowAdvancedSearchOptions } = mainSlice.actions
 export const { setisDrawingEnabled } = mainSlice.actions
 export const { setmapDrawPolygonHandler } = mainSlice.actions
+export const { setsearchGeojsonBoundary } = mainSlice.actions
 
 export default mainSlice.reducer

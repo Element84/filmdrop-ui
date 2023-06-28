@@ -101,18 +101,33 @@ export function newSearch() {
 function buildSearchScenesParams(gridCodeToSearchIn) {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
   const bbox = buildUrlParamFromBBOX()
-  const dateTimeRange = convertDateForURL(
+  const _dateTimeRange = convertDateForURL(
     store.getState().mainSlice.searchDateRangeValue
   )
   const limit = VITE_API_MAX_ITEMS || 200
   const collections = _selectedCollection.id
+  const _searchGeojsonBoundary =
+    store.getState().mainSlice.searchGeojsonBoundary
 
-  const searchParams = new Map([
-    ['bbox', bbox],
-    ['datetime', dateTimeRange],
-    ['limit', limit],
-    ['collections', collections]
-  ])
+  let searchParams
+  if (_searchGeojsonBoundary) {
+    searchParams = new Map([
+      [
+        'intersects',
+        encodeURIComponent(JSON.stringify(_searchGeojsonBoundary.geometry))
+      ],
+      ['datetime', _dateTimeRange],
+      ['limit', limit],
+      ['collections', collections]
+    ])
+  } else {
+    searchParams = new Map([
+      ['bbox', bbox],
+      ['datetime', _dateTimeRange],
+      ['limit', limit],
+      ['collections', collections]
+    ])
+  }
 
   const query = {}
   if (_selectedCollection.queryables['eo:cloud_cover']) {
@@ -159,9 +174,11 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
 function buildSearchAggregateParams(gridType) {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
   const bbox = buildUrlParamFromBBOX()
-  const dateTimeRange = convertDateForURL(
+  const _dateTimeRange = convertDateForURL(
     store.getState().mainSlice.searchDateRangeValue
   )
+  const _searchGeojsonBoundary =
+    store.getState().mainSlice.searchGeojsonBoundary
   const collections = _selectedCollection.id
 
   let aggregations
@@ -193,12 +210,25 @@ function buildSearchAggregateParams(gridType) {
     aggregations = `${gridAggName},total_count`
   }
 
-  const searchParams = new Map([
-    ['bbox', bbox],
-    ['datetime', dateTimeRange],
-    ['collections', collections],
-    ['aggregations', aggregations]
-  ])
+  let searchParams
+  if (_searchGeojsonBoundary) {
+    searchParams = new Map([
+      [
+        'intersects',
+        encodeURIComponent(JSON.stringify(_searchGeojsonBoundary.geometry))
+      ],
+      ['datetime', _dateTimeRange],
+      ['collections', collections],
+      ['aggregations', aggregations]
+    ])
+  } else {
+    searchParams = new Map([
+      ['bbox', bbox],
+      ['datetime', _dateTimeRange],
+      ['collections', collections],
+      ['aggregations', aggregations]
+    ])
+  }
 
   const query = {}
   if (_selectedCollection.queryables['eo:cloud_cover']) {
@@ -400,15 +430,29 @@ function newMosaicSearch() {
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData
   const datetime = convertDate(store.getState().mainSlice.searchDateRangeValue)
+  const _searchGeojsonBoundary =
+    store.getState().mainSlice.searchGeojsonBoundary
   const bboxFromMap = bboxFromMapBounds()
 
-  const createMosaicBody = {
-    stac_api_root: VITE_STAC_API_URL,
-    asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
-    collections: [_selectedCollectionData.id],
-    datetime,
-    bbox: bboxFromMap,
-    max_items: VITE_MOSAIC_MAX_ITEMS || 100
+  let createMosaicBody
+  if (_searchGeojsonBoundary) {
+    createMosaicBody = {
+      stac_api_root: VITE_STAC_API_URL,
+      asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
+      collections: [_selectedCollectionData.id],
+      datetime,
+      intersects: _searchGeojsonBoundary.geometry,
+      max_items: VITE_MOSAIC_MAX_ITEMS || 100
+    }
+  } else {
+    createMosaicBody = {
+      stac_api_root: VITE_STAC_API_URL,
+      asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
+      collections: [_selectedCollectionData.id],
+      datetime,
+      bbox: bboxFromMap,
+      max_items: VITE_MOSAIC_MAX_ITEMS || 100
+    }
   }
 
   if (store.getState().mainSlice.showCloudSlider) {

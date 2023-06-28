@@ -7,7 +7,8 @@ import {
   setShowPopupModal,
   setShowZoomNotice,
   setSearchLoading,
-  setisDrawingEnabled
+  setisDrawingEnabled,
+  setsearchGeojsonBoundary
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 import debounce from './debounce'
@@ -24,7 +25,8 @@ export const footprintLayerStyle = {
   weight: 1,
   opacity: 1,
   fillOpacity: 0.1,
-  fillColor: '#3183f5'
+  fillColor: '#3183f5',
+  pane: 'searchResults'
 }
 
 export const gridCodeLayerStyle = {
@@ -32,14 +34,16 @@ export const gridCodeLayerStyle = {
   weight: 1,
   opacity: 1,
   fillOpacity: 0.1,
-  fillColor: '#3183f5'
+  fillColor: '#3183f5',
+  pane: 'searchResults'
 }
 
 export const clickedFootprintLayerStyle = {
   color: '#ff7800',
   weight: 4,
   opacity: 0.65,
-  fillOpacity: 0
+  fillOpacity: 0,
+  pane: 'searchResults'
 }
 
 export const customDrawingPolygonStyle = {
@@ -48,7 +52,8 @@ export const customDrawingPolygonStyle = {
   opacity: 1,
   fillOpacity: 0,
   dashArray: '4, 4',
-  dashOffset: '0'
+  dashOffset: '0',
+  pane: 'drawPane'
 }
 
 export function mapClickHandler(e) {
@@ -503,6 +508,7 @@ export async function addMosaicLayer(json) {
 export function enableMapPolyDrawing() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
+    clearLayer('drawBoundsLayer')
     store.getState().mainSlice.mapDrawPolygonHandler.enable()
 
     // save drawn items
@@ -511,11 +517,13 @@ export function enableMapPolyDrawing() {
       map.eachLayer(function (layer) {
         if (layer.layer_name === 'drawBoundsLayer') {
           const drawLayer = e.layer
-          console.log(drawLayer)
           drawLayer.setStyle(customDrawingPolygonStyle)
           drawLayer.options.interactive = false
           layer.addLayer(drawLayer)
+          const data = layer.toGeoJSON()
+          store.dispatch(setsearchGeojsonBoundary(data.features[0]))
           store.dispatch(setisDrawingEnabled(false))
+          layer.bringToFront()
         }
       })
     })

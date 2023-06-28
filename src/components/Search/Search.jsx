@@ -4,7 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   setIsAutoSearchSet,
   setshowAdvancedSearchOptions,
-  setisDrawingEnabled
+  setisDrawingEnabled,
+  setsearchGeojsonBoundary
 } from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
 import Switch from '@mui/material/Switch'
@@ -21,7 +22,7 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 
 import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
 import { Box } from '@mui/material'
-import { enableMapPolyDrawing } from '../../utils/mapHelper'
+import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -41,6 +42,9 @@ const Search = () => {
   )
   const _isDrawingEnabled = useSelector(
     (state) => state.mainSlice.isDrawingEnabled
+  )
+  const _searchGeojsonBoundary = useSelector(
+    (state) => state.mainSlice.searchGeojsonBoundary
   )
   const mosaicTilerURL = VITE_MOSAIC_TILER_URL || ''
 
@@ -68,10 +72,28 @@ const Search = () => {
   }
 
   function onDrawBoundaryClicked() {
+    if (_searchGeojsonBoundary) {
+      return
+    }
     dispatch(setshowAdvancedSearchOptions(!_showAdvancedSearchOptions))
     dispatch(setisDrawingEnabled(true))
     enableMapPolyDrawing()
     // disable search buttons
+  }
+
+  function onClearButtonClicked() {
+    if (!_searchGeojsonBoundary) {
+      return
+    }
+    dispatch(setsearchGeojsonBoundary(null))
+    dispatch(setshowAdvancedSearchOptions(false))
+    clearLayer('drawBoundsLayer')
+  }
+
+  function onAdvancedSearchBlur(event) {
+    if (!event.currentTarget.contains(event.relatedTarget)) {
+      dispatch(setshowAdvancedSearchOptions(false))
+    }
   }
 
   return (
@@ -92,12 +114,14 @@ const Search = () => {
       )}
 
       {VITE_ADVANCED_SEARCH_ENABLED ? (
-        <div
+        <Box
           className={
             _showAdvancedSearchOptions
               ? 'searchContainer searchButtonAdvanced ' + 'active'
               : 'searchContainer searchButtonAdvanced'
           }
+          onBlur={onAdvancedSearchBlur}
+          tabIndex={0}
         >
           <div className="advancedSearchContent">
             <button
@@ -125,21 +149,41 @@ const Search = () => {
               </span>
               <div className="advancedSearchOptionsButtons">
                 <button
-                  className="advancedSearchOptionsButton"
+                  className={
+                    !_searchGeojsonBoundary
+                      ? 'advancedSearchOptionsButton'
+                      : 'advancedSearchOptionsButton ' +
+                        'advancedSearchOptionsButtonDisabled'
+                  }
                   onClick={onDrawBoundaryClicked}
                 >
                   Draw boundary
                 </button>
-                <button className="advancedSearchOptionsButton">
+                <button
+                  className={
+                    !_searchGeojsonBoundary
+                      ? 'advancedSearchOptionsButton'
+                      : 'advancedSearchOptionsButton ' +
+                        'advancedSearchOptionsButtonDisabled'
+                  }
+                >
                   Upload GeoJSON
                 </button>
-                <button className="advancedSearchOptionsButton advancedSearchOptionsButtonDisabled">
+                <button
+                  className={
+                    _searchGeojsonBoundary
+                      ? 'advancedSearchOptionsButton'
+                      : 'advancedSearchOptionsButton ' +
+                        'advancedSearchOptionsButtonDisabled'
+                  }
+                  onClick={onClearButtonClicked}
+                >
                   Clear
                 </button>
               </div>
             </Box>
           ) : null}
-        </div>
+        </Box>
       ) : (
         <div className="searchContainer searchButton">
           <button
