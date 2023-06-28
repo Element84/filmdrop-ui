@@ -523,7 +523,6 @@ export function enableMapPolyDrawing() {
           const data = layer.toGeoJSON()
           store.dispatch(setsearchGeojsonBoundary(data.features[0]))
           store.dispatch(setisDrawingEnabled(false))
-          layer.bringToFront()
         }
       })
     })

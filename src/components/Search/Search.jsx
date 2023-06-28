@@ -78,7 +78,6 @@ const Search = () => {
     dispatch(setshowAdvancedSearchOptions(!_showAdvancedSearchOptions))
     dispatch(setisDrawingEnabled(true))
     enableMapPolyDrawing()
-    // disable search buttons
   }
 
   function onClearButtonClicked() {
