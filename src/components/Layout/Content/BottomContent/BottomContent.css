@@ -8,7 +8,7 @@
 
 .ZoomNotice {
   position: absolute;
-  top: 54px;
+  top: 10px;
   left: 52px;
   z-index: 1;
   background: #353d4f;
@@ -17,9 +17,11 @@
   font-size: 0.75em;
   animation: fadeIn 0.45s ease-in-out 0.4s forwards;
   opacity: 0;
+  display: flex;
+  flex-direction: row;
 }
 
-.ZoomNotice a {
+.zoomInText {
   color: #6cc24a;
   cursor: pointer;
   transition: border-color 0.33s ease-in-out;
@@ -28,7 +30,7 @@
   margin-left: 10px;
 }
 
-.ZoomNotice a:hover {
+.zoomInText:hover {
   border-color: #6cc24a;
 }
 
