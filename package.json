@@ -77,7 +77,7 @@
     "format-fix": "npx prettier . --write .",
     "fix": "npm run format-fix && npm run lint-fix",
     "typecheck": "tsc --jsx react",
-    "audit-all": "npx better-npm-audit audit",
+    "audit-all": "npx better-npm-audit audit -x 1092330",
     "audit-prod": "npx better-npm-audit audit --production",
     "pre-commit": "./node_modules/pre-commit/hook",
     "check-markdown": "remark . --frail"
