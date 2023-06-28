@@ -26,8 +26,7 @@ import DOMPurify from 'dompurify'
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,
-  setMosaicZoomMessage,
-  customDrawingPolygonStyle
+  setMosaicZoomMessage
 } from '../../utils/mapHelper'
 
 const LeafMap = () => {
@@ -187,9 +186,9 @@ const LeafMap = () => {
         />
       </MapContainer>
       <div className="attributionTooltipContainer">
-        <a data-tooltip-id="attribution-tooltip">
+        <div data-tooltip-id="attribution-tooltip">
           <InfoOutlinedIcon />
-        </a>
+        </div>
         <Tooltip id="attribution-tooltip" place="left" clickable="true">
           <div className="mapAttribution leaflet-control-attribution leaflet-control">
             <svg

@@ -48,7 +48,7 @@
   text-decoration: underline;
 }
 
-a[data-tooltip-id='attribution-tooltip'] {
+div[data-tooltip-id='attribution-tooltip'] {
   position: absolute;
   bottom: 0;
   right: 10px;
