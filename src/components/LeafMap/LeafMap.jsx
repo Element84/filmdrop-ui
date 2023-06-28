@@ -82,6 +82,10 @@ const LeafMap = () => {
       map.createPane('drawPane')
       map.getPane('drawPane').style.zIndex = 700
 
+      // override existing panes for draw controls
+      map.getPane('overlayPane').style.zIndex = 700
+      map.getPane('markerPane').style.zIndex = 700
+
       // setup max map bounds
       const southWest = L.latLng(-90, -180)
       const northEast = L.latLng(90, 180)
@@ -124,9 +128,6 @@ const LeafMap = () => {
       const drawPolygonHandler = new L.Draw.Polygon(map, {
         shapeOptions: { color: '#00C07B' }
       })
-
-      map.getPane('overlayPane').style.zIndex = 700
-      map.getPane('markerPane').style.zIndex = 700
 
       dispatch(setmapDrawPolygonHandler(drawPolygonHandler))
 
