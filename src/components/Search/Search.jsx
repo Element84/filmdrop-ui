@@ -195,7 +195,7 @@ const Search = () => {
           </button>
 
           <div className="autoSearchContainer">
-            <label>Auto Search</label>
+            <label htmlFor="autoSearchSwtich">Auto Search</label>
             <Switch
               checked={_isAutoSearchSet}
               onChange={handleSwitchChange}

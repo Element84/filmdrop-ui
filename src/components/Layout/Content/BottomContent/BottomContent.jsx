@@ -28,6 +28,8 @@ import {
   disableMapPolyDrawing
 } from '../../../../utils/mapHelper'
 
+import Box from '@mui/material/Box'
+
 const BottomContent = () => {
   // set up useSelector to get value from store
   const _map = useSelector((state) => state.mainSlice.map)
@@ -89,9 +91,9 @@ const BottomContent = () => {
       {_showZoomNotice && (
         <div className="ZoomNotice">
           Images are not visible at this zoom level.
-          <a onClick={onZoomClick}>
+          <Box className="zoomInText" onClick={onZoomClick}>
             <strong>Zoom in</strong>
-          </a>
+          </Box>
         </div>
       )}
       <div className="actionButtons">
