@@ -71,8 +71,7 @@ const LeafMap = () => {
       // add geosearch/geocoder to map
       map.addControl(searchControl)
 
-      // setup custom pane for results
-
+      // setup custom panes for results
       map.createPane('searchResults')
       map.getPane('searchResults').style.zIndex = 600
 
