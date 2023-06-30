@@ -109,14 +109,14 @@ const BottomContent = () => {
       {_searchResults?.numberMatched &&
       _searchResults?.searchType !== 'AggregatedResults' &&
       !_isDrawingEnabled ? (
-        <div className="resultCount">
+        <div className="resultCount" data-testid="testShowingScenesMessage">
           Showing {_searchResults.numberReturned} of{' '}
           {_searchResults.numberMatched} scenes
         </div>
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' &&
       !_isDrawingEnabled ? (
-        <div className="resultCount">
+        <div className="resultCount" data-testid="testShowingAggregatedMessage">
           <strong>Showing Aggregated Results</strong>
           {_searchResults.features.length} {resultType},{' '}
           {_searchResults.numberMatched} total scenes

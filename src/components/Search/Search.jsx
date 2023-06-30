@@ -26,7 +26,7 @@ import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
 const Search = () => {
   const dispatch = useDispatch()
   const _selectedCollectionData = useSelector(
-    (state) => state.mainSlice._selectedCollectionData
+    (state) => state.mainSlice.selectedCollectionData
   )
   const _searchDateRangeValue = useSelector(
     (state) => state.mainSlice.searchDateRangeValue
@@ -192,7 +192,10 @@ const Search = () => {
             Search
           </button>
 
-          <div className="autoSearchContainer">
+          <div
+            className="autoSearchContainer"
+            data-testid="test_autoSearchContainer"
+          >
             <label htmlFor="autoSearchSwtich">Auto Search</label>
             <Switch
               checked={_isAutoSearchSet}
@@ -202,7 +205,12 @@ const Search = () => {
           </div>
         </div>
       )}
-      {_isDrawingEnabled ? <div className="disableSearchOverlay"></div> : null}
+      {_isDrawingEnabled ? (
+        <div
+          className="disableSearchOverlay"
+          data-testid="test_disableSearchOverlay"
+        ></div>
+      ) : null}
     </div>
   )
 }
