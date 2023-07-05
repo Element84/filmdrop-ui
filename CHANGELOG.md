@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor API calls
 - Moved config reference from `envSetupVars.js` into `search.jsx`
 - Geosearch moved under zoom control and changed to be collapsed
+- `VITE_ADVANCED_SEARCH_ENABLED` and `VITE_CART_ENABLED` must be set in `config.js`
 
 ### Fixed
 
