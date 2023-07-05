@@ -422,7 +422,7 @@ function newMosaicSearch() {
     store.getState().mainSlice.searchGeojsonBoundary
   const bboxFromMap = bboxFromMapBounds()
 
-  let createMosaicBody = {
+  const createMosaicBody = {
     stac_api_root: VITE_STAC_API_URL,
     asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
     collections: [_selectedCollectionData.id],
@@ -430,12 +430,9 @@ function newMosaicSearch() {
     max_items: VITE_MOSAIC_MAX_ITEMS || 100
   }
   if (_searchGeojsonBoundary) {
-    createMosaicBody = {
-      ...createMosaicBody,
-      intersects: _searchGeojsonBoundary.geometry
-    }
+    createMosaicBody.intersects = _searchGeojsonBoundary.geometry
   } else {
-    createMosaicBody = { ...createMosaicBody, bbox: bboxFromMap }
+    createMosaicBody.bbox = bboxFromMap
   }
 
   if (store.getState().mainSlice.showCloudSlider) {
