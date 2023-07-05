@@ -1,11 +1,14 @@
 import * as L from 'leaflet'
+import 'leaflet-draw'
 import { store } from '../redux/store'
 import { colorMap } from './colorMap'
 import {
   setClickResults,
   setShowPopupModal,
   setShowZoomNotice,
-  setSearchLoading
+  setSearchLoading,
+  setisDrawingEnabled,
+  setsearchGeojsonBoundary
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 import debounce from './debounce'
@@ -22,7 +25,8 @@ export const footprintLayerStyle = {
   weight: 1,
   opacity: 1,
   fillOpacity: 0.1,
-  fillColor: '#3183f5'
+  fillColor: '#3183f5',
+  pane: 'searchResults'
 }
 
 export const gridCodeLayerStyle = {
@@ -30,17 +34,32 @@ export const gridCodeLayerStyle = {
   weight: 1,
   opacity: 1,
   fillOpacity: 0.1,
-  fillColor: '#3183f5'
+  fillColor: '#3183f5',
+  pane: 'searchResults'
 }
 
 export const clickedFootprintLayerStyle = {
   color: '#ff7800',
   weight: 4,
   opacity: 0.65,
-  fillOpacity: 0
+  fillOpacity: 0,
+  pane: 'searchResults'
+}
+
+export const customDrawingPolygonStyle = {
+  color: '#00C07B',
+  weight: 2,
+  opacity: 1,
+  fillOpacity: 0,
+  dashArray: '4, 4',
+  dashOffset: '0',
+  pane: 'drawPane'
 }
 
 export function mapClickHandler(e) {
+  if (store.getState().mainSlice.isDrawingEnabled) {
+    return
+  }
   const map = store.getState().mainSlice.map
   const clickBounds = L.latLngBounds(e.latlng, e.latlng)
   if (map && Object.keys(map).length > 0) {
@@ -128,7 +147,7 @@ export function clearAllLayers() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
     map.eachLayer(function (layer) {
-      if (layer.layer_name) {
+      if (layer.layer_name && layer.layer_name !== 'drawBoundsLayer') {
         layer.clearLayers()
       }
     })
@@ -483,5 +502,36 @@ export async function addMosaicLayer(json) {
         }
       })
     })
+  }
+}
+
+export function enableMapPolyDrawing() {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    clearLayer('drawBoundsLayer')
+    store.getState().mainSlice.mapDrawPolygonHandler.enable()
+
+    // save drawn items
+    map.on(L.Draw.Event.CREATED, (e) => {
+      e.layer.options.color = '#00FF00'
+      map.eachLayer(function (layer) {
+        if (layer.layer_name === 'drawBoundsLayer') {
+          const drawLayer = e.layer
+          drawLayer.setStyle(customDrawingPolygonStyle)
+          drawLayer.options.interactive = false
+          layer.addLayer(drawLayer)
+          const data = layer.toGeoJSON()
+          store.dispatch(setsearchGeojsonBoundary(data.features[0]))
+          store.dispatch(setisDrawingEnabled(false))
+        }
+      })
+    })
+  }
+}
+
+export function disableMapPolyDrawing() {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    store.getState().mainSlice.mapDrawPolygonHandler.disable()
   }
 }

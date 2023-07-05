@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor map code and related files
 - Refactor API calls
 - Moved config reference from `envSetupVars.js` into `search.jsx`
+- Geosearch moved under zoom control and changed to be collapsed
+- `VITE_ADVANCED_SEARCH_ENABLED` and `VITE_CART_ENABLED` must be set in `config.js`
 
 ### Fixed
 
@@ -22,6 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added 'thumbnail not found' image placeholder
 - Added Config feature flags for Advanced Search Options and Cart
+- Added draw boundary feature to allow user to draw polygon on map (WIP)
+- When polygon drawn, use as search intersects param instead of map viewport bbox
 
 ### Removed
 

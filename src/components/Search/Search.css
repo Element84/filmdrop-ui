@@ -3,7 +3,6 @@
   width: 100%;
   display: flex;
   flex-direction: row;
-  align-items: center;
   transition: max-height 0.33s ease-in-out;
 }
 
@@ -41,10 +40,84 @@
 
 .searchContainer.searchButton {
   border-right: 0 none;
-  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
+}
+
+.searchContainer.searchButtonAdvanced {
+  padding-left: 40px;
+  padding-right: 40px;
+}
+
+.searchContainer.searchButtonAdvanced.active {
+  background-color: #4f5768;
+  width: 150px;
+  display: block;
+}
+
+.advancedSearchContent {
+  width: 150px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.advancedSearchOptionsContainer {
+  height: 167px;
+  width: 280px;
+  background-color: #4f5768;
+  float: right;
+  margin-right: -40px;
+  display: flex;
+  flex-direction: column;
+}
+
+.advancedSearchOptionsText {
+  font-size: 16px;
+  margin-top: 10px;
+  margin-left: 12px;
+  color: #fff;
+  font-weight: bold;
+}
+
+.advancedSearchOptionsButtons {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.advancedSearchOptionsButton {
+  height: 32px;
+  width: 256px;
+  background-color: #4f5768;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #a9b0c1;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+}
+.advancedSearchOptionsButton:hover {
+  background-color: #353d4f;
+}
+
+.advancedSearchOptionsButtonDisabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.advancedSearchOptionsButtonDisabled:hover {
+  background-color: #4f5768;
 }
 
 .searchContainer.searchButton button {
@@ -72,6 +145,31 @@
   min-width: 160px;
   align-items: center;
   padding-top: 2px;
+}
+
+.advancedSearchOptions {
+  margin-top: 8px;
+  font-size: 14px;
+  color: #a9b0c1;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+
+.searchContainer .actionButton {
+  height: 45px;
+}
+
+.disableSearchOverlay {
+  height: 100%;
+  width: 100%;
+  background-color: #353d4f;
+  opacity: 0.7;
+  z-index: 5;
+  position: absolute;
 }
 
 @media screen and (min-width: 731px) {

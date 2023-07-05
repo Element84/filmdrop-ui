@@ -8,7 +8,7 @@
 
 .ZoomNotice {
   position: absolute;
-  top: 54px;
+  top: 11px;
   left: 52px;
   z-index: 1;
   background: #353d4f;
@@ -17,9 +17,11 @@
   font-size: 0.75em;
   animation: fadeIn 0.45s ease-in-out 0.4s forwards;
   opacity: 0;
+  display: flex;
+  flex-direction: row;
 }
 
-.ZoomNotice a {
+.zoomInText {
   color: #6cc24a;
   cursor: pointer;
   transition: border-color 0.33s ease-in-out;
@@ -28,7 +30,7 @@
   margin-left: 10px;
 }
 
-.ZoomNotice a:hover {
+.zoomInText:hover {
   border-color: #6cc24a;
 }
 
@@ -99,6 +101,51 @@
   font-size: 0.75em;
   letter-spacing: 0.025em;
   line-height: 1.8;
+}
+
+.drawGeomMessage {
+  position: absolute;
+  z-index: 2;
+  top: 11px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(34, 34, 34, 0.8);
+  padding: 10px 20px;
+  border-radius: 5px;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75em;
+  letter-spacing: 0.025em;
+  line-height: 1.8;
+}
+
+.drawGeomMessageText {
+  display: flex;
+  flex-direction: column;
+  font-size: 16px;
+}
+.drawGeomMessageTextTitle {
+  color: #abb0c0;
+  font-weight: bold;
+}
+
+.drawGeomMessageCancelButton {
+  height: 32px;
+  width: 75px;
+  background-color: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #a9b0c1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin-left: 30px;
 }
 
 .resultCount strong {

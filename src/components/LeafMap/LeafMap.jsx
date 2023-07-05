@@ -1,27 +1,21 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './LeafMap.css'
-
-// redux imports
 import { useDispatch } from 'react-redux'
-import { setMap } from '../../redux/slices/mainSlice'
-
+import { setMap, setmapDrawPolygonHandler } from '../../redux/slices/mainSlice'
 import * as L from 'leaflet'
+import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
-
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
-
 import {
   VITE_BASEMAP_URL,
   VITE_BASEMAP_HTML_ATTRIBUTION
 } from '../../assets/config.js'
-
 import DOMPurify from 'dompurify'
-
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,
@@ -45,7 +39,7 @@ const LeafMap = () => {
   })
 
   const searchControl = new SearchControl({
-    style: 'bar',
+    style: 'button',
     notFoundMessage: 'Sorry, that address could not be found.',
     provider: new OpenStreetMapProvider(),
     marker: {
@@ -61,20 +55,29 @@ const LeafMap = () => {
 
   useEffect(() => {
     if (map && Object.keys(map).length) {
-      // add geosearch/geocoder to map
-      map.addControl(searchControl)
-
       // override position of zoom controls
       L.control
         .zoom({
           position: 'topleft'
         })
         .addTo(map)
+      // add geosearch/geocoder to map
+      map.addControl(searchControl)
 
-      // setup custom pane for tiler image result
+      // setup custom panes for results
+      map.createPane('searchResults')
+      map.getPane('searchResults').style.zIndex = 600
+
       map.createPane('imagery')
       map.getPane('imagery').style.zIndex = 650
       map.getPane('imagery').style.pointerEvents = 'none'
+
+      map.createPane('drawPane')
+      map.getPane('drawPane').style.zIndex = 700
+
+      // override existing panes for draw controls
+      map.getPane('overlayPane').style.zIndex = 700
+      map.getPane('markerPane').style.zIndex = 700
 
       // setup max map bounds
       const southWest = L.latLng(-90, -180)
@@ -102,6 +105,24 @@ const LeafMap = () => {
       const mosaicImageLayerInit = new L.FeatureGroup()
       mosaicImageLayerInit.addTo(map)
       mosaicImageLayerInit.layer_name = 'mosaicImageLayer'
+
+      const drawBounds = new L.FeatureGroup()
+      drawBounds.pane = 'drawPane'
+      drawBounds.addTo(map)
+      drawBounds.layer_name = 'drawBoundsLayer'
+
+      // eslint-disable-next-line no-new
+      new L.Control.Draw({
+        edit: {
+          featureGroup: drawBounds
+        }
+      })
+
+      const drawPolygonHandler = new L.Draw.Polygon(map, {
+        shapeOptions: { color: '#00C07B' }
+      })
+
+      dispatch(setmapDrawPolygonHandler(drawPolygonHandler))
 
       // set up map events
       map.on('zoomend', function () {
@@ -159,9 +180,9 @@ const LeafMap = () => {
         />
       </MapContainer>
       <div className="attributionTooltipContainer">
-        <a data-tooltip-id="attribution-tooltip">
+        <div data-tooltip-id="attribution-tooltip">
           <InfoOutlinedIcon />
-        </a>
+        </div>
         <Tooltip id="attribution-tooltip" place="left" clickable="true">
           <div className="mapAttribution leaflet-control-attribution leaflet-control">
             <svg

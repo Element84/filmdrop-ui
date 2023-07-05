@@ -27,7 +27,11 @@ const initialState = {
   searchDateRangeValue: null,
   localGridData: [],
   isAutoSearchSet: false,
-  hasCollectionChanged: false
+  hasCollectionChanged: false,
+  showAdvancedSearchOptions: false,
+  isDrawingEnabled: false,
+  mapDrawPolygonHandler: null,
+  searchGeojsonBoundary: null
 }
 
 // next, for every key in the initialState
@@ -107,6 +111,18 @@ export const mainSlice = createSlice({
     },
     sethasCollectionChanged: (state, action) => {
       state.hasCollectionChanged = action.payload
+    },
+    setshowAdvancedSearchOptions: (state, action) => {
+      state.showAdvancedSearchOptions = action.payload
+    },
+    setisDrawingEnabled: (state, action) => {
+      state.isDrawingEnabled = action.payload
+    },
+    setmapDrawPolygonHandler: (state, action) => {
+      state.mapDrawPolygonHandler = action.payload
+    },
+    setsearchGeojsonBoundary: (state, action) => {
+      state.searchGeojsonBoundary = action.payload
     }
   }
 })
@@ -137,5 +153,9 @@ export const { setSearchDateRangeValue } = mainSlice.actions
 export const { setLocalGridData } = mainSlice.actions
 export const { setIsAutoSearchSet } = mainSlice.actions
 export const { sethasCollectionChanged } = mainSlice.actions
+export const { setshowAdvancedSearchOptions } = mainSlice.actions
+export const { setisDrawingEnabled } = mainSlice.actions
+export const { setmapDrawPolygonHandler } = mainSlice.actions
+export const { setsearchGeojsonBoundary } = mainSlice.actions
 
 export default mainSlice.reducer
