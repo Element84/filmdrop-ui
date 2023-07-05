@@ -109,24 +109,18 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
   const _searchGeojsonBoundary =
     store.getState().mainSlice.searchGeojsonBoundary
 
-  let searchParams
+  const searchParams = new Map([
+    ['datetime', _dateTimeRange],
+    ['limit', limit],
+    ['collections', collections]
+  ])
   if (_searchGeojsonBoundary) {
-    searchParams = new Map([
-      [
-        'intersects',
-        encodeURIComponent(JSON.stringify(_searchGeojsonBoundary.geometry))
-      ],
-      ['datetime', _dateTimeRange],
-      ['limit', limit],
-      ['collections', collections]
-    ])
+    searchParams.set(
+      'intersects',
+      encodeURIComponent(JSON.stringify(_searchGeojsonBoundary.geometry))
+    )
   } else {
-    searchParams = new Map([
-      ['bbox', bbox],
-      ['datetime', _dateTimeRange],
-      ['limit', limit],
-      ['collections', collections]
-    ])
+    searchParams.set('bbox', bbox)
   }
 
   const query = {}
@@ -210,24 +204,18 @@ function buildSearchAggregateParams(gridType) {
     aggregations = `${gridAggName},total_count`
   }
 
-  let searchParams
+  const searchParams = new Map([
+    ['datetime', _dateTimeRange],
+    ['collections', collections],
+    ['aggregations', aggregations]
+  ])
   if (_searchGeojsonBoundary) {
-    searchParams = new Map([
-      [
-        'intersects',
-        encodeURIComponent(JSON.stringify(_searchGeojsonBoundary.geometry))
-      ],
-      ['datetime', _dateTimeRange],
-      ['collections', collections],
-      ['aggregations', aggregations]
-    ])
+    searchParams.set(
+      'intersects',
+      encodeURIComponent(JSON.stringify(_searchGeojsonBoundary.geometry))
+    )
   } else {
-    searchParams = new Map([
-      ['bbox', bbox],
-      ['datetime', _dateTimeRange],
-      ['collections', collections],
-      ['aggregations', aggregations]
-    ])
+    searchParams.set('bbox', bbox)
   }
 
   const query = {}
@@ -434,25 +422,20 @@ function newMosaicSearch() {
     store.getState().mainSlice.searchGeojsonBoundary
   const bboxFromMap = bboxFromMapBounds()
 
-  let createMosaicBody
+  let createMosaicBody = {
+    stac_api_root: VITE_STAC_API_URL,
+    asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
+    collections: [_selectedCollectionData.id],
+    datetime,
+    max_items: VITE_MOSAIC_MAX_ITEMS || 100
+  }
   if (_searchGeojsonBoundary) {
     createMosaicBody = {
-      stac_api_root: VITE_STAC_API_URL,
-      asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
-      collections: [_selectedCollectionData.id],
-      datetime,
-      intersects: _searchGeojsonBoundary.geometry,
-      max_items: VITE_MOSAIC_MAX_ITEMS || 100
+      ...createMosaicBody,
+      intersects: _searchGeojsonBoundary.geometry
     }
   } else {
-    createMosaicBody = {
-      stac_api_root: VITE_STAC_API_URL,
-      asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
-      collections: [_selectedCollectionData.id],
-      datetime,
-      bbox: bboxFromMap,
-      max_items: VITE_MOSAIC_MAX_ITEMS || 100
-    }
+    createMosaicBody = { ...createMosaicBody, bbox: bboxFromMap }
   }
 
   if (store.getState().mainSlice.showCloudSlider) {
