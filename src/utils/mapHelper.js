@@ -19,6 +19,7 @@ import {
   VITE_MOSAIC_TILER_PARAMS
 } from '../assets/config'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
+import * as gjv from 'geojson-validation'
 
 export const footprintLayerStyle = {
   color: '#3183f5',
@@ -46,7 +47,24 @@ export const clickedFootprintLayerStyle = {
   pane: 'searchResults'
 }
 
-export const customDrawingPolygonStyle = {
+const customSearchPointIconStyle = L.icon({
+  iconSize: [25, 41],
+  iconAnchor: [10, 41],
+  popupAnchor: [2, -40],
+  iconUrl: '/marker-icon.png',
+  shadowUrl: '/marker-shadow.png'
+})
+
+export const customSearchLineStyle = {
+  color: '#00C07B',
+  weight: 2,
+  opacity: 1,
+  dashArray: '4, 4',
+  dashOffset: '0',
+  pane: 'drawPane'
+}
+
+export const customSearchPolygonStyle = {
   color: '#00C07B',
   weight: 2,
   opacity: 1,
@@ -517,7 +535,8 @@ export function enableMapPolyDrawing() {
       map.eachLayer(function (layer) {
         if (layer.layer_name === 'drawBoundsLayer') {
           const drawLayer = e.layer
-          drawLayer.setStyle(customDrawingPolygonStyle)
+          console.log(drawLayer)
+          drawLayer.setStyle(customSearchPolygonStyle)
           drawLayer.options.interactive = false
           layer.addLayer(drawLayer)
           const data = layer.toGeoJSON()
@@ -534,4 +553,60 @@ export function disableMapPolyDrawing() {
   if (map && Object.keys(map).length > 0) {
     store.getState().mainSlice.mapDrawPolygonHandler.disable()
   }
+}
+
+export function addUploadedGeojsonToMap(geojson) {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    clearLayer('drawBoundsLayer')
+    map.eachLayer(function (layer) {
+      if (layer.layer_name === 'drawBoundsLayer') {
+        let geojsonLayer = L.geoJSON(geojson)
+
+        if (
+          geojson.geometry.type === 'Point' ||
+          geojson.geometry.type === 'MultiPoint'
+        ) {
+          geojsonLayer = L.geoJSON(geojson, {
+            pointToLayer: function (feature, latlng) {
+              return L.marker(latlng, { icon: customSearchPointIconStyle })
+            }
+          })
+        }
+        if (
+          geojson.geometry.type === 'LineString' ||
+          geojson.geometry.type === 'MultiLineString'
+        ) {
+          geojsonLayer.setStyle(customSearchLineStyle)
+        }
+        if (
+          geojson.geometry.type === 'Polygon' ||
+          geojson.geometry.type === 'MultiPolygon'
+        ) {
+          geojsonLayer.setStyle(customSearchPolygonStyle)
+        }
+
+        geojsonLayer.options.interactive = false
+        layer.addLayer(geojsonLayer)
+        store.dispatch(setsearchGeojsonBoundary(geojson))
+      }
+    })
+  }
+}
+
+export async function parseGeomUpload(geom) {
+  if (gjv.isFeatureCollection(geom)) {
+    return geom.features[0]
+  }
+  if (gjv.isFeature(geom)) {
+    return geom
+  }
+  if (gjv.isGeometryObject(geom)) {
+    return {
+      type: 'Feature',
+      geometry: geom,
+      properties: {}
+    }
+  }
+  throw Error('Invalid geojson uploaded')
 }

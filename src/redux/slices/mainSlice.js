@@ -31,7 +31,8 @@ const initialState = {
   showAdvancedSearchOptions: false,
   isDrawingEnabled: false,
   mapDrawPolygonHandler: null,
-  searchGeojsonBoundary: null
+  searchGeojsonBoundary: null,
+  showUploadGeojsonModal: false
 }
 
 // next, for every key in the initialState
@@ -123,6 +124,9 @@ export const mainSlice = createSlice({
     },
     setsearchGeojsonBoundary: (state, action) => {
       state.searchGeojsonBoundary = action.payload
+    },
+    setshowUploadGeojsonModal: (state, action) => {
+      state.showUploadGeojsonModal = action.payload
     }
   }
 })
@@ -157,5 +161,6 @@ export const { setshowAdvancedSearchOptions } = mainSlice.actions
 export const { setisDrawingEnabled } = mainSlice.actions
 export const { setmapDrawPolygonHandler } = mainSlice.actions
 export const { setsearchGeojsonBoundary } = mainSlice.actions
+export const { setshowUploadGeojsonModal } = mainSlice.actions
 
 export default mainSlice.reducer

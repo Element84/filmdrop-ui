@@ -5,7 +5,8 @@ import {
   setIsAutoSearchSet,
   setshowAdvancedSearchOptions,
   setisDrawingEnabled,
-  setsearchGeojsonBoundary
+  setsearchGeojsonBoundary,
+  setshowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
 import Switch from '@mui/material/Switch'
@@ -77,6 +78,14 @@ const Search = () => {
     dispatch(setshowAdvancedSearchOptions(!_showAdvancedSearchOptions))
     dispatch(setisDrawingEnabled(true))
     enableMapPolyDrawing()
+  }
+
+  function onUploadGeojsonButtonClicked() {
+    if (_searchGeojsonBoundary) {
+      return
+    }
+    dispatch(setshowAdvancedSearchOptions(false))
+    dispatch(setshowUploadGeojsonModal(true))
   }
 
   function onClearButtonClicked() {
@@ -164,6 +173,7 @@ const Search = () => {
                       : 'advancedSearchOptionsButton ' +
                         'advancedSearchOptionsButtonDisabled'
                   }
+                  onClick={onUploadGeojsonButtonClicked}
                 >
                   Upload GeoJSON
                 </button>
