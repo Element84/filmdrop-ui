@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux'
 import { setshowUploadGeojsonModal } from '../../redux/slices/mainSlice'
 import { useDropzone } from 'react-dropzone'
 import { addUploadedGeojsonToMap, parseGeomUpload } from '../../utils/mapHelper'
-import * as gjv from 'geojson-validation'
+import { showApplicationAlert } from '../../utils/alertHelper'
 
 const UploadGeojsonModal = () => {
   const [fileData, setFileData] = useState(null)
@@ -40,6 +40,11 @@ const UploadGeojsonModal = () => {
 
   const handleFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0]
+    if (file.size >= 100000) {
+      setFileData(null)
+      showApplicationAlert('error', 'File size exceeded (100KB max)', 5000)
+      return
+    }
     if (file.name.endsWith('.geojson') || file.name.endsWith('.json')) {
       const reader = new FileReader()
       reader.onload = (e) => {
@@ -47,7 +52,12 @@ const UploadGeojsonModal = () => {
       }
       reader.readAsText(file)
     } else {
-      alert('Please drop a GeoJSON file.')
+      setFileData(null)
+      showApplicationAlert(
+        'error',
+        'ERROR: Only .json or .geojson supported',
+        5000
+      )
     }
   }
 
@@ -64,9 +74,7 @@ const UploadGeojsonModal = () => {
   })
 
   const acceptedFileItems = acceptedFiles.map((file) => (
-    <span key={file.path}>
-      {file.path} - {file.size} bytes
-    </span>
+    <span key={file.path}>{file.path}</span>
   ))
 
   const style = useMemo(
@@ -88,8 +96,8 @@ const UploadGeojsonModal = () => {
     try {
       geoJsonData = JSON.parse(fileData)
     } catch (e) {
-      alert('There was an error parsing the GeoJSON file.')
-      return // error in the above string (in this case, yes)!
+      showApplicationAlert('error', 'ERROR: JSON format invalid', 5000)
+      return
     }
     if (fileData) {
       await parseGeomUpload(geoJsonData).then(
@@ -97,14 +105,15 @@ const UploadGeojsonModal = () => {
           addUploadedGeojsonToMap(response)
           dispatch(setshowUploadGeojsonModal(false))
         },
+        // eslint-disable-next-line n/handle-callback-err
         (error) => {
-          alert('The GeoJSON file is not valid.')
-          console.error(`error: ${error.message}`)
+          showApplicationAlert(
+            'error',
+            'ERROR: ' + error.message.toString(),
+            5000
+          )
         }
       )
-    } else {
-      setFileData(null)
-      alert('Please drop a GeoJSON file.')
     }
   }
 

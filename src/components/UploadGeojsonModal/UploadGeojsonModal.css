@@ -46,6 +46,12 @@
   position: absolute;
   bottom: 25px;
   left: 20px;
+  width: calc(100% - 220px);
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
 }
 
 .uploadGeojsonModalActionButtons {
@@ -97,6 +103,10 @@
 }
 
 @media screen and (max-width: 650px) {
+  .fileToUploadText {
+    font-size: 14px;
+  }
+
   .uploadGeojsonModalContainerBackground {
     min-width: 80%;
   }

@@ -19,7 +19,7 @@ import {
   VITE_MOSAIC_TILER_PARAMS
 } from '../assets/config'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
-import * as gjv from 'geojson-validation'
+import GeoJSONValidation from './geojsonValidation'
 
 export const footprintLayerStyle = {
   color: '#3183f5',
@@ -595,13 +595,24 @@ export function addUploadedGeojsonToMap(geojson) {
 }
 
 export async function parseGeomUpload(geom) {
-  if (gjv.isFeatureCollection(geom)) {
+  if (GeoJSONValidation.isValidFeatureCollection(geom)) {
+    if (
+      GeoJSONValidation.isValidGeometryCollection(geom.features[0].geometry)
+    ) {
+      throw Error('GeometryCollection not supported')
+    }
     return geom.features[0]
   }
-  if (gjv.isFeature(geom)) {
+  if (GeoJSONValidation.isValidFeature(geom)) {
+    if (GeoJSONValidation.isValidGeometryCollection(geom.geometry)) {
+      throw Error('GeometryCollection not supported')
+    }
     return geom
   }
-  if (gjv.isGeometryObject(geom)) {
+  if (GeoJSONValidation.isValidGeometry(geom)) {
+    if (GeoJSONValidation.isValidGeometryCollection(geom)) {
+      throw Error('GeometryCollection not supported')
+    }
     return {
       type: 'Feature',
       geometry: geom,
