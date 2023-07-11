@@ -32,7 +32,10 @@ const initialState = {
   isDrawingEnabled: false,
   mapDrawPolygonHandler: null,
   searchGeojsonBoundary: null,
-  showUploadGeojsonModal: false
+  showUploadGeojsonModal: false,
+  showApplicationAlert: false,
+  applicationAlertMessage: 'System Error',
+  applicationAlertSeverity: 'error'
 }
 
 // next, for every key in the initialState
@@ -127,6 +130,15 @@ export const mainSlice = createSlice({
     },
     setshowUploadGeojsonModal: (state, action) => {
       state.showUploadGeojsonModal = action.payload
+    },
+    setshowApplicationAlert: (state, action) => {
+      state.showApplicationAlert = action.payload
+    },
+    setapplicationAlertMessage: (state, action) => {
+      state.applicationAlertMessage = action.payload
+    },
+    setapplicationAlertSeverity: (state, action) => {
+      state.applicationAlertSeverity = action.payload
     }
   }
 })
@@ -162,5 +174,8 @@ export const { setisDrawingEnabled } = mainSlice.actions
 export const { setmapDrawPolygonHandler } = mainSlice.actions
 export const { setsearchGeojsonBoundary } = mainSlice.actions
 export const { setshowUploadGeojsonModal } = mainSlice.actions
+export const { setshowApplicationAlert } = mainSlice.actions
+export const { setapplicationAlertMessage } = mainSlice.actions
+export const { setapplicationAlertSeverity } = mainSlice.actions
 
 export default mainSlice.reducer
