@@ -535,7 +535,6 @@ export function enableMapPolyDrawing() {
       map.eachLayer(function (layer) {
         if (layer.layer_name === 'drawBoundsLayer') {
           const drawLayer = e.layer
-          console.log(drawLayer)
           drawLayer.setStyle(customSearchPolygonStyle)
           drawLayer.options.interactive = false
           layer.addLayer(drawLayer)
