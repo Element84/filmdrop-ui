@@ -118,7 +118,7 @@ const UploadGeojsonModal = () => {
   }
 
   return (
-    <div className="uploadGeojsonModal">
+    <div className="uploadGeojsonModal" data-testid="testUploadGeojsonModal">
       <div className="uploadGeojsonModalContainerBackground"></div>
       <div className="uploadGeojsonModalContainer">
         <span className="uploadGeojsonModalTitle">Upload Geojson File</span>

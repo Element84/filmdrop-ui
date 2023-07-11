@@ -6,7 +6,9 @@ import { store } from './redux/store'
 import {
   setShowPublishModal,
   setShowLaunchModal,
-  setShowLaunchImageModal
+  setShowLaunchImageModal,
+  setshowUploadGeojsonModal,
+  setshowApplicationAlert
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
@@ -79,6 +81,36 @@ describe('App', () => {
           'testLaunchImageModal'
         )
         expect(LaunchImageModalComponent).not.toBeNull()
+      })
+    })
+    describe('when conditionally rendering UploadGeojsonModal', () => {
+      it('should not render UploadGeojsonModal if showUploadGeojsonModal in state is false', () => {
+        setup()
+        const UploadGeojsonModalComponent = screen.queryByTestId(
+          'testUploadGeojsonModal'
+        )
+        expect(UploadGeojsonModalComponent).toBeNull()
+      })
+      it('should render UploadGeojsonModal if showUploadGeojsonModal in state is true', () => {
+        store.dispatch(setshowUploadGeojsonModal(true))
+        setup()
+        const UploadGeojsonModalComponent = screen.queryByTestId(
+          'testUploadGeojsonModal'
+        )
+        expect(UploadGeojsonModalComponent).not.toBeNull()
+      })
+    })
+    describe('when conditionally rendering SystemMessage', () => {
+      it('should not render SystemMessage if showApplicationAlert in state is false', () => {
+        setup()
+        const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
+        expect(SystemMessageComponent).toBeNull()
+      })
+      it('should render SystemMessage if showApplicationAlert in state is true', () => {
+        store.dispatch(setshowApplicationAlert(true))
+        setup()
+        const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
+        expect(SystemMessageComponent).not.toBeNull()
       })
     })
   })

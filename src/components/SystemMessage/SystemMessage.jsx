@@ -15,7 +15,7 @@ const SystemMessage = () => {
   )
 
   return (
-    <div className="SystemMessage">
+    <div className="SystemMessage" data-testid="testSystemMessage">
       <Alert
         onClose={() => {
           store.dispatch(setshowApplicationAlert(false))
