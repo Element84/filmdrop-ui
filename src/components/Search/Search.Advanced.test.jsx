@@ -151,6 +151,36 @@ describe('Search', () => {
       expect(store.getState().mainSlice.showAdvancedSearchOptions).toBeFalsy()
     })
   })
+  describe('when upload geojson button clicked', () => {
+    it('should not call dispatch functions if geom already exists', async () => {
+      store.dispatch(
+        setsearchGeojsonBoundary({
+          type: 'Polygon',
+          coordinates: [[]]
+        })
+      )
+      setup()
+      const advancedButton = screen.getByText(/advanced/i)
+      await user.click(advancedButton)
+      const uploadGeojsonButton = screen.getByRole('button', {
+        name: /upload geojson/i
+      })
+      await user.click(uploadGeojsonButton)
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
+    })
+    it('should call dispatch functions if geom does not exists', async () => {
+      store.dispatch(setshowAdvancedSearchOptions(true))
+      setup()
+      const advancedButton = screen.getByText(/advanced/i)
+      await user.click(advancedButton)
+      const uploadGeojsonButton = screen.getByRole('button', {
+        name: /upload geojson/i
+      })
+      await user.click(uploadGeojsonButton)
+      expect(store.getState().mainSlice.showAdvancedSearchOptions).toBeFalsy()
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
+    })
+  })
   describe('when drawing mode enabled', () => {
     it('should render disabled search bar overlay div', async () => {
       setup()
