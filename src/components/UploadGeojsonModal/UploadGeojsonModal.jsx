@@ -130,6 +130,7 @@ const UploadGeojsonModal = () => {
           <p>
             Drag and drop a GeoJSON file here or click to{' '}
             <input
+              data-testid="testGeojsonFileUploadInput"
               {...getInputProps({ accept: '.geojson, application/json' })}
             />
             browse
