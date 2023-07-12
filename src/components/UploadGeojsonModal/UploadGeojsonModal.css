@@ -1,34 +1,24 @@
 .uploadGeojsonModal {
-  background-color: #00000070;
-  height: 100%;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   z-index: 100;
-}
-
-.uploadGeojsonModalContainerBackground {
-  position: absolute;
-  z-index: 1;
-  height: 30%;
-  width: 30%;
-  min-height: 300px;
-  min-width: 600px;
-  max-width: 600px;
-  background-color: #353d4f;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .uploadGeojsonModalContainer {
-  position: absolute;
-  z-index: 3;
-  height: 30%;
-  width: 30%;
-  min-height: 300px;
-  min-width: 600px;
-  max-width: 600px;
+  width: 600px;
+  max-width: 80%;
+  min-height: 280px;
+  background: #353d4f;
   color: #dedede;
+  padding: 20px;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -42,10 +32,12 @@
   top: 20px;
   left: 20px;
 }
+
 .fileToUploadText {
   position: absolute;
   bottom: 25px;
   left: 20px;
+  right: 140px;
   width: calc(100% - 220px);
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;
@@ -56,10 +48,10 @@
 
 .uploadGeojsonModalActionButtons {
   position: absolute;
-  bottom: 10px;
   right: 20px;
   display: flex;
   flex-direction: row;
+  bottom: 10px;
 }
 
 .uploadGeojsonModalActionButton {
@@ -83,35 +75,11 @@
 }
 
 .uploadGeojsonModalActionButton:hover {
-  background-color: #353d4f;
+  background: #353d4f;
 }
 
-@media screen and (max-width: 1600px) {
-  .uploadGeojsonDropZone {
-    width: 70%;
-  }
-}
-
-@media screen and (max-width: 1200px) {
-  .uploadGeojsonModalContainerBackground {
-    min-width: 500px;
-  }
-
-  .uploadGeojsonModalContainer {
-    min-width: 500px;
-  }
-}
-
-@media screen and (max-width: 650px) {
+@media (max-width: 650px) {
   .fileToUploadText {
     font-size: 14px;
-  }
-
-  .uploadGeojsonModalContainerBackground {
-    min-width: 80%;
-  }
-
-  .uploadGeojsonModalContainer {
-    min-width: 80%;
   }
 }

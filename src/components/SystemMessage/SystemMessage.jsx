@@ -21,6 +21,11 @@ const SystemMessage = () => {
           store.dispatch(setshowApplicationAlert(false))
         }}
         severity={_applicationAlertSeverity}
+        sx={{
+          '& .MuiAlert-message': {
+            fontSize: 14
+          }
+        }}
       >
         {_applicationAlertMessage}
       </Alert>
