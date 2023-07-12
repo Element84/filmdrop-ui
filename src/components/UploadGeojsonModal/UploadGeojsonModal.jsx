@@ -114,6 +114,8 @@ const UploadGeojsonModal = () => {
           )
         }
       )
+    } else {
+      showApplicationAlert('error', 'No file selected', 5000)
     }
   }
 
