@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
+import { DEFAULT_MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
@@ -8,7 +8,8 @@ import Legend from '../../../Legend/Legend'
 import {
   VITE_CF_TEMPLATE_URL,
   VITE_SHOW_PUBLISH_BTN,
-  VITE_ANALYZE_BTN_URL
+  VITE_ANALYZE_BTN_URL,
+  VITE_MOSAIC_MIN_ZOOM_LEVEL
 } from '../../../../assets/config.js'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -65,6 +66,8 @@ const BottomContent = () => {
 
   function onZoomClick() {
     if (_viewMode === 'mosaic') {
+      const MOSAIC_MIN_ZOOM =
+        VITE_MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
       _map.setZoom(MOSAIC_MIN_ZOOM)
       setMapZoomLevel(MOSAIC_MIN_ZOOM)
       dispatch(setShowZoomNotice(false))
