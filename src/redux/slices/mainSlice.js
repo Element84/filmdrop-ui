@@ -35,7 +35,8 @@ const initialState = {
   showUploadGeojsonModal: false,
   showApplicationAlert: false,
   applicationAlertMessage: 'System Error',
-  applicationAlertSeverity: 'error'
+  applicationAlertSeverity: 'error',
+  appConfig: null
 }
 
 // next, for every key in the initialState
@@ -139,6 +140,9 @@ export const mainSlice = createSlice({
     },
     setapplicationAlertSeverity: (state, action) => {
       state.applicationAlertSeverity = action.payload
+    },
+    setappConfig: (state, action) => {
+      state.appConfig = action.payload
     }
   }
 })
@@ -177,5 +181,6 @@ export const { setshowUploadGeojsonModal } = mainSlice.actions
 export const { setshowApplicationAlert } = mainSlice.actions
 export const { setapplicationAlertMessage } = mainSlice.actions
 export const { setapplicationAlertSeverity } = mainSlice.actions
+export const { setappConfig } = mainSlice.actions
 
 export default mainSlice.reducer
