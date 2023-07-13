@@ -1,6 +1,6 @@
 import React from 'react'
 import './BottomContent.css'
-import { DEFAULT_MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
+import { DEFAULT_MOSAIC_MIN_ZOOM, DEFAULT_APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
@@ -48,7 +48,7 @@ const BottomContent = () => {
   const ANALYZE_LINK = VITE_ANALYZE_BTN_URL
   const SHOW_PUBLISH_BTN = VITE_SHOW_PUBLISH_BTN
   const CF_TEMPLATE_URL = VITE_CF_TEMPLATE_URL
-  const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
+  const VIEWER_BTN_TEXT = `Launch Your Own ${DEFAULT_APP_NAME}`
 
   const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
@@ -138,7 +138,7 @@ const BottomContent = () => {
       {_showAppLoading && (
         <div className="appLoadingContainer">
           <LoadingAnimation></LoadingAnimation>
-          <span>Loading {APP_NAME}</span>
+          <span>Loading {DEFAULT_APP_NAME}</span>
         </div>
       )}
       {_searchType === 'hex' &&

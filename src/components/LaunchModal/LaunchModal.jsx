@@ -2,7 +2,7 @@ import { React, useState } from 'react'
 import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
-import { APP_NAME } from '../defaults'
+import { DEFAULT_APP_NAME } from '../defaults'
 import { VITE_CF_TEMPLATE_URL } from '../../assets/config.js'
 
 import { useDispatch } from 'react-redux'
@@ -52,10 +52,11 @@ const LaunchModal = () => {
         </button>
         <div className="launchModalContent">
           <h3>Launch Your Own</h3>
-          <h2>{APP_NAME}</h2>
+          <h2>{DEFAULT_APP_NAME}</h2>
           <p>
-            Now you can view your own datasets by deploying {APP_NAME} into your
-            AWS account! Simply follow the instructions below to get started.
+            Now you can view your own datasets by deploying {DEFAULT_APP_NAME}{' '}
+            into your AWS account! Simply follow the instructions below to get
+            started.
           </p>
           <ol>
             <li>Sign In to the Console</li>
@@ -63,7 +64,7 @@ const LaunchModal = () => {
               Create a new CloudFormation Stack with the template link below
             </li>
             <li>Configure new Stack as needed</li>
-            <li>Launch your own {APP_NAME}</li>
+            <li>Launch your own {DEFAULT_APP_NAME}</li>
           </ol>
           <div className="fieldContainer">
             <p>
