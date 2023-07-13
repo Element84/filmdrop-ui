@@ -8,7 +8,8 @@ import {
   setShowLaunchModal,
   setShowLaunchImageModal,
   setshowUploadGeojsonModal,
-  setshowApplicationAlert
+  setshowApplicationAlert,
+  setappConfig
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
@@ -22,6 +23,9 @@ describe('App', () => {
     )
 
   describe('on app render', () => {
+    beforeEach(() => {
+      store.dispatch(setappConfig({}))
+    })
     afterEach(() => {
       vi.restoreAllMocks()
     })

@@ -11,6 +11,7 @@ import UploadGeojsonModal from './components/UploadGeojsonModal/UploadGeojsonMod
 import SystemMessage from './components/SystemMessage/SystemMessage'
 
 import { GetCollectionsService } from './services/get-collections-service'
+import { LoadConfigIntoStateService } from './services/get-config-service'
 import { useSelector } from 'react-redux'
 
 function App() {
@@ -29,23 +30,38 @@ function App() {
   const _showApplicationAlert = useSelector(
     (state) => state.mainSlice.showApplicationAlert
   )
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+
   useEffect(() => {
-    GetCollectionsService()
+    LoadConfigIntoStateService()
   }, [])
+
+  useEffect(() => {
+    if (_appConfig) {
+      GetCollectionsService()
+    }
+  }, [_appConfig])
 
   return (
     <React.StrictMode>
-      <div className="App">
-        <PageHeader></PageHeader>
-        <Content></Content>
-        {_showPublishModal ? <PublishModal /> : null}
-        {_showLaunchModal ? <LaunchModal /> : null}
-        {_showLaunchImageModal ? <LaunchImageModal /> : null}
-        {_showUploadGeojsonModal ? (
-          <UploadGeojsonModal></UploadGeojsonModal>
-        ) : null}
-        {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
-      </div>
+      {_appConfig ? (
+        <div className="App">
+          <PageHeader></PageHeader>
+          <Content></Content>
+          {_showPublishModal ? <PublishModal /> : null}
+          {_showLaunchModal ? <LaunchModal /> : null}
+          {_showLaunchImageModal ? <LaunchImageModal /> : null}
+          {_showUploadGeojsonModal ? (
+            <UploadGeojsonModal></UploadGeojsonModal>
+          ) : null}
+          {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
+        </div>
+      ) : (
+        <div className="App">
+          <div className="appLoading"></div>
+          {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
+        </div>
+      )}
     </React.StrictMode>
   )
 }
