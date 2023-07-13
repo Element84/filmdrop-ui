@@ -49,7 +49,7 @@
   margin-bottom: 2.5em;
 }
 
-.launchModal .fieldContainer a {
+.linkToHowToModal {
   color: #6cc24a;
   display: inline-block;
   border-bottom: 1px solid transparent;

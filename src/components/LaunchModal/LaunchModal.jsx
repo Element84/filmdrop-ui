@@ -10,6 +10,7 @@ import {
   setShowLaunchModal,
   setShowLaunchImageModal
 } from '../../redux/slices/mainSlice'
+import { Box } from '@mui/material'
 
 const LaunchModal = () => {
   const dispatch = useDispatch()
@@ -79,9 +80,9 @@ const LaunchModal = () => {
                 <span>&#x2713;</span> {copyButtonText}
               </button>
             </div>
-            <a onClick={() => onImageClick()}>
+            <Box className="linkToHowToModal" onClick={() => onImageClick()}>
               Where do I paste this information?
-            </a>
+            </Box>
           </div>
           <div className="buttonContainer">
             <button className="actionButton" onClick={() => onButtonClick()}>
