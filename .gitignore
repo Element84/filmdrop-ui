@@ -2,8 +2,8 @@
 
 .env*
 !.env.example
-/src/assets/config*.js
-!/src/assets/config.example.js
+/public/config/config*.json
+!/public/config/config.example.json
 
 # dependencies
 /node_modules
