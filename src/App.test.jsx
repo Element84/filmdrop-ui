@@ -13,6 +13,7 @@ import {
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
+import { mockAppConfig } from './testing/shared-mocks'
 
 describe('App', () => {
   const setup = () =>
@@ -22,9 +23,9 @@ describe('App', () => {
       </Provider>
     )
 
-  describe('on app render', () => {
+  describe('on app render with config', () => {
     beforeEach(() => {
-      store.dispatch(setappConfig({}))
+      store.dispatch(setappConfig(mockAppConfig))
     })
     afterEach(() => {
       vi.restoreAllMocks()
@@ -116,6 +117,16 @@ describe('App', () => {
         const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
         expect(SystemMessageComponent).not.toBeNull()
       })
+    })
+  })
+  describe('on app render without config', () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+    it('should showAppLoading page', () => {
+      setup()
+      const PageHeaderComponent = screen.queryByTestId('testAppLoading')
+      expect(PageHeaderComponent).not.toBeNull()
     })
   })
 })

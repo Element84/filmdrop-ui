@@ -58,7 +58,7 @@ function App() {
         </div>
       ) : (
         <div className="App">
-          <div className="appLoading"></div>
+          <div className="appLoading" data-testid="testAppLoading"></div>
           {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
         </div>
       )}
