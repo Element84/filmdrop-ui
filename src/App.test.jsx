@@ -13,6 +13,7 @@ import {
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
+import * as LoadConfigService from './services/get-config-service'
 import { mockAppConfig } from './testing/shared-mocks'
 
 describe('App', () => {
@@ -32,6 +33,11 @@ describe('App', () => {
     })
     it('should call GetCollectionsService once', () => {
       const spy = vi.spyOn(CollectionsService, 'GetCollectionsService')
+      setup()
+      expect(spy).toHaveBeenCalledTimes(1)
+    })
+    it('should call LoadConfigIntoStateService once', () => {
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
       setup()
       expect(spy).toHaveBeenCalledTimes(1)
     })
@@ -127,6 +133,16 @@ describe('App', () => {
       setup()
       const PageHeaderComponent = screen.queryByTestId('testAppLoading')
       expect(PageHeaderComponent).not.toBeNull()
+    })
+    it('should call LoadConfigIntoStateService once', () => {
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
+      setup()
+      expect(spy).toHaveBeenCalledTimes(1)
+    })
+    it('should call not GetCollectionsService', () => {
+      const spy = vi.spyOn(CollectionsService, 'GetCollectionsService')
+      setup()
+      expect(spy).not.toHaveBeenCalled()
     })
   })
 })
