@@ -595,23 +595,15 @@ export function addUploadedGeojsonToMap(geojson) {
 
 export async function parseGeomUpload(geom) {
   if (GeoJSONValidation.isValidFeatureCollection(geom)) {
-    if (
-      GeoJSONValidation.isValidGeometryCollection(geom.features[0].geometry)
-    ) {
-      throw Error('GeometryCollection not supported')
+    if (geom.features.length > 1) {
+      throw Error('Only FeatureCollections with a single feature are supported')
     }
     return geom.features[0]
   }
   if (GeoJSONValidation.isValidFeature(geom)) {
-    if (GeoJSONValidation.isValidGeometryCollection(geom.geometry)) {
-      throw Error('GeometryCollection not supported')
-    }
     return geom
   }
   if (GeoJSONValidation.isValidGeometry(geom)) {
-    if (GeoJSONValidation.isValidGeometryCollection(geom)) {
-      throw Error('GeometryCollection not supported')
-    }
     return {
       type: 'Feature',
       geometry: geom,
