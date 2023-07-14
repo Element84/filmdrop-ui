@@ -14,9 +14,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Moved config reference from `envSetupVars.js` into `search.jsx`
 - Geosearch moved under zoom control and changed to be collapsed
 - `VITE_ADVANCED_SEARCH_ENABLED` and `VITE_CART_ENABLED` must be set in `config.js`
-- Moved config location from src/assets/config.js to ./public/config/config.json
+- Moved config location from `src/assets/config.js` to `public/config/config.json`
 - Refactor config to be a json object instead of separate exported constants
 - Changed config key names to remove the word `VITE` (leftover from when they were .env vars)
+- Refactor `default.js` to remove dead code and rename vars
 
 ### Fixed
 
@@ -31,7 +32,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When polygon drawn, use as search intersects param instead of map viewport bbox
 - Added upload geojson feature to allow users to select a geojson file to add to map
 - Reusable System Message component for showing app alerts
-- Load config.json into redux on app load once instead of direct imports
+- Load `config.json` into redux on app load once instead of direct imports
 - Add pre-initialization page to handle and show error (and not render app) if config is missing
 
 ### Removed
