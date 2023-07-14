@@ -1,0 +1,85 @@
+.uploadGeojsonModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadGeojsonModalContainer {
+  width: 600px;
+  max-width: 80%;
+  min-height: 280px;
+  background: #353d4f;
+  color: #dedede;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.uploadGeojsonModalTitle {
+  font-size: 24px;
+  font-weight: bold;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.fileToUploadText {
+  position: absolute;
+  bottom: 25px;
+  left: 20px;
+  right: 140px;
+  width: calc(100% - 220px);
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+  white-space: -pre-wrap;
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+}
+
+.uploadGeojsonModalActionButtons {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  flex-direction: row;
+  bottom: 10px;
+}
+
+.uploadGeojsonModalActionButton {
+  height: 32px;
+  width: 50px;
+  background-color: #4f5768;
+  border: none;
+  color: white;
+  padding: 15px 32px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #a9b0c1;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+.uploadGeojsonModalActionButton:hover {
+  background: #353d4f;
+}
+
+@media (max-width: 650px) {
+  .fileToUploadText {
+    font-size: 14px;
+  }
+}

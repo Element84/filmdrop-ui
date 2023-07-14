@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added Config feature flags for Advanced Search Options and Cart
 - Added draw boundary feature to allow user to draw polygon on map (WIP)
 - When polygon drawn, use as search intersects param instead of map viewport bbox
+- Added upload geojson feature to allow users to select a geojson file to add to map
+- Reusable System Message component for showing app alerts
 
 ### Removed
 
