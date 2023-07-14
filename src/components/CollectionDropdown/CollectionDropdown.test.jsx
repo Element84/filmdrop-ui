@@ -4,8 +4,8 @@ import { render, screen } from '@testing-library/react'
 import CollectionDropdown from './CollectionDropdown'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
-import { setCollectionsData } from '../../redux/slices/mainSlice'
-import { mockCollectionsData } from '../../testing/shared-mocks'
+import { setCollectionsData, setappConfig } from '../../redux/slices/mainSlice'
+import { mockCollectionsData, mockAppConfig } from '../../testing/shared-mocks'
 import * as mapHelper from '../../utils/mapHelper'
 import userEvent from '@testing-library/user-event'
 
@@ -19,6 +19,7 @@ describe('CollectionDropdown', () => {
 
   beforeEach(() => {
     vi.mock('../../utils/mapHelper')
+    store.dispatch(setappConfig(mockAppConfig))
     store.dispatch(setCollectionsData(mockCollectionsData))
   })
   afterEach(() => {

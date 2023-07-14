@@ -1,6 +1,5 @@
 import { store } from '../redux/store'
 import { setSearchLoading, setSearchResults } from '../redux/slices/mainSlice'
-import { VITE_STAC_API_URL } from '../assets/config'
 import {
   addDataToLayer,
   buildHexGridLayerOptions,
@@ -9,9 +8,14 @@ import {
 import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
 
 export async function AggregateSearchService(searchParams, gridType) {
-  await fetch(`${VITE_STAC_API_URL}/aggregate?${searchParams}`, {
-    method: 'GET'
-  })
+  await fetch(
+    `${
+      store.getState().mainSlice.appConfig.VITE_STAC_API_URL
+    }/aggregate?${searchParams}`,
+    {
+      method: 'GET'
+    }
+  )
     .then((response) => {
       if (response.ok) {
         return response.json()

@@ -14,10 +14,6 @@ import DateTimeRangeSelector from '../DateTimeRangeSelector/DateTimeRangeSelecto
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
-import {
-  VITE_MOSAIC_TILER_URL,
-  VITE_ADVANCED_SEARCH_ENABLED
-} from '../../assets/config'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
@@ -46,7 +42,8 @@ const Search = () => {
   const _searchGeojsonBoundary = useSelector(
     (state) => state.mainSlice.searchGeojsonBoundary
   )
-  const mosaicTilerURL = VITE_MOSAIC_TILER_URL || ''
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const mosaicTilerURL = _appConfig.VITE_MOSAIC_TILER_URL || ''
 
   useEffect(() => {
     dispatch(setshowAdvancedSearchOptions(false))
@@ -120,7 +117,7 @@ const Search = () => {
         </div>
       )}
 
-      {VITE_ADVANCED_SEARCH_ENABLED ? (
+      {_appConfig.VITE_ADVANCED_SEARCH_ENABLED ? (
         <Box
           className={
             _showAdvancedSearchOptions

@@ -1,6 +1,6 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './LeafMap.css'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { setMap, setmapDrawPolygonHandler } from '../../redux/slices/mainSlice'
 import * as L from 'leaflet'
 import 'leaflet-draw'
@@ -11,10 +11,6 @@ import 'leaflet-geosearch/dist/geosearch.css'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
-import {
-  VITE_BASEMAP_URL,
-  VITE_BASEMAP_HTML_ATTRIBUTION
-} from '../../assets/config.js'
 import DOMPurify from 'dompurify'
 import {
   mapClickHandler,
@@ -24,6 +20,7 @@ import {
 
 const LeafMap = () => {
   const dispatch = useDispatch()
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   // set map ref to itself with useRef
   const mapRef = useRef()
 
@@ -142,8 +139,8 @@ const LeafMap = () => {
   }, [map])
 
   useEffect(() => {
-    if (VITE_BASEMAP_HTML_ATTRIBUTION) {
-      const output = sanitize(String(VITE_BASEMAP_HTML_ATTRIBUTION))
+    if (_appConfig.VITE_BASEMAP_HTML_ATTRIBUTION) {
+      const output = sanitize(String(_appConfig.VITE_BASEMAP_HTML_ATTRIBUTION))
       setmapAttribution(output)
     }
   }, [])
@@ -173,9 +170,10 @@ const LeafMap = () => {
       >
         {/* set basemap layers here: */}
         <TileLayer
-          className={VITE_BASEMAP_URL ? '' : 'map-tiles'}
+          className={_appConfig.VITE_BASEMAP_URL ? '' : 'map-tiles'}
           url={
-            VITE_BASEMAP_URL || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+            _appConfig.VITE_BASEMAP_URL ||
+            'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
           }
         />
       </MapContainer>
@@ -204,7 +202,7 @@ const LeafMap = () => {
               Leaflet
             </a>{' '}
             <span aria-hidden="true">|</span>{' '}
-            {VITE_BASEMAP_URL && mapAttribution ? (
+            {_appConfig.VITE_BASEMAP_URL && mapAttribution ? (
               <span dangerouslySetInnerHTML={mapAttribution}></span>
             ) : (
               <span>

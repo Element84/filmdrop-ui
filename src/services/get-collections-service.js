@@ -3,13 +3,15 @@ import {
   setCollectionsData,
   setShowAppLoading
 } from '../redux/slices/mainSlice'
-import { VITE_STAC_API_URL } from '../assets/config'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 
 export async function GetCollectionsService(searchParams) {
-  await fetch(`${VITE_STAC_API_URL}/collections`, {
-    method: 'GET'
-  })
+  await fetch(
+    `${store.getState().mainSlice.appConfig.VITE_STAC_API_URL}/collections`,
+    {
+      method: 'GET'
+    }
+  )
     .then((response) => {
       if (response.ok) {
         return response.json()

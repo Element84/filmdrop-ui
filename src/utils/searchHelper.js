@@ -1,12 +1,5 @@
 import { store } from '../redux/store'
 import {
-  VITE_SEARCH_MIN_ZOOM_LEVELS,
-  VITE_API_MAX_ITEMS,
-  VITE_STAC_API_URL,
-  VITE_MOSAIC_MAX_ITEMS,
-  VITE_MOSAIC_TILER_PARAMS
-} from '../assets/config'
-import {
   DEFAULT_MED_ZOOM,
   DEFAULT_HIGH_ZOOM,
   DEFAULT_API_MAX_ITEMS,
@@ -43,12 +36,14 @@ export function newSearch() {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
   const midZoomLevel =
-    VITE_SEARCH_MIN_ZOOM_LEVELS[_selectedCollection.id]?.medium ||
-    DEFAULT_MED_ZOOM
+    store.getState().mainSlice.appConfig.VITE_SEARCH_MIN_ZOOM_LEVELS[
+      _selectedCollection.id
+    ]?.medium || DEFAULT_MED_ZOOM
 
   const highZoomLevel =
-    VITE_SEARCH_MIN_ZOOM_LEVELS[_selectedCollection.id]?.high ||
-    DEFAULT_HIGH_ZOOM
+    store.getState().mainSlice.appConfig.VITE_SEARCH_MIN_ZOOM_LEVELS[
+      _selectedCollection.id
+    ]?.high || DEFAULT_HIGH_ZOOM
 
   const currentMapZoomLevel = getCurrentMapZoomLevel()
 
@@ -109,7 +104,9 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
   const _dateTimeRange = convertDateForURL(
     store.getState().mainSlice.searchDateRangeValue
   )
-  const limit = VITE_API_MAX_ITEMS || DEFAULT_API_MAX_ITEMS
+  const limit =
+    store.getState().mainSlice.appConfig.VITE_API_MAX_ITEMS ||
+    DEFAULT_API_MAX_ITEMS
   const collections = _selectedCollection.id
   const _searchGeojsonBoundary =
     store.getState().mainSlice.searchGeojsonBoundary
@@ -428,11 +425,13 @@ function newMosaicSearch() {
   const bboxFromMap = bboxFromMapBounds()
 
   const createMosaicBody = {
-    stac_api_root: VITE_STAC_API_URL,
+    stac_api_root: store.getState().mainSlice.appConfig.VITE_STAC_API_URL,
     asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
     collections: [_selectedCollectionData.id],
     datetime,
-    max_items: VITE_MOSAIC_MAX_ITEMS || DEFAULT_MOSAIC_MAX_ITEMS
+    max_items:
+      store.getState().mainSlice.appConfig.VITE_MOSAIC_MAX_ITEMS ||
+      DEFAULT_MOSAIC_MAX_ITEMS
   }
   if (_searchGeojsonBoundary) {
     createMosaicBody.intersects = _searchGeojsonBoundary.geometry
@@ -461,7 +460,8 @@ function newMosaicSearch() {
 }
 
 const constructMosaicAssetVal = (collection) => {
-  const envMosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
+  const envMosaicTilerParams =
+    store.getState().mainSlice.appConfig.VITE_MOSAIC_TILER_PARAMS || ''
   const asset = getTilerParams(envMosaicTilerParams)[collection]?.assets || ''
   if (!asset) {
     console.log(`Assets not defined for ${collection}`)

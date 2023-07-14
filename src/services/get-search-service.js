@@ -5,13 +5,17 @@ import {
   setSearchResults,
   setShowPopupModal
 } from '../redux/slices/mainSlice'
-import { VITE_STAC_API_URL } from '../assets/config'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
 export async function SearchService(searchParams, typeOfSearch) {
-  await fetch(`${VITE_STAC_API_URL}/search?${searchParams}`, {
-    method: 'GET'
-  })
+  await fetch(
+    `${
+      store.getState().mainSlice.appConfig.VITE_STAC_API_URL
+    }/search?${searchParams}`,
+    {
+      method: 'GET'
+    }
+  )
     .then((response) => {
       if (response.ok) {
         return response.json()

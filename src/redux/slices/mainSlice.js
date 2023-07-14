@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want
@@ -8,7 +7,6 @@ const initialState = {
   dateTime: [],
   cloudCover: 0,
   showCloudSlider: true,
-  selectedCollection: VITE_DEFAULT_COLLECTION || null,
   searchResults: null,
   clickResults: [],
   searchLoading: false,

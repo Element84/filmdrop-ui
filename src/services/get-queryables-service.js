@@ -1,9 +1,14 @@
-import { VITE_STAC_API_URL } from '../assets/config'
+import { store } from '../redux/store'
 
 export function GetCollectionQueryablesService(collectionId) {
-  return fetch(`${VITE_STAC_API_URL}/collections/${collectionId}/queryables`, {
-    method: 'GET'
-  })
+  return fetch(
+    `${
+      store.getState().mainSlice.appConfig.VITE_STAC_API_URL
+    }/collections/${collectionId}/queryables`,
+    {
+      method: 'GET'
+    }
+  )
     .then((response) => {
       if (response.ok) {
         return response.json()

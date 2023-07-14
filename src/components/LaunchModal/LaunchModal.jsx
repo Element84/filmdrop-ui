@@ -3,9 +3,7 @@ import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
 import { DEFAULT_APP_NAME } from '../defaults'
-import { VITE_CF_TEMPLATE_URL } from '../../assets/config.js'
-
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   setShowLaunchModal,
   setShowLaunchImageModal
@@ -16,7 +14,8 @@ const LaunchModal = () => {
   const dispatch = useDispatch()
   const [copyButtonText, setCopyButtonText] = useState('Copy URL')
   const [copyButtonState, setCopyButtonState] = useState('default')
-  const templateURL = VITE_CF_TEMPLATE_URL
+
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))
@@ -32,7 +31,7 @@ const LaunchModal = () => {
   // copy content to clipboard
   const onCopyClick = async () => {
     try {
-      await navigator.clipboard.writeText(templateURL)
+      await navigator.clipboard.writeText(_appConfig.VITE_CF_TEMPLATE_URL)
       setCopyButtonText('Copied to Clipboard')
       setCopyButtonState('success')
     } catch (err) {
@@ -72,7 +71,9 @@ const LaunchModal = () => {
               URL&quot; field:
             </p>
             <div className="fieldContent">
-              <div className="templateURL">{templateURL}</div>
+              <div className="templateURL">
+                {_appConfig.VITE_CF_TEMPLATE_URL}
+              </div>
               <button
                 className={`copyButton ${copyButtonState}`}
                 onClick={() => onCopyClick()}

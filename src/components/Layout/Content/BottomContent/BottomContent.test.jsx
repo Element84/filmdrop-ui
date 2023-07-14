@@ -6,12 +6,14 @@ import { Provider } from 'react-redux'
 import { store } from '../../../../redux/store'
 import {
   setSearchResults,
-  setisDrawingEnabled
+  setisDrawingEnabled,
+  setappConfig
 } from '../../../../redux/slices/mainSlice'
 import {
   mockSceneSearchResult,
   mockHexAggregateSearchResult,
-  mockGridAggregateSearchResult
+  mockGridAggregateSearchResult,
+  mockAppConfig
 } from '../../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
 import * as mapHelper from '../../../../utils/mapHelper'
@@ -26,6 +28,7 @@ describe('BottomContent', () => {
     )
 
   beforeEach(() => {
+    store.dispatch(setappConfig(mockAppConfig))
     vi.mock('../../../../utils/mapHelper')
   })
   afterEach(() => {
