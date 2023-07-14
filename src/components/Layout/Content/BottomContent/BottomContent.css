@@ -1,9 +1,10 @@
 .BottomContent {
   width: 100%;
-  height: calc(100% - 103px);
+  height: calc(100% - 100px);
   background-color: #12171a;
   display: flex;
-  position: relative;
+  position: absolute;
+  top: 100px;
 }
 
 .ZoomNotice {
