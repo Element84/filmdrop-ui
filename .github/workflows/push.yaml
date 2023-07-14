@@ -37,7 +37,7 @@ jobs:
       - name: Copy env file
         run: cp .env.example .env
       - name: Copy config file
-        run: cp ./src/assets/config.example.js ./src/assets/config.js
+        run: cp ./public/config/config.example.json ./public/config/config.json
       - name: Run unit tests
         run: npm run test
       - name: Run dev build
