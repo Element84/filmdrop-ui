@@ -7,7 +7,7 @@ import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 
 export async function GetCollectionsService(searchParams) {
   await fetch(
-    `${store.getState().mainSlice.appConfig.VITE_STAC_API_URL}/collections`,
+    `${store.getState().mainSlice.appConfig.STAC_API_URL}/collections`,
     {
       method: 'GET'
     }

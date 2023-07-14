@@ -10,7 +10,7 @@ import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
 export async function AggregateSearchService(searchParams, gridType) {
   await fetch(
     `${
-      store.getState().mainSlice.appConfig.VITE_STAC_API_URL
+      store.getState().mainSlice.appConfig.STAC_API_URL
     }/aggregate?${searchParams}`,
     {
       method: 'GET'

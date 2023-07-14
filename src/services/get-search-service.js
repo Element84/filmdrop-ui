@@ -10,7 +10,7 @@ import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 export async function SearchService(searchParams, typeOfSearch) {
   await fetch(
     `${
-      store.getState().mainSlice.appConfig.VITE_STAC_API_URL
+      store.getState().mainSlice.appConfig.STAC_API_URL
     }/search?${searchParams}`,
     {
       method: 'GET'

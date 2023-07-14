@@ -43,7 +43,7 @@ const BottomContent = () => {
   const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
-    window.open(_appConfig.VITE_ANALYZE_BTN_URL, '_blank')
+    window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
   }
 
   function onPublishClick() {
@@ -57,7 +57,7 @@ const BottomContent = () => {
   function onZoomClick() {
     if (_viewMode === 'mosaic') {
       const MOSAIC_MIN_ZOOM =
-        _appConfig.VITE_MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
+        _appConfig.MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
       _map.setZoom(MOSAIC_MIN_ZOOM)
       setMapZoomLevel(MOSAIC_MIN_ZOOM)
       dispatch(setShowZoomNotice(false))
@@ -83,17 +83,17 @@ const BottomContent = () => {
         </div>
       )}
       <div className="actionButtons">
-        {_appConfig.VITE_ANALYZE_BTN_URL && (
+        {_appConfig.ANALYZE_BTN_URL && (
           <button className="actionButton" onClick={() => onAnalyzeClick()}>
             Analyze
           </button>
         )}
-        {_appConfig.VITE_SHOW_PUBLISH_BTN === true && (
+        {_appConfig.SHOW_PUBLISH_BTN === true && (
           <button className="actionButton" onClick={() => onPublishClick()}>
             Publish
           </button>
         )}
-        {_appConfig.VITE_CF_TEMPLATE_URL && (
+        {_appConfig.CF_TEMPLATE_URL && (
           <button className="actionButton" onClick={() => onLaunchClick()}>
             {VIEWER_BTN_TEXT}
           </button>

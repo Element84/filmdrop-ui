@@ -36,12 +36,12 @@ export function newSearch() {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
   const midZoomLevel =
-    store.getState().mainSlice.appConfig.VITE_SEARCH_MIN_ZOOM_LEVELS[
+    store.getState().mainSlice.appConfig.SEARCH_MIN_ZOOM_LEVELS[
       _selectedCollection.id
     ]?.medium || DEFAULT_MED_ZOOM
 
   const highZoomLevel =
-    store.getState().mainSlice.appConfig.VITE_SEARCH_MIN_ZOOM_LEVELS[
+    store.getState().mainSlice.appConfig.SEARCH_MIN_ZOOM_LEVELS[
       _selectedCollection.id
     ]?.high || DEFAULT_HIGH_ZOOM
 
@@ -105,8 +105,7 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
     store.getState().mainSlice.searchDateRangeValue
   )
   const limit =
-    store.getState().mainSlice.appConfig.VITE_API_MAX_ITEMS ||
-    DEFAULT_API_MAX_ITEMS
+    store.getState().mainSlice.appConfig.API_MAX_ITEMS || DEFAULT_API_MAX_ITEMS
   const collections = _selectedCollection.id
   const _searchGeojsonBoundary =
     store.getState().mainSlice.searchGeojsonBoundary
@@ -425,12 +424,12 @@ function newMosaicSearch() {
   const bboxFromMap = bboxFromMapBounds()
 
   const createMosaicBody = {
-    stac_api_root: store.getState().mainSlice.appConfig.VITE_STAC_API_URL,
+    stac_api_root: store.getState().mainSlice.appConfig.STAC_API_URL,
     asset_name: constructMosaicAssetVal(_selectedCollectionData.id),
     collections: [_selectedCollectionData.id],
     datetime,
     max_items:
-      store.getState().mainSlice.appConfig.VITE_MOSAIC_MAX_ITEMS ||
+      store.getState().mainSlice.appConfig.MOSAIC_MAX_ITEMS ||
       DEFAULT_MOSAIC_MAX_ITEMS
   }
   if (_searchGeojsonBoundary) {
@@ -461,7 +460,7 @@ function newMosaicSearch() {
 
 const constructMosaicAssetVal = (collection) => {
   const envMosaicTilerParams =
-    store.getState().mainSlice.appConfig.VITE_MOSAIC_TILER_PARAMS || ''
+    store.getState().mainSlice.appConfig.MOSAIC_TILER_PARAMS || ''
   const asset = getTilerParams(envMosaicTilerParams)[collection]?.assets || ''
   if (!asset) {
     console.log(`Assets not defined for ${collection}`)

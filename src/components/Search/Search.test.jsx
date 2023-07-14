@@ -32,7 +32,7 @@ describe('Search', () => {
       store.dispatch(setappConfig(mockAppConfig))
     })
     describe('on render', () => {
-      it('should render auto search when VITE_ADVANCED_SEARCH_ENABLED is false', () => {
+      it('should render auto search when ADVANCED_SEARCH_ENABLED is false', () => {
         setup()
         expect(screen.getByText(/auto search/i)).toBeInTheDocument()
       })
@@ -44,12 +44,12 @@ describe('Search', () => {
       vi.mock('../../utils/searchHelper')
       const mockAppConfigSearchEnabled = {
         ...mockAppConfig,
-        VITE_ADVANCED_SEARCH_ENABLED: true
+        ADVANCED_SEARCH_ENABLED: true
       }
       store.dispatch(setappConfig(mockAppConfigSearchEnabled))
     })
     describe('on render', () => {
-      it('should not render auto search when VITE_ADVANCED_SEARCH_ENABLED is true', () => {
+      it('should not render auto search when ADVANCED_SEARCH_ENABLED is true', () => {
         setup()
         expect(
           screen.queryByText('test_autoSearchContainer')

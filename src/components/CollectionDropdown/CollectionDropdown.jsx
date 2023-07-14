@@ -30,12 +30,12 @@ const Dropdown = () => {
   useEffect(() => {
     if (_collectionsData.length > 0) {
       const defaultCollectionFound = !!_collectionsData.find(
-        (o) => o.id === _appConfig.VITE_DEFAULT_COLLECTION
+        (o) => o.id === _appConfig.DEFAULT_COLLECTION
       )
       if (!defaultCollectionFound) {
         console.log('Configuration Error: DEFAULT_COLLECTION not found in API')
       } else {
-        setCollectionId(_appConfig.VITE_DEFAULT_COLLECTION)
+        setCollectionId(_appConfig.DEFAULT_COLLECTION)
       }
     }
   }, [_collectionsData])

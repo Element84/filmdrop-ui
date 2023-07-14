@@ -9,16 +9,16 @@ const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
 
   function onDashboardClick() {
-    window.open(_appConfig.VITE_DASHBOARD_BTN_URL, '_blank')
+    window.open(_appConfig.DASHBOARD_BTN_URL, '_blank')
   }
 
   return (
     <div className="PageHeader" data-testid="testPageHeader">
       <div className="pageHeaderLeft">
-        {_appConfig.VITE_LOGO_URL ? (
+        {_appConfig.LOGO_URL ? (
           <img
-            src={_appConfig.VITE_LOGO_URL}
-            alt={_appConfig.VITE_LOGO_ALT}
+            src={_appConfig.LOGO_URL}
+            alt={_appConfig.LOGO_ALT}
             className="headerLogoImage"
           ></img>
         ) : (
@@ -30,7 +30,7 @@ const PageHeader = () => {
         )}
       </div>
       <div className="pageHeaderRight">
-        {_appConfig.VITE_DASHBOARD_BTN_URL && (
+        {_appConfig.DASHBOARD_BTN_URL && (
           <Box className="dashboardLink" onClick={() => onDashboardClick()}>
             <span className="pageHeaderLink pageHeaderLinkHoverable">
               Dashboard

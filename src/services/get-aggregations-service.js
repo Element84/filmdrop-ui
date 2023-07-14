@@ -3,7 +3,7 @@ import { store } from '../redux/store'
 export async function GetCollectionAggregationsService(collectionId) {
   return fetch(
     `${
-      store.getState().mainSlice.appConfig.VITE_STAC_API_URL
+      store.getState().mainSlice.appConfig.STAC_API_URL
     }/collections/${collectionId}/aggregations`,
     {
       method: 'GET'

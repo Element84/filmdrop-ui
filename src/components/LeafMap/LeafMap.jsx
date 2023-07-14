@@ -139,8 +139,8 @@ const LeafMap = () => {
   }, [map])
 
   useEffect(() => {
-    if (_appConfig.VITE_BASEMAP_HTML_ATTRIBUTION) {
-      const output = sanitize(String(_appConfig.VITE_BASEMAP_HTML_ATTRIBUTION))
+    if (_appConfig.BASEMAP_HTML_ATTRIBUTION) {
+      const output = sanitize(String(_appConfig.BASEMAP_HTML_ATTRIBUTION))
       setmapAttribution(output)
     }
   }, [])
@@ -170,9 +170,9 @@ const LeafMap = () => {
       >
         {/* set basemap layers here: */}
         <TileLayer
-          className={_appConfig.VITE_BASEMAP_URL ? '' : 'map-tiles'}
+          className={_appConfig.BASEMAP_URL ? '' : 'map-tiles'}
           url={
-            _appConfig.VITE_BASEMAP_URL ||
+            _appConfig.BASEMAP_URL ||
             'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
           }
         />
@@ -202,7 +202,7 @@ const LeafMap = () => {
               Leaflet
             </a>{' '}
             <span aria-hidden="true">|</span>{' '}
-            {_appConfig.VITE_BASEMAP_URL && mapAttribution ? (
+            {_appConfig.BASEMAP_URL && mapAttribution ? (
               <span dangerouslySetInnerHTML={mapAttribution}></span>
             ) : (
               <span>

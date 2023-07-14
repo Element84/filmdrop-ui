@@ -43,7 +43,7 @@ const Search = () => {
     (state) => state.mainSlice.searchGeojsonBoundary
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
-  const mosaicTilerURL = _appConfig.VITE_MOSAIC_TILER_URL || ''
+  const mosaicTilerURL = _appConfig.MOSAIC_TILER_URL || ''
 
   useEffect(() => {
     dispatch(setshowAdvancedSearchOptions(false))
@@ -117,7 +117,7 @@ const Search = () => {
         </div>
       )}
 
-      {_appConfig.VITE_ADVANCED_SEARCH_ENABLED ? (
+      {_appConfig.ADVANCED_SEARCH_ENABLED ? (
         <Box
           className={
             _showAdvancedSearchOptions

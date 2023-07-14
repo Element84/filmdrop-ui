@@ -3,8 +3,7 @@ import { setSearchLoading } from '../redux/slices/mainSlice'
 import { addMosaicLayer } from '../utils/mapHelper'
 
 export async function AddMosaicService(reqParams) {
-  const mosaicTilerURL =
-    store.getState().mainSlice.appConfig.VITE_MOSAIC_TILER_URL
+  const mosaicTilerURL = store.getState().mainSlice.appConfig.MOSAIC_TILER_URL
   await fetch(`${mosaicTilerURL}/mosaicjson/mosaics`, reqParams)
     .then((response) => {
       if (response.ok) {

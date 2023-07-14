@@ -294,7 +294,7 @@ export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
 
 function addImageOverlay() {
   const sceneTilerURL =
-    store.getState().mainSlice.appConfig.VITE_SCENE_TILER_URL || ''
+    store.getState().mainSlice.appConfig.SCENE_TILER_URL || ''
   const _currentPopupResult = store.getState().mainSlice.currentPopupResult
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData
@@ -342,7 +342,7 @@ function addImageOverlay() {
         }
       } else {
         store.dispatch(setSearchLoading(false))
-        console.log('VITE_SCENE_TILER_URL is not set in env variables.')
+        console.log('SCENE_TILER_URL is not set in env variables.')
       }
     })
 }
@@ -361,7 +361,7 @@ function setupBounds(bbox) {
 
 const constructSceneTilerParams = (collection) => {
   const envSceneTilerParams =
-    store.getState().mainSlice.appConfig.VITE_SCENE_TILER_PARAMS || ''
+    store.getState().mainSlice.appConfig.SCENE_TILER_PARAMS || ''
   // retrieve mosaic tiler parameters from env variable
   const tilerParams = getTilerParams(envSceneTilerParams)
 
@@ -446,7 +446,7 @@ export function setMosaicZoomMessage() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
     const MOSAIC_MIN_ZOOM =
-      store.getState().mainSlice.appConfig.VITE_MOSAIC_MIN_ZOOM_LEVEL ||
+      store.getState().mainSlice.appConfig.MOSAIC_MIN_ZOOM_LEVEL ||
       DEFAULT_MOSAIC_MIN_ZOOM
     if (
       map.getZoom() >= MOSAIC_MIN_ZOOM ||
@@ -461,7 +461,7 @@ export function setMosaicZoomMessage() {
 
 export const constructMosaicTilerParams = (collection) => {
   const mosaicTilerParams =
-    store.getState().mainSlice.appConfig.VITE_MOSAIC_TILER_PARAMS || ''
+    store.getState().mainSlice.appConfig.MOSAIC_TILER_PARAMS || ''
   // retrieve mosaic tiler parameters from env variable
   const tilerParams = getTilerParams(mosaicTilerParams)
 

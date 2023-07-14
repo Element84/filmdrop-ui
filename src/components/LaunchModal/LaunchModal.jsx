@@ -31,7 +31,7 @@ const LaunchModal = () => {
   // copy content to clipboard
   const onCopyClick = async () => {
     try {
-      await navigator.clipboard.writeText(_appConfig.VITE_CF_TEMPLATE_URL)
+      await navigator.clipboard.writeText(_appConfig.CF_TEMPLATE_URL)
       setCopyButtonText('Copied to Clipboard')
       setCopyButtonState('success')
     } catch (err) {
@@ -71,9 +71,7 @@ const LaunchModal = () => {
               URL&quot; field:
             </p>
             <div className="fieldContent">
-              <div className="templateURL">
-                {_appConfig.VITE_CF_TEMPLATE_URL}
-              </div>
+              <div className="templateURL">{_appConfig.CF_TEMPLATE_URL}</div>
               <button
                 className={`copyButton ${copyButtonState}`}
                 onClick={() => onCopyClick()}
