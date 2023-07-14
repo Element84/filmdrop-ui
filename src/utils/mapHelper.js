@@ -562,29 +562,14 @@ export function addUploadedGeojsonToMap(geojson) {
       if (layer.layer_name === 'drawBoundsLayer') {
         let geojsonLayer = L.geoJSON(geojson)
 
-        if (
-          geojson.geometry.type === 'Point' ||
-          geojson.geometry.type === 'MultiPoint'
-        ) {
-          geojsonLayer = L.geoJSON(geojson, {
-            pointToLayer: function (feature, latlng) {
-              return L.marker(latlng, { icon: customSearchPointIconStyle })
-            }
-          })
-        }
-        if (
-          geojson.geometry.type === 'LineString' ||
-          geojson.geometry.type === 'MultiLineString'
-        ) {
-          geojsonLayer.setStyle(customSearchLineStyle)
-        }
-        if (
-          geojson.geometry.type === 'Polygon' ||
-          geojson.geometry.type === 'MultiPolygon'
-        ) {
-          geojsonLayer.setStyle(customSearchPolygonStyle)
-        }
-
+        geojsonLayer = L.geoJSON(geojson, {
+          pointToLayer: function (feature, latlng) {
+            return L.marker(latlng, { icon: customSearchPointIconStyle })
+          }
+        })
+        geojsonLayer.setStyle((feature) => {
+          return styleFeatures(feature, geojsonLayer)
+        })
         geojsonLayer.options.interactive = false
         layer.addLayer(geojsonLayer)
         store.dispatch(setsearchGeojsonBoundary(geojson))
@@ -611,4 +596,31 @@ export async function parseGeomUpload(geom) {
     }
   }
   throw Error('Invalid geojson uploaded')
+}
+
+function styleFeatures(feature, geojsonLayer) {
+  if (
+    feature.geometry.type === 'LineString' ||
+    feature.geometry.type === 'MultiLineString'
+  ) {
+    return customSearchLineStyle
+  }
+  if (
+    feature.geometry.type === 'Polygon' ||
+    feature.geometry.type === 'MultiPolygon'
+  ) {
+    return customSearchPolygonStyle
+  }
+  if (feature.geometry.type === 'GeometryCollection') {
+    const accumulatedStyle = {}
+    feature.geometry.geometries.forEach((part) => {
+      if (part.type === 'LineString' || part.type === 'MultiLineString') {
+        Object.assign(accumulatedStyle, customSearchLineStyle)
+      }
+      if (part.type === 'Polygon' || part.type === 'MultiPolygon') {
+        Object.assign(accumulatedStyle, customSearchPolygonStyle)
+      }
+    })
+    return accumulatedStyle
+  }
 }
