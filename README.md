@@ -4,6 +4,7 @@
   - [Summary](#summary)
   - [Screenshots](#screenshots)
   - [Running](#running)
+    - [TiTiler](#titiler)
     - [Environment Files](#environment-files)
     - [Links](#links)
   - [Scripts](#scripts)
@@ -52,6 +53,21 @@ Sentinel-2 L2A Mosaic View
 ![Sentinel-2 L2A Mosaic View](/screenshots/s2-l2a-mosaic.jpg)
 
 ## Running
+
+### TiTiler
+
+The scene and mosaic views require instances of TiTiler be deployed and configured.
+
+The configuration `SCENE_TILER_URL` must be pointed at a TiTiler deployment. At
+least 0.11.x is recommended, but this may work with other versions 0.7.x and greater.
+
+The configuration `MOSAIC_TILER_URL` must be pointed at a deployment of the
+[Element 84 TiTiler MosaicJSON fork](https://github.com/Element84/titiler-mosaicjson)
+of the [NASA IMPACT Titiler fork](https://github.com/NASA-IMPACT/titiler). This
+adds support for creating mosaics from STAC API searches to Titiler.
+
+If the Mosiac TiTiler is deployed, it can be used for both the scene and mosaic tiler URL
+configurations.
 
 ### Environment Files
 
