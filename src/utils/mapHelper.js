@@ -342,7 +342,6 @@ function addImageOverlay() {
         }
       } else {
         store.dispatch(setSearchLoading(false))
-        console.log('SCENE_TILER_URL is not set in env variables.')
       }
     })
 }
