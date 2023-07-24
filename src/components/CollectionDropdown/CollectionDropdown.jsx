@@ -3,7 +3,6 @@ import './CollectionDropdown.css'
 import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import NativeSelect from '@mui/material/NativeSelect'
-import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCollectionData,
@@ -19,8 +18,6 @@ import {
 } from '../../utils/mapHelper'
 
 const Dropdown = () => {
-  const DEFAULT_COLLECTION = VITE_DEFAULT_COLLECTION
-
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState('Select Collection')
 
@@ -28,17 +25,17 @@ const Dropdown = () => {
     (state) => state.mainSlice.collectionsData
   )
 
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+
   useEffect(() => {
     if (_collectionsData.length > 0) {
       const defaultCollectionFound = !!_collectionsData.find(
-        (o) => o.id === DEFAULT_COLLECTION
+        (o) => o.id === _appConfig.DEFAULT_COLLECTION
       )
       if (!defaultCollectionFound) {
-        console.log(
-          'Configuration Error: VITE_DEFAULT_COLLECTION not found in API'
-        )
+        console.log('Configuration Error: DEFAULT_COLLECTION not found in API')
       } else {
-        setCollectionId(DEFAULT_COLLECTION)
+        setCollectionId(_appConfig.DEFAULT_COLLECTION)
       }
     }
   }, [_collectionsData])

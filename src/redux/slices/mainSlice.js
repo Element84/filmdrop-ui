@@ -1,5 +1,4 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { VITE_DEFAULT_COLLECTION } from '../../assets/config.js'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want
@@ -8,7 +7,6 @@ const initialState = {
   dateTime: [],
   cloudCover: 0,
   showCloudSlider: true,
-  selectedCollection: VITE_DEFAULT_COLLECTION || null,
   searchResults: null,
   clickResults: [],
   searchLoading: false,
@@ -35,7 +33,8 @@ const initialState = {
   showUploadGeojsonModal: false,
   showApplicationAlert: false,
   applicationAlertMessage: 'System Error',
-  applicationAlertSeverity: 'error'
+  applicationAlertSeverity: 'error',
+  appConfig: null
 }
 
 // next, for every key in the initialState
@@ -139,6 +138,9 @@ export const mainSlice = createSlice({
     },
     setapplicationAlertSeverity: (state, action) => {
       state.applicationAlertSeverity = action.payload
+    },
+    setappConfig: (state, action) => {
+      state.appConfig = action.payload
     }
   }
 })
@@ -177,5 +179,6 @@ export const { setshowUploadGeojsonModal } = mainSlice.actions
 export const { setshowApplicationAlert } = mainSlice.actions
 export const { setapplicationAlertMessage } = mainSlice.actions
 export const { setapplicationAlertSeverity } = mainSlice.actions
+export const { setappConfig } = mainSlice.actions
 
 export default mainSlice.reducer

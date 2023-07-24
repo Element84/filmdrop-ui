@@ -8,10 +8,13 @@ import {
   setShowLaunchModal,
   setShowLaunchImageModal,
   setshowUploadGeojsonModal,
-  setshowApplicationAlert
+  setshowApplicationAlert,
+  setappConfig
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
+import * as LoadConfigService from './services/get-config-service'
+import { mockAppConfig } from './testing/shared-mocks'
 
 describe('App', () => {
   const setup = () =>
@@ -21,12 +24,20 @@ describe('App', () => {
       </Provider>
     )
 
-  describe('on app render', () => {
+  describe('on app render with config', () => {
+    beforeEach(() => {
+      store.dispatch(setappConfig(mockAppConfig))
+    })
     afterEach(() => {
       vi.restoreAllMocks()
     })
     it('should call GetCollectionsService once', () => {
       const spy = vi.spyOn(CollectionsService, 'GetCollectionsService')
+      setup()
+      expect(spy).toHaveBeenCalledTimes(1)
+    })
+    it('should call LoadConfigIntoStateService once', () => {
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
       setup()
       expect(spy).toHaveBeenCalledTimes(1)
     })
@@ -112,6 +123,26 @@ describe('App', () => {
         const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
         expect(SystemMessageComponent).not.toBeNull()
       })
+    })
+  })
+  describe('on app render without config', () => {
+    afterEach(() => {
+      vi.restoreAllMocks()
+    })
+    it('should showAppLoading page', () => {
+      setup()
+      const PageHeaderComponent = screen.queryByTestId('testAppLoading')
+      expect(PageHeaderComponent).not.toBeNull()
+    })
+    it('should call LoadConfigIntoStateService once', () => {
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
+      setup()
+      expect(spy).toHaveBeenCalledTimes(1)
+    })
+    it('should call not GetCollectionsService', () => {
+      const spy = vi.spyOn(CollectionsService, 'GetCollectionsService')
+      setup()
+      expect(spy).not.toHaveBeenCalled()
     })
   })
 })

@@ -2,20 +2,20 @@ import { React, useState } from 'react'
 import './LaunchModal.css'
 import iconCopy from '../../assets/icon-copy.svg'
 import iconExternalLink from '../../assets/icon-external-link.svg'
-import { APP_NAME } from '../defaults'
-import { VITE_CF_TEMPLATE_URL } from '../../assets/config.js'
-
-import { useDispatch } from 'react-redux'
+import { DEFAULT_APP_NAME } from '../defaults'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   setShowLaunchModal,
   setShowLaunchImageModal
 } from '../../redux/slices/mainSlice'
+import { Box } from '@mui/material'
 
 const LaunchModal = () => {
   const dispatch = useDispatch()
   const [copyButtonText, setCopyButtonText] = useState('Copy URL')
   const [copyButtonState, setCopyButtonState] = useState('default')
-  const templateURL = VITE_CF_TEMPLATE_URL
+
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
 
   function onCloseClick() {
     dispatch(setShowLaunchModal(false))
@@ -31,7 +31,7 @@ const LaunchModal = () => {
   // copy content to clipboard
   const onCopyClick = async () => {
     try {
-      await navigator.clipboard.writeText(templateURL)
+      await navigator.clipboard.writeText(_appConfig.CF_TEMPLATE_URL)
       setCopyButtonText('Copied to Clipboard')
       setCopyButtonState('success')
     } catch (err) {
@@ -51,10 +51,11 @@ const LaunchModal = () => {
         </button>
         <div className="launchModalContent">
           <h3>Launch Your Own</h3>
-          <h2>{APP_NAME}</h2>
+          <h2>{DEFAULT_APP_NAME}</h2>
           <p>
-            Now you can view your own datasets by deploying {APP_NAME} into your
-            AWS account! Simply follow the instructions below to get started.
+            Now you can view your own datasets by deploying {DEFAULT_APP_NAME}{' '}
+            into your AWS account! Simply follow the instructions below to get
+            started.
           </p>
           <ol>
             <li>Sign In to the Console</li>
@@ -62,7 +63,7 @@ const LaunchModal = () => {
               Create a new CloudFormation Stack with the template link below
             </li>
             <li>Configure new Stack as needed</li>
-            <li>Launch your own {APP_NAME}</li>
+            <li>Launch your own {DEFAULT_APP_NAME}</li>
           </ol>
           <div className="fieldContainer">
             <p>
@@ -70,7 +71,7 @@ const LaunchModal = () => {
               URL&quot; field:
             </p>
             <div className="fieldContent">
-              <div className="templateURL">{templateURL}</div>
+              <div className="templateURL">{_appConfig.CF_TEMPLATE_URL}</div>
               <button
                 className={`copyButton ${copyButtonState}`}
                 onClick={() => onCopyClick()}
@@ -79,9 +80,9 @@ const LaunchModal = () => {
                 <span>&#x2713;</span> {copyButtonText}
               </button>
             </div>
-            <a onClick={() => onImageClick()}>
+            <Box className="linkToHowToModal" onClick={() => onImageClick()}>
               Where do I paste this information?
-            </a>
+            </Box>
           </div>
           <div className="buttonContainer">
             <button className="actionButton" onClick={() => onButtonClick()}>

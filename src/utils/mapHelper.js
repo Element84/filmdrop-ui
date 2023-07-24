@@ -12,14 +12,9 @@ import {
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 import debounce from './debounce'
-import {
-  VITE_SCENE_TILER_URL,
-  VITE_SCENE_TILER_PARAMS,
-  VITE_MOSAIC_MIN_ZOOM_LEVEL,
-  VITE_MOSAIC_TILER_PARAMS
-} from '../assets/config'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
 import GeoJSONValidation from './geojsonValidation'
+import { DEFAULT_MOSAIC_MIN_ZOOM } from '../components/defaults'
 
 export const footprintLayerStyle = {
   color: '#3183f5',
@@ -298,7 +293,8 @@ export function mapCallDebounceNewSearch() {
 export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
 
 function addImageOverlay() {
-  const sceneTilerURL = VITE_SCENE_TILER_URL || ''
+  const sceneTilerURL =
+    store.getState().mainSlice.appConfig.SCENE_TILER_URL || ''
   const _currentPopupResult = store.getState().mainSlice.currentPopupResult
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData
@@ -346,7 +342,6 @@ function addImageOverlay() {
         }
       } else {
         store.dispatch(setSearchLoading(false))
-        console.log('VITE_SCENE_TILER_URL is not set in env variables.')
       }
     })
 }
@@ -364,7 +359,8 @@ function setupBounds(bbox) {
 }
 
 const constructSceneTilerParams = (collection) => {
-  const envSceneTilerParams = VITE_SCENE_TILER_PARAMS || ''
+  const envSceneTilerParams =
+    store.getState().mainSlice.appConfig.SCENE_TILER_PARAMS || ''
   // retrieve mosaic tiler parameters from env variable
   const tilerParams = getTilerParams(envSceneTilerParams)
 
@@ -448,7 +444,9 @@ const parameters = {
 export function setMosaicZoomMessage() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
-    const MOSAIC_MIN_ZOOM = VITE_MOSAIC_MIN_ZOOM_LEVEL || 7
+    const MOSAIC_MIN_ZOOM =
+      store.getState().mainSlice.appConfig.MOSAIC_MIN_ZOOM_LEVEL ||
+      DEFAULT_MOSAIC_MIN_ZOOM
     if (
       map.getZoom() >= MOSAIC_MIN_ZOOM ||
       store.getState().mainSlice.viewMode === 'scene'
@@ -461,7 +459,8 @@ export function setMosaicZoomMessage() {
 }
 
 export const constructMosaicTilerParams = (collection) => {
-  const mosaicTilerParams = VITE_MOSAIC_TILER_PARAMS || ''
+  const mosaicTilerParams =
+    store.getState().mainSlice.appConfig.MOSAIC_TILER_PARAMS || ''
   // retrieve mosaic tiler parameters from env variable
   const tilerParams = getTilerParams(mosaicTilerParams)
 

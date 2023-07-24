@@ -3442,3 +3442,109 @@ export const mockSceneSearchResult = {
     }
   ]
 }
+
+export const mockAppConfig = {
+  PUBLIC_URL: 'http://example.com/',
+  LOGO_URL: './logo.png',
+  LOGO_ALT: 'Alt description for my custom logo',
+  SHOW_PUBLISH_BTN: false,
+  DEFAULT_COLLECTION: 'collection-name',
+  STAC_API_URL: 'https://api-endpoint.example.com',
+  API_MAX_ITEMS: 200,
+  SCENE_TILER_URL: 'https://titiler.example.com',
+  DASHBOARD_BTN_URL: 'https://dashboard.example.com',
+  ANALYZE_BTN_URL: 'https://dashboard.example.com',
+  CF_TEMPLATE_URL: 'https://cf-template.example.com',
+  SCENE_TILER_PARAMS: {
+    'sentinel-2-l2a': {
+      assets: ['red', 'green', 'blue'],
+      color_formula: 'Gamma+RGB+3.2+Saturation+0.8+Sigmoidal+RGB+12+0.35'
+    },
+    'landsat-c2-l2': {
+      assets: ['red', 'green', 'blue'],
+      color_formula: 'Gamma+RGB+1.7+Saturation+1.7+Sigmoidal+RGB+15+0.35'
+    },
+    naip: {
+      assets: ['image'],
+      bidx: '1,2,3'
+    },
+    'cop-dem-glo-30': {
+      assets: ['data'],
+      colormap_name: 'terrain',
+      rescale: ['-1000,4000']
+    },
+    'cop-dem-glo-90': {
+      assets: ['data'],
+      colormap_name: 'terrain',
+      rescale: ['-1000,4000']
+    },
+    'sentinel-1-grd': {
+      assets: ['vv'],
+      rescale: ['0,250'],
+      colormap_name: 'plasma'
+    }
+  },
+  MOSAIC_TILER_URL: 'https://titiler-mosaic.example.com',
+  MOSAIC_TILER_PARAMS: {
+    'sentinel-2-l2a': {
+      assets: ['visual']
+    },
+    'landsat-c2-l2': {
+      assets: ['red'],
+      color_formula: 'Gamma+R+1.7+Sigmoidal+R+15+0.35'
+    },
+    naip: {
+      assets: ['image'],
+      bidx: '1,2,3'
+    },
+    'cop-dem-glo-30': {
+      assets: ['data'],
+      colormap_name: 'terrain',
+      rescale: ['-1000,4000']
+    },
+    'cop-dem-glo-90': {
+      assets: ['data'],
+      colormap_name: 'terrain',
+      rescale: ['-1000,4000']
+    },
+    'sentinel-1-grd': {
+      assets: ['vv'],
+      rescale: ['0,250'],
+      colormap_name: 'plasma'
+    }
+  },
+  MOSAIC_MAX_ITEMS: 100,
+  MOSAIC_MIN_ZOOM_LEVEL: 7,
+  CONFIG_COLORMAP: 'viridis',
+  SEARCH_MIN_ZOOM_LEVELS: {
+    'sentinel-2-l2a': {
+      medium: 4,
+      high: 7
+    },
+    'landsat-c2-l2': {
+      medium: 4,
+      high: 7
+    },
+    naip: {
+      medium: 10,
+      high: 14
+    },
+    'cop-dem-glo-30': {
+      medium: 6,
+      high: 8
+    },
+    'cop-dem-glo-90': {
+      medium: 6,
+      high: 8
+    },
+    'sentinel-1-grd': {
+      medium: 7,
+      high: 7
+    }
+  },
+  BASEMAP_URL: 'https://tile-provider.example.com/{z}/{x}/{y}.png',
+  BASEMAP_HTML_ATTRIBUTION:
+    '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>',
+  ADVANCED_SEARCH_ENABLED: false,
+  CART_ENABLED: false
+}

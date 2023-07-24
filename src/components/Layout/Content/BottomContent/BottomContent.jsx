@@ -1,15 +1,10 @@
 import React from 'react'
 import './BottomContent.css'
-import { MOSAIC_MIN_ZOOM, APP_NAME } from '../../../defaults'
+import { DEFAULT_MOSAIC_MIN_ZOOM, DEFAULT_APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import Legend from '../../../Legend/Legend'
-import {
-  VITE_CF_TEMPLATE_URL,
-  VITE_SHOW_PUBLISH_BTN,
-  VITE_ANALYZE_BTN_URL
-} from '../../../../assets/config.js'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowPublishModal,
@@ -24,7 +19,6 @@ import {
 import Box from '@mui/material/Box'
 
 const BottomContent = () => {
-  // set up useSelector to get value from store
   const _map = useSelector((state) => state.mainSlice.map)
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
@@ -40,19 +34,16 @@ const BottomContent = () => {
   const _isDrawingEnabled = useSelector(
     (state) => state.mainSlice.isDrawingEnabled
   )
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
 
-  // if you are setting redux state, call dispatch
   const dispatch = useDispatch()
 
-  const ANALYZE_LINK = VITE_ANALYZE_BTN_URL
-  const SHOW_PUBLISH_BTN = VITE_SHOW_PUBLISH_BTN
-  const CF_TEMPLATE_URL = VITE_CF_TEMPLATE_URL
-  const VIEWER_BTN_TEXT = `Launch Your Own ${APP_NAME}`
+  const VIEWER_BTN_TEXT = `Launch Your Own ${DEFAULT_APP_NAME}`
 
   const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
   function onAnalyzeClick() {
-    window.open(ANALYZE_LINK, '_blank')
+    window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
   }
 
   function onPublishClick() {
@@ -65,6 +56,8 @@ const BottomContent = () => {
 
   function onZoomClick() {
     if (_viewMode === 'mosaic') {
+      const MOSAIC_MIN_ZOOM =
+        _appConfig.MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
       _map.setZoom(MOSAIC_MIN_ZOOM)
       setMapZoomLevel(MOSAIC_MIN_ZOOM)
       dispatch(setShowZoomNotice(false))
@@ -90,17 +83,17 @@ const BottomContent = () => {
         </div>
       )}
       <div className="actionButtons">
-        {ANALYZE_LINK && (
+        {_appConfig.ANALYZE_BTN_URL && (
           <button className="actionButton" onClick={() => onAnalyzeClick()}>
             Analyze
           </button>
         )}
-        {SHOW_PUBLISH_BTN === true && (
+        {_appConfig.SHOW_PUBLISH_BTN === true && (
           <button className="actionButton" onClick={() => onPublishClick()}>
             Publish
           </button>
         )}
-        {CF_TEMPLATE_URL && (
+        {_appConfig.CF_TEMPLATE_URL && (
           <button className="actionButton" onClick={() => onLaunchClick()}>
             {VIEWER_BTN_TEXT}
           </button>
@@ -135,7 +128,7 @@ const BottomContent = () => {
       {_showAppLoading && (
         <div className="appLoadingContainer">
           <LoadingAnimation></LoadingAnimation>
-          <span>Loading {APP_NAME}</span>
+          <span>Loading {DEFAULT_APP_NAME}</span>
         </div>
       )}
       {_searchType === 'hex' &&

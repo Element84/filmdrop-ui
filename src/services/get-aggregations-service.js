@@ -1,8 +1,10 @@
-import { VITE_STAC_API_URL } from '../assets/config'
+import { store } from '../redux/store'
 
 export async function GetCollectionAggregationsService(collectionId) {
   return fetch(
-    `${VITE_STAC_API_URL}/collections/${collectionId}/aggregations`,
+    `${
+      store.getState().mainSlice.appConfig.STAC_API_URL
+    }/collections/${collectionId}/aggregations`,
     {
       method: 'GET'
     }
