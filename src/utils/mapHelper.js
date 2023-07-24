@@ -410,7 +410,10 @@ const constructSceneAssetsParam = (collection, tilerParams) => {
     console.log(`Assets not defined for ${collection}`)
     return [null, '']
   }
-  return [assets[0], `assets=${assets.join(',')}`]
+  // titiler accepts multiple `assets` parameters for compositing
+  // multiple files, so add extra params here if there's more than
+  // one asset specified
+  return [assets[0], `assets=${assets.join('&assets=')}`]
 }
 
 const parameters = {
@@ -435,7 +438,7 @@ const parameters = {
     // for scene tiler
     if (asset) {
       const assetBidx = asset && value ? `${asset}|${value}` : null
-      return assetBidx && `bidx=${assetBidx}`
+      return assetBidx && `asset_bidx=${assetBidx}`
     } else {
       return value && `bidx=${value}`
     }
