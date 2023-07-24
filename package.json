@@ -60,7 +60,7 @@
     "remark-preset-lint-recommended": "^6.1.2",
     "remark-validate-links": "^12.1.1",
     "typescript": "^5.0.4",
-    "vite": "^4.3.9",
+    "vite": "^4.4.6",
     "vite-plugin-svgr": "^3.2.0",
     "vite-tsconfig-paths": "^4.2.0",
     "vitest": "^0.32.0"
