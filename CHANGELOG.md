@@ -5,13 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## Unreleased
-
-### Added
-
-- Added Hawaii DOQQ grid (for NAIP)
-
-## 2.1.0
+## 3.0.0
 
 ### Changed
 
@@ -42,6 +36,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Load `config.json` into redux on app load once instead of direct imports
 - Add pre-initialization page to handle and show error (and not render app) if config is missing
 - Add `SHOW_BRAND_LOGO` config option to optionally hide brand logo
+- Added Hawaii DOQQ grid (for NAIP)
 
 ### Removed
 
