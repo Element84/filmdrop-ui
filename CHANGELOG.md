@@ -37,10 +37,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add pre-initialization page to handle and show error (and not render app) if config is missing
 - Add `SHOW_BRAND_LOGO` config option to optionally hide brand logo
 - Added Hawaii DOQQ grid (for NAIP)
+- Redirect to `LAUNCH_URL` config URL on 'Launch Your Own' button click
 
 ### Removed
 
 - Delete `envSetupVars.js` after moving functions and const into other files
+- Removed Launch Modals
 
 ## 2.0.2 - 2023-05-18
 
