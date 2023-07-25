@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor config to be a json object instead of separate exported constants
 - Changed config key names to remove the word `VITE` (leftover from when they were .env vars)
 - Refactor `default.js` to remove dead code and rename vars
+- Conditionally render E84 FilmDrop Logo based on config var for `SHOW_BRAND_LOGO``
 
 ### Fixed
 
@@ -40,6 +41,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Reusable System Message component for showing app alerts
 - Load `config.json` into redux on app load once instead of direct imports
 - Add pre-initialization page to handle and show error (and not render app) if config is missing
+- Add `SHOW_BRAND_LOGO` config option to optionally hide brand logo
 
 ### Removed
 
