@@ -3546,5 +3546,6 @@ export const mockAppConfig = {
   BASEMAP_HTML_ATTRIBUTION:
     '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>',
   ADVANCED_SEARCH_ENABLED: false,
-  CART_ENABLED: false
+  CART_ENABLED: false,
+  SHOW_BRAND_LOGO: true
 }
