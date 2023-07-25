@@ -15,8 +15,6 @@ const initialState = {
   showPublishModal: false,
   showZoomNotice: false,
   zoomLevelNeeded: null,
-  showLaunchModal: false,
-  showLaunchImageModal: false,
   viewMode: 'scene',
   showAppLoading: true,
   searchType: null,
@@ -81,12 +79,6 @@ export const mainSlice = createSlice({
     },
     setZoomLevelNeeded: (state, action) => {
       state.zoomLevelNeeded = action.payload
-    },
-    setShowLaunchModal: (state, action) => {
-      state.showLaunchModal = action.payload
-    },
-    setShowLaunchImageModal: (state, action) => {
-      state.showLaunchImageModal = action.payload
     },
     setViewMode: (state, action) => {
       state.viewMode = action.payload
@@ -160,8 +152,6 @@ export const { setShowPopupModal } = mainSlice.actions
 export const { setShowPublishModal } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions
 export const { setZoomLevelNeeded } = mainSlice.actions
-export const { setShowLaunchModal } = mainSlice.actions
-export const { setShowLaunchImageModal } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
 export const { setShowAppLoading } = mainSlice.actions
 export const { setSearchType } = mainSlice.actions
