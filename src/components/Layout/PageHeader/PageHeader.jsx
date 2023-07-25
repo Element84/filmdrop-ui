@@ -38,16 +38,18 @@ const PageHeader = () => {
             </span>
           </Box>
         )}
-        <a
-          href="https://element84.com/filmdrop"
-          title="Learn more about FilmDrop"
-        >
-          <img
-            src={logoFilmDrop}
-            alt="FilmDrop by Element 84"
-            className="headerLogoImage filmDrop"
-          />
-        </a>
+        {_appConfig.SHOW_BRAND_LOGO && (
+          <a
+            href="https://element84.com/filmdrop"
+            title="Learn more about FilmDrop"
+          >
+            <img
+              src={logoFilmDrop}
+              alt="FilmDrop by Element 84"
+              className="headerLogoImage filmDrop"
+            />
+          </a>
+        )}
       </div>
     </div>
   )
