@@ -35,6 +35,30 @@ describe('BottomContent', () => {
     vi.resetAllMocks()
   })
 
+  describe('on render', () => {
+    it('should render Launch Your Own Viewer Button if LAUNCH_URL set in config', () => {
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /launch your own/i
+        })
+      ).toBeInTheDocument()
+    })
+    it('should not render Launch Your Own Viewer Button if LAUNCH_URL not set in config', () => {
+      const mockAppConfigSearchEnabled = {
+        ...mockAppConfig,
+        LAUNCH_URL: ''
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /launch your own/i
+        })
+      ).not.toBeInTheDocument()
+    })
+  })
+
   describe('when isDrawingEnabled is true', () => {
     beforeEach(() => {
       store.dispatch(setisDrawingEnabled(true))

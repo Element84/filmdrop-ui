@@ -3454,7 +3454,7 @@ export const mockAppConfig = {
   SCENE_TILER_URL: 'https://titiler.example.com',
   DASHBOARD_BTN_URL: 'https://dashboard.example.com',
   ANALYZE_BTN_URL: 'https://dashboard.example.com',
-  CF_TEMPLATE_URL: 'https://cf-template.example.com',
+  LAUNCH_URL: 'https://github.com/Element84/filmdrop-ui',
   SCENE_TILER_PARAMS: {
     'sentinel-2-l2a': {
       assets: ['red', 'green', 'blue'],

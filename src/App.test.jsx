@@ -5,8 +5,6 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import {
   setShowPublishModal,
-  setShowLaunchModal,
-  setShowLaunchImageModal,
   setshowUploadGeojsonModal,
   setshowApplicationAlert,
   setappConfig
@@ -62,36 +60,6 @@ describe('App', () => {
         setup()
         const PublishModalComponent = screen.queryByTestId('testPublishModal')
         expect(PublishModalComponent).not.toBeNull()
-      })
-    })
-    describe('when conditionally rendering LaunchModal', () => {
-      it('should not render LaunchModal if showLaunchModal in state is false', () => {
-        setup()
-        const LaunchModalComponent = screen.queryByTestId('testLaunchModal')
-        expect(LaunchModalComponent).toBeNull()
-      })
-      it('should render LaunchModal if showLaunchModal in state is true', () => {
-        store.dispatch(setShowLaunchModal(true))
-        setup()
-        const LaunchModalComponent = screen.queryByTestId('testLaunchModal')
-        expect(LaunchModalComponent).not.toBeNull()
-      })
-    })
-    describe('when conditionally rendering LaunchImageModal', () => {
-      it('should not render LaunchImageModal if showLaunchImageModal in state is false', () => {
-        setup()
-        const LaunchImageModalComponent = screen.queryByTestId(
-          'testLaunchImageModal'
-        )
-        expect(LaunchImageModalComponent).toBeNull()
-      })
-      it('should render LaunchImageModal if showLaunchImageModal in state is true', () => {
-        store.dispatch(setShowLaunchImageModal(true))
-        setup()
-        const LaunchImageModalComponent = screen.queryByTestId(
-          'testLaunchImageModal'
-        )
-        expect(LaunchImageModalComponent).not.toBeNull()
       })
     })
     describe('when conditionally rendering UploadGeojsonModal', () => {

@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+### Changed
+
+- Launch modals have been removed along with the `CF_TEMPLATE_URL` config parameter.
+  Instead, the 'Launch Your Own' button will redirect to the URL configured for the
+  `LAUNCH_URL` parameter
+
 ## 3.0.0
 
 ### Changed
@@ -18,7 +26,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Refactor config to be a json object instead of separate exported constants
 - Changed config key names to remove the word `VITE` (leftover from when they were .env vars)
 - Refactor `default.js` to remove dead code and rename vars
-- Conditionally render E84 FilmDrop Logo based on config var for `SHOW_BRAND_LOGO``
+- Conditionally render E84 FilmDrop Logo based on config var for `SHOW_BRAND_LOGO`
 
 ### Fixed
 

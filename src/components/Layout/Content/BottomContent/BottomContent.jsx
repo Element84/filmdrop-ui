@@ -8,7 +8,6 @@ import Legend from '../../../Legend/Legend'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowPublishModal,
-  setShowLaunchModal,
   setShowZoomNotice,
   setisDrawingEnabled
 } from '../../../../redux/slices/mainSlice'
@@ -51,7 +50,7 @@ const BottomContent = () => {
   }
 
   function onLaunchClick() {
-    dispatch(setShowLaunchModal(true))
+    window.open(_appConfig.LAUNCH_URL, '_blank')
   }
 
   function onZoomClick() {
@@ -93,7 +92,7 @@ const BottomContent = () => {
             Publish
           </button>
         )}
-        {_appConfig.CF_TEMPLATE_URL && (
+        {_appConfig.LAUNCH_URL && (
           <button className="actionButton" onClick={() => onLaunchClick()}>
             {VIEWER_BTN_TEXT}
           </button>

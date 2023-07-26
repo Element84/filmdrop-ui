@@ -9,7 +9,7 @@
   "SCENE_TILER_URL": "https://titiler.example.com",
   "DASHBOARD_BTN_URL": "https://dashboard.example.com",
   "ANALYZE_BTN_URL": "https://dashboard.example.com",
-  "CF_TEMPLATE_URL": "https://cf-template.example.com",
+  "LAUNCH_URL": "https://launch-a-viewer.example.com",
   "SCENE_TILER_PARAMS": {
     "sentinel-2-l2a": {
       "assets": ["red", "green", "blue"],
