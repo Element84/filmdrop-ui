@@ -16,25 +16,25 @@ const LayerLegend = () => {
         <div className="sceneLegend">
           {_appConfig.CART_ENABLED ? (
             <div className="legendRow">
-              <div className="sceneInCartLegendSymbol"></div>
+              <div className="legendSymbol sceneInCartLegendSymbol"></div>
               <span>Scene in cart</span>
             </div>
           ) : null}
           <div className="legendRow">
-            <div className="sceneLegendSymbol"></div>
+            <div className="legendSymbol sceneLegendSymbol"></div>
             <span>Available scene</span>
           </div>
         </div>
       )}
       {_searchType === 'grid-code' && _searchResults && (
         <div className="legendRow">
-          <div className="sceneLegendSymbol"></div>
+          <div className="legendSymbol sceneLegendSymbol"></div>
           <span>Scene aggregation</span>
         </div>
       )}
       {_appConfig.ADVANCED_SEARCH_ENABLED && _searchGeojsonBoundary && (
         <div className="legendRow">
-          <div className="searchAreaLegendSymbol"></div>
+          <div className="legendSymbol searchAreaLegendSymbol"></div>
           <img
             src="/marker-icon.png"
             alt="Search area point"

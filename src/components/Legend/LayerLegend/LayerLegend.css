@@ -29,16 +29,19 @@
   flex-direction: row;
 }
 
-.searchAreaLegendSymbol {
+.legendSymbol {
   width: 14px;
   height: fill;
-  border-color: #00c07b;
-  border-style: dashed;
   border-width: 2px;
   display: flex;
   align-items: center;
   justify-content: center;
   margin-right: 8px;
+}
+
+.searchAreaLegendSymbol {
+  border-color: #00c07b;
+  border-style: dashed;
 }
 
 .searchAreaLegendIcon {
@@ -48,29 +51,15 @@
 }
 
 .sceneLegendSymbol {
-  width: 14px;
-  height: fill;
   border-color: #3183f5;
   background-color: #3183f52e;
   border-style: solid;
-  border-width: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
 }
 
 .sceneInCartLegendSymbol {
-  width: 14px;
-  height: fill;
   border-color: #ad5c11;
   background-color: #ad5c1129;
   border-style: solid;
-  border-width: 2px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-right: 8px;
 }
 
 .sceneLegend {
