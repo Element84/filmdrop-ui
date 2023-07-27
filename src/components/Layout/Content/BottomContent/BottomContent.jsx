@@ -4,7 +4,6 @@ import { DEFAULT_MOSAIC_MIN_ZOOM, DEFAULT_APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
-import Legend from '../../../Legend/Legend'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowPublishModal,
@@ -16,6 +15,7 @@ import {
   disableMapPolyDrawing
 } from '../../../../utils/mapHelper'
 import Box from '@mui/material/Box'
+import LayerLegend from '../../../LayerLegend/LayerLegend'
 
 const BottomContent = () => {
   const _map = useSelector((state) => state.mainSlice.map)
@@ -34,6 +34,9 @@ const BottomContent = () => {
     (state) => state.mainSlice.isDrawingEnabled
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const _searchGeojsonBoundary = useSelector(
+    (state) => state.mainSlice.searchGeojsonBoundary
+  )
 
   const dispatch = useDispatch()
 
@@ -130,10 +133,6 @@ const BottomContent = () => {
           <span>Loading {DEFAULT_APP_NAME}</span>
         </div>
       )}
-      {_searchType === 'hex' &&
-        _searchResults?.searchType === 'AggregatedResults' && (
-          <Legend results={_searchResults}></Legend>
-        )}
       {_isDrawingEnabled ? (
         <div className="drawGeomMessage">
           <div className="drawGeomMessageText">
@@ -153,6 +152,9 @@ const BottomContent = () => {
             </button>
           </div>
         </div>
+      ) : null}
+      {_searchGeojsonBoundary || (_searchType && _searchResults) ? (
+        <LayerLegend></LayerLegend>
       ) : null}
     </div>
   )

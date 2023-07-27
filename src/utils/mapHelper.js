@@ -35,7 +35,7 @@ export const gridCodeLayerStyle = {
 }
 
 export const clickedFootprintLayerStyle = {
-  color: '#ff7800',
+  color: '#BEA835',
   weight: 4,
   opacity: 0.65,
   fillOpacity: 0,
