@@ -26,6 +26,20 @@ describe('PageHeader', () => {
         })
       ).toBeInTheDocument()
     })
+    it('should load the filmdrop logo into the document if SHOW_BRAND_LOGO set to true in config', () => {
+      const SHOW_BRAND_LOGO = mockAppConfig.SHOW_BRAND_LOGO
+      const mockAppConfigSearchEnabled = {
+        SHOW_BRAND_LOGO,
+        ...mockAppConfig
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      setup()
+      expect(
+        screen.queryByRole('img', {
+          name: /filmdrop by element 84/i
+        })
+      ).toBeInTheDocument()
+    })
     it('should not load the filmdrop logo into the document if SHOW_BRAND_LOGO set to false in config', () => {
       const mockAppConfigSearchEnabled = {
         ...mockAppConfig,
