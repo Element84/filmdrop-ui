@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import './Legend.css'
-import { colorMap } from '../../utils'
+import './HeatMapSymbology.css'
+import { colorMap } from '../../../utils'
 
-const Legend = ({ results }) => {
+const HeatMapSymbology = ({ results }) => {
   const colors = colorMap(results.properties.largestRatio)
 
   return (
-    <div className="heatMapLegend">
+    <div className="HeatMapSymbology">
       <div
         className="gradient"
         style={{
@@ -27,8 +27,8 @@ const Legend = ({ results }) => {
   )
 }
 
-Legend.propTypes = {
+HeatMapSymbology.propTypes = {
   results: PropTypes.object
 }
 
-export default Legend
+export default HeatMapSymbology

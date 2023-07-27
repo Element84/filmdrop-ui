@@ -1,16 +1,16 @@
-.heatMapLegend {
+.HeatMapSymbology {
   width: 150px;
   margin-top: 10px;
 }
 
-.heatMapLegend .gradient {
+.HeatMapSymbology .gradient {
   width: 100%;
   height: 20px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.5);
   opacity: 0.7;
 }
 
-.heatMapLegend .values {
+.HeatMapSymbology .values {
   width: 100%;
   display: flex;
   flex-direction: row;
@@ -22,19 +22,19 @@
   background: rgba(18, 23, 26, 0.5);
 }
 
-.heatMapLegend .values .min {
+.HeatMapSymbology .values .min {
   border-left: 1px solid rgba(255, 255, 255, 0.5);
   padding-left: 5px;
   padding-top: 5px;
 }
 
-.heatMapLegend .values .max {
+.HeatMapSymbology .values .max {
   border-right: 1px solid rgba(255, 255, 255, 0.5);
   padding-right: 5px;
   padding-top: 5px;
 }
 
-.heatMapLegend .values .mid {
+.HeatMapSymbology .values .mid {
   border-right: 1px solid rgba(255, 255, 255, 0.5);
   position: absolute;
   top: 0;

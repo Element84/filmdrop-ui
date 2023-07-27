@@ -1,7 +1,7 @@
 import React from 'react'
 import './LayerLegend.css'
 import { useSelector } from 'react-redux'
-import Legend from '../Legend/Legend'
+import HeatMapSymbology from '../HeatMapSymbology/HeatMapSymbology'
 
 const LayerLegend = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
@@ -47,7 +47,7 @@ const LayerLegend = () => {
         _searchResults?.searchType === 'AggregatedResults' && (
           <div className="hexLegendContainer">
             <span className="hexLegendLabel">Aggregate Scenes</span>
-            <Legend results={_searchResults}></Legend>
+            <HeatMapSymbology results={_searchResults}></HeatMapSymbology>
           </div>
         )}
     </div>

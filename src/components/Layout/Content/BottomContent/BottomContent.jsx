@@ -15,7 +15,7 @@ import {
   disableMapPolyDrawing
 } from '../../../../utils/mapHelper'
 import Box from '@mui/material/Box'
-import LayerLegend from '../../../LayerLegend/LayerLegend'
+import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
 
 const BottomContent = () => {
   const _map = useSelector((state) => state.mainSlice.map)
