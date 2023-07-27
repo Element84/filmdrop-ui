@@ -38,7 +38,7 @@ const PageHeader = () => {
             </span>
           </Box>
         )}
-        {_appConfig.SHOW_BRAND_LOGO && (
+        {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
           <a
             href="https://element84.com/filmdrop"
             title="Learn more about FilmDrop"
@@ -49,7 +49,7 @@ const PageHeader = () => {
               className="headerLogoImage filmDrop"
             />
           </a>
-        )}
+        ) : null}
       </div>
     </div>
   )
