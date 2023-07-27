@@ -26,7 +26,7 @@ describe('PageHeader', () => {
         })
       ).toBeInTheDocument()
     })
-    it('should load the filmdrop logo into the document if SHOW_BRAND_LOGO set to true in config', () => {
+    it('should load the filmdrop logo into the document if SHOW_BRAND_LOGO does not exists in config', () => {
       const SHOW_BRAND_LOGO = mockAppConfig.SHOW_BRAND_LOGO
       const mockAppConfigSearchEnabled = {
         SHOW_BRAND_LOGO,
