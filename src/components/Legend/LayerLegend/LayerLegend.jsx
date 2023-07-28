@@ -11,7 +11,7 @@ const LayerLegend = () => {
   )
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   return (
-    <div className="LayerLegend">
+    <div data-testid="testLayerLegend" className="LayerLegend">
       {_searchType === 'scene' && (
         <div className="sceneLegend">
           {_appConfig.CART_ENABLED ? (
