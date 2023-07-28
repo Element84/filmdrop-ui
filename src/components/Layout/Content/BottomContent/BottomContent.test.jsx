@@ -9,7 +9,6 @@ import {
   setisDrawingEnabled,
   setappConfig,
   setsearchGeojsonBoundary,
-  setsearchResults,
   setSearchType
 } from '../../../../redux/slices/mainSlice'
 import {
