@@ -7,7 +7,9 @@ import { store } from '../../../../redux/store'
 import {
   setSearchResults,
   setisDrawingEnabled,
-  setappConfig
+  setappConfig,
+  setsearchGeojsonBoundary,
+  setSearchType
 } from '../../../../redux/slices/mainSlice'
 import {
   mockSceneSearchResult,
@@ -56,6 +58,33 @@ describe('BottomContent', () => {
           name: /launch your own/i
         })
       ).not.toBeInTheDocument()
+    })
+    it('should render Legend if geojsonBoundary set in redux', () => {
+      store.dispatch(
+        setsearchGeojsonBoundary({ type: 'Point', coordinates: [0, 0] })
+      )
+      setup()
+      expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
+    })
+    it('should render Legend if searchType and searchResults set in redux', () => {
+      store.dispatch(setSearchType('hex'))
+      store.dispatch(setSearchResults({ type: 'Point', coordinates: [0, 0] }))
+      setup()
+      expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
+    })
+    it('should not render Legend if geojsonBoundary not set and searchType and searchResults not set in redux', () => {
+      setup()
+      expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
+    })
+    it('should not render Legend if searchType not set in redux', () => {
+      store.dispatch(setSearchResults({ type: 'Point', coordinates: [0, 0] }))
+      setup()
+      expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
+    })
+    it('should not render Legend if searchResults not set in redux', () => {
+      store.dispatch(setSearchType('hex'))
+      setup()
+      expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
     })
   })
 

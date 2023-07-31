@@ -27,6 +27,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Changed config key names to remove the word `VITE` (leftover from when they were .env vars)
 - Refactor `default.js` to remove dead code and rename vars
 - Conditionally render E84 FilmDrop Logo based on config var for `SHOW_BRAND_LOGO`
+- Consolidate hex legend into single new legend component
 
 ### Fixed
 
@@ -45,6 +46,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Add pre-initialization page to handle and show error (and not render app) if config is missing
 - Add `SHOW_BRAND_LOGO` config option to optionally hide brand logo
 - Added Hawaii DOQQ grid (for NAIP)
+- Add new Legend component for map
 
 ### Removed
 

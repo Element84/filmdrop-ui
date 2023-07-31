@@ -1,0 +1,68 @@
+.LayerLegend {
+  position: absolute;
+  z-index: 5;
+  bottom: 80px;
+  left: 20px;
+  padding: 10px;
+  background-color: #13171a;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.hexLegendContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.hexLegendLabel {
+  font-weight: bold;
+}
+
+.legendRow {
+  margin-top: 4px;
+  margin-bottom: 8px;
+  display: flex;
+  flex-direction: row;
+}
+
+.legendSymbol {
+  width: 14px;
+  height: fill;
+  border-width: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 8px;
+}
+
+.searchAreaLegendSymbol {
+  border-color: #00c07b;
+  border-style: dashed;
+}
+
+.searchAreaLegendIcon {
+  height: fill;
+  width: 10px;
+  margin-right: 8px;
+}
+
+.sceneLegendSymbol {
+  border-color: #3183f5;
+  background-color: #3183f52e;
+  border-style: solid;
+}
+
+.sceneInCartLegendSymbol {
+  border-color: #ad5c11;
+  background-color: #ad5c1129;
+  border-style: solid;
+}
+
+.sceneLegend {
+  display: flex;
+  flex-direction: column;
+}
