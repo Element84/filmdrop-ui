@@ -32,7 +32,9 @@ const initialState = {
   showApplicationAlert: false,
   applicationAlertMessage: 'System Error',
   applicationAlertSeverity: 'error',
-  appConfig: null
+  appConfig: null,
+  cartItems: [{ test: 'true' }],
+  showCartModal: false
 }
 
 // next, for every key in the initialState
@@ -133,6 +135,12 @@ export const mainSlice = createSlice({
     },
     setappConfig: (state, action) => {
       state.appConfig = action.payload
+    },
+    setcartItems: (state, action) => {
+      state.cartItems = action.payload
+    },
+    setshowCartModal: (state, action) => {
+      state.showCartModal = action.payload
     }
   }
 })
@@ -170,5 +178,7 @@ export const { setshowApplicationAlert } = mainSlice.actions
 export const { setapplicationAlertMessage } = mainSlice.actions
 export const { setapplicationAlertSeverity } = mainSlice.actions
 export const { setappConfig } = mainSlice.actions
+export const { setcartItems } = mainSlice.actions
+export const { setshowCartModal } = mainSlice.actions
 
 export default mainSlice.reducer
