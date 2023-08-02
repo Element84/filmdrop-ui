@@ -63,11 +63,7 @@ const Dropdown = () => {
   return (
     <Box>
       <label htmlFor="collectionDropdown">Collection</label>
-      <Grid
-        container
-        alignItems="center"
-        className="collectionDropdownContainer"
-      >
+      <Grid container alignItems="center">
         <Grid item xs>
           <NativeSelect
             id="collectionDropdown"
