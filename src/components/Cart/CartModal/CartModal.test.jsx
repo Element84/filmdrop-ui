@@ -21,6 +21,11 @@ describe('CartModal', () => {
 
   describe('on close clicked', () => {
     it('should set setshowCartModal to false in redux state', async () => {
+      const mockAppConfigSearchEnabled = {
+        ...mockAppConfig,
+        CART_ENABLED: true
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
       store.dispatch(setshowCartModal(true))
       setup()
       expect(store.getState().mainSlice.showCartModal).toBeTruthy()
