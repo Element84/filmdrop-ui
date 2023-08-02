@@ -10,7 +10,7 @@ const CartModal = () => {
     dispatch(setshowCartModal(false))
   }
   return (
-    <div className="cartModal">
+    <div className="cartModal" data-testid="testCartModal">
       <div className="cartModalContents">
         <div className="cartModalTopBar">
           <span className="cartModalTopBarText">Your cart</span>

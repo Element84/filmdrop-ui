@@ -7,7 +7,8 @@ import {
   setShowPublishModal,
   setshowUploadGeojsonModal,
   setshowApplicationAlert,
-  setappConfig
+  setappConfig,
+  setshowCartModal
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
@@ -90,6 +91,19 @@ describe('App', () => {
         setup()
         const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
         expect(SystemMessageComponent).not.toBeNull()
+      })
+    })
+    describe('when conditionally rendering Cart Modal', () => {
+      it('should not render CartModal if showCartModal in state is false', () => {
+        setup()
+        const CartModalComponent = screen.queryByTestId('testCartModal')
+        expect(CartModalComponent).toBeNull()
+      })
+      it('should render CartModal if showCartModal in state is true', () => {
+        store.dispatch(setshowCartModal(true))
+        setup()
+        const CartModalComponent = screen.queryByTestId('testCartModal')
+        expect(CartModalComponent).not.toBeNull()
       })
     })
   })
