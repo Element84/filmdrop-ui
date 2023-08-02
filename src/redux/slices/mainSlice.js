@@ -33,7 +33,7 @@ const initialState = {
   applicationAlertMessage: 'System Error',
   applicationAlertSeverity: 'error',
   appConfig: null,
-  cartItems: [{ test: 'true' }],
+  cartItems: [],
   showCartModal: false
 }
 
