@@ -242,6 +242,7 @@ const Search = () => {
                   ? 'cartButton cartButtonEnabled'
                   : 'cartButton'
               }
+              data-testid="testCartButton"
               onClick={onCartButtonClick}
             >
               <span>Cart</span>
@@ -251,6 +252,7 @@ const Search = () => {
                     ? 'cartCountContainer carCountContainerEnabled'
                     : 'cartCountContainer'
                 }
+                data-testid="testCartCount"
               >
                 {_cartItems.length}
               </div>
