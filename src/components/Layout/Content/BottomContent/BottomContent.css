@@ -175,9 +175,6 @@
   opacity: 0.75;
 }
 
-@media screen and (max-width: 730px) {
-}
-
 @media screen and (max-width: 1460px) {
   .BottomContent {
     height: calc(100% - 200px);

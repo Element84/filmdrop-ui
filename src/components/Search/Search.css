@@ -257,16 +257,6 @@
   background-color: #4f8f36;
 }
 
-/* @media screen and (min-width: 731px) {
-  .Search {
-    height: 100%;
-  }
-  .searchContainer {
-    width: unset;
-    flex-grow: unset;
-  }
-} */
-
 @media screen and (max-width: 1460px) {
   .Search {
     flex-direction: column;
@@ -368,7 +358,7 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   max-width: 30%;
 }
 
-@media screen and (max-width: 730px) {
+@media screen and (max-width: 975px) {
   .leaflet-control-geosearch.leaflet-geosearch-bar {
     max-width: 80%;
   }
