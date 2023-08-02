@@ -291,13 +291,20 @@
   }
   .secondSearchItemsGroup {
     width: 100%;
-    flex-direction: column;
+    flex-direction: row;
   }
   .searchButtonAdvanced.active {
     z-index: 100;
   }
   .disableSearchOverlay {
     display: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .secondSearchItemsGroup {
+    width: 100%;
+    flex-direction: column;
   }
 }
 
