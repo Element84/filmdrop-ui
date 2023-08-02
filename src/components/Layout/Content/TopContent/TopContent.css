@@ -37,10 +37,11 @@
   transform: rotate(180deg);
 }
 
-@media screen and (max-width: 730px) {
+@media screen and (max-width: 975px) {
   .TopContent {
     position: absolute;
-    z-index: 9999;
+    z-index: 99;
+    height: auto;
   }
   .TopContent.active .Search {
     max-height: 100vh;
@@ -51,13 +52,7 @@
   }
 }
 
-@media screen and (max-width: 1299px) {
-  .TopContent {
-    height: auto;
-  }
-}
-
-@media screen and (min-width: 731px) {
+@media screen and (min-width: 975px) {
   .TopContent .mobileMenu {
     display: none;
   }

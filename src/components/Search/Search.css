@@ -290,6 +290,27 @@
   }
 }
 
+@media screen and (max-width: 975px) {
+  .Search {
+    flex-direction: column;
+    height: 200px;
+  }
+  .firstSearchItemsGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+  .secondSearchItemsGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+  .searchButtonAdvanced.active {
+    z-index: 100;
+  }
+  .disableSearchOverlay {
+    display: none;
+  }
+}
+
 /* Date Range Picker */
 
 .datePicker {
