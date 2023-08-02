@@ -6,18 +6,28 @@
   transition: max-height 0.33s ease-in-out;
 }
 
+.firstSearchItemsGroup {
+  display: flex;
+  flex-direction: row;
+  width: 65%;
+}
+.secondSearchItemsGroup {
+  display: flex;
+  flex-direction: row;
+  width: 35%;
+}
+
 .searchContainer {
   height: 100px;
-  padding-left: 2%;
-  padding-right: 2%;
   background-color: #353d4f;
   color: #ffffff;
   font-size: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  flex-grow: 1;
+  align-items: center;
   width: 100%;
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
 }
 
 .searchContainer label {
@@ -34,48 +44,66 @@
   padding-top: 5px;
 }
 
-.searchContainer .cloudSlider {
-  min-width: 155px;
+.collectionDropdownComponent {
+  width: 80%;
+}
+
+.dateTimeRangeComponent {
+  width: 80%;
+}
+
+.cloudSliderComponent {
+  width: 80%;
+}
+.viewSelectorComponent {
+  width: 80%;
+  display: flex;
+  justify-content: center;
+}
+
+.cartComponent {
+  width: 80%;
+}
+
+.defaultSearchContainer {
+  display: flex;
+  flex-direction: column;
 }
 
 .searchContainer.searchButton {
-  border-right: 0 none;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
 }
-
-.searchContainer.searchButtonAdvanced {
-  padding-left: 40px;
-  padding-right: 40px;
+.searchContainer.searchButton .actionButton {
+  height: 45px;
 }
 
 .searchContainer.searchButtonAdvanced.active {
   background-color: #4f5768;
-  width: 150px;
   display: block;
 }
 
 .advancedSearchContent {
-  width: 150px;
+  width: 100%;
   height: 100px;
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .advancedSearchOptionsContainer {
   height: 167px;
-  width: 280px;
+  width: 100%;
   background-color: #4f5768;
-  float: right;
-  margin-right: -40px;
   display: flex;
   flex-direction: column;
+  border-right: 2px solid rgba(0, 0, 0, 0.2);
 }
 
 .advancedSearchOptionsText {
-  font-size: 16px;
+  font-size: 14px;
   margin-top: 10px;
   margin-left: 12px;
   color: #fff;
@@ -92,14 +120,14 @@
 
 .advancedSearchOptionsButton {
   height: 32px;
-  width: 256px;
+  width: 80%;
   background-color: #4f5768;
   border: none;
   color: white;
-  padding: 15px 32px;
+  padding: 15px 15px;
   text-align: center;
   text-decoration: none;
-  font-size: 16px;
+  font-size: 14px;
   cursor: pointer;
   border: 1px solid #a9b0c1;
   margin-bottom: 10px;
@@ -145,6 +173,8 @@
   min-width: 160px;
   align-items: center;
   padding-top: 2px;
+  margin-top: -5px;
+  margin-bottom: -10px;
 }
 
 .advancedSearchOptions {
@@ -161,6 +191,10 @@
 
 .searchContainer .actionButton {
   height: 45px;
+  width: 145px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .disableSearchOverlay {
@@ -172,23 +206,105 @@
   position: absolute;
 }
 
-@media screen and (min-width: 731px) {
-  .Search {
-    height: 100%;
-  }
-  .searchContainer {
-    width: unset;
-    flex-grow: unset;
-    border-right: 2px solid rgba(0, 0, 0, 0.2);
-  }
+.cartButtonContainer {
+  max-width: 130px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: default;
 }
 
-@media screen and (max-width: 1299px) {
+.cartButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60px;
+  width: 55px;
+  border-radius: 5px;
+  border-style: solid;
+  border-width: 1px;
+  padding: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  border-color: #76829c;
+  color: #a9b0c1;
+  user-select: none;
+  margin-right: 10px;
+}
+
+.cartButtonEnabled {
+  cursor: pointer;
+  color: #12171a;
+  background-color: #6cc24a;
+  border-style: none;
+}
+
+.cartCountContainer {
+  width: 55px;
+  height: 30px;
+  background-color: #5d626d;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 7px;
+  border-radius: 5px;
+  font-weight: normal;
+}
+
+.carCountContainerEnabled {
+  background-color: #4f8f36;
+}
+
+@media screen and (max-width: 1460px) {
   .Search {
-    flex-wrap: wrap;
+    flex-direction: column;
+    height: 200px;
+  }
+  .firstSearchItemsGroup {
+    width: 100%;
+  }
+  .secondSearchItemsGroup {
+    width: 100%;
   }
   .searchContainer {
     border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+  }
+  .cartButtonContainer {
+    max-width: unset;
+    align-items: center;
+  }
+  .defaultSearchContainer {
+    min-width: unset;
+  }
+}
+
+@media screen and (max-width: 975px) {
+  .Search {
+    flex-direction: column;
+    height: 200px;
+  }
+  .firstSearchItemsGroup {
+    width: 100%;
+    flex-direction: column;
+  }
+  .secondSearchItemsGroup {
+    width: 100%;
+    flex-direction: row;
+  }
+  .searchButtonAdvanced.active {
+    z-index: 100;
+  }
+  .disableSearchOverlay {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .secondSearchItemsGroup {
+    width: 100%;
+    flex-direction: column;
   }
 }
 
@@ -249,7 +365,7 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   max-width: 30%;
 }
 
-@media screen and (max-width: 730px) {
+@media screen and (max-width: 975px) {
   .leaflet-control-geosearch.leaflet-geosearch-bar {
     max-width: 80%;
   }

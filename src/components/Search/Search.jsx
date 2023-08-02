@@ -6,7 +6,8 @@ import {
   setshowAdvancedSearchOptions,
   setisDrawingEnabled,
   setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setshowUploadGeojsonModal,
+  setshowCartModal
 } from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
 import Switch from '@mui/material/Switch'
@@ -43,6 +44,7 @@ const Search = () => {
     (state) => state.mainSlice.searchGeojsonBoundary
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   const mosaicTilerURL = _appConfig.MOSAIC_TILER_URL || ''
 
   useEffect(() => {
@@ -100,118 +102,164 @@ const Search = () => {
     }
   }
 
+  function onCartButtonClick() {
+    if (_cartItems.length === 0) {
+      return
+    }
+    dispatch(setshowCartModal(true))
+  }
+
   return (
     <div className="Search" data-testid="Search">
-      <div className={`searchContainer collectionDropdown`}>
-        <CollectionDropdown></CollectionDropdown>
-      </div>
-      <div className="searchContainer datePicker">
-        <DateTimeRangeSelector></DateTimeRangeSelector>
-      </div>
-      <div className="searchContainer cloudSlider">
-        <CloudSlider></CloudSlider>
-      </div>
-      {mosaicTilerURL && (
-        <div className="searchContainer">
-          <ViewSelector></ViewSelector>
-        </div>
-      )}
-
-      {_appConfig.ADVANCED_SEARCH_ENABLED ? (
-        <Box
-          className={
-            _showAdvancedSearchOptions
-              ? 'searchContainer searchButtonAdvanced ' + 'active'
-              : 'searchContainer searchButtonAdvanced'
-          }
-          onBlur={onAdvancedSearchBlur}
-          tabIndex={0}
-        >
-          <div className="advancedSearchContent">
-            <button
-              className={`actionButton`}
-              onClick={() => processSearchBtn()}
-            >
-              Search
-            </button>
-            <Box
-              className="advancedSearchOptions"
-              onClick={onAdvancedOptionsClicked}
-            >
-              Advanced
-              {_showAdvancedSearchOptions ? (
-                <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
-              ) : (
-                <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
-              )}
-            </Box>
+      <div className="firstSearchItemsGroup">
+        <div className={`searchContainer collectionDropdown`}>
+          <div className="collectionDropdownComponent">
+            <CollectionDropdown></CollectionDropdown>
           </div>
-          {_showAdvancedSearchOptions ? (
-            <Box className="advancedSearchOptionsContainer">
-              <span className="advancedSearchOptionsText">
-                Limit search to boundary
-              </span>
-              <div className="advancedSearchOptionsButtons">
-                <button
-                  className={
-                    !_searchGeojsonBoundary
-                      ? 'advancedSearchOptionsButton'
-                      : 'advancedSearchOptionsButton ' +
-                        'advancedSearchOptionsButtonDisabled'
-                  }
-                  onClick={onDrawBoundaryClicked}
-                >
-                  Draw boundary
-                </button>
-                <button
-                  className={
-                    !_searchGeojsonBoundary
-                      ? 'advancedSearchOptionsButton'
-                      : 'advancedSearchOptionsButton ' +
-                        'advancedSearchOptionsButtonDisabled'
-                  }
-                  onClick={onUploadGeojsonButtonClicked}
-                >
-                  Upload GeoJSON
-                </button>
-                <button
-                  className={
-                    _searchGeojsonBoundary
-                      ? 'advancedSearchOptionsButton'
-                      : 'advancedSearchOptionsButton ' +
-                        'advancedSearchOptionsButtonDisabled'
-                  }
-                  onClick={onClearButtonClicked}
-                >
-                  Clear
-                </button>
+        </div>
+        <div className="searchContainer datePicker">
+          <div className="dateTimeRangeComponent">
+            <DateTimeRangeSelector></DateTimeRangeSelector>
+          </div>
+        </div>
+        <div className="searchContainer cloudSlider">
+          <div className="cloudSliderComponent">
+            <CloudSlider></CloudSlider>
+          </div>
+        </div>
+      </div>
+      <div className="secondSearchItemsGroup">
+        {mosaicTilerURL && (
+          <div className="searchContainer">
+            <div className="viewSelectorComponent">
+              <ViewSelector></ViewSelector>
+            </div>
+          </div>
+        )}
+        {_appConfig.ADVANCED_SEARCH_ENABLED ? (
+          <Box
+            className={
+              _showAdvancedSearchOptions
+                ? 'searchContainer searchButtonAdvanced ' + 'active'
+                : 'searchContainer searchButtonAdvanced'
+            }
+            onBlur={onAdvancedSearchBlur}
+            tabIndex={0}
+          >
+            <div className="advancedSearchContent">
+              <button
+                className={`actionButton`}
+                onClick={() => processSearchBtn()}
+              >
+                Search
+              </button>
+              <Box
+                className="advancedSearchOptions"
+                onClick={onAdvancedOptionsClicked}
+              >
+                Advanced
+                {_showAdvancedSearchOptions ? (
+                  <KeyboardArrowUpIcon></KeyboardArrowUpIcon>
+                ) : (
+                  <KeyboardArrowDownIcon></KeyboardArrowDownIcon>
+                )}
+              </Box>
+            </div>
+            {_showAdvancedSearchOptions ? (
+              <Box className="advancedSearchOptionsContainer">
+                <span className="advancedSearchOptionsText">
+                  Limit search to boundary
+                </span>
+                <div className="advancedSearchOptionsButtons">
+                  <button
+                    className={
+                      !_searchGeojsonBoundary
+                        ? 'advancedSearchOptionsButton'
+                        : 'advancedSearchOptionsButton ' +
+                          'advancedSearchOptionsButtonDisabled'
+                    }
+                    onClick={onDrawBoundaryClicked}
+                  >
+                    Draw boundary
+                  </button>
+                  <button
+                    className={
+                      !_searchGeojsonBoundary
+                        ? 'advancedSearchOptionsButton'
+                        : 'advancedSearchOptionsButton ' +
+                          'advancedSearchOptionsButtonDisabled'
+                    }
+                    onClick={onUploadGeojsonButtonClicked}
+                  >
+                    Upload GeoJSON
+                  </button>
+                  <button
+                    className={
+                      _searchGeojsonBoundary
+                        ? 'advancedSearchOptionsButton'
+                        : 'advancedSearchOptionsButton ' +
+                          'advancedSearchOptionsButtonDisabled'
+                    }
+                    onClick={onClearButtonClicked}
+                  >
+                    Clear
+                  </button>
+                </div>
+              </Box>
+            ) : null}
+          </Box>
+        ) : (
+          <div className="searchContainer searchButton defaultSearchContainer">
+            <div>
+              <button
+                className={`actionButton disabled-${_isAutoSearchSet}`}
+                onClick={() => processSearchBtn()}
+                disabled={_isAutoSearchSet}
+              >
+                Search
+              </button>
+            </div>
+
+            <div
+              className="autoSearchContainer"
+              data-testid="test_autoSearchContainer"
+            >
+              <label htmlFor="autoSearchSwtich">Auto Search</label>
+              <Switch
+                checked={_isAutoSearchSet}
+                onChange={handleSwitchChange}
+                inputProps={{ 'aria-label': 'controlled' }}
+              />
+            </div>
+          </div>
+        )}
+        {_appConfig.CART_ENABLED ? (
+          <div className="searchContainer cartButtonContainer">
+            <div className="cartComponent"></div>
+            <Box
+              className={
+                _cartItems.length > 0
+                  ? 'cartButton cartButtonEnabled'
+                  : 'cartButton'
+              }
+              data-testid="testCartButton"
+              onClick={onCartButtonClick}
+            >
+              <span>Cart</span>
+              <div
+                className={
+                  _cartItems.length > 0
+                    ? 'cartCountContainer carCountContainerEnabled'
+                    : 'cartCountContainer'
+                }
+                data-testid="testCartCount"
+              >
+                {_cartItems.length}
               </div>
             </Box>
-          ) : null}
-        </Box>
-      ) : (
-        <div className="searchContainer searchButton">
-          <button
-            className={`actionButton disabled-${_isAutoSearchSet}`}
-            onClick={() => processSearchBtn()}
-            disabled={_isAutoSearchSet}
-          >
-            Search
-          </button>
-
-          <div
-            className="autoSearchContainer"
-            data-testid="test_autoSearchContainer"
-          >
-            <label htmlFor="autoSearchSwtich">Auto Search</label>
-            <Switch
-              checked={_isAutoSearchSet}
-              onChange={handleSwitchChange}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
           </div>
-        </div>
-      )}
+        ) : null}
+      </div>
       {_isDrawingEnabled ? (
         <div
           className="disableSearchOverlay"

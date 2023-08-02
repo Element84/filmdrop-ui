@@ -9,6 +9,7 @@ import SystemMessage from './components/SystemMessage/SystemMessage'
 import { GetCollectionsService } from './services/get-collections-service'
 import { LoadConfigIntoStateService } from './services/get-config-service'
 import { useSelector } from 'react-redux'
+import CartModal from './components/Cart/CartModal/CartModal'
 
 function App() {
   const _showPublishModal = useSelector(
@@ -21,6 +22,7 @@ function App() {
     (state) => state.mainSlice.showApplicationAlert
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const _showCartModal = useSelector((state) => state.mainSlice.showCartModal)
 
   useEffect(() => {
     LoadConfigIntoStateService()
@@ -43,6 +45,7 @@ function App() {
             <UploadGeojsonModal></UploadGeojsonModal>
           ) : null}
           {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
+          {_showCartModal ? <CartModal></CartModal> : null}
         </div>
       ) : (
         <div className="App">

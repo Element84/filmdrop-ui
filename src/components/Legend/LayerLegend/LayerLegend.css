@@ -13,6 +13,10 @@
   opacity: 0.9;
 }
 
+.LayerLegendBottom {
+  bottom: 20px;
+}
+
 .hexLegendContainer {
   display: flex;
   flex-direction: column;

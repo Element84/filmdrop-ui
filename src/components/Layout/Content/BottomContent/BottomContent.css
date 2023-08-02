@@ -175,7 +175,20 @@
   opacity: 0.75;
 }
 
-@media screen and (max-width: 730px) {
+@media screen and (max-width: 1460px) {
+  .BottomContent {
+    height: calc(100% - 200px);
+    margin-top: 100px;
+  }
+}
+
+@media screen and (max-width: 975px) {
+  .BottomContent {
+    height: calc(100% - 60px);
+    top: 0px;
+    margin-top: 60px;
+    background-color: red;
+  }
   .BottomContent {
     height: calc(100% - 60px);
     margin-top: 60px;
@@ -183,7 +196,6 @@
 
   .resultCount {
     width: 70%;
-    top: 50px;
     left: 52px;
     transform: none;
   }

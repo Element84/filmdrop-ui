@@ -11,7 +11,16 @@ const LayerLegend = () => {
   )
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   return (
-    <div data-testid="testLayerLegend" className="LayerLegend">
+    <div
+      data-testid="testLayerLegend"
+      className={
+        _appConfig.SHOW_PUBLISH_BTN ||
+        _appConfig.ANALYZE_BTN_URL ||
+        _appConfig.LAUNCH_URL
+          ? 'LayerLegend'
+          : 'LayerLegend LayerLegendBottom'
+      }
+    >
       {_searchType === 'scene' && (
         <div className="sceneLegend">
           {_appConfig.CART_ENABLED ? (

@@ -12,7 +12,7 @@ label {
 .datePicker {
   z-index: 4;
   font-size: 16px;
-  min-width: 270px;
+  min-width: 150px;
 }
 
 .datePicker label a svg {
@@ -40,7 +40,7 @@ label {
   flex-direction: column;
   justify-content: center;
   flex-grow: 1;
-  width: 100%;
+  width: 80%;
 }
 
 .dateToolTipIcon {
