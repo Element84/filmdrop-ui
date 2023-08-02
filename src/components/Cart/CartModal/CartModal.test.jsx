@@ -1,10 +1,9 @@
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { store } from '../../../redux/store'
 import { setappConfig, setshowCartModal } from '../../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../../testing/shared-mocks'
-import userEvent from '@testing-library/user-event'
 import CartModal from './CartModal'
 
 describe('CartModal', () => {
@@ -20,20 +19,12 @@ describe('CartModal', () => {
   })
 
   describe('on close clicked', () => {
-    it('should set setshowCartModal to false in redux state', async () => {
-      const mockAppConfigSearchEnabled = {
-        ...mockAppConfig,
-        CART_ENABLED: true
-      }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+    it('should set setshowCartModal to false in redux state', () => {
       store.dispatch(setshowCartModal(true))
       setup()
       expect(store.getState().mainSlice.showCartModal).toBeTruthy()
-      await userEvent.click(
-        screen.getByRole('button', {
-          name: /✕/i
-        })
-      )
+      const closeButton = screen.getByText('✕')
+      fireEvent.click(closeButton)
       expect(store.getState().mainSlice.showCartModal).toBeFalsy()
     })
   })
