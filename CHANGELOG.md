@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Cart button added to search bar if config set to true (WIP feature)
+- Cart button added to search bar if `CART_ENABLED` set to true in `config.json` (WIP feature)
 
 ## 3.2.0 - 2023-08-02
 
