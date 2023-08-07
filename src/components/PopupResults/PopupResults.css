@@ -1,9 +1,9 @@
 .popupResultsContainer {
-  height: calc(100% - 60px);
+  height: calc(100% - 80px);
   width: 400px;
   position: absolute;
   z-index: 2;
-  bottom: 30px;
+  bottom: 40px;
   right: 10px;
   display: flex;
   flex-direction: column;
@@ -14,32 +14,198 @@
   z-index: 5;
 }
 
+.popupResultsContainerMin {
+  height: unset;
+}
+
 .popupResults {
   height: 100%;
   display: flex;
   flex-direction: column;
 }
 
-.popupFooter {
-  height: 30px;
-  font-size: 18px;
+.popupHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 5px;
+  border-bottom: #353d4f 3px solid;
+}
+
+.popupHeaderTop {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.popupHeaderBottom {
   display: flex;
   flex-direction: row;
   justify-content: center;
+  height: 32px;
+  width: 100%;
+  margin-top: 5px;
+  margin-bottom: 10px;
+}
+
+.popupHeaderBottomButton {
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 1px solid #a9b0c1;
+  border-radius: 5px;
+  height: 32px;
+  font-size: 16px;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.popupHeaderBottomButton:hover {
+  background-color: #252f36;
+  color: #fff;
+}
+.popupHeaderBottomButtonDisabled {
+  color: #646566;
+  border: 1px solid #646566;
+  cursor: default;
+}
+.popupHeaderBottomButtonDisabled:hover {
+  background-color: transparent;
+  color: #646566;
+}
+
+.popupResultsBottom {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  height: 32px;
+  width: 100%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.popupResultsBottomButton {
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 1px solid #a9b0c1;
+  border-radius: 5px;
+  height: 32px;
+  font-size: 16px;
+  width: 80%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.popupResultsBottomButton:hover {
+  background-color: #252f36;
+  color: #fff;
+}
+
+.popupHeaderButtonsGroup {
+  display: flex;
+  flex-direction: row;
+}
+
+.popupHeaderButtons {
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 0px;
+  font-weight: bold;
+  height: 30px;
+  width: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.popupResultsContent {
+  height: calc(100% - 91px);
+  border-bottom: #353d4f 3px solid;
+}
+
+.popupResultsContentCartEnabled {
+  height: calc(100% - 138px);
+}
+
+.popupResultContentText {
+  height: 40px;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+
+.popupFooter {
+  font-size: 18px;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   margin-top: 10px;
 }
 
-.popupFooterIconContainer {
+.popupFooterControls {
+  width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding-left: 10px;
-  padding-right: 10px;
+  justify-content: space-between;
 }
 
-.popupFooterIcon {
-  color: #dedede;
-  transform: scale(1.2);
+.popupFooterControlLeft {
+  padding-left: 10px;
+}
+
+.popupFooterButtonsGroup {
+  display: flex;
+  flex-direction: row;
+}
+
+.popupFooterButton {
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 0px;
+  font-weight: bold;
+  height: 30px;
+  width: 30px;
+  border: #dedede solid 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.popupFooterButton:hover {
+  background-color: #252f36;
+  color: #fff;
+}
+
+.popupFooterButtonRight {
+  margin-left: -1px;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.popupFooterButtonLeft {
+  margin-left: -1px;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
 }
