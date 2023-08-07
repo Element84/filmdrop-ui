@@ -7,12 +7,14 @@ import {
   setSearchResults,
   setappConfig,
   setsearchGeojsonBoundary,
-  setSearchType
+  setSearchType,
+  setcartItems
 } from '../../../redux/slices/mainSlice'
 import {
   mockAppConfig,
   mockGridAggregateSearchResult,
-  mockHexAggregateSearchResult
+  mockHexAggregateSearchResult,
+  mockSceneSearchResult
 } from '../../../testing/shared-mocks'
 
 describe('LayerLegend', () => {
@@ -28,6 +30,31 @@ describe('LayerLegend', () => {
   })
 
   describe('on conditional render', () => {
+    describe('confirm conditional cart render', () => {
+      it('should render scenes in cart legend item if cart enabled in config and cart has items', () => {
+        const mockAppConfigSearchEnabled = {
+          ...mockAppConfig,
+          CART_ENABLED: 'true'
+        }
+        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        store.dispatch(setcartItems([mockSceneSearchResult]))
+        setup()
+        expect(screen.queryByText(/scenes in cart/i)).toBeInTheDocument()
+      })
+      it('should not render scenes in cart legend item if cart enabled in config but cart has no items', () => {
+        const mockAppConfigSearchEnabled = {
+          ...mockAppConfig,
+          CART_ENABLED: 'true'
+        }
+        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        setup()
+        expect(screen.queryByText(/scenes in cart/i)).not.toBeInTheDocument()
+      })
+      it('should not render scenes in cart legend item if cart not enabled in config', () => {
+        setup()
+        expect(screen.queryByText(/scenes in cart/i)).not.toBeInTheDocument()
+      })
+    })
     describe('confirm conditional scene render', () => {
       it('should render available scene legend item if searchType set to scene in redux', () => {
         store.dispatch(setSearchType('scene'))
@@ -38,21 +65,6 @@ describe('LayerLegend', () => {
         store.dispatch(setSearchType('grid-code'))
         setup()
         expect(screen.queryByText(/available scene/i)).not.toBeInTheDocument()
-      })
-      it('should render scene in cart legend item if searchType set to scene in redux and cart enabled in config', () => {
-        store.dispatch(setSearchType('scene'))
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          CART_ENABLED: 'true'
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        setup()
-        expect(screen.queryByText(/scene in cart/i)).toBeInTheDocument()
-      })
-      it('should not render scene in cart legend item if searchType set to scene in redux and cart not enabled in config', () => {
-        store.dispatch(setSearchType('scene'))
-        setup()
-        expect(screen.queryByText(/scene in cart/i)).not.toBeInTheDocument()
       })
     })
     describe('confirm conditional gird-code render', () => {

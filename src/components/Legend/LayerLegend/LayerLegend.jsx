@@ -10,6 +10,7 @@ const LayerLegend = () => {
     (state) => state.mainSlice.searchGeojsonBoundary
   )
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
+  const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   return (
     <div
       data-testid="testLayerLegend"
@@ -21,14 +22,14 @@ const LayerLegend = () => {
           : 'LayerLegend LayerLegendBottom'
       }
     >
+      {_appConfig.CART_ENABLED && _cartItems.length > 0 ? (
+        <div className="legendRow">
+          <div className="legendSymbol sceneInCartLegendSymbol"></div>
+          <span>Scenes in cart</span>
+        </div>
+      ) : null}
       {_searchType === 'scene' && (
         <div className="sceneLegend">
-          {_appConfig.CART_ENABLED ? (
-            <div className="legendRow">
-              <div className="legendSymbol sceneInCartLegendSymbol"></div>
-              <span>Scene in cart</span>
-            </div>
-          ) : null}
           <div className="legendRow">
             <div className="legendSymbol sceneLegendSymbol"></div>
             <span>Available scene</span>
