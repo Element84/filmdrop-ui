@@ -9,7 +9,8 @@ import {
   setisDrawingEnabled,
   setappConfig,
   setsearchGeojsonBoundary,
-  setSearchType
+  setSearchType,
+  setcartItems
 } from '../../../../redux/slices/mainSlice'
 import {
   mockSceneSearchResult,
@@ -69,6 +70,11 @@ describe('BottomContent', () => {
     it('should render Legend if searchType and searchResults set in redux', () => {
       store.dispatch(setSearchType('hex'))
       store.dispatch(setSearchResults({ type: 'Point', coordinates: [0, 0] }))
+      setup()
+      expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
+    })
+    it('should render Legend if cartItems has items set in redux', () => {
+      store.dispatch(setcartItems([mockSceneSearchResult]))
       setup()
       expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
     })
