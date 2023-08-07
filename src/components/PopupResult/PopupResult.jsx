@@ -66,22 +66,22 @@ const PopupResult = (props) => {
           </div>
           <div className="popupResultDetails">
             <div className="detailRow">
-              <label>Title: </label>
+              <label htmlFor="title">Title: </label>
               <span>{props.result.id}</span>
             </div>
             <div className="detailRow">
-              <label>Collection Date: </label>
+              <label htmlFor="collectionDate">Collection Date: </label>
               <span>{props.result.properties.datetime}</span>
             </div>
             {cloudCover ? (
               <div className="detailRow">
-                <label>Cloud Cover: </label>
+                <label htmlFor="cloudCover">Cloud Cover: </label>
                 <span>{`${cloudCover?.toFixed(2)}%`}</span>
               </div>
             ) : null}
             {polarizations ? (
               <div className="detailRow">
-                <label>Polarizations: </label>
+                <label htmlFor="polarizations">Polarizations: </label>
                 <span>{`${polarizations}`}</span>
               </div>
             ) : null}
