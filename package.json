@@ -9,7 +9,7 @@
     "@mui/material": "^5.14.2",
     "@reduxjs/toolkit": "^1.9.5",
     "@vitejs/plugin-react": "^4.0.0",
-    "@wojtekmaj/react-datetimerange-picker": "^5.2.0",
+    "@wojtekmaj/react-datetimerange-picker": "^5.4.2",
     "colormap": "^2.3.2",
     "dompurify": "^3.0.3",
     "h3-js": "^4.1.0",
