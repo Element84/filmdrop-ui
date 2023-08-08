@@ -234,5 +234,30 @@ describe('PopupResult', () => {
         expect(store.getState().mainSlice.cartItems.length).toBe(0)
       })
     })
+    describe('on prev & next scene buttons clicked', () => {
+      it('should set scene result in redux to next and prev scene if not out of range', () => {
+        store.dispatch(setappConfig(mockAppConfig))
+        setup()
+        expect(store.getState().mainSlice.currentPopupResult).toEqual(
+          mockClickResults[0]
+        )
+        fireEvent.click(screen.getByTestId('ChevronRightIcon'))
+        expect(store.getState().mainSlice.currentPopupResult).toEqual(
+          mockClickResults[1]
+        )
+        fireEvent.click(screen.getByTestId('ChevronRightIcon'))
+        expect(store.getState().mainSlice.currentPopupResult).toEqual(
+          mockClickResults[1]
+        )
+        fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+        expect(store.getState().mainSlice.currentPopupResult).toEqual(
+          mockClickResults[0]
+        )
+        fireEvent.click(screen.getByTestId('ChevronLeftIcon'))
+        expect(store.getState().mainSlice.currentPopupResult).toEqual(
+          mockClickResults[0]
+        )
+      })
+    })
   })
 })
