@@ -9,7 +9,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Cart button added to search bar if `CART_ENABLED` set to true in `config.json` (WIP feature)
+- Cart button to `Add all to cart` & `Add/Remove scene from cart` added to search bar if `CART_ENABLED` set to true in `config.json` (WIP feature)
+- Cart buttons now show in PopupResults component if if `CART_ENABLED` set to true in `config.json` (WIP feature)
+- Cart items are now shown in layer on map if `CART_ENABLED` set to true in `config.json` and Items exist in cart. (WIP feature)
+
+### Changed
+
+- Map legend updated to always show 'Scenes in Cart' symbology when `CART_ENABLED` set to true in `config.json` and Items exist in cart. (WIP feature)
+- PopupResults component updated to allow users to minimize/maximize popup results component content.
 
 ## 3.2.0 - 2023-08-02
 
