@@ -1,5 +1,4 @@
 import React from 'react'
-
 import { render, screen, fireEvent, within } from '@testing-library/react'
 import PopupResults from './PopupResults'
 import { Provider } from 'react-redux'

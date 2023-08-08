@@ -1,5 +1,3 @@
-// dataHelper.test.js
-
 import { vi } from 'vitest'
 import { store } from '../redux/store'
 import {
@@ -27,31 +25,24 @@ describe('dataHelper', () => {
   describe('isSceneInCart', () => {
     it('returns true if scene is in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-
       vi.spyOn(store, 'getState').mockReturnValue({
         mainSlice: {
           cartItems: mockCart
         }
       })
-
       const scene = { id: '1' }
       const result = isSceneInCart(scene)
-
       expect(result).toBe(true)
     })
-
     it('returns false if scene is not in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-
       vi.spyOn(store, 'getState').mockReturnValue({
         mainSlice: {
           cartItems: mockCart
         }
       })
-
       const scene = { id: '3' }
       const result = isSceneInCart(scene)
-
       expect(result).toBe(false)
     })
   })
@@ -73,33 +64,24 @@ describe('dataHelper', () => {
   describe('areAllScenesSelectedInCart', () => {
     it('returns true if all scenes are in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-
       vi.spyOn(store, 'getState').mockReturnValue({
         mainSlice: {
           cartItems: mockCart
         }
       })
-
       const mockResults = [{ id: '1' }, { id: '2' }]
-
       const allInCart = areAllScenesSelectedInCart(mockResults)
-
       expect(allInCart).toBe(true)
     })
-
     it('returns false if some scenes not in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-
       vi.spyOn(store, 'getState').mockReturnValue({
         mainSlice: {
           cartItems: mockCart
         }
       })
-
       const mockResults = [{ id: '1' }, { id: '3' }]
-
       const allInCart = areAllScenesSelectedInCart(mockResults)
-
       expect(allInCart).toBe(false)
     })
   })

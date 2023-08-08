@@ -121,7 +121,6 @@ export function mapClickHandler(e) {
             if (intersectingFeatures.length > 0) {
               // push to store
               store.dispatch(setClickResults(intersectingFeatures))
-              console.log(intersectingFeatures)
               store.dispatch(setShowPopupModal(true))
             } else {
               // clear store
