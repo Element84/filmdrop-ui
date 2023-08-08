@@ -95,6 +95,7 @@ const PopupResults = (props) => {
 
   return (
     <div
+      data-testid="testPopupResults"
       className={
         minimizePopup
           ? 'popupResultsContainer popupResultsContainerMin'
@@ -107,7 +108,6 @@ const PopupResults = (props) => {
             <div className="popupHeaderTop">
               <div className="popupResultContentText">
                 {props.results.length + ' scenes selected'}{' '}
-                {/* TODO: replace _cartItems.length with function that returns count of selected results */}
                 {_appConfig.CART_ENABLED &&
                 numberOfSelectedInCart(props.results) > 0
                   ? '(' + numberOfSelectedInCart(props.results) + ' in cart)'

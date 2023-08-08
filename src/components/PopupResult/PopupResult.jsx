@@ -41,6 +41,7 @@ const PopupResult = (props) => {
 
   return (
     <div
+      data-testid="testPopupResult"
       className={
         _appConfig.CART_ENABLED
           ? 'popupResult popupResultCartEnabled'
