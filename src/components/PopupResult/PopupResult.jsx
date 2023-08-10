@@ -67,17 +67,45 @@ const PopupResult = (props) => {
           </div>
           <div className="popupResultDetails">
             <div className="detailRow">
-              <label htmlFor="title">Title: </label>
-              <span>{props.result.id}</span>
+              <span
+                className="popupResultDetailsRowKey"
+                id="popupResultDetailsTitle"
+              >
+                Title:
+              </span>
+              <span
+                className="popupResultDetailsRowValue"
+                aria-labelledby="popupResultDetailsTitle"
+              >
+                {props.result.id}
+              </span>
             </div>
             <div className="detailRow">
-              <label htmlFor="collectionDate">Collection Date: </label>
-              <span>{props.result.properties.datetime}</span>
+              <span
+                className="popupResultDetailsRowKey"
+                id="popupResultDetailsCollectionDate"
+              >
+                Collection Date:{' '}
+              </span>
+              <span
+                className="popupResultDetailsRowValue"
+                aria-labelledby="popupResultDetailsCollectionDate"
+              >
+                {props.result.properties.datetime}
+              </span>
             </div>
             {cloudCover ? (
               <div className="detailRow">
-                <label htmlFor="cloudCover">Cloud Cover: </label>
-                <span>{`${cloudCover?.toFixed(2)}%`}</span>
+                <span
+                  className="popupResultDetailsRowKey"
+                  id="popupResultDetailsCloudCover"
+                >
+                  Cloud Cover:{' '}
+                </span>
+                <span
+                  className="popupResultDetailsRowValue"
+                  aria-labelledby="popupResultDetailsCloudCover"
+                >{`${cloudCover?.toFixed(2)}%`}</span>
               </div>
             ) : null}
             {polarizations ? (

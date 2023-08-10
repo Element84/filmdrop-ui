@@ -41,12 +41,12 @@
   line-height: 1.6;
 }
 
-.detailRow label {
+.popupResultDetailsRowKey {
   font-weight: bold;
   color: #fff;
 }
 
-.detailRow span {
+.popupResultDetailsRowValue {
   font-size: 14px;
   word-wrap: break-word;
 }
