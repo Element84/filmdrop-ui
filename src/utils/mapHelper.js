@@ -42,6 +42,15 @@ export const clickedFootprintLayerStyle = {
   pane: 'searchResults'
 }
 
+export const cartFootprintLayerStyle = {
+  color: '#ad5c11',
+  weight: 3,
+  opacity: 1,
+  fillOpacity: 0.1,
+  fillColor: '#ad5c11',
+  pane: 'searchResults'
+}
+
 const customSearchPointIconStyle = L.icon({
   iconSize: [25, 41],
   iconAnchor: [10, 41],
@@ -140,6 +149,9 @@ export function addDataToLayer(geojson, layerName, options) {
           L.geoJSON(geojson).addTo(layer)
         }
       }
+      if (layer.layer_name === 'cartFootprintsLayer') {
+        layer.bringToFront()
+      }
     })
   }
 }
@@ -160,7 +172,11 @@ export function clearAllLayers() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
     map.eachLayer(function (layer) {
-      if (layer.layer_name && layer.layer_name !== 'drawBoundsLayer') {
+      if (
+        layer.layer_name &&
+        layer.layer_name !== 'drawBoundsLayer' &&
+        layer.layer_name !== 'cartFootprintsLayer'
+      ) {
         layer.clearLayers()
       }
     })
@@ -293,6 +309,10 @@ export function mapCallDebounceNewSearch() {
 export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
 
 function addImageOverlay() {
+  if (!store.getState().mainSlice.currentPopupResult) {
+    store.dispatch(setSearchLoading(false))
+    return
+  }
   const sceneTilerURL =
     store.getState().mainSlice.appConfig.SCENE_TILER_URL || ''
   const _currentPopupResult = store.getState().mainSlice.currentPopupResult

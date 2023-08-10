@@ -37,6 +37,7 @@ const BottomContent = () => {
   const _searchGeojsonBoundary = useSelector(
     (state) => state.mainSlice.searchGeojsonBoundary
   )
+  const _cartItems = useSelector((state) => state.mainSlice.cartItems)
 
   const dispatch = useDispatch()
 
@@ -153,7 +154,9 @@ const BottomContent = () => {
           </div>
         </div>
       ) : null}
-      {_searchGeojsonBoundary || (_searchType && _searchResults) ? (
+      {_searchGeojsonBoundary ||
+      (_searchType && _searchResults) ||
+      _cartItems.length > 0 ? (
         <LayerLegend></LayerLegend>
       ) : null}
     </div>

@@ -1,28 +1,16 @@
 import { React, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResult.css'
-
-import { useDispatch } from 'react-redux'
-import {
-  setCurrentPopupResult,
-  setShowPopupModal
-} from '../../redux/slices/mainSlice'
-
-import {
-  clearMapSelection,
-  debounceTitilerOverlay
-} from '../../utils/mapHelper'
+import { useDispatch, useSelector } from 'react-redux'
+import { setCurrentPopupResult } from '../../redux/slices/mainSlice'
 
 const PopupResult = (props) => {
   const dispatch = useDispatch()
+  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const [thumbnailURL, setthumbnailURL] = useState(null)
 
   useEffect(() => {
     if (props.result) {
-      dispatch(setCurrentPopupResult(props.result))
-
-      debounceTitilerOverlay()
-
       const thumbnailURLForSelection = props.result?.links?.find(
         ({ rel }) => rel === 'thumbnail'
       )?.href
@@ -51,13 +39,15 @@ const PopupResult = (props) => {
   const cloudCover = props.result?.properties['eo:cloud_cover']
   const polarizations = props.result?.properties['sar:polarizations']
 
-  function onCloseClick() {
-    clearMapSelection()
-    dispatch(setShowPopupModal(false))
-  }
-
   return (
-    <div className="popupResult">
+    <div
+      data-testid="testPopupResult"
+      className={
+        _appConfig.CART_ENABLED
+          ? 'popupResult popupResultCartEnabled'
+          : 'popupResult'
+      }
+    >
       {props.result ? (
         <div>
           <div className="popupResultThumbnailContainer">
@@ -77,29 +67,54 @@ const PopupResult = (props) => {
           </div>
           <div className="popupResultDetails">
             <div className="detailRow">
-              <label>Title: </label>
-              <span>{props.result.id}</span>
+              <span
+                className="popupResultDetailsRowKey"
+                id="popupResultDetailsTitle"
+              >
+                Title:
+              </span>
+              <span
+                className="popupResultDetailsRowValue"
+                aria-labelledby="popupResultDetailsTitle"
+              >
+                {props.result.id}
+              </span>
             </div>
             <div className="detailRow">
-              <label>Collection Date: </label>
-              <span>{props.result.properties.datetime}</span>
+              <span
+                className="popupResultDetailsRowKey"
+                id="popupResultDetailsCollectionDate"
+              >
+                Collection Date:{' '}
+              </span>
+              <span
+                className="popupResultDetailsRowValue"
+                aria-labelledby="popupResultDetailsCollectionDate"
+              >
+                {props.result.properties.datetime}
+              </span>
             </div>
             {cloudCover ? (
               <div className="detailRow">
-                <label>Cloud Cover: </label>
-                <span>{`${cloudCover?.toFixed(2)}%`}</span>
+                <span
+                  className="popupResultDetailsRowKey"
+                  id="popupResultDetailsCloudCover"
+                >
+                  Cloud Cover:{' '}
+                </span>
+                <span
+                  className="popupResultDetailsRowValue"
+                  aria-labelledby="popupResultDetailsCloudCover"
+                >{`${cloudCover?.toFixed(2)}%`}</span>
               </div>
             ) : null}
             {polarizations ? (
               <div className="detailRow">
-                <label>Polarizations: </label>
+                <label htmlFor="polarizations">Polarizations: </label>
                 <span>{`${polarizations}`}</span>
               </div>
             ) : null}
           </div>
-          <button className="closePopupModal" onClick={() => onCloseClick()}>
-            ✕
-          </button>
         </div>
       ) : null}
     </div>

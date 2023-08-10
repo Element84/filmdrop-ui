@@ -17,10 +17,12 @@ import {
   mapCallDebounceNewSearch,
   setMosaicZoomMessage
 } from '../../utils/mapHelper'
+import { setScenesForCartLayer } from '../../utils/dataHelper'
 
 const LeafMap = () => {
   const dispatch = useDispatch()
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   // set map ref to itself with useRef
   const mapRef = useRef()
 
@@ -49,6 +51,10 @@ const LeafMap = () => {
       setLocalMap(mapRef.current)
     }
   }, [mapRef.current])
+
+  useEffect(() => {
+    setScenesForCartLayer()
+  }, [_cartItems])
 
   useEffect(() => {
     if (map && Object.keys(map).length) {
@@ -90,6 +96,18 @@ const LeafMap = () => {
       const resultFootprintsInit = new L.FeatureGroup()
       resultFootprintsInit.addTo(map)
       resultFootprintsInit.layer_name = 'searchResultsLayer'
+
+      const cartFootprintsInit = new L.FeatureGroup()
+      cartFootprintsInit.addTo(map)
+      cartFootprintsInit.layer_name = 'cartFootprintsLayer'
+      cartFootprintsInit.eachLayer(function (layer) {
+        layer.on('mouseover', function (e) {
+          map.getContainer().style.cursor = 'default'
+        })
+        layer.on('mouseout', function (e) {
+          map.getContainer().style.cursor = ''
+        })
+      })
 
       const clickedFootprintsHighlightInit = new L.FeatureGroup()
       clickedFootprintsHighlightInit.addTo(map)

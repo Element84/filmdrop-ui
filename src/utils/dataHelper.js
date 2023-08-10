@@ -1,6 +1,12 @@
 import { GetCollectionQueryablesService } from '../services/get-queryables-service'
 import { GetCollectionAggregationsService } from '../services/get-aggregations-service'
 import { LoadLocalGridDataService } from '../services/get-local-grid-data-json-service'
+import { store } from '../redux/store'
+import {
+  cartFootprintLayerStyle,
+  addDataToLayer,
+  clearLayer
+} from './mapHelper'
 
 export async function buildCollectionsData(collections) {
   for (const collection of collections.collections) {
@@ -24,4 +30,42 @@ export async function loadLocalGridData() {
   dataFiles.map(async function (d) {
     await LoadLocalGridDataService(d)
   })
+}
+
+export function isSceneInCart(sceneObject) {
+  const cartItems = store.getState().mainSlice.cartItems
+  return cartItems.some((cartItem) => cartItem.id === sceneObject.id)
+}
+
+export function numberOfSelectedInCart(results) {
+  const cartItems = store.getState().mainSlice.cartItems
+  return results.reduce((count, result) => {
+    if (cartItems.some((cartItem) => cartItem.id === result.id)) {
+      return count + 1
+    }
+    return count
+  }, 0)
+}
+
+export function areAllScenesSelectedInCart(results) {
+  const cartItems = store.getState().mainSlice.cartItems
+  return results.every((result) =>
+    cartItems.some((cartItem) => cartItem.id === result.id)
+  )
+}
+
+export function setScenesForCartLayer() {
+  if (store.getState().mainSlice.cartItems.length === 0) {
+    clearLayer('cartFootprintsLayer')
+    return
+  }
+  const cartGeojson = {
+    type: 'FeatureCollection',
+    features: store.getState().mainSlice.cartItems
+  }
+  const options = {
+    style: cartFootprintLayerStyle,
+    interactive: false
+  }
+  addDataToLayer(cartGeojson, 'cartFootprintsLayer', options)
 }
