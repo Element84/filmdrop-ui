@@ -33,35 +33,25 @@ export async function loadLocalGridData() {
 }
 
 export function isSceneInCart(sceneObject) {
-  let itemInCart = false
-  store.getState().mainSlice.cartItems.forEach((cartItem) => {
-    if (cartItem.id === sceneObject.id) {
-      itemInCart = true
-    }
-  })
-  return itemInCart
+  const cartItems = store.getState().mainSlice.cartItems
+  return cartItems.some((cartItem) => cartItem.id === sceneObject.id)
 }
 
 export function numberOfSelectedInCart(results) {
-  let count = 0
-  results.forEach((result) => {
-    const sceneInCart = isSceneInCart(result)
-    if (sceneInCart) {
-      count++
+  const cartItems = store.getState().mainSlice.cartItems
+  return results.reduce((count, result) => {
+    if (cartItems.some((cartItem) => cartItem.id === result.id)) {
+      return count + 1
     }
-  })
-  return count
+    return count
+  }, 0)
 }
 
 export function areAllScenesSelectedInCart(results) {
-  let allInCart = true
-  results.forEach((result) => {
-    const sceneInCart = isSceneInCart(result)
-    if (!sceneInCart) {
-      allInCart = false
-    }
-  })
-  return allInCart
+  const cartItems = store.getState().mainSlice.cartItems
+  return results.every((result) =>
+    cartItems.some((cartItem) => cartItem.id === result.id)
+  )
 }
 
 export function setScenesForCartLayer() {
