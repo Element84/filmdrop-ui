@@ -74,7 +74,7 @@ export function processDisplayFieldValues(value) {
   if (typeof value === 'boolean') {
     return value.toString()
   } else if (Array.isArray(value)) {
-    return value.map(processDisplayFieldValues).join(', ') // Process each item in the array
+    return value.map(processDisplayFieldValues).join(', ')
   } else if (typeof value === 'number') {
     return value.toString()
   } else if (typeof value === 'string') {
