@@ -74,13 +74,17 @@ export function processDisplayFieldValues(value) {
   if (typeof value === 'boolean') {
     return value.toString()
   } else if (Array.isArray(value)) {
-    return value.join(', ')
+    return value.map(processDisplayFieldValues).join(', ') // Process each item in the array
   } else if (typeof value === 'number') {
     return value.toString()
   } else if (typeof value === 'string') {
     return value
   } else if (typeof value === 'object' && value !== null) {
-    return processDisplayFieldValues(value)
+    const processedObject = {}
+    for (const key in value) {
+      processedObject[key] = processDisplayFieldValues(value[key])
+    }
+    return processedObject
   } else {
     return 'Unsupported Type'
   }
