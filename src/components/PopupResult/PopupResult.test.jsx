@@ -27,7 +27,7 @@ describe('PopupResult', () => {
   })
 
   describe('on conditional render', () => {
-    it('should only render title if POPUP_DISPLAY_FIELDS not set in config', () => {
+    it('should render title field and no others if POPUP_DISPLAY_FIELDS not set in config', () => {
       const mockAppConfigSearchEnabled = {
         ...mockAppConfig
       }
