@@ -101,5 +101,19 @@
   "BASEMAP_HTML_ATTRIBUTION": "&copy; <a href=\"https://www.tile-provider.example.com/copyright\">TileProvider</a>",
   "ADVANCED_SEARCH_ENABLED": false,
   "CART_ENABLED": false,
-  "SHOW_BRAND_LOGO": true
+  "SHOW_BRAND_LOGO": true,
+  "POPUP_DISPLAY_FIELDS": {
+    "sentinel-2-l2a": ["datetime", "platform", "eo:cloud_cover"],
+    "sentinel-2-l1c": ["datetime", "platform", "eo:cloud_cover"],
+    "landsat-c2-l2": ["datetime", "platform", "instruments", "eo:cloud_cover"],
+    "naip": ["datetime", "naip:state", "naip:year", "gsd"],
+    "cop-dem-glo-30": ["datetime"],
+    "cop-dem-glo-90": ["datetime"],
+    "sentinel-1-grd": [
+      "datetime",
+      "platform",
+      "sar:instrument_mode",
+      "sar:polarizations"
+    ]
+  }
 }
