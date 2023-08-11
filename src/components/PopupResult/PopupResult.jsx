@@ -90,7 +90,7 @@ const PopupResult = (props) => {
                       className="popupResultDetailsRowKey"
                       key={field + '2'}
                     >
-                      {field.charAt(0).toUpperCase() + field.slice(1)}
+                      {field.charAt(0).toUpperCase() + field.slice(1) + ':'}
                     </span>
                     <span
                       className="popupResultDetailsRowValue"
