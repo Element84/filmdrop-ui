@@ -5,7 +5,8 @@ import {
   isSceneInCart,
   numberOfSelectedInCart,
   areAllScenesSelectedInCart,
-  setScenesForCartLayer
+  setScenesForCartLayer,
+  processDisplayFieldValues
 } from './dataHelper'
 import * as getLocalGridDataService from '../services/get-local-grid-data-json-service'
 import * as MapHelper from './mapHelper'
@@ -115,6 +116,68 @@ describe('dataHelper', () => {
         'cartFootprintsLayer',
         expect.any(Object)
       )
+    })
+  })
+
+  describe('processDisplayFieldValues', () => {
+    it('returns boolean value as string', () => {
+      const input = true
+      const expected = 'true'
+      const actual = processDisplayFieldValues(input)
+      expect(actual).toEqual(expected)
+    })
+
+    it('returns array values joined as comma separated string', () => {
+      const input = [1, 2, 3]
+      const expected = '1, 2, 3'
+      const actual = processDisplayFieldValues(input)
+      expect(actual).toEqual(expected)
+    })
+
+    it('returns number value as string', () => {
+      const input = 123
+      const expected = '123'
+      const actual = processDisplayFieldValues(input)
+      expect(actual).toEqual(expected)
+    })
+
+    it('returns string value unchanged', () => {
+      const input = 'hello'
+      const expected = 'hello'
+      const actual = processDisplayFieldValues(input)
+      expect(actual).toEqual(expected)
+    })
+
+    it('should recursively process object values', () => {
+      const input = {
+        bool: true,
+        arr: [1, 2, 3],
+        num: 42,
+        str: 'Hello, world!',
+        nestedObj: {
+          nestedBool: false,
+          nestedArr: [4, 5, 6]
+        }
+      }
+
+      const result = processDisplayFieldValues(input)
+      expect(result).toEqual({
+        bool: 'true',
+        arr: '1, 2, 3',
+        num: '42',
+        str: 'Hello, world!',
+        nestedObj: {
+          nestedBool: 'false',
+          nestedArr: '4, 5, 6'
+        }
+      })
+    })
+
+    it('returns Unsupported Type for other types', () => {
+      const input = Symbol('test')
+      const expected = 'Unsupported Type'
+      const actual = processDisplayFieldValues(input)
+      expect(actual).toEqual(expected)
     })
   })
 })
