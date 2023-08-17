@@ -1,6 +1,5 @@
 import { store } from '../redux/store'
 import { setLocalGridData } from '../redux/slices/mainSlice'
-// import { addDataToLayer } from '../utils/mapHelper'
 
 export async function LoadLocalGridDataService(fileName) {
   await fetch(`/data/${fileName}.json`, {

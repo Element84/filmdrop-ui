@@ -50,7 +50,7 @@ export async function AggregateSearchService(searchParams, gridType) {
       }
 
       store.dispatch(setSearchLoading(false))
-      addDataToLayer(gridFromJson, 'searchResultsLayer', options)
+      addDataToLayer(gridFromJson, 'searchResultsLayer', options, true)
     })
     .catch((error) => {
       store.dispatch(setSearchLoading(false))

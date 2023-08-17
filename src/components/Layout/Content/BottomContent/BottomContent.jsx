@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import './BottomContent.css'
 import { DEFAULT_MOSAIC_MIN_ZOOM, DEFAULT_APP_NAME } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
@@ -8,16 +8,22 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowPublishModal,
   setShowZoomNotice,
-  setisDrawingEnabled
+  setisDrawingEnabled,
+  setmappedScenes
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
-  disableMapPolyDrawing
+  disableMapPolyDrawing,
+  clearLayer,
+  clearMapSelection,
+  selectMappedScenes
 } from '../../../../utils/mapHelper'
 import Box from '@mui/material/Box'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
+import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
 
 const BottomContent = () => {
+  const [allScenesLoading, setallScenesLoading] = useState(false)
   const _map = useSelector((state) => state.mainSlice.map)
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
@@ -38,8 +44,11 @@ const BottomContent = () => {
     (state) => state.mainSlice.searchGeojsonBoundary
   )
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
+  const _mappedScenes = useSelector((state) => state.mainSlice.mappedScenes)
 
   const dispatch = useDispatch()
+
+  const abortControllerRef = useRef(null)
 
   const VIEWER_BTN_TEXT = `Launch Your Own ${DEFAULT_APP_NAME}`
 
@@ -74,6 +83,47 @@ const BottomContent = () => {
     disableMapPolyDrawing()
   }
 
+  function onLoadAllScenesClicked() {
+    dispatch(setmappedScenes([]))
+    clearMapSelection()
+    clearLayer('searchResultsLayer')
+    setallScenesLoading(true)
+
+    // const apiUrl =
+    //   'https://earth-search.aws.element84.com/v1/search?datetime=2020-08-01T00%3A00%3A00Z%2F2023-08-15T23%3A59%3A59.999Z&limit=200&collections=sentinel-2-l2a&bbox=-80.68634033203126,37.05956083025126,-75.41290283203126,37.88569271818349&query=%7B%22eo%3Acloud_cover%22%3A%7B%22gte%22%3A0%2C%22lte%22%3A30%7D%7D'
+
+    const apiUrl =
+      'https://earth-search.aws.element84.com/v1/search?datetime=2020-08-01T00%3A00%3A00Z%2F2023-08-15T23%3A59%3A59.999Z&limit=200&collections=sentinel-2-l2a&bbox=-82.83416748046875,35.0209997011147,-77.56072998046876,35.80444911191491&query=%7B%22eo%3Acloud_cover%22%3A%7B%22gte%22%3A0%2C%22lte%22%3A95%7D%7D'
+
+    abortControllerRef.current = new AbortController()
+    const featuresPromise = fetchAllFeatures(
+      apiUrl,
+      abortControllerRef.current.signal
+    )
+
+    featuresPromise
+      .then(() => {
+        setallScenesLoading(false)
+        // change cancel button text back to 'load all scenes' but make it disabled
+      })
+      .catch((error) => {
+        if (abortControllerRef.current.signal.aborted) {
+          setallScenesLoading(false)
+          console.log('Fetching was cancelled.') // TODO: remove this line
+        } else {
+          console.error('An error occurred:', error)
+        }
+      })
+  }
+
+  function onCancelLoadAllScenesClicked() {
+    abortControllerRef.current.abort()
+  }
+
+  function onSelectAllScenesClicked() {
+    selectMappedScenes()
+  }
+
   return (
     <div className="BottomContent">
       <LeafMap></LeafMap>
@@ -106,18 +156,46 @@ const BottomContent = () => {
       _searchResults?.searchType !== 'AggregatedResults' &&
       !_isDrawingEnabled ? (
         <div className="resultCount" data-testid="testShowingScenesMessage">
-          Showing {_searchResults.numberReturned} of{' '}
-          {_searchResults.numberMatched} scenes
+          <div
+            className={
+              _appConfig.CART_ENABLED
+                ? 'resultCountCartText'
+                : 'resultCountText'
+            }
+          >
+            Showing {_mappedScenes.length} of {_searchResults.numberMatched}{' '}
+            scenes
+          </div>
+          {_appConfig.CART_ENABLED ? (
+            <div className="resultCountButtons">
+              {_searchResults.numberReturned < _searchResults.numberMatched ? (
+                <div>
+                  {allScenesLoading ? (
+                    <button onClick={onCancelLoadAllScenesClicked}>
+                      Cancel
+                    </button>
+                  ) : (
+                    <button onClick={onLoadAllScenesClicked}>
+                      Load all scenes
+                    </button>
+                  )}
+                </div>
+              ) : null}
+              <button onClick={onSelectAllScenesClicked}>Select scenes</button>
+            </div>
+          ) : null}
         </div>
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' &&
       !_isDrawingEnabled ? (
         <div className="resultCount" data-testid="testShowingAggregatedMessage">
-          <strong>Showing Aggregated Results</strong>
-          {_searchResults.features.length} {resultType},{' '}
-          {_searchResults.numberMatched} total scenes
-          {_searchResults.properties.overflow > 0 &&
-            `, ${_searchResults.properties.overflow} scenes not represented`}
+          <div className="resultCountText">
+            <strong>Showing Aggregated Results</strong>
+            {_searchResults.features.length} {resultType},{' '}
+            {_searchResults.numberMatched} total scenes
+            {_searchResults.properties.overflow > 0 &&
+              `, ${_searchResults.properties.overflow} scenes not represented`}
+          </div>
         </div>
       ) : null}
       {_showPopupModal && _clickResults.length > 0 ? (
