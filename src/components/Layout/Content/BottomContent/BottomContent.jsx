@@ -9,7 +9,8 @@ import {
   setShowPublishModal,
   setShowZoomNotice,
   setisDrawingEnabled,
-  setmappedScenes
+  setmappedScenes,
+  setSearchLoading
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
@@ -21,6 +22,7 @@ import {
 import Box from '@mui/material/Box'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
 import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
+import { CircularProgress } from '@mui/material'
 
 const BottomContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
@@ -45,6 +47,12 @@ const BottomContent = () => {
   )
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   const _mappedScenes = useSelector((state) => state.mainSlice.mappedScenes)
+  const _isAutoSearchSet = useSelector(
+    (state) => state.mainSlice.isAutoSearchSet
+  )
+  const _imageOverlayLoading = useSelector(
+    (state) => state.mainSlice.imageOverlayLoading
+  )
 
   const dispatch = useDispatch()
 
@@ -87,30 +95,31 @@ const BottomContent = () => {
     dispatch(setmappedScenes([]))
     clearMapSelection()
     clearLayer('searchResultsLayer')
+    clearLayer('clickedSceneImageLayer')
     setallScenesLoading(true)
+    dispatch(setSearchLoading(true))
 
-    // const apiUrl =
-    //   'https://earth-search.aws.element84.com/v1/search?datetime=2020-08-01T00%3A00%3A00Z%2F2023-08-15T23%3A59%3A59.999Z&limit=200&collections=sentinel-2-l2a&bbox=-80.68634033203126,37.05956083025126,-75.41290283203126,37.88569271818349&query=%7B%22eo%3Acloud_cover%22%3A%7B%22gte%22%3A0%2C%22lte%22%3A30%7D%7D'
-
-    const apiUrl =
-      'https://earth-search.aws.element84.com/v1/search?datetime=2020-08-01T00%3A00%3A00Z%2F2023-08-15T23%3A59%3A59.999Z&limit=200&collections=sentinel-2-l2a&bbox=-82.83416748046875,35.0209997011147,-77.56072998046876,35.80444911191491&query=%7B%22eo%3Acloud_cover%22%3A%7B%22gte%22%3A0%2C%22lte%22%3A95%7D%7D'
+    const searchURL = _searchResults.links[0].href.split('&next=')[0]
 
     abortControllerRef.current = new AbortController()
     const featuresPromise = fetchAllFeatures(
-      apiUrl,
+      searchURL,
       abortControllerRef.current.signal
     )
 
     featuresPromise
       .then(() => {
         setallScenesLoading(false)
-        // change cancel button text back to 'load all scenes' but make it disabled
+        dispatch(setSearchLoading(false))
+        clearLayer('clickedSceneImageLayer')
       })
       .catch((error) => {
         if (abortControllerRef.current.signal.aborted) {
           setallScenesLoading(false)
-          console.log('Fetching was cancelled.') // TODO: remove this line
+          dispatch(setSearchLoading(false))
         } else {
+          setallScenesLoading(false)
+          dispatch(setSearchLoading(false))
           console.error('An error occurred:', error)
         }
       })
@@ -166,22 +175,62 @@ const BottomContent = () => {
             Showing {_mappedScenes.length} of {_searchResults.numberMatched}{' '}
             scenes
           </div>
-          {_appConfig.CART_ENABLED ? (
+          {!_isAutoSearchSet ? (
             <div className="resultCountButtons">
               {_searchResults.numberReturned < _searchResults.numberMatched ? (
                 <div>
                   {allScenesLoading ? (
-                    <button onClick={onCancelLoadAllScenesClicked}>
-                      Cancel
+                    <button
+                      onClick={onCancelLoadAllScenesClicked}
+                      className="countButton"
+                    >
+                      <span>
+                        <span className="countButtonCancelText">Cancel</span>
+                        <CircularProgress
+                          size={14}
+                          color="inherit"
+                        ></CircularProgress>
+                      </span>
                     </button>
                   ) : (
-                    <button onClick={onLoadAllScenesClicked}>
-                      Load all scenes
+                    <button
+                      onClick={
+                        _mappedScenes.length === _searchResults.numberMatched ||
+                        _mappedScenes.length >= 1000
+                          ? null
+                          : onLoadAllScenesClicked
+                      }
+                      className={
+                        _mappedScenes.length === _searchResults.numberMatched ||
+                        _mappedScenes.length >= 1000
+                          ? 'countButton disabledCountButton'
+                          : 'countButton'
+                      }
+                    >
+                      {_mappedScenes.length === _searchResults.numberMatched ||
+                      _mappedScenes.length >= 1000
+                        ? 'Max scenes loaded'
+                        : 'Load all scenes'}
                     </button>
                   )}
                 </div>
               ) : null}
-              <button onClick={onSelectAllScenesClicked}>Select scenes</button>
+              <button
+                onClick={
+                  allScenesLoading ||
+                  _mappedScenes.length === _clickResults.length
+                    ? null
+                    : onSelectAllScenesClicked
+                }
+                className={
+                  allScenesLoading ||
+                  _mappedScenes.length === _clickResults.length
+                    ? 'countButton disabledCountButton'
+                    : 'countButton'
+                }
+              >
+                Select scenes
+              </button>
             </div>
           ) : null}
         </div>
@@ -202,6 +251,11 @@ const BottomContent = () => {
         <PopupResults results={_clickResults}></PopupResults>
       ) : null}
       {_searchLoading ? (
+        <div className="loadingSpinnerContainer">
+          <LoadingAnimation></LoadingAnimation>
+        </div>
+      ) : null}
+      {_imageOverlayLoading ? (
         <div className="loadingSpinnerContainer">
           <LoadingAnimation></LoadingAnimation>
         </div>

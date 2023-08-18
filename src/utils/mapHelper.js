@@ -6,9 +6,10 @@ import {
   setClickResults,
   setShowPopupModal,
   setShowZoomNotice,
-  setSearchLoading,
   setisDrawingEnabled,
-  setsearchGeojsonBoundary
+  setsearchGeojsonBoundary,
+  setimageOverlayLoading,
+  setSearchLoading
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 import debounce from './debounce'
@@ -333,7 +334,7 @@ export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
 
 function addImageOverlay() {
   if (!store.getState().mainSlice.currentPopupResult) {
-    store.dispatch(setSearchLoading(false))
+    store.dispatch(setimageOverlayLoading(false))
     return
   }
   const sceneTilerURL =
@@ -343,7 +344,7 @@ function addImageOverlay() {
     store.getState().mainSlice.selectedCollectionData
   // TODO: consider changing how spinner loads, or not at all?
   // maybe load spinner in footprint extent? or different loading spinner?
-  store.dispatch(setSearchLoading(true))
+  store.dispatch(setimageOverlayLoading(true))
 
   clearLayer('clickedSceneImageLayer')
 
@@ -370,10 +371,10 @@ function addImageOverlay() {
             }
           )
             .on('load', function () {
-              store.dispatch(setSearchLoading(false))
+              store.dispatch(setimageOverlayLoading(false))
             })
             .on('tileerror', function () {
-              store.dispatch(setSearchLoading(false))
+              store.dispatch(setimageOverlayLoading(false))
               console.log('Tile Error')
             })
 
@@ -384,7 +385,7 @@ function addImageOverlay() {
           })
         }
       } else {
-        store.dispatch(setSearchLoading(false))
+        store.dispatch(setimageOverlayLoading(false))
       }
     })
 }

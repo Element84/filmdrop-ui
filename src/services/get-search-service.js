@@ -27,7 +27,6 @@ export async function SearchService(searchParams, typeOfSearch) {
       if (typeOfSearch === 'scene') {
         store.dispatch(setSearchResults(json))
         store.dispatch(setmappedScenes(json.features))
-        console.log(json.links[0].href)
         const options = {
           style: footprintLayerStyle
         }

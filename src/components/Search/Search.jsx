@@ -45,6 +45,7 @@ const Search = () => {
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
+  const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
   const mosaicTilerURL = _appConfig.MOSAIC_TILER_URL || ''
 
   useEffect(() => {
@@ -261,6 +262,12 @@ const Search = () => {
         ) : null}
       </div>
       {_isDrawingEnabled ? (
+        <div
+          className="disableSearchOverlay"
+          data-testid="test_disableSearchOverlay"
+        ></div>
+      ) : null}
+      {_searchLoading ? (
         <div
           className="disableSearchOverlay"
           data-testid="test_disableSearchOverlay"

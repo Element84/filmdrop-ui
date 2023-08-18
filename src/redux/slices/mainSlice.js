@@ -35,7 +35,8 @@ const initialState = {
   appConfig: null,
   cartItems: [],
   showCartModal: false,
-  mappedScenes: []
+  mappedScenes: [],
+  imageOverlayLoading: false
 }
 
 // next, for every key in the initialState
@@ -145,6 +146,9 @@ export const mainSlice = createSlice({
     },
     setmappedScenes: (state, action) => {
       state.mappedScenes = action.payload
+    },
+    setimageOverlayLoading: (state, action) => {
+      state.imageOverlayLoading = action.payload
     }
   }
 })
@@ -185,5 +189,6 @@ export const { setappConfig } = mainSlice.actions
 export const { setcartItems } = mainSlice.actions
 export const { setshowCartModal } = mainSlice.actions
 export const { setmappedScenes } = mainSlice.actions
+export const { setimageOverlayLoading } = mainSlice.actions
 
 export default mainSlice.reducer
