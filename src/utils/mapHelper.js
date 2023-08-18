@@ -142,7 +142,6 @@ export function selectMappedScenes() {
   if (map && Object.keys(map).length > 0) {
     const _mappedScenes = store.getState().mainSlice.mappedScenes
     store.dispatch(setClickResults(_mappedScenes))
-    // highlight layer
     for (const f in _mappedScenes) {
       const feature = _mappedScenes[f]
       const clickedFootprintsFound = L.geoJSON(feature, {
