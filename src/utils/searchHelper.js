@@ -135,7 +135,11 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
   if (gridCodeToSearchIn) {
-    if (_selectedCollection.id.includes('landsat')) {
+    if (
+      _selectedCollection.aggregations.some(
+        (item) => item.name === 'grid_code_landsat_frequency'
+      )
+    ) {
       // extract the path and row from gridcode value, e.g., WRS2-123123
       query['landsat:wrs_path'] = { eq: gridCodeToSearchIn.substring(5, 8) }
       query['landsat:wrs_row'] = { eq: gridCodeToSearchIn.slice(-3) }
@@ -199,9 +203,11 @@ function buildSearchAggregateParams(gridType) {
     }
     aggregations = `grid_geohex_frequency,total_count&grid_geohex_frequency_precision=${precision}`
   } else {
-    const gridAggName = _selectedCollection.id.includes('landsat')
-      ? 'grid_code_landsat_frequency'
-      : 'grid_code_frequency'
+    const gridAggName = _selectedCollection.aggregations.some(
+      (item) => item.name === 'grid_code_frequency'
+    )
+      ? 'grid_code_frequency'
+      : 'grid_code_landsat_frequency'
     aggregations = `${gridAggName},total_count`
   }
 
@@ -344,10 +350,11 @@ function fixAntiMeridianPoints(hexBoundary) {
 export function mapGridCodeFromJson(json) {
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
   const _gridCellData = store.getState().mainSlice.localGridData
-
-  const gridAggName = _selectedCollection.id.includes('landsat')
-    ? 'grid_code_landsat_frequency'
-    : 'grid_code_frequency'
+  const gridAggName = _selectedCollection.aggregations.some(
+    (item) => item.name === 'grid_code_frequency'
+  )
+    ? 'grid_code_frequency'
+    : 'grid_code_landsat_frequency'
   const buckets = json.aggregations?.find(
     (el) => el.name === gridAggName
   ).buckets

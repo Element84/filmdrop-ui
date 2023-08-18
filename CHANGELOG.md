@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 3.3.0 - 2023-08-17
+
 ### Added
 
 - Cart button to `Add all to cart` & `Add/Remove scene from cart` added to search bar if `CART_ENABLED` set to true in `config.json` (WIP feature)
@@ -17,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Map legend updated to always show 'Scenes in Cart' symbology when `CART_ENABLED` set to true in `config.json` and Items exist in cart. (WIP feature)
 - PopupResults component updated to allow users to minimize/maximize popup results component content.
 - Metadata in `PopupResult` changed to show additional properties about the scene if `POPUP_DISPLAY_FIELDS` set in the `config.json`.
+- Bug fix to handle grid aggregations that 'landsat' in the title but `grid-code-frequency` in the properties.
 
 ## 3.2.0 - 2023-08-02
 
