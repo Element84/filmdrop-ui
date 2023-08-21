@@ -26,7 +26,6 @@ import { CircularProgress } from '@mui/material'
 
 const BottomContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
-  const _map = useSelector((state) => state.mainSlice.map)
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
@@ -78,7 +77,6 @@ const BottomContent = () => {
     if (_viewMode === 'mosaic') {
       const MOSAIC_MIN_ZOOM =
         _appConfig.MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
-      _map.setZoom(MOSAIC_MIN_ZOOM)
       setMapZoomLevel(MOSAIC_MIN_ZOOM)
       dispatch(setShowZoomNotice(false))
     } else if (_zoomLevelNeeded) {
