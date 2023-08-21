@@ -150,7 +150,7 @@ const BottomContent = () => {
             Analyze
           </button>
         )}
-        {_appConfig.SHOW_PUBLISH_BTN === true && (
+        {_appConfig.SHOW_PUBLISH_BTN && (
           <button className="actionButton" onClick={() => onPublishClick()}>
             Publish
           </button>
@@ -251,17 +251,26 @@ const BottomContent = () => {
         <PopupResults results={_clickResults}></PopupResults>
       ) : null}
       {_searchLoading ? (
-        <div className="loadingSpinnerContainer">
+        <div
+          className="loadingSpinnerContainer"
+          data-testid="testsearchLoadingAnimation"
+        >
           <LoadingAnimation></LoadingAnimation>
         </div>
       ) : null}
       {_imageOverlayLoading ? (
-        <div className="loadingSpinnerContainer">
+        <div
+          className="loadingSpinnerContainer"
+          data-testid="test_imageOverlayLoadingAnimation"
+        >
           <LoadingAnimation></LoadingAnimation>
         </div>
       ) : null}
       {_showAppLoading && (
-        <div className="appLoadingContainer">
+        <div
+          className="appLoadingContainer"
+          data-testid="test_applicationLoadingAnimation"
+        >
           <LoadingAnimation></LoadingAnimation>
           <span>Loading {DEFAULT_APP_NAME}</span>
         </div>

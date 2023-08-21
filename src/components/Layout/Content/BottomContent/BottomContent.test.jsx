@@ -10,7 +10,11 @@ import {
   setappConfig,
   setsearchGeojsonBoundary,
   setSearchType,
-  setcartItems
+  setcartItems,
+  setimageOverlayLoading,
+  setShowAppLoading,
+  setSearchLoading,
+  setShowZoomNotice
 } from '../../../../redux/slices/mainSlice'
 import {
   mockSceneSearchResult,
@@ -92,8 +96,117 @@ describe('BottomContent', () => {
       setup()
       expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
     })
+    it('should render loading animation when searchLoading is true', async () => {
+      store.dispatch(setSearchLoading(true))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('testsearchLoadingAnimation')
+      ).toBeInTheDocument()
+    })
+    it('should not render loading animation when searchLoading is false', async () => {
+      store.dispatch(setSearchLoading(false))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('testsearchLoadingAnimation')
+      ).not.toBeInTheDocument()
+    })
+    it('should render loading animation when imageOverlay loading is true', async () => {
+      store.dispatch(setimageOverlayLoading(true))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('test_imageOverlayLoadingAnimation')
+      ).toBeInTheDocument()
+    })
+    it('should not render loading animation when imageOverlay loading is false', async () => {
+      store.dispatch(setimageOverlayLoading(false))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('test_imageOverlayLoadingAnimation')
+      ).not.toBeInTheDocument()
+    })
+    it('should render application loading animation when showAppLoading loading is true', async () => {
+      store.dispatch(setShowAppLoading(true))
+      vi.mock('../../../defaults.js', () => ({
+        DEFAULT_APP_NAME: 'test app'
+      }))
+      setup()
+      expect(
+        screen.queryByTestId('test_applicationLoadingAnimation')
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/loading test app/i)).toBeInTheDocument()
+    })
+    it('should not render application loading animation when showAppLoading loading is false', async () => {
+      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setShowAppLoading(false))
+      vi.mock('../../../defaults.js', () => ({
+        DEFAULT_APP_NAME: 'test app'
+      }))
+      setup()
+      expect(
+        screen.queryByTestId('test_applicationLoadingAnimation')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByText(/loading test app/i)).not.toBeInTheDocument()
+    })
+    it('should render publish Button if SHOW_PUBLISH_BTN set in config', () => {
+      const mockAppConfigSearchEnabled = {
+        ...mockAppConfig,
+        SHOW_PUBLISH_BTN: true
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /publish/i
+        })
+      ).toBeInTheDocument()
+    })
+    it('should not render publish Button if SHOW_PUBLISH_BTN not set in config', () => {
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /publish/i
+        })
+      ).not.toBeInTheDocument()
+    })
+    it('should render analyze Button if ANALYZE_BTN_URL set in config', () => {
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /analyze/i
+        })
+      ).toBeInTheDocument()
+    })
+    it('should not render analyze Button if ANALYZE_BTN_URL not set in config', () => {
+      const mockAppConfigSearchEnabled = {
+        ...mockAppConfig,
+        ANALYZE_BTN_URL: ''
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /analyze/i
+        })
+      ).not.toBeInTheDocument()
+    })
+    it('should render zoom notice if showZoomNotice set to true in redux', () => {
+      store.dispatch(setShowZoomNotice(true))
+      setup()
+      expect(
+        screen.queryByText(/images are not visible at this zoom level\./i)
+      ).toBeInTheDocument()
+    })
+    it('should not render  zoom notice if showZoomNotice set to false in redux', () => {
+      setup()
+      expect(
+        screen.queryByText(/images are not visible at this zoom level\./i)
+      ).not.toBeInTheDocument()
+    })
   })
-
   describe('when isDrawingEnabled is true', () => {
     beforeEach(() => {
       store.dispatch(setisDrawingEnabled(true))
