@@ -1,6 +1,10 @@
 import React, { useState, useRef } from 'react'
 import './BottomContent.css'
-import { DEFAULT_MOSAIC_MIN_ZOOM, DEFAULT_APP_NAME } from '../../../defaults'
+import {
+  DEFAULT_MOSAIC_MIN_ZOOM,
+  DEFAULT_APP_NAME,
+  DEFAULT_MAX_SCENES_RENDERED
+} from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
@@ -198,19 +202,19 @@ const BottomContent = () => {
                     <button
                       onClick={
                         _mappedScenes.length === _searchResults.numberMatched ||
-                        _mappedScenes.length >= 1000
+                        _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
                           ? null
                           : onLoadAllScenesClicked
                       }
                       className={
                         _mappedScenes.length === _searchResults.numberMatched ||
-                        _mappedScenes.length >= 1000
+                        _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
                           ? 'countButton disabledCountButton'
                           : 'countButton'
                       }
                     >
                       {_mappedScenes.length === _searchResults.numberMatched ||
-                      _mappedScenes.length >= 1000
+                      _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
                         ? 'Max scenes loaded'
                         : 'Load all scenes'}
                     </button>

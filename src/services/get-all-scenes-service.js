@@ -5,6 +5,7 @@ import {
   footprintLayerStyle,
   clearLayer
 } from '../utils/mapHelper'
+import { DEFAULT_MAX_SCENES_RENDERED } from '../components/defaults'
 
 async function fetchFeatures(url, abortSignal) {
   const response = await fetch(url, { signal: abortSignal })
@@ -25,7 +26,10 @@ async function fetchFeatures(url, abortSignal) {
   const nextPageLink = data.links.find((link) => link.rel === 'next')
   if (nextPageLink) {
     if (!abortSignal.aborted) {
-      if (store.getState().mainSlice.mappedScenes.length >= 1000) {
+      if (
+        store.getState().mainSlice.mappedScenes.length >=
+        DEFAULT_MAX_SCENES_RENDERED
+      ) {
         // change this number to increase max number of scenes returned, set to 1000 currently
         return
       }
