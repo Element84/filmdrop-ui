@@ -6,9 +6,10 @@ import {
   setClickResults,
   setShowPopupModal,
   setShowZoomNotice,
-  setSearchLoading,
   setisDrawingEnabled,
-  setsearchGeojsonBoundary
+  setsearchGeojsonBoundary,
+  setimageOverlayLoading,
+  setSearchLoading
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
 import debounce from './debounce'
@@ -85,8 +86,8 @@ export function mapClickHandler(e) {
   const map = store.getState().mainSlice.map
   const clickBounds = L.latLngBounds(e.latlng, e.latlng)
   if (map && Object.keys(map).length > 0) {
-    const _searchResults = store.getState().mainSlice.searchResults
     const _searchType = store.getState().mainSlice.searchType
+    const _mappedScenes = store.getState().mainSlice.mappedScenes
 
     clearMapSelection()
 
@@ -100,9 +101,9 @@ export function mapClickHandler(e) {
 
     // pull all items from search results that intersect with the click bounds
     let intersectingFeatures = []
-    if (_searchResults !== null) {
-      for (const f in _searchResults.features) {
-        const feature = _searchResults.features[f]
+    if (_mappedScenes !== null) {
+      for (const f in _mappedScenes) {
+        const feature = _mappedScenes[f]
         const featureBounds = L.geoJSON(feature).getBounds()
         if (featureBounds && featureBounds.intersects(clickBounds)) {
           // highlight layer
@@ -136,13 +137,35 @@ export function mapClickHandler(e) {
   }
 }
 
+export function selectMappedScenes() {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    const _mappedScenes = store.getState().mainSlice.mappedScenes
+    store.dispatch(setClickResults(_mappedScenes))
+    for (const f in _mappedScenes) {
+      const feature = _mappedScenes[f]
+      const clickedFootprintsFound = L.geoJSON(feature, {
+        style: clickedFootprintLayerStyle
+      })
+      map.eachLayer(function (layer) {
+        if (layer.layer_name === 'clickedSceneHighlightLayer') {
+          clickedFootprintsFound.addTo(layer)
+        }
+      })
+    }
+    store.dispatch(setShowPopupModal(true))
+  }
+}
+
 // searchResultsLayer | clickedSceneHighlightLayer
-export function addDataToLayer(geojson, layerName, options) {
+export function addDataToLayer(geojson, layerName, options, clearExisting) {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
     map.eachLayer(function (layer) {
       if (layer.layer_name === layerName) {
-        clearLayer(layerName) // clear layer before adding new
+        if (clearExisting) {
+          clearLayer(layerName) // clear layer before adding new
+        }
         if (options !== 'undefined') {
           L.geoJSON(geojson, options).addTo(layer)
         } else {
@@ -310,7 +333,7 @@ export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
 
 function addImageOverlay() {
   if (!store.getState().mainSlice.currentPopupResult) {
-    store.dispatch(setSearchLoading(false))
+    store.dispatch(setimageOverlayLoading(false))
     return
   }
   const sceneTilerURL =
@@ -320,7 +343,7 @@ function addImageOverlay() {
     store.getState().mainSlice.selectedCollectionData
   // TODO: consider changing how spinner loads, or not at all?
   // maybe load spinner in footprint extent? or different loading spinner?
-  store.dispatch(setSearchLoading(true))
+  store.dispatch(setimageOverlayLoading(true))
 
   clearLayer('clickedSceneImageLayer')
 
@@ -347,10 +370,10 @@ function addImageOverlay() {
             }
           )
             .on('load', function () {
-              store.dispatch(setSearchLoading(false))
+              store.dispatch(setimageOverlayLoading(false))
             })
             .on('tileerror', function () {
-              store.dispatch(setSearchLoading(false))
+              store.dispatch(setimageOverlayLoading(false))
               console.log('Tile Error')
             })
 
@@ -361,7 +384,7 @@ function addImageOverlay() {
           })
         }
       } else {
-        store.dispatch(setSearchLoading(false))
+        store.dispatch(setimageOverlayLoading(false))
       }
     })
 }

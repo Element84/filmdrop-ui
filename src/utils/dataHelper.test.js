@@ -114,7 +114,8 @@ describe('dataHelper', () => {
           features: mockCartItems
         }),
         'cartFootprintsLayer',
-        expect.any(Object)
+        expect.any(Object),
+        true
       )
     })
   })

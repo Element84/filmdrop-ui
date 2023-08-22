@@ -67,7 +67,7 @@ export function setScenesForCartLayer() {
     style: cartFootprintLayerStyle,
     interactive: false
   }
-  addDataToLayer(cartGeojson, 'cartFootprintsLayer', options)
+  addDataToLayer(cartGeojson, 'cartFootprintsLayer', options, true)
 }
 
 export function processDisplayFieldValues(value) {

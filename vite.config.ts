@@ -24,7 +24,7 @@ export default defineConfig({
     setupFiles: ['./src/setupTests.js'],
     threads: false,
     coverage: {
-      provider: 'c8',
+      provider: 'v8',
       reporter: ['text'],
       exclude: [...configDefaults.coverage.exclude, 'src/redux/*'] // ignore the redux boilerplate for coverage report
     }

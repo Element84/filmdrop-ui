@@ -6,7 +6,8 @@ import { store } from '../../redux/store'
 import {
   setShowPopupModal,
   setappConfig,
-  setcartItems
+  setcartItems,
+  setimageOverlayLoading
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig, mockClickResults } from '../../testing/shared-mocks'
 import { describe } from 'vitest'
@@ -151,6 +152,14 @@ describe('PopupResult', () => {
         expect(store.getState().mainSlice.showPopupModal).toBeTruthy()
         fireEvent.click(screen.getByTestId('CloseIcon'))
         expect(store.getState().mainSlice.showPopupModal).toBeFalsy()
+      })
+      it('should set imageOverlayLoading in redux to be false', () => {
+        store.dispatch(setappConfig(mockAppConfig))
+        store.dispatch(setimageOverlayLoading(true))
+        setup()
+        expect(store.getState().mainSlice.imageOverlayLoading).toBeTruthy()
+        fireEvent.click(screen.getByTestId('CloseIcon'))
+        expect(store.getState().mainSlice.imageOverlayLoading).toBeFalsy()
       })
     })
     describe('on Add all to cart button clicked', () => {

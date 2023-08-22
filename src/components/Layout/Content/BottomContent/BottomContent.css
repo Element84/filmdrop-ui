@@ -92,7 +92,7 @@
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   background-color: rgba(34, 34, 34, 0.8);
   padding: 10px 20px;
   border-radius: 5px;
@@ -101,6 +101,60 @@
   font-size: 0.75em;
   letter-spacing: 0.025em;
   line-height: 1.8;
+}
+
+.resultCountText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.resultCountCartText {
+  display: flex;
+  flex-direction: column;
+}
+
+.resultCountButtons {
+  margin-left: 10px;
+  display: flex;
+  flex-direction: row;
+}
+
+.countButton {
+  background-color: transparent;
+  color: #a9b0c1;
+  border: 1px solid #a9b0c1;
+  border-radius: 5px;
+  height: 32px;
+  font-size: 16px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: color 0.33s ease-in-out;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  margin-left: 10px;
+}
+.countButton:hover {
+  background-color: #252f36;
+  color: #fff;
+}
+
+.disabledCountButton {
+  color: #7f828a;
+  border: 1px solid #7f828a;
+  cursor: default;
+}
+.disabledCountButton:hover {
+  color: #7f828a;
+  background-color: transparent;
+}
+
+.countButtonCancelText {
+  margin-right: 10px;
 }
 
 .drawGeomMessage {
@@ -195,7 +249,6 @@
   }
 
   .resultCount {
-    width: 70%;
     left: 52px;
     transform: none;
   }

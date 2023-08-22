@@ -9,7 +9,8 @@ import {
   setcartItems,
   setCloudCover,
   setsearchGeojsonBoundary,
-  setshowAdvancedSearchOptions
+  setshowAdvancedSearchOptions,
+  setSearchLoading
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
@@ -277,6 +278,16 @@ describe('Search', () => {
           expect(screen.getByTestId('testCartCount').innerHTML).toBe('1')
         })
       })
+    })
+  })
+  describe('when search loading', () => {
+    it('should render disabled search bar overlay div', async () => {
+      store.dispatch(setSearchLoading(true))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('test_disableSearchOverlay')
+      ).toBeInTheDocument()
     })
   })
 })

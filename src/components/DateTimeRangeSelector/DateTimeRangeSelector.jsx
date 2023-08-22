@@ -120,7 +120,7 @@ const DateTimeRangeSelector = () => {
       <DateTimeRangePicker
         className="dateTimePicker"
         format={'yy-MM-dd'}
-        calendarType="US"
+        calendarType="gregory"
         showLeadingZeros={false}
         disableClock={true}
         required={true}
