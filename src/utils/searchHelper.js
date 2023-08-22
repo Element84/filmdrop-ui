@@ -25,6 +25,7 @@ import {
 import * as h3 from 'h3-js'
 import debounce from './debounce'
 import { AddMosaicService } from '../services/post-mosaic-service'
+import { showApplicationAlert } from './alertHelper'
 
 export function newSearch() {
   clearAllLayers()
@@ -34,6 +35,11 @@ export function newSearch() {
   store.dispatch(setSearchLoading(false))
 
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
+
+  if (!_selectedCollection) {
+    showApplicationAlert('error', 'Search error: no collection set', null)
+    return
+  }
 
   const midZoomLevel =
     store.getState().mainSlice.appConfig.SEARCH_MIN_ZOOM_LEVELS[
