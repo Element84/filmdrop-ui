@@ -6,15 +6,25 @@ import {
   gridCodeLayerStyle
 } from '../utils/mapHelper'
 import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
+import { showApplicationAlert } from '../utils/alertHelper'
 
 export async function AggregateSearchService(searchParams, gridType) {
+  const apiRequestConfig = store.getState().mainSlice.appConfig.UI_SOURCE_ID
+    ? {
+        method: 'GET',
+        headers: {
+          'X-FILMDROP-UI-SOURCE_ID':
+            store.getState().mainSlice.appConfig.UI_SOURCE_ID
+        }
+      }
+    : {
+        method: 'GET'
+      }
   await fetch(
     `${
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/aggregate?${searchParams}`,
-    {
-      method: 'GET'
-    }
+    apiRequestConfig
   )
     .then((response) => {
       if (response.ok) {
@@ -55,6 +65,7 @@ export async function AggregateSearchService(searchParams, gridType) {
     .catch((error) => {
       store.dispatch(setSearchLoading(false))
       const message = 'Error Fetching Aggregate Search Results'
+      showApplicationAlert('error', message, null)
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
     })

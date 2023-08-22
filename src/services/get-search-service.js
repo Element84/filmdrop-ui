@@ -6,15 +6,25 @@ import {
   setShowPopupModal
 } from '../redux/slices/mainSlice'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
+import { showApplicationAlert } from '../utils/alertHelper'
 
 export async function SearchService(searchParams, typeOfSearch) {
+  const apiRequestConfig = store.getState().mainSlice.appConfig.UI_SOURCE_ID
+    ? {
+        method: 'GET',
+        headers: {
+          'X-FILMDROP-UI-SOURCE_ID':
+            store.getState().mainSlice.appConfig.UI_SOURCE_ID
+        }
+      }
+    : {
+        method: 'GET'
+      }
   await fetch(
     `${
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/search?${searchParams}`,
-    {
-      method: 'GET'
-    }
+    apiRequestConfig
   )
     .then((response) => {
       if (response.ok) {
@@ -39,6 +49,7 @@ export async function SearchService(searchParams, typeOfSearch) {
     .catch((error) => {
       store.dispatch(setSearchLoading(false))
       const message = 'Error Fetching Search Results'
+      showApplicationAlert('error', message, null)
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
     })
