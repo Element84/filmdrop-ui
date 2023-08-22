@@ -1,6 +1,7 @@
 import { store } from '../redux/store'
 import { setSearchLoading } from '../redux/slices/mainSlice'
 import { addMosaicLayer } from '../utils/mapHelper'
+import { showApplicationAlert } from '../utils/alertHelper'
 
 export async function AddMosaicService(reqParams) {
   const mosaicTilerURL = store.getState().mainSlice.appConfig.MOSAIC_TILER_URL
@@ -17,6 +18,7 @@ export async function AddMosaicService(reqParams) {
     .catch((error) => {
       store.dispatch(setSearchLoading(false))
       const message = 'Error Fetching Mosaic'
+      showApplicationAlert('error', message, null)
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
     })
