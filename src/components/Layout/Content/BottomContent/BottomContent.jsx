@@ -97,11 +97,15 @@ const BottomContent = () => {
     setallScenesLoading(true)
     dispatch(setSearchLoading(true))
 
-    const searchURL = _searchResults.links[0].href.split('&next=')[0]
+    const nextLinkObj = _searchResults.links.find((link) => link.rel === 'next')
+
+    const urlObj = new URL(nextLinkObj.href)
+    urlObj.searchParams.delete('next')
+    const baseURL = urlObj.toString()
 
     abortControllerRef.current = new AbortController()
     const featuresPromise = fetchAllFeatures(
-      searchURL,
+      baseURL,
       abortControllerRef.current.signal
     )
 
