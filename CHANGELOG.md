@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Add buttons for: `loading all scenes` and `selecting all scenes on map` to show in popup if more than initial load of 200 scenes is matched.
+
+### Changed
+
+- Migrate vitest coverage provider to use v8 instead of c8.
+
 ## 3.3.0 - 2023-08-17
 
 ### Added

@@ -3,7 +3,8 @@ import {
   setClickResults,
   setSearchLoading,
   setSearchResults,
-  setShowPopupModal
+  setShowPopupModal,
+  setmappedScenes
 } from '../redux/slices/mainSlice'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
@@ -25,11 +26,12 @@ export async function SearchService(searchParams, typeOfSearch) {
     .then((json) => {
       if (typeOfSearch === 'scene') {
         store.dispatch(setSearchResults(json))
+        store.dispatch(setmappedScenes(json.features))
         const options = {
           style: footprintLayerStyle
         }
         store.dispatch(setSearchLoading(false))
-        addDataToLayer(json, 'searchResultsLayer', options)
+        addDataToLayer(json, 'searchResultsLayer', options, true)
       } else {
         store.dispatch(setSearchLoading(false))
         store.dispatch(setClickResults(json.features))

@@ -1,6 +1,10 @@
-import React from 'react'
+import React, { useState, useRef } from 'react'
 import './BottomContent.css'
-import { DEFAULT_MOSAIC_MIN_ZOOM, DEFAULT_APP_NAME } from '../../../defaults'
+import {
+  DEFAULT_MOSAIC_MIN_ZOOM,
+  DEFAULT_APP_NAME,
+  DEFAULT_MAX_SCENES_RENDERED
+} from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
@@ -8,17 +12,24 @@ import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowPublishModal,
   setShowZoomNotice,
-  setisDrawingEnabled
+  setisDrawingEnabled,
+  setmappedScenes,
+  setSearchLoading
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
-  disableMapPolyDrawing
+  disableMapPolyDrawing,
+  clearLayer,
+  clearMapSelection,
+  selectMappedScenes
 } from '../../../../utils/mapHelper'
 import Box from '@mui/material/Box'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
+import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
+import { CircularProgress } from '@mui/material'
 
 const BottomContent = () => {
-  const _map = useSelector((state) => state.mainSlice.map)
+  const [allScenesLoading, setallScenesLoading] = useState(false)
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
@@ -38,8 +49,17 @@ const BottomContent = () => {
     (state) => state.mainSlice.searchGeojsonBoundary
   )
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
+  const _mappedScenes = useSelector((state) => state.mainSlice.mappedScenes)
+  const _isAutoSearchSet = useSelector(
+    (state) => state.mainSlice.isAutoSearchSet
+  )
+  const _imageOverlayLoading = useSelector(
+    (state) => state.mainSlice.imageOverlayLoading
+  )
 
   const dispatch = useDispatch()
+
+  const abortControllerRef = useRef(null)
 
   const VIEWER_BTN_TEXT = `Launch Your Own ${DEFAULT_APP_NAME}`
 
@@ -61,7 +81,6 @@ const BottomContent = () => {
     if (_viewMode === 'mosaic') {
       const MOSAIC_MIN_ZOOM =
         _appConfig.MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
-      _map.setZoom(MOSAIC_MIN_ZOOM)
       setMapZoomLevel(MOSAIC_MIN_ZOOM)
       dispatch(setShowZoomNotice(false))
     } else if (_zoomLevelNeeded) {
@@ -72,6 +91,52 @@ const BottomContent = () => {
   function onCancelDrawGeomClicked() {
     dispatch(setisDrawingEnabled(false))
     disableMapPolyDrawing()
+  }
+
+  function onLoadAllScenesClicked() {
+    dispatch(setmappedScenes([]))
+    clearMapSelection()
+    clearLayer('searchResultsLayer')
+    clearLayer('clickedSceneImageLayer')
+    setallScenesLoading(true)
+    dispatch(setSearchLoading(true))
+
+    const nextLinkObj = _searchResults.links.find((link) => link.rel === 'next')
+
+    const urlObj = new URL(nextLinkObj.href)
+    urlObj.searchParams.delete('next')
+    const baseURL = urlObj.toString()
+
+    abortControllerRef.current = new AbortController()
+    const featuresPromise = fetchAllFeatures(
+      baseURL,
+      abortControllerRef.current.signal
+    )
+
+    featuresPromise
+      .then(() => {
+        setallScenesLoading(false)
+        dispatch(setSearchLoading(false))
+        clearLayer('clickedSceneImageLayer')
+      })
+      .catch((error) => {
+        if (abortControllerRef.current.signal.aborted) {
+          setallScenesLoading(false)
+          dispatch(setSearchLoading(false))
+        } else {
+          setallScenesLoading(false)
+          dispatch(setSearchLoading(false))
+          console.error('An error occurred:', error)
+        }
+      })
+  }
+
+  function onCancelLoadAllScenesClicked() {
+    abortControllerRef.current.abort()
+  }
+
+  function onSelectAllScenesClicked() {
+    selectMappedScenes()
   }
 
   return (
@@ -91,7 +156,7 @@ const BottomContent = () => {
             Analyze
           </button>
         )}
-        {_appConfig.SHOW_PUBLISH_BTN === true && (
+        {_appConfig.SHOW_PUBLISH_BTN && (
           <button className="actionButton" onClick={() => onPublishClick()}>
             Publish
           </button>
@@ -106,30 +171,112 @@ const BottomContent = () => {
       _searchResults?.searchType !== 'AggregatedResults' &&
       !_isDrawingEnabled ? (
         <div className="resultCount" data-testid="testShowingScenesMessage">
-          Showing {_searchResults.numberReturned} of{' '}
-          {_searchResults.numberMatched} scenes
+          <div
+            className={
+              _appConfig.CART_ENABLED
+                ? 'resultCountCartText'
+                : 'resultCountText'
+            }
+          >
+            Showing {_mappedScenes.length} of {_searchResults.numberMatched}{' '}
+            scenes
+          </div>
+          {!_isAutoSearchSet ? (
+            <div className="resultCountButtons">
+              {_searchResults.numberReturned < _searchResults.numberMatched ? (
+                <div>
+                  {allScenesLoading ? (
+                    <button
+                      onClick={onCancelLoadAllScenesClicked}
+                      className="countButton"
+                    >
+                      <span>
+                        <span className="countButtonCancelText">Cancel</span>
+                        <CircularProgress
+                          size={14}
+                          color="inherit"
+                        ></CircularProgress>
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={
+                        _mappedScenes.length === _searchResults.numberMatched ||
+                        _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
+                          ? null
+                          : onLoadAllScenesClicked
+                      }
+                      className={
+                        _mappedScenes.length === _searchResults.numberMatched ||
+                        _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
+                          ? 'countButton disabledCountButton'
+                          : 'countButton'
+                      }
+                    >
+                      {_mappedScenes.length === _searchResults.numberMatched ||
+                      _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
+                        ? 'Max scenes loaded'
+                        : 'Load all scenes'}
+                    </button>
+                  )}
+                </div>
+              ) : null}
+              <button
+                onClick={
+                  allScenesLoading ||
+                  _mappedScenes.length === _clickResults.length
+                    ? null
+                    : onSelectAllScenesClicked
+                }
+                className={
+                  allScenesLoading ||
+                  _mappedScenes.length === _clickResults.length
+                    ? 'countButton disabledCountButton'
+                    : 'countButton'
+                }
+              >
+                Select scenes
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' &&
       !_isDrawingEnabled ? (
         <div className="resultCount" data-testid="testShowingAggregatedMessage">
-          <strong>Showing Aggregated Results</strong>
-          {_searchResults.features.length} {resultType},{' '}
-          {_searchResults.numberMatched} total scenes
-          {_searchResults.properties.overflow > 0 &&
-            `, ${_searchResults.properties.overflow} scenes not represented`}
+          <div className="resultCountText">
+            <strong>Showing Aggregated Results</strong>
+            {_searchResults.features.length} {resultType},{' '}
+            {_searchResults.numberMatched} total scenes
+            {_searchResults.properties.overflow > 0 &&
+              `, ${_searchResults.properties.overflow} scenes not represented`}
+          </div>
         </div>
       ) : null}
       {_showPopupModal && _clickResults.length > 0 ? (
         <PopupResults results={_clickResults}></PopupResults>
       ) : null}
       {_searchLoading ? (
-        <div className="loadingSpinnerContainer">
+        <div
+          className="loadingSpinnerContainer"
+          data-testid="testsearchLoadingAnimation"
+        >
+          <LoadingAnimation></LoadingAnimation>
+        </div>
+      ) : null}
+      {_imageOverlayLoading ? (
+        <div
+          className="loadingSpinnerContainer"
+          data-testid="test_imageOverlayLoadingAnimation"
+        >
           <LoadingAnimation></LoadingAnimation>
         </div>
       ) : null}
       {_showAppLoading && (
-        <div className="appLoadingContainer">
+        <div
+          className="appLoadingContainer"
+          data-testid="test_applicationLoadingAnimation"
+        >
           <LoadingAnimation></LoadingAnimation>
           <span>Loading {DEFAULT_APP_NAME}</span>
         </div>

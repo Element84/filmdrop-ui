@@ -1,4 +1,4 @@
-import { vi } from 'vitest'
+import { describe, vi } from 'vitest'
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import BottomContent from './BottomContent'
@@ -10,13 +10,23 @@ import {
   setappConfig,
   setsearchGeojsonBoundary,
   setSearchType,
-  setcartItems
+  setcartItems,
+  setimageOverlayLoading,
+  setShowAppLoading,
+  setSearchLoading,
+  setShowZoomNotice,
+  setShowPopupModal,
+  setClickResults,
+  setZoomLevelNeeded,
+  setViewMode,
+  setmappedScenes
 } from '../../../../redux/slices/mainSlice'
 import {
   mockSceneSearchResult,
   mockHexAggregateSearchResult,
   mockGridAggregateSearchResult,
-  mockAppConfig
+  mockAppConfig,
+  mockClickResults
 } from '../../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
 import * as mapHelper from '../../../../utils/mapHelper'
@@ -92,8 +102,134 @@ describe('BottomContent', () => {
       setup()
       expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
     })
+    it('should render loading animation when searchLoading is true', async () => {
+      store.dispatch(setSearchLoading(true))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('testsearchLoadingAnimation')
+      ).toBeInTheDocument()
+    })
+    it('should not render loading animation when searchLoading is false', async () => {
+      store.dispatch(setSearchLoading(false))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('testsearchLoadingAnimation')
+      ).not.toBeInTheDocument()
+    })
+    it('should render loading animation when imageOverlay loading is true', async () => {
+      store.dispatch(setimageOverlayLoading(true))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('test_imageOverlayLoadingAnimation')
+      ).toBeInTheDocument()
+    })
+    it('should not render loading animation when imageOverlay loading is false', async () => {
+      store.dispatch(setimageOverlayLoading(false))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('test_imageOverlayLoadingAnimation')
+      ).not.toBeInTheDocument()
+    })
+    it('should render application loading animation when showAppLoading loading is true', async () => {
+      store.dispatch(setShowAppLoading(true))
+      vi.mock('../../../defaults.js', () => ({
+        DEFAULT_APP_NAME: 'test app'
+      }))
+      setup()
+      expect(
+        screen.queryByTestId('test_applicationLoadingAnimation')
+      ).toBeInTheDocument()
+      expect(screen.queryByText(/loading test app/i)).toBeInTheDocument()
+    })
+    it('should not render application loading animation when showAppLoading loading is false', async () => {
+      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setShowAppLoading(false))
+      vi.mock('../../../defaults.js', () => ({
+        DEFAULT_APP_NAME: 'test app'
+      }))
+      setup()
+      expect(
+        screen.queryByTestId('test_applicationLoadingAnimation')
+      ).not.toBeInTheDocument()
+      expect(screen.queryByText(/loading test app/i)).not.toBeInTheDocument()
+    })
+    it('should render publish Button if SHOW_PUBLISH_BTN set in config', () => {
+      const mockAppConfigSearchEnabled = {
+        ...mockAppConfig,
+        SHOW_PUBLISH_BTN: true
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /publish/i
+        })
+      ).toBeInTheDocument()
+    })
+    it('should not render publish Button if SHOW_PUBLISH_BTN not set in config', () => {
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /publish/i
+        })
+      ).not.toBeInTheDocument()
+    })
+    it('should render analyze Button if ANALYZE_BTN_URL set in config', () => {
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /analyze/i
+        })
+      ).toBeInTheDocument()
+    })
+    it('should not render analyze Button if ANALYZE_BTN_URL not set in config', () => {
+      const mockAppConfigSearchEnabled = {
+        ...mockAppConfig,
+        ANALYZE_BTN_URL: ''
+      }
+      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      setup()
+      expect(
+        screen.queryByRole('button', {
+          name: /analyze/i
+        })
+      ).not.toBeInTheDocument()
+    })
+    it('should render zoom notice if showZoomNotice set to true in redux', () => {
+      store.dispatch(setShowZoomNotice(true))
+      setup()
+      expect(
+        screen.queryByText(/images are not visible at this zoom level\./i)
+      ).toBeInTheDocument()
+    })
+    it('should not render  zoom notice if showZoomNotice set to false in redux', () => {
+      setup()
+      expect(
+        screen.queryByText(/images are not visible at this zoom level\./i)
+      ).not.toBeInTheDocument()
+    })
+    it('should render popup results if showPopupModal set to true in redux and clickResults greater than 0', () => {
+      store.dispatch(setShowPopupModal(true))
+      store.dispatch(setClickResults([mockClickResults[0]]))
+      setup()
+      expect(screen.queryByTestId('testPopupResults')).toBeInTheDocument()
+    })
+    it('should not render popup results if showPopupModal set to false in redux', () => {
+      store.dispatch(setClickResults([mockClickResults[0]]))
+      setup()
+      expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
+    })
+    it('should not render popup results clickResults has not results added', () => {
+      store.dispatch(setShowPopupModal(true))
+      store.dispatch(setClickResults([]))
+      setup()
+      expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
+    })
   })
-
   describe('when isDrawingEnabled is true', () => {
     beforeEach(() => {
       store.dispatch(setisDrawingEnabled(true))
@@ -161,6 +297,113 @@ describe('BottomContent', () => {
       expect(
         screen.queryByTestId('testShowingAggregatedMessage')
       ).toBeInTheDocument()
+    })
+  })
+  describe('on button clicks', () => {
+    describe('on analyze clicked', () => {
+      it('should open a new window with analyze URL', async () => {
+        window.open = vi.fn()
+        const openSpy = vi.spyOn(window, 'open')
+        const mockAnalyzeBtnUrl = 'https://example.com/analyze'
+        const mockAppConfigSearchEnabled = {
+          ...mockAppConfig,
+          ANALYZE_BTN_URL: mockAnalyzeBtnUrl
+        }
+        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        setup()
+        const analyzeButton = screen.getByRole('button', {
+          name: /analyze/i
+        })
+        await user.click(analyzeButton)
+        expect(openSpy).toHaveBeenCalledWith(mockAnalyzeBtnUrl, '_blank')
+      })
+    })
+    describe('on launch clicked', () => {
+      it('should open a new window with launch URL', async () => {
+        window.open = vi.fn()
+        const openSpy = vi.spyOn(window, 'open')
+        const mockLaunchBtnUrl = 'https://example.com/launch'
+        const mockAppConfigSearchEnabled = {
+          ...mockAppConfig,
+          LAUNCH_URL: mockLaunchBtnUrl
+        }
+        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        setup()
+        const launchButton = screen.getByRole('button', {
+          name: /launch your own/i
+        })
+        await user.click(launchButton)
+        expect(openSpy).toHaveBeenCalledWith(mockLaunchBtnUrl, '_blank')
+      })
+    })
+    describe('on publish clicked', () => {
+      it('should show publish modal', async () => {
+        const mockAppConfigSearchEnabled = {
+          ...mockAppConfig,
+          SHOW_PUBLISH_BTN: true
+        }
+        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        setup()
+        const publishButton = screen.getByRole('button', {
+          name: /publish/i
+        })
+        await user.click(publishButton)
+        expect(store.getState().mainSlice.showPublishModal).toBeTruthy()
+      })
+    })
+    describe('on zoom Clicked', () => {
+      it('should zoom in to match the redux zoom level if view mode is not mosaic', async () => {
+        store.dispatch(setShowZoomNotice(true))
+        store.dispatch(setZoomLevelNeeded(7))
+        const zoomSpy = vi.spyOn(mapHelper, 'setMapZoomLevel')
+        setup()
+        const zoomButton = screen.getByText(/zoom in/i)
+        await user.click(zoomButton)
+        expect(zoomSpy).toHaveBeenCalledWith(7)
+      })
+      it('should zoom in to match the config zoom level if view mode is mosaic', async () => {
+        store.dispatch(setShowZoomNotice(true))
+        store.dispatch(setZoomLevelNeeded(7))
+        store.dispatch(setViewMode('mosaic'))
+        const zoomSpy = vi.spyOn(mapHelper, 'setMapZoomLevel')
+        store.dispatch(setappConfig(mockAppConfig))
+        setup()
+        const zoomButton = screen.getByText(/zoom in/i)
+        await user.click(zoomButton)
+        expect(zoomSpy).toHaveBeenCalledWith(7)
+        expect(store.getState().mainSlice.showZoomNotice).toBeFalsy()
+      })
+    })
+    describe('on Cancel Draw Geom clicked', () => {
+      it('should set isDrawingEnabled to false in redux and call disableMapPolyDrawing', async () => {
+        const disableMapPloyDrawingSpy = vi.spyOn(
+          mapHelper,
+          'disableMapPolyDrawing'
+        )
+        store.dispatch(setappConfig(mockAppConfig))
+        store.dispatch(setisDrawingEnabled(true))
+        setup()
+        const cancelButton = screen.getByRole('button', {
+          name: /cancel/i
+        })
+        await user.click(cancelButton)
+        expect(store.getState().mainSlice.isDrawingEnabled).toBeFalsy()
+        expect(disableMapPloyDrawingSpy).toHaveBeenCalledOnce()
+      })
+    })
+    describe('on Select All Scenes clicked', () => {
+      it('should call selectMappedScenes', async () => {
+        const selectMappedScenesSpy = vi.spyOn(mapHelper, 'selectMappedScenes')
+        store.dispatch(setappConfig(mockAppConfig))
+        store.dispatch(setSearchResults(mockSceneSearchResult))
+        store.dispatch(setmappedScenes(mockSceneSearchResult.features))
+        setup()
+        const selectScenesButton = screen.getByRole('button', {
+          name: /select scenes/i
+        })
+        await user.click(selectScenesButton)
+        expect(selectMappedScenesSpy).toHaveBeenCalledOnce()
+      })
     })
   })
 })

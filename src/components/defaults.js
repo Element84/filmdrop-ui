@@ -6,3 +6,4 @@ export const DEFAULT_HIGH_ZOOM = 7
 export const DEFAULT_COLORMAP = 'viridis'
 export const DEFAULT_APP_NAME =
   import.meta.env.VITE_APP_NAME || 'FilmDrop Console'
+export const DEFAULT_MAX_SCENES_RENDERED = 1000

@@ -11,7 +11,7 @@ import {
   setShowPopupModal,
   setCurrentPopupResult,
   setcartItems,
-  setSearchLoading
+  setimageOverlayLoading
 } from '../../redux/slices/mainSlice'
 import { ChevronRight, ChevronLeft } from '@mui/icons-material'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
@@ -38,7 +38,7 @@ const PopupResults = (props) => {
     dispatch(setCurrentPopupResult(props.results[currentResultIndex]))
     debounceTitilerOverlay()
     return () => {
-      dispatch(setSearchLoading(false))
+      dispatch(setimageOverlayLoading(false))
     }
   }, [currentResultIndex, props.results])
 
@@ -60,7 +60,7 @@ const PopupResults = (props) => {
 
   function onCloseClick() {
     clearMapSelection()
-    dispatch(setSearchLoading(false))
+    dispatch(setimageOverlayLoading(false))
     dispatch(setShowPopupModal(false))
   }
 
