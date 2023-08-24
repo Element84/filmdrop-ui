@@ -3,8 +3,10 @@ import { setappConfig } from '../redux/slices/mainSlice'
 import { showApplicationAlert } from '../utils/alertHelper'
 
 export async function LoadConfigIntoStateService() {
-  await fetch(`/config/config.json`, {
-    method: 'GET'
+  const cacheBuster = Date.now()
+  await fetch(`/config/config.json?_cb=${cacheBuster}`, {
+    method: 'GET',
+    cache: 'no-store'
   })
     .then((response) => {
       if (response.ok) {
