@@ -229,6 +229,43 @@
   opacity: 0.75;
 }
 
+.mapAttribution {
+  font-size: 12px;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: #12171a;
+  padding: 4px 6px;
+}
+
+.mapAttribution a {
+  color: #19a1d7;
+  text-decoration: none;
+}
+
+.mapAttribution span {
+  color: #bbb;
+}
+
+.mapAttribution a:hover {
+  text-decoration: underline;
+}
+
+div[data-tooltip-id='attribution-tooltip'] {
+  position: absolute;
+  bottom: 0;
+  right: 10px;
+  z-index: 1;
+  color: #a9b0c1;
+}
+
+div#attribution-tooltip {
+  z-index: 999;
+  white-space: nowrap;
+  padding: 2px;
+  background-color: #12171a;
+}
+
 @media screen and (max-width: 1460px) {
   .BottomContent {
     height: calc(100% - 200px);
@@ -241,7 +278,6 @@
     height: calc(100% - 60px);
     top: 0px;
     margin-top: 60px;
-    background-color: red;
   }
   .BottomContent {
     height: calc(100% - 60px);

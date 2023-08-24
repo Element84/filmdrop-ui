@@ -344,6 +344,7 @@ const BottomContent = () => {
           id="attribution-tooltip"
           place="left"
           clickable="true"
+          noArrow="true"
           isOpen={_showMapAttribution}
         >
           <div className="mapAttribution leaflet-control-attribution leaflet-control">

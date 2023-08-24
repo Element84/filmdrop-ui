@@ -12,7 +12,6 @@ import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
-import 'react-tooltip/dist/react-tooltip.css'
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,
