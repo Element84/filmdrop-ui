@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import './BottomContent.css'
 import {
   DEFAULT_MOSAIC_MIN_ZOOM,
@@ -14,7 +14,8 @@ import {
   setShowZoomNotice,
   setisDrawingEnabled,
   setmappedScenes,
-  setSearchLoading
+  setSearchLoading,
+  setshowMapAttribution
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
@@ -27,9 +28,16 @@ import Box from '@mui/material/Box'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
 import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
 import { CircularProgress } from '@mui/material'
+import DOMPurify from 'dompurify'
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
+import { Tooltip } from 'react-tooltip'
 
 const BottomContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
+  const [mapAttribution, setmapAttribution] = useState('')
+  const _showMapAttribution = useSelector(
+    (state) => state.mainSlice.showMapAttribution
+  )
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _clickResults = useSelector((state) => state.mainSlice.clickResults)
@@ -137,6 +145,24 @@ const BottomContent = () => {
 
   function onSelectAllScenesClicked() {
     selectMappedScenes()
+  }
+
+  useEffect(() => {
+    if (_appConfig.BASEMAP_HTML_ATTRIBUTION) {
+      const output = sanitize(String(_appConfig.BASEMAP_HTML_ATTRIBUTION))
+      setmapAttribution(output)
+    }
+  }, [])
+
+  function sanitize(dirty) {
+    const clean = {
+      __html: DOMPurify.sanitize(dirty, {
+        USE_PROFILES: { html: true },
+        ALLOWED_TAGS: ['a'],
+        ALLOWED_ATTR: ['href', 'target']
+      })
+    }
+    return clean
   }
 
   return (
@@ -306,6 +332,53 @@ const BottomContent = () => {
       _cartItems.length > 0 ? (
         <LayerLegend></LayerLegend>
       ) : null}
+      <div className="attributionTooltipContainer">
+        <div
+          data-tooltip-id="attribution-tooltip"
+          onMouseEnter={() => dispatch(setshowMapAttribution(true))}
+          onMouseLeave={() => dispatch(setshowMapAttribution(false))}
+        >
+          <InfoOutlinedIcon />
+        </div>
+        <Tooltip
+          id="attribution-tooltip"
+          place="left"
+          clickable="true"
+          isOpen={_showMapAttribution}
+        >
+          <div className="mapAttribution leaflet-control-attribution leaflet-control">
+            <svg
+              aria-hidden="true"
+              xmlns="http://www.w3.org/2000/svg"
+              width="12"
+              height="8"
+              viewBox="0 0 12 8"
+              className="leaflet-attribution-flag"
+            >
+              <path fill="#4C7BE1" d="M0 0h12v4H0z"></path>
+              <path fill="#FFD500" d="M0 4h12v3H0z"></path>
+              <path fill="#E0BC00" d="M0 7h12v1H0z"></path>
+            </svg>{' '}
+            <a
+              href="https://leafletjs.com"
+              title="A JavaScript library for interactive maps"
+            >
+              Leaflet
+            </a>{' '}
+            <span aria-hidden="true">|</span>{' '}
+            {_appConfig.BASEMAP_URL && mapAttribution ? (
+              <span dangerouslySetInnerHTML={mapAttribution}></span>
+            ) : (
+              <span>
+                &copy;{' '}
+                <a href="https://www.openstreetmap.org/copyright">
+                  OpenStreetMap
+                </a>
+              </span>
+            )}
+          </div>
+        </Tooltip>
+      </div>
     </div>
   )
 }

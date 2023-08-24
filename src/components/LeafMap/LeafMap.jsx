@@ -1,17 +1,18 @@
 import { React, useEffect, useState, useRef } from 'react'
 import './LeafMap.css'
 import { useDispatch, useSelector } from 'react-redux'
-import { setMap, setmapDrawPolygonHandler } from '../../redux/slices/mainSlice'
+import {
+  setMap,
+  setmapDrawPolygonHandler,
+  setshowMapAttribution
+} from '../../redux/slices/mainSlice'
 import * as L from 'leaflet'
 import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import { Tooltip } from 'react-tooltip'
 import 'react-tooltip/dist/react-tooltip.css'
-import DOMPurify from 'dompurify'
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,
@@ -27,7 +28,7 @@ const LeafMap = () => {
   const mapRef = useRef()
 
   const [map, setLocalMap] = useState({})
-  const [mapAttribution, setmapAttribution] = useState('')
+  const [mapTouched, setmapTouched] = useState(false)
 
   const mapMarkerIcon = L.icon({
     iconSize: [25, 41],
@@ -143,6 +144,10 @@ const LeafMap = () => {
       map.on('zoomend', function () {
         mapCallDebounceNewSearch()
         setMosaicZoomMessage()
+        if (!mapTouched) {
+          setmapTouched(true)
+          dispatch(setshowMapAttribution(false))
+        }
       })
 
       map.on('dragend', function () {
@@ -151,28 +156,17 @@ const LeafMap = () => {
 
       map.on('click', mapClickHandler)
 
+      map.on('mousedown', function () {
+        if (!mapTouched) {
+          setmapTouched(true)
+          dispatch(setshowMapAttribution(false))
+        }
+      })
+
       // push map into redux state
       dispatch(setMap(map))
     }
   }, [map])
-
-  useEffect(() => {
-    if (_appConfig.BASEMAP_HTML_ATTRIBUTION) {
-      const output = sanitize(String(_appConfig.BASEMAP_HTML_ATTRIBUTION))
-      setmapAttribution(output)
-    }
-  }, [])
-
-  function sanitize(dirty) {
-    const clean = {
-      __html: DOMPurify.sanitize(dirty, {
-        USE_PROFILES: { html: true },
-        ALLOWED_TAGS: ['a'],
-        ALLOWED_ATTR: ['href', 'target']
-      })
-    }
-    return clean
-  }
 
   return (
     <div className="LeafMap" data-testid="LeafMap">
@@ -195,44 +189,6 @@ const LeafMap = () => {
           }
         />
       </MapContainer>
-      <div className="attributionTooltipContainer">
-        <div data-tooltip-id="attribution-tooltip">
-          <InfoOutlinedIcon />
-        </div>
-        <Tooltip id="attribution-tooltip" place="left" clickable="true">
-          <div className="mapAttribution leaflet-control-attribution leaflet-control">
-            <svg
-              aria-hidden="true"
-              xmlns="http://www.w3.org/2000/svg"
-              width="12"
-              height="8"
-              viewBox="0 0 12 8"
-              className="leaflet-attribution-flag"
-            >
-              <path fill="#4C7BE1" d="M0 0h12v4H0z"></path>
-              <path fill="#FFD500" d="M0 4h12v3H0z"></path>
-              <path fill="#E0BC00" d="M0 7h12v1H0z"></path>
-            </svg>{' '}
-            <a
-              href="https://leafletjs.com"
-              title="A JavaScript library for interactive maps"
-            >
-              Leaflet
-            </a>{' '}
-            <span aria-hidden="true">|</span>{' '}
-            {_appConfig.BASEMAP_URL && mapAttribution ? (
-              <span dangerouslySetInnerHTML={mapAttribution}></span>
-            ) : (
-              <span>
-                &copy;{' '}
-                <a href="https://www.openstreetmap.org/copyright">
-                  OpenStreetMap
-                </a>
-              </span>
-            )}
-          </div>
-        </Tooltip>
-      </div>
     </div>
   )
 }
