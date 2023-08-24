@@ -149,12 +149,14 @@ const BottomContent = () => {
 
   useEffect(() => {
     if (_appConfig.BASEMAP_HTML_ATTRIBUTION) {
-      const output = sanitize(String(_appConfig.BASEMAP_HTML_ATTRIBUTION))
+      const output = sanitizeAttribution(
+        String(_appConfig.BASEMAP_HTML_ATTRIBUTION)
+      )
       setmapAttribution(output)
     }
   }, [])
 
-  function sanitize(dirty) {
+  function sanitizeAttribution(dirty) {
     const clean = {
       __html: DOMPurify.sanitize(dirty, {
         USE_PROFILES: { html: true },
