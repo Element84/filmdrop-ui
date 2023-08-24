@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Migrate vitest coverage provider to use v8 instead of c8.
 - Added cache-busting to config and data asset fetching to prevent caching of stale files.
+- Update map attribution to show until user interaction.
 
 ## 3.3.0 - 2023-08-17
 
