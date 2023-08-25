@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from 'react'
 import './BottomContent.css'
 import {
   DEFAULT_MOSAIC_MIN_ZOOM,
-  DEFAULT_APP_NAME,
   DEFAULT_MAX_SCENES_RENDERED
 } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
@@ -64,13 +63,14 @@ const BottomContent = () => {
   const _imageOverlayLoading = useSelector(
     (state) => state.mainSlice.imageOverlayLoading
   )
+  const _appName = useSelector((state) => state.mainSlice.appName)
 
   const dispatch = useDispatch()
 
   const abortControllerRef = useRef(null)
   const attributionTimeout = useRef(null)
 
-  const VIEWER_BTN_TEXT = `Launch Your Own ${DEFAULT_APP_NAME}`
+  const VIEWER_BTN_TEXT = `Launch Your Own ${_appName}`
 
   const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
@@ -326,7 +326,7 @@ const BottomContent = () => {
           data-testid="test_applicationLoadingAnimation"
         >
           <LoadingAnimation></LoadingAnimation>
-          <span>Loading {DEFAULT_APP_NAME}</span>
+          <span>Loading {_appName}</span>
         </div>
       )}
       {_isDrawingEnabled ? (

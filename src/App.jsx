@@ -10,6 +10,7 @@ import { GetCollectionsService } from './services/get-collections-service'
 import { LoadConfigIntoStateService } from './services/get-config-service'
 import { useSelector } from 'react-redux'
 import CartModal from './components/Cart/CartModal/CartModal'
+import { InitializeAppFromConfig } from './utils/configHelper'
 
 function App() {
   const _showPublishModal = useSelector(
@@ -30,6 +31,7 @@ function App() {
 
   useEffect(() => {
     if (_appConfig) {
+      InitializeAppFromConfig()
       GetCollectionsService()
     }
   }, [_appConfig])

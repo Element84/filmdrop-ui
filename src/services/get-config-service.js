@@ -24,3 +24,24 @@ export async function LoadConfigIntoStateService() {
       showApplicationAlert('error', message, null)
     })
 }
+
+export async function DoesFaviconExistService() {
+  const cacheBuster = Date.now()
+
+  try {
+    const response = await fetch(
+      `/config/${
+        store.getState().mainSlice.appConfig.APP_FAVICON
+      }?_cb=${cacheBuster}`,
+      {
+        method: 'HEAD',
+        cache: 'no-store'
+      }
+    )
+
+    return response.ok
+  } catch (error) {
+    console.error('Error Fetching Favicon File', error)
+    return false
+  }
+}

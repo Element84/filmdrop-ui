@@ -1,4 +1,6 @@
 {
+  "APP_NAME": "Example App",
+  "APP_FAVICON": "exampleFavicon.ico",
   "PUBLIC_URL": "http://example.com/",
   "LOGO_URL": "./logo.png",
   "LOGO_ALT": "Alt description for my custom logo",
