@@ -68,6 +68,7 @@ const BottomContent = () => {
   const dispatch = useDispatch()
 
   const abortControllerRef = useRef(null)
+  const attributionTimeout = useRef(null)
 
   const VIEWER_BTN_TEXT = `Launch Your Own ${DEFAULT_APP_NAME}`
 
@@ -165,6 +166,25 @@ const BottomContent = () => {
       })
     }
     return clean
+  }
+
+  const handleAttributionIconMouseEnter = () => {
+    clearTimeout(attributionTimeout.current)
+    dispatch(setshowMapAttribution(true))
+  }
+
+  const handleAttributionIconMouseLeave = () => {
+    attributionTimeout.current = setTimeout(() => {
+      dispatch(setshowMapAttribution(false))
+    }, 500)
+  }
+
+  const handleAttributionTooltipMouseEnter = () => {
+    clearTimeout(attributionTimeout.current)
+  }
+
+  const handleAttributionTooltipMouseLeave = () => {
+    dispatch(setshowMapAttribution(false))
   }
 
   return (
@@ -337,8 +357,8 @@ const BottomContent = () => {
       <div className="attributionTooltipContainer">
         <div
           data-tooltip-id="attribution-tooltip"
-          onMouseEnter={() => dispatch(setshowMapAttribution(true))}
-          onMouseLeave={() => dispatch(setshowMapAttribution(false))}
+          onMouseEnter={handleAttributionIconMouseEnter}
+          onMouseLeave={handleAttributionIconMouseLeave}
         >
           <InfoOutlinedIcon />
         </div>
@@ -349,7 +369,11 @@ const BottomContent = () => {
           noArrow="true"
           isOpen={_showMapAttribution}
         >
-          <div className="mapAttribution leaflet-control-attribution leaflet-control">
+          <div
+            className="mapAttribution leaflet-control-attribution leaflet-control"
+            onMouseEnter={handleAttributionTooltipMouseEnter}
+            onMouseLeave={handleAttributionTooltipMouseLeave}
+          >
             <svg
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
