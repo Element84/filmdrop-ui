@@ -6,6 +6,9 @@ import { loadAppTitle, loadAppFavicon } from './configHelper'
 import { DoesFaviconExistService } from '../services/get-config-service'
 
 describe('ConfigHelper', () => {
+  afterEach(() => {
+    vi.resetAllMocks()
+  })
   describe('loadAppTitle', () => {
     it('sets document title and appName from config if present', () => {
       const mockAppConfigAppTitle = {
