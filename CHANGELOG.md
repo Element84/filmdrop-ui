@@ -10,12 +10,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Add buttons for: `loading all scenes` and `selecting all scenes on map` to show in popup if more than initial load of 200 scenes is matched.
+- Add favicon config setting to allow custom favicon to be set.
 
 ### Changed
 
 - Migrate vitest coverage provider to use v8 instead of c8.
 - Added cache-busting to config and data asset fetching to prevent caching of stale files.
 - Update map attribution to show until user interaction.
+- Move app title from env variable to config file for completing build once deploy anywhere approach.
+- Removed mention of env variables from README as they are no longer used.
 
 ## 3.3.0 - 2023-08-17
 
