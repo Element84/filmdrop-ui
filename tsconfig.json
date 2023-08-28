@@ -3,7 +3,7 @@
   "compilerOptions": {
     "target": "ESNext",
     "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "es2022",
+    "module": "Node16",
     "allowJs": true,
     "checkJs": false,
     "noEmit": true,
