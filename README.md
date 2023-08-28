@@ -58,7 +58,7 @@ Sentinel-2 L2A Mosaic View
 For local development, you should create a `./public/config/config.json` file with appropriate variables outlined in the table below.
 The file `./public/config/config.example.json` is included in this repository as representative file structure.
 
-> NOTE: This project uses a build once deploy anywhere approach with config variables. The config is read on application load by a fetch from the `/config/config.json` path.
+> NOTE: This project uses a build once deploy anywhere approach with config variables. The config is read on application load by a fetch to the `/config/config.json` path.
 > There is a cachebreaker included in the request to prevent stale config files from being used.
 > This works if the app is deployed with at the root. If nested, the config path may need adjusting and will require a new build step.
 
