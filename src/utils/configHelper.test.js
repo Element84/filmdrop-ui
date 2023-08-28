@@ -28,11 +28,15 @@ describe('ConfigHelper', () => {
     })
   })
   describe('loadAppFavicon', () => {
+    const originalQuerySelector = document.querySelector
     beforeEach(() => {
       vi.clearAllMocks()
       vi.mock('../services/get-config-service', () => ({
         DoesFaviconExistService: vi.fn()
       }))
+    })
+    afterEach(() => {
+      document.querySelector = originalQuerySelector
     })
 
     it('should do nothing when APP_FAVICON is not provided', async () => {

@@ -3448,7 +3448,7 @@ export const mockAppConfig = {
   LOGO_URL: './logo.png',
   LOGO_ALT: 'Alt description for my custom logo',
   SHOW_PUBLISH_BTN: false,
-  DEFAULT_COLLECTION: 'collection-name',
+  DEFAULT_COLLECTION: 'cop-dem-glo-30',
   STAC_API_URL: 'https://api-endpoint.example.com',
   API_MAX_ITEMS: 200,
   SCENE_TILER_URL: 'https://titiler.example.com',
