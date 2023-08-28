@@ -35,6 +35,7 @@ describe('CollectionDropdown', () => {
   })
   describe('on collection changed', () => {
     it('should set hasCollectionChanged to true in redux state', async () => {
+      store.dispatch(setappConfig(mockAppConfig))
       setup()
       expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
       await userEvent.selectOptions(
@@ -52,6 +53,7 @@ describe('CollectionDropdown', () => {
       )
       const spyClearMapSelection = vi.spyOn(mapHelper, 'clearMapSelection')
       const spyClearAllLayers = vi.spyOn(mapHelper, 'clearAllLayers')
+      store.dispatch(setappConfig(mockAppConfig))
       setup()
       await userEvent.selectOptions(
         screen.getByRole('combobox', {
