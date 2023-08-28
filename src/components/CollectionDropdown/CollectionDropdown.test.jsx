@@ -37,9 +37,6 @@ describe('CollectionDropdown', () => {
     it('should set hasCollectionChanged to true in redux state', async () => {
       setup()
       expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
-
-      await screen.findByRole('option', { name: 'Copernicus DEM GLO-30' })
-
       await userEvent.selectOptions(
         screen.getByRole('combobox', {
           name: /collection/i
@@ -56,7 +53,6 @@ describe('CollectionDropdown', () => {
       const spyClearMapSelection = vi.spyOn(mapHelper, 'clearMapSelection')
       const spyClearAllLayers = vi.spyOn(mapHelper, 'clearAllLayers')
       setup()
-      await screen.findByRole('option', { name: 'Copernicus DEM GLO-30' })
       await userEvent.selectOptions(
         screen.getByRole('combobox', {
           name: /collection/i
