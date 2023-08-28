@@ -44,3 +44,6 @@ export function InitializeAppFromConfig() {
   loadAppTitle()
   loadAppFavicon()
 }
+
+// exports for testing purposes
+export { loadAppTitle, loadAppFavicon }
