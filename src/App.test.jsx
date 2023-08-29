@@ -14,6 +14,7 @@ import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
 import * as LoadConfigService from './services/get-config-service'
 import { mockAppConfig } from './testing/shared-mocks'
+import * as ConfigHelper from './utils/configHelper'
 
 describe('App', () => {
   const setup = () =>
@@ -32,6 +33,11 @@ describe('App', () => {
     })
     it('should call GetCollectionsService once', () => {
       const spy = vi.spyOn(CollectionsService, 'GetCollectionsService')
+      setup()
+      expect(spy).toHaveBeenCalledTimes(1)
+    })
+    it('should call InitializeAppFromConfig once', () => {
+      const spy = vi.spyOn(ConfigHelper, 'InitializeAppFromConfig')
       setup()
       expect(spy).toHaveBeenCalledTimes(1)
     })
@@ -123,6 +129,11 @@ describe('App', () => {
     })
     it('should call not GetCollectionsService', () => {
       const spy = vi.spyOn(CollectionsService, 'GetCollectionsService')
+      setup()
+      expect(spy).not.toHaveBeenCalled()
+    })
+    it('should call not InitializeAppFromConfig', () => {
+      const spy = vi.spyOn(ConfigHelper, 'InitializeAppFromConfig')
       setup()
       expect(spy).not.toHaveBeenCalled()
     })

@@ -4,7 +4,7 @@
   - [Summary](#summary)
   - [Screenshots](#screenshots)
   - [Running](#running)
-    - [Environment Files](#environment-files)
+    - [Configuration File](#configuration-file)
     - [Links](#links)
   - [Scripts](#scripts)
     - [`npm start`](#npm-start)
@@ -53,16 +53,14 @@ Sentinel-2 L2A Mosaic View
 
 ## Running
 
-### Environment Files
+### Configuration File
 
-For local development, you should create an `.env` & `./public/config/config.json` file with appropriate variables outlined in the table below.
-The files `.env.example` and `./public/config/config.example.json` are included in this repository as representative files.
+For local development, you should create a `./public/config/config.json` file with appropriate variables outlined in the table below.
+The file `./public/config/config.example.json` is included in this repository as representative file structure.
 
-### `.env`
-
-| Variable      | Description                                                                      | Required |
-| ------------- | -------------------------------------------------------------------------------- | -------- |
-| VITE_APP_NAME | Name for this app. (set in `.env`, because it is needed prior to any JS loading) | Optional |
+> NOTE: This project uses a "build-once, deploy-anywhere" approach with config variables. The config is read on application load by a fetch to the `/config/config.json` path.
+> There is a cachebreaker included in the request to prevent stale config files from being used.
+> This works if the app is deployed with at the root. If nested, the config path may need adjusting and will require a new build step.
 
 ### `config.json`
 
@@ -92,6 +90,8 @@ The files `.env.example` and `./public/config/config.example.json` are included 
 | CART_ENABLED             | If set to `true` cart features will be enabled. These include: rendering cart button in search controls bar, adding cart management buttons to popup results, render buttons in messages to quickly add some or all scenes to cart after search completes.                                                                                                                                                                                                                                                                    | Optional |
 | SHOW_BRAND_LOGO          | If set to `true` filmdrop brand logo and clickable hyperlink are rendered at the top right of the UI. If not set or `false`, the logo will not be visible.                                                                                                                                                                                                                                                                                                                                                                    | Optional |
 | POPUP_DISPLAY_FIELDS     | Per-collection configuration of popup metadata fields properies to render. Example in [config.example.json](./public/config/config.example.json). Only `Title` field (which maps to the `id` property for STAC items) is rendered if collection used in application but not included in configuration.                                                                                                                                                                                                                        | Optional |
+| APP_NAME                 | String value used for html title and anywhere else that the text value for app name is used. If not set, default value of `FilmDrop Console` will be used.                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| APP_FAVICON              | If set, custom application favicon is used instead of default FilmDrop favicon. Favicon file of format `.ico` OR `.png` must be used and file must exist next to config in `/config` of the built deployment directory. Place in `public` directory during local development, but can also be added or adjusted post depolyment. File name in `config.json` must match extactly with file in config, see `config.example.json` for example. If not set or error in config/file, default FilmDrop favicon will be used.        | Optional |
 
 ### Links
 
@@ -105,7 +105,7 @@ This project contains several NPM scripts for common tasks.
 
 Runs the app locally at <http://localhost:5173>
 
-This uses the env vars found in `.env` and `./public/config/config.json`.
+This uses the configuration settings in `./public/config/config.json`.
 
 ### `npm test`
 
@@ -113,7 +113,7 @@ Launches the test runner.
 
 ### `npm run build`
 
-This builds using the env vars found in `.env` and `./public/config/config.json`.
+This builds using the configuration settings found in `./public/config/config.json`.
 
 The result will appear in the `build` folder.
 

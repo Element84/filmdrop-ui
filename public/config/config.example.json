@@ -115,5 +115,7 @@
       "sar:instrument_mode",
       "sar:polarizations"
     ]
-  }
+  },
+  "APP_NAME": "Filmdrop Console",
+  "APP_FAVICON": "exampleFavicon.ico"
 }

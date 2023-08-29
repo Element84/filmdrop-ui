@@ -1,8 +1,8 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-.env*
-!.env.example
 /public/config/config*.json
+/public/config/*.png
+/public/config/*.ico
 !/public/config/config.example.json
 
 # dependencies

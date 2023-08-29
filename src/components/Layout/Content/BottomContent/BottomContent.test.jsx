@@ -19,7 +19,8 @@ import {
   setClickResults,
   setZoomLevelNeeded,
   setViewMode,
-  setmappedScenes
+  setmappedScenes,
+  setappName
 } from '../../../../redux/slices/mainSlice'
 import {
   mockSceneSearchResult,
@@ -136,9 +137,7 @@ describe('BottomContent', () => {
     })
     it('should render application loading animation when showAppLoading loading is true', async () => {
       store.dispatch(setShowAppLoading(true))
-      vi.mock('../../../defaults.js', () => ({
-        DEFAULT_APP_NAME: 'test app'
-      }))
+      store.dispatch(setappName('Test App'))
       setup()
       expect(
         screen.queryByTestId('test_applicationLoadingAnimation')
@@ -148,9 +147,7 @@ describe('BottomContent', () => {
     it('should not render application loading animation when showAppLoading loading is false', async () => {
       store.dispatch(setappConfig(mockAppConfig))
       store.dispatch(setShowAppLoading(false))
-      vi.mock('../../../defaults.js', () => ({
-        DEFAULT_APP_NAME: 'test app'
-      }))
+      store.dispatch(setappName('Test App'))
       setup()
       expect(
         screen.queryByTestId('test_applicationLoadingAnimation')
