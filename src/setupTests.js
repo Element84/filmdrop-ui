@@ -1,6 +1,6 @@
 import { expect, afterEach, beforeEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
-import matchers from '@testing-library/jest-dom/matchers'
+import * as matchers from '@testing-library/jest-dom/matchers'
 import { mainSliceReset } from './redux/slices/mainSlice'
 import { store } from './redux/store'
 import 'resize-observer-polyfill'
