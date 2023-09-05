@@ -143,7 +143,7 @@ FilmDrop family of services.
 ### Geohex Aggregated View
 
 Support for STAC API [Aggregation Extension](https://github.com/stac-api-extensions/aggregation)
-is necessary for the geohex aggregated view. At present, only stac-server implements
+is necessary for the geohex aggregated view. As of September 2023, only stac-server implements
 this extension.
 
 The geohex aggregated view requires:
