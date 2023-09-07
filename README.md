@@ -5,6 +5,7 @@
   - [Screenshots](#screenshots)
   - [Running](#running)
     - [Configuration File](#configuration-file)
+    - [`config.json`](#configjson)
     - [Links](#links)
   - [Scripts](#scripts)
     - [`npm start`](#npm-start)
@@ -12,6 +13,14 @@
     - [`npm run build`](#npm-run-build)
     - [`npm run coverage`](#npm-run-coverage)
     - [`npm run serve`](#npm-run-serve)
+  - [Feature Support](#feature-support)
+    - [Geohex Aggregated View](#geohex-aggregated-view)
+    - [Grid Code Aggregated View](#grid-code-aggregated-view)
+    - [Cloud Cover](#cloud-cover)
+    - [SAR](#sar)
+    - [Thumbnails](#thumbnails)
+    - [Scene Tiling Configuration](#scene-tiling-configuration)
+    - [Mosaic Tiling Configuration](#mosaic-tiling-configuration)
 
 ## Summary
 
@@ -124,3 +133,85 @@ Runs tests and outputs a coverage report into console.
 ### `npm run serve`
 
 Starts a local web server that serves the built solution from `build` folder.
+
+## Feature Support
+
+Many of the advanced features of FilmDrop-UI rely on behaviors of
+[stac-server](https://github.com/stac-utils/stac-server), part of the
+FilmDrop family of services.
+
+### Geohex Aggregated View
+
+Support for STAC API [Aggregation Extension](https://github.com/stac-api-extensions/aggregation)
+is necessary for the geohex aggregated view. As of September 2023, only stac-server implements
+this extension.
+
+The geohex aggregated view requires:
+
+1. All Items that are to be aggregated must have the `proj:centroid` property defined,
+2. The aggregation `grid_geohex_frequency` must be advertised by the `/aggregations` endpoint
+   for each collection that has Items with the `proj:centroid` property.
+
+### Grid Code Aggregated View
+
+Support for STAC API [Aggregation Extension](https://github.com/stac-api-extensions/aggregation)
+is necessary for the grid code aggregated view. At present, only stac-server implements
+this extension.
+
+The grid code view requires:
+
+1. All Items that are to be aggregated must have the `grid:code` property defined,
+2. The aggregation `grid_code_frequency` must be advertised by the `/aggregations` endpoint
+   for each collection that has Items with the `grid:code` property.
+3. The `grid:code` prefixes CDEM, DOQQ, MGRS, and WRS2 are supported by default. Any other grid
+   code prefixes require customization of the filmdrop-ui application.
+
+### Cloud Cover
+
+The Cloud Cover filter widget is enabled when a Collection's `/queryables` endpoint advertises
+it has a queryable named `eo:cloud_cover`. This should be configured for all Collections with the
+`eo:cloud_cover`` property defined`.
+
+### SAR
+
+One limitation of the scene and mosaic views is that the assets they display must be consistent
+across all items, e.g., if "red", "green", and "blue" are configured as the assets to composite,
+then assets with these names must exist across all items in the collection. In the case of a
+collection of SAR data, this is frequently not the case. For example, Sentinel-1 scenes have
+some combination of assets "vv", "vh", "hv", and "hh". To work around this, the UI searches only
+for items with the polarization `VV` present in the `sar:polarizations` property and then the
+scene configuration only uses the `vv` asset in rendering.
+
+To support this behavior, the queryable `sar:polarizations` must be advertised by a collection's
+`/queryables` endpoint.
+
+### Thumbnails
+
+The thumbnail for a scene is determined by the existence of link with the relation `thumbnail`
+for an item. stac-server will always present this relation, but making a request to it may result
+in a 404 if no appropriate thumbnail can be determined for an item. stac-server determines the
+appropriate thing to do by first looking for an asset with a role of `thumbnail`. If this asset
+exists and the href starts with `http`, a 302 redirect is made to that URL. If this asset exists
+and has an href starting with `s3://`, the URI is signed using stac-server's AWS credentials and
+the pre-signed URL is redirected. For non-public S3 buckets, stac-server must be granted
+permissions on that bucket or the pre-signed URL will get an Access Denied error.
+
+### Scene Tiling Configuration
+
+Scene tiling requires describing the form of the data and how titiler should create a single
+image from an item.
+
+The configurations include:
+
+- `assets`: one or three assets. If three assets are specified, they will be composited as RGB.
+- `color_formula`: the color formula to adjust a composite with
+- `bidx`: if a single asset is defined, these indicies are used as the band indicies within that
+  image to composite.
+- `colormap_name`: the colormap to use for mapping values (typically used for single band)
+- `rescale`: the rescale range to apply prior to color mapping (typically used for single band)
+
+### Mosaic Tiling Configuration
+
+Configuration of mosaic tiling is the same as for scene tiling, with the additional constraint
+that multi-asset compositing cannot be done, so only as single asset may be specified for the
+`assets` list.
