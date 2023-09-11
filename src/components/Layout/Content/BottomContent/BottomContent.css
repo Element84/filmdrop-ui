@@ -266,6 +266,30 @@ div#attribution-tooltip {
   background-color: #12171a;
 }
 
+.layerListButton {
+  position: absolute;
+  background-color: #fff;
+  top: 130px;
+  left: 12px;
+  z-index: 1;
+  height: 29px;
+  width: 29px;
+  cursor: pointer;
+  border-radius: 4px;
+  border: solid 1px #ccc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.layerListButton:hover {
+  background-color: #f4f4f4;
+}
+
+.layerListButtonIcon {
+  color: #555;
+}
+
 @media screen and (max-width: 1460px) {
   .BottomContent {
     height: calc(100% - 200px);

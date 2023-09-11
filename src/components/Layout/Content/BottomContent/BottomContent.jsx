@@ -30,6 +30,7 @@ import { CircularProgress } from '@mui/material'
 import DOMPurify from 'dompurify'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
+import LayersIcon from '@mui/icons-material/Layers'
 
 const BottomContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
@@ -196,6 +197,11 @@ const BottomContent = () => {
           <Box className="zoomInText" onClick={onZoomClick}>
             <strong>Zoom in</strong>
           </Box>
+        </div>
+      )}
+      {_appConfig.Layer_List_Enabled && (
+        <div className="layerListButton" title="Layer List">
+          <LayersIcon className="layerListButtonIcon"></LayersIcon>
         </div>
       )}
       <div className="actionButtons">
