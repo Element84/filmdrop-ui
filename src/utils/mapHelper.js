@@ -87,7 +87,7 @@ export function mapClickHandler(e) {
   const clickBounds = L.latLngBounds(e.latlng, e.latlng)
   if (map && Object.keys(map).length > 0) {
     const _searchType = store.getState().mainSlice.searchType
-    const _mappedScenes = store.getState().mainSlice.mappedScenes
+    const _searchResults = store.getState().mainSlice.searchResults
 
     clearMapSelection()
 
@@ -101,9 +101,9 @@ export function mapClickHandler(e) {
 
     // pull all items from search results that intersect with the click bounds
     let intersectingFeatures = []
-    if (_mappedScenes !== null) {
-      for (const f in _mappedScenes) {
-        const feature = _mappedScenes[f]
+    if (_searchResults !== null) {
+      for (const f in _searchResults.features) {
+        const feature = _searchResults.features[f]
         const featureBounds = L.geoJSON(feature).getBounds()
         if (featureBounds && featureBounds.intersects(clickBounds)) {
           // highlight layer
