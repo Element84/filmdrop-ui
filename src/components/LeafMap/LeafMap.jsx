@@ -18,6 +18,7 @@ import {
   setMosaicZoomMessage
 } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
+import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../defaults'
 
 const LeafMap = () => {
   const dispatch = useDispatch()
@@ -173,8 +174,10 @@ const LeafMap = () => {
       <MapContainer
         className="mainMap"
         ref={mapRef}
-        center={[30, 0]}
-        zoom={3}
+        center={
+          _appConfig.MAP_CENTER ? _appConfig.MAP_CENTER : DEFAULT_MAP_CENTER
+        }
+        zoom={_appConfig.MAP_ZOOM ? _appConfig.MAP_ZOOM : DEFAULT_MAP_ZOOM}
         scrollWheelZoom={true}
         zoomControl={false}
         attributionControl={false}

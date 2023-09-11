@@ -117,5 +117,39 @@
     ]
   },
   "APP_NAME": "Filmdrop Console",
-  "APP_FAVICON": "exampleFavicon.ico"
+  "APP_FAVICON": "exampleFavicon.ico",
+  "MAP_ZOOM": 3,
+  "MAP_CENTER": [30, 0],
+  "Layer_List_Enabled": true,
+  "Layer_List_Services": [
+    {
+      "name": "Service 1",
+      "type": "wms",
+      "url": "https://sampleservice.com/arcgis/rest/services/SampleService/MapServer",
+      "layers": [
+        {
+          "name": "layer1_name",
+          "alias": "Layer 1 Alias",
+          "default_visibility": true
+        },
+        {
+          "name": "layer2_name",
+          "alias": "Layer 2 Alias",
+          "default_visibility": false
+        }
+      ]
+    },
+    {
+      "name": "Service 2",
+      "type": "wms",
+      "url": "https://sampleservice.com/arcgis/rest/services/SampleService/MapServer",
+      "layers": [
+        {
+          "name": "layer1_name",
+          "alias": "Layer 1 Alias",
+          "default_visibility": true
+        }
+      ]
+    }
+  ]
 }
