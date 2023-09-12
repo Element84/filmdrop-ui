@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 4.0.1 - 2023-09-12
+
+### Changed
+
+- Bug fix for grid-code not working properly on map click events.
+
 ## 4.0.0 - 2023-08-29
 
 ### Added
