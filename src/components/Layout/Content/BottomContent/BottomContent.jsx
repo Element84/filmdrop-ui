@@ -14,7 +14,8 @@ import {
   setisDrawingEnabled,
   setmappedScenes,
   setSearchLoading,
-  setshowMapAttribution
+  setshowMapAttribution,
+  setshowLayerList
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
@@ -31,6 +32,7 @@ import DOMPurify from 'dompurify'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
 import LayersIcon from '@mui/icons-material/Layers'
+import LayerList from '../../../LayerList/LayerList'
 
 const BottomContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
@@ -65,6 +67,7 @@ const BottomContent = () => {
     (state) => state.mainSlice.imageOverlayLoading
   )
   const _appName = useSelector((state) => state.mainSlice.appName)
+  const _showLayerList = useSelector((state) => state.mainSlice.showLayerList)
 
   const dispatch = useDispatch()
 
@@ -188,6 +191,10 @@ const BottomContent = () => {
     dispatch(setshowMapAttribution(false))
   }
 
+  function onLayerListButtonClick() {
+    dispatch(setshowLayerList(!_showLayerList))
+  }
+
   return (
     <div className="BottomContent">
       <LeafMap></LeafMap>
@@ -201,9 +208,13 @@ const BottomContent = () => {
       )}
       {_appConfig.Layer_List_Enabled && (
         <div className="layerListButton" title="Layer List">
-          <LayersIcon className="layerListButtonIcon"></LayersIcon>
+          <LayersIcon
+            className="layerListButtonIcon"
+            onClick={() => onLayerListButtonClick()}
+          ></LayersIcon>
         </div>
       )}
+      {_showLayerList && <LayerList></LayerList>}
       <div className="actionButtons">
         {_appConfig.ANALYZE_BTN_URL && (
           <button className="actionButton" onClick={() => onAnalyzeClick()}>

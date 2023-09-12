@@ -130,7 +130,8 @@
         {
           "name": "layer1_name",
           "alias": "Layer 1 Alias",
-          "default_visibility": true
+          "default_visibility": true,
+          "CRS": "EPSG:4326"
         },
         {
           "name": "layer2_name",
