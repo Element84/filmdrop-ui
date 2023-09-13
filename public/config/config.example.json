@@ -125,13 +125,13 @@
     {
       "name": "Service 1",
       "type": "wms",
-      "url": "https://sampleservice.com/arcgis/rest/services/SampleService/MapServer",
+      "url": "https://sampleservice1.com/wms",
       "layers": [
         {
           "name": "layer1_name",
           "alias": "Layer 1 Alias",
           "default_visibility": true,
-          "CRS": "EPSG:4326"
+          "crs": "EPSG:4326"
         },
         {
           "name": "layer2_name",
@@ -143,7 +143,7 @@
     {
       "name": "Service 2",
       "type": "wms",
-      "url": "https://sampleservice.com/arcgis/rest/services/SampleService/MapServer",
+      "url": "https://sampleservice2.com/wms",
       "layers": [
         {
           "name": "layer1_name",
