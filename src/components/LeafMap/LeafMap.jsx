@@ -15,7 +15,8 @@ import 'leaflet-geosearch/dist/geosearch.css'
 import {
   mapClickHandler,
   mapCallDebounceNewSearch,
-  setMosaicZoomMessage
+  setMosaicZoomMessage,
+  addReferenceLayersToMap
 } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../defaults'
@@ -94,6 +95,9 @@ const LeafMap = () => {
       })
 
       // set up map layers
+      const referenceLayerGroup = L.layerGroup().addTo(map)
+      referenceLayerGroup.layer_name = 'referenceLayerGroup'
+
       const resultFootprintsInit = new L.FeatureGroup()
       resultFootprintsInit.addTo(map)
       resultFootprintsInit.layer_name = 'searchResultsLayer'
@@ -165,6 +169,8 @@ const LeafMap = () => {
 
       // push map into redux state
       dispatch(setMap(map))
+
+      addReferenceLayersToMap()
     }
   }, [map])
 

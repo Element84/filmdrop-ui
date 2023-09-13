@@ -60,22 +60,43 @@ async function parseLayerListConfig(config) {
           )
         }
 
-        return service.layers.map((layer) => {
-          if (!layer.name) {
-            throw new Error(
-              `Invalid configuration format for layer in service '${service.name}': 'name' is missing.`
-            )
-          }
+        return service.layers
+          .map((layer) => {
+            if (!layer.name) {
+              throw new Error(
+                `Invalid configuration format for layer in service '${service.name}': 'name' is missing.`
+              )
+            }
 
-          return {
-            layerName: `${service.name.replace(/ /g, '_')}_${layer.name.replace(
-              / /g,
-              '_'
-            )}`,
-            layerAlias: layer.alias || layer.name,
-            visibility: layer.default_visibility || false
-          }
-        })
+            const validCRS = ['EPSG:4326', 'EPSG:3857']
+            const shouldAddLayer = !layer.crs || validCRS.includes(layer.crs)
+
+            if (shouldAddLayer) {
+              return {
+                combinedLayerName: `${service.name.replace(
+                  / /g,
+                  '_'
+                )}_${layer.name.replace(/ /g, '_')}`,
+                layerName: layer.name,
+                layerAlias: layer.alias || layer.name,
+                visibility: layer.default_visibility || false,
+                crs: layer.crs || 'EPSG:3857',
+                url: service.url,
+                type: service.type
+              }
+            }
+
+            console.error(
+              'Error adding layer: ' +
+                `${service.name.replace(/ /g, '_')}_${layer.name.replace(
+                  / /g,
+                  '_'
+                )}` +
+                ': unsupported crs'
+            )
+            return null // Skip adding the layer if error
+          })
+          .filter((layer) => layer !== null) // Filter out null layers
       })
   } catch (error) {
     console.error('Error loading reference layers', error.message)
@@ -96,11 +117,7 @@ async function loadReferenceLayers() {
     return
   }
 
-  console.log(LayerListFromConfig)
-  // set refLayer in redux store
   store.dispatch(setreferenceLayers(LayerListFromConfig))
-
-  // call function to add reference layers to map from mapHelper
 }
 
 export function InitializeAppFromConfig() {

@@ -2,21 +2,21 @@ import React from 'react'
 import './LayerList.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { setreferenceLayers } from '../../redux/slices/mainSlice'
+import { toggleReferenceLayerVisibility } from '../../utils/mapHelper'
 
 const LayerList = () => {
   const dispatch = useDispatch()
   const _referenceLayers = useSelector(
     (state) => state.mainSlice.referenceLayers
   )
-  function onLayerClicked(layerName) {
+  function onLayerClicked(combinedLayerName) {
     const updatedLayers = _referenceLayers.map((layer) =>
-      layer.layerName === layerName
+      layer.combinedLayerName === combinedLayerName
         ? { ...layer, visibility: !layer.visibility }
         : layer
     )
     dispatch(setreferenceLayers(updatedLayers))
-
-    // call function to setRefLayer Visibility from MapHelper?
+    toggleReferenceLayerVisibility(combinedLayerName)
   }
 
   return (
@@ -26,13 +26,13 @@ const LayerList = () => {
       </div>
       <div className="LayerListLayers">
         {_referenceLayers.map((layer) => (
-          <div className="LayerListLayer" key={layer.layerName}>
+          <div className="LayerListLayer" key={layer.combinedLayerName}>
             <label className="LayerListLayerContainer">
               {layer.layerAlias}
               <input
                 type="checkbox"
                 checked={layer.visibility}
-                onChange={() => onLayerClicked(layer.layerName)}
+                onChange={() => onLayerClicked(layer.combinedLayerName)}
               ></input>
               <span className="LayerListCheckmark"></span>
             </label>

@@ -198,7 +198,13 @@ export function clearAllLayers() {
       if (
         layer.layer_name &&
         layer.layer_name !== 'drawBoundsLayer' &&
-        layer.layer_name !== 'cartFootprintsLayer'
+        layer.layer_name !== 'cartFootprintsLayer' &&
+        layer.layer_name !== 'referenceLayerGroup' &&
+        !store
+          .getState()
+          .mainSlice.referenceLayers.some(
+            (data) => data.combinedLayerName === layer.layer_name
+          )
       ) {
         layer.clearLayers()
       }
@@ -664,5 +670,97 @@ function styleFeatures(feature, geojsonLayer) {
       }
     })
     return accumulatedStyle
+  }
+}
+
+export function addReferenceLayersToMap() {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    map.eachLayer(function (layer) {
+      if (layer.layer_name === 'referenceLayerGroup') {
+        const reversedReferenceLayersArr = store
+          .getState()
+          .mainSlice.referenceLayers.slice()
+          .reverse()
+        reversedReferenceLayersArr.forEach((refLayer) => {
+          if (refLayer.type !== 'wms') {
+            console.error(
+              'Error adding layer: ' +
+                refLayer.name +
+                ': only wms type supported'
+            )
+            return
+          }
+          const wmsLayer = L.tileLayer.wms(refLayer.url, {
+            layers: refLayer.layerName,
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.1',
+            crs: refLayer.crs === 'EPSG:4326' ? L.CRS.EPSG4326 : L.CRS.EPSG3857
+          })
+          wmsLayer.layer_name = refLayer.combinedLayerName
+          layer.addLayer(wmsLayer)
+          if (!refLayer.visibility) {
+            layer.removeLayer(wmsLayer)
+          }
+        })
+      }
+    })
+  }
+}
+
+export function toggleReferenceLayerVisibility(combinedLayerNameToToggle) {
+  const map = store.getState().mainSlice.map
+  if (map && Object.keys(map).length > 0) {
+    map.eachLayer(function (layer) {
+      if (layer.layer_name === 'referenceLayerGroup') {
+        const refLayerToToggle = store
+          .getState()
+          .mainSlice.referenceLayers.find(
+            (item) => item.combinedLayerName === combinedLayerNameToToggle
+          )
+
+        const layersInGroup = []
+        layer.eachLayer(function (layerInGroup) {
+          layersInGroup.push(layerInGroup.layer_name)
+          if (layerInGroup.layer_name === combinedLayerNameToToggle) {
+            layer.removeLayer(layerInGroup)
+          }
+        })
+
+        if (
+          !layersInGroup.includes(combinedLayerNameToToggle) &&
+          refLayerToToggle.visibility
+        ) {
+          const wmsLayer = L.tileLayer.wms(refLayerToToggle.url, {
+            layers: refLayerToToggle.layerName,
+            format: 'image/png',
+            transparent: true,
+            version: '1.1.1',
+            crs:
+              refLayerToToggle.crs === 'EPSG:4326'
+                ? L.CRS.EPSG4326
+                : L.CRS.EPSG3857
+          })
+          wmsLayer.layer_name = refLayerToToggle.combinedLayerName
+          wmsLayer.bringToBack()
+          layer.addLayer(wmsLayer)
+          wmsLayer.bringToFront()
+
+          // need this to keep layer order when adding and removing layers
+          const layersInGroup = layer.getLayers()
+          const orderMap = {}
+          store.getState().mainSlice.referenceLayers.forEach((item, index) => {
+            orderMap[item.combinedLayerName] = index
+          })
+          layersInGroup.sort(
+            (a, b) => orderMap[b.layer_name] - orderMap[a.layer_name]
+          )
+          layersInGroup.forEach(function (layerInGroup) {
+            layerInGroup.bringToFront()
+          })
+        }
+      }
+    })
   }
 }
