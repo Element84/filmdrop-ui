@@ -120,8 +120,8 @@
   "APP_FAVICON": "exampleFavicon.ico",
   "MAP_ZOOM": 3,
   "MAP_CENTER": [30, 0],
-  "Layer_List_Enabled": true,
-  "Layer_List_Services": [
+  "LAYER_LIST_ENABLED": true,
+  "LAYER_LIST_SERVICES": [
     {
       "name": "Service 1",
       "type": "wms",

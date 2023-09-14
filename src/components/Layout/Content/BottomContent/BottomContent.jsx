@@ -206,7 +206,7 @@ const BottomContent = () => {
           </Box>
         </div>
       )}
-      {_appConfig.Layer_List_Enabled && _appConfig.Layer_List_Services && (
+      {_appConfig.LAYER_LIST_ENABLED && _appConfig.LAYER_LIST_SERVICES && (
         <div className="layerListButton" title="Layer List">
           <LayersIcon
             className="layerListButtonIcon"

@@ -45,15 +45,15 @@ async function parseLayerListConfig(config) {
   try {
     if (
       !store.getState().mainSlice.appConfig ||
-      !store.getState().mainSlice.appConfig.Layer_List_Services
+      !store.getState().mainSlice.appConfig.LAYER_LIST_SERVICES
     ) {
       throw new Error(
-        'Invalid configuration format: Layer_List_Services is missing.'
+        'Invalid configuration format: LAYER_LIST_SERVICES is missing.'
       )
     }
     return store
       .getState()
-      .mainSlice.appConfig.Layer_List_Services.flatMap((service) => {
+      .mainSlice.appConfig.LAYER_LIST_SERVICES.flatMap((service) => {
         if (!service.layers || !Array.isArray(service.layers)) {
           throw new Error(
             `Invalid configuration format for service '${service.name}': 'layers' is missing or not an array.`
@@ -107,8 +107,8 @@ async function parseLayerListConfig(config) {
 
 async function loadReferenceLayers() {
   if (
-    !store.getState().mainSlice.appConfig.Layer_List_Services ||
-    !store.getState().mainSlice.appConfig.Layer_List_Enabled
+    !store.getState().mainSlice.appConfig.LAYER_LIST_SERVICES ||
+    !store.getState().mainSlice.appConfig.LAYER_LIST_ENABLED
   ) {
     return
   }
