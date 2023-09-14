@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Added config option for starting map zoom level
+- Added config option for starting map center location
+- Added config options for enabling and defining reference map layers (only wms currently supported)
+
 ## 4.0.1 - 2023-09-12
 
 ### Changed
