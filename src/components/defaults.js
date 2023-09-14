@@ -6,3 +6,5 @@ export const DEFAULT_HIGH_ZOOM = 7
 export const DEFAULT_COLORMAP = 'viridis'
 export const DEFAULT_APP_NAME = 'FilmDrop Console'
 export const DEFAULT_MAX_SCENES_RENDERED = 1000
+export const DEFAULT_MAP_CENTER = [30, 0]
+export const DEFAULT_MAP_ZOOM = 3

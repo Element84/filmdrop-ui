@@ -38,7 +38,9 @@ const initialState = {
   mappedScenes: [],
   imageOverlayLoading: false,
   showMapAttribution: true,
-  appName: ''
+  appName: '',
+  showLayerList: false,
+  referenceLayers: []
 }
 
 // next, for every key in the initialState
@@ -157,6 +159,12 @@ export const mainSlice = createSlice({
     },
     setappName: (state, action) => {
       state.appName = action.payload
+    },
+    setshowLayerList: (state, action) => {
+      state.showLayerList = action.payload
+    },
+    setreferenceLayers: (state, action) => {
+      state.referenceLayers = action.payload
     }
   }
 })
@@ -200,5 +208,7 @@ export const { setmappedScenes } = mainSlice.actions
 export const { setimageOverlayLoading } = mainSlice.actions
 export const { setshowMapAttribution } = mainSlice.actions
 export const { setappName } = mainSlice.actions
+export const { setshowLayerList } = mainSlice.actions
+export const { setreferenceLayers } = mainSlice.actions
 
 export default mainSlice.reducer
