@@ -84,7 +84,12 @@ export function mapClickHandler(e) {
     return
   }
   const map = store.getState().mainSlice.map
-  const clickBounds = L.latLngBounds(e.latlng, e.latlng)
+
+  // Limit the precision of the coordinates to 5 decimal places
+  let lat = parseFloat(e.latlng.lat.toFixed(5))
+  let lng = parseFloat(e.latlng.lng.toFixed(5))
+  const clickBounds = L.latLngBounds([lat, lng], [lat, lng])
+  
   if (map && Object.keys(map).length > 0) {
     const _searchType = store.getState().mainSlice.searchType
     const _searchResults = store.getState().mainSlice.searchResults
