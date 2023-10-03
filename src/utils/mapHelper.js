@@ -485,7 +485,10 @@ const parameters = {
       const assetBidx = asset && value ? `${asset}|${value}` : null
       return assetBidx && `asset_bidx=${assetBidx}`
     } else {
-      return value && `bidx=${value}`
+      return value
+        ?.split(',')
+        .map((x) => `bidx=${x}`)
+        .join('&')
     }
   }
 }
