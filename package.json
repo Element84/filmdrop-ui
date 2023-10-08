@@ -15,7 +15,7 @@
     "h3-js": "^4.1.0",
     "leaflet": "^1.9.3",
     "leaflet-draw": "^1.0.4",
-    "leaflet-geosearch": "^3.8.0",
+    "leaflet-geosearch": "^3.9.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-dropzone": "^14.2.3",
