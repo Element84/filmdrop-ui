@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+## 4.3.0 - 2023-10-13
+
+### Fixed
+
+- resolve security @vitejs/plugin-react@4.0.4 vulnerabilities coming from `babel`
+
+### Changed
+
+- Updated max-height of main logo to be 40px
+
+### Added
+
+- Added config option for applying dark style to custom basemap URL
+
 ## 4.2.0 - 2023-10-03
 
 ### Changed
