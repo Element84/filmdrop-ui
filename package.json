@@ -7,7 +7,7 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.14.1",
     "@mui/material": "^5.14.2",
-    "@reduxjs/toolkit": "^1.9.5",
+    "@reduxjs/toolkit": "^1.9.6",
     "@vitejs/plugin-react": "^4.0.4",
     "@wojtekmaj/react-datetimerange-picker": "^5.4.2",
     "colormap": "^2.3.2",
