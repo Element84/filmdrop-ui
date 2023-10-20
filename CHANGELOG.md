@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
 - Update link tag for manifest.json so that it uses basic auth credentials, fixes load when running behind CloudFront with basic auth
 
 ## 4.3.0 - 2023-10-13
