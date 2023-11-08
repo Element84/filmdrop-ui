@@ -14,7 +14,7 @@ deciders: Brad Andrick, Matt Hanson, Phil Varner
 
 ## Existing Example Config.json Structure:
 
-```json
+```jsonc
 {
   "PUBLIC_URL": "http://example.com/",
   "LOGO_URL": "./logo.png",
@@ -176,7 +176,7 @@ deciders: Brad Andrick, Matt Hanson, Phil Varner
 
 ## Proposed Config.json Structure:
 
-```json
+```jsonc
 {
   "CONSOLE_SETTINGS": {
     // settings for top level console/parent container app
@@ -219,7 +219,7 @@ deciders: Brad Andrick, Matt Hanson, Phil Varner
 
 ## Exiting Directory Structure:
 
-```json
+```
 filmdrop-ui/
   ├── src/
   │   ├── assets/                 # Static assets like images, fonts, etc.
@@ -240,7 +240,7 @@ filmdrop-ui/
 
 ## Proposed Directory Structure:
 
-```json
+```
 filmdrop-ui/
   ├── src/
   │   ├── assets/                 # Static assets like images, fonts, etc.
