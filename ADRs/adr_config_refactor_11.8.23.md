@@ -217,7 +217,7 @@ deciders: Brad Andrick, Matt Hanson, Phil Varner
 }
 ```
 
-## Exiting Directory Structure:
+## Existing Directory Structure:
 
 ```
 filmdrop-ui/
