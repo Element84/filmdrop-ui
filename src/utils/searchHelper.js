@@ -53,9 +53,6 @@ export function newSearch() {
   const includesGridCode = _selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_code_frequency'
   )
-  const includesGridCodeLandsat = _selectedCollection.aggregations?.some(
-    (el) => el.name === 'grid_code_landsat_frequency'
-  )
 
   if (store.getState().mainSlice.viewMode !== 'scene') {
     if (currentMapZoomLevel < 7) {
@@ -80,7 +77,7 @@ export function newSearch() {
     AggregateSearchService(searchAggregateParams, 'hex')
     return
   }
-  if (includesGridCode || includesGridCodeLandsat) {
+  if (includesGridCode) {
     if (currentMapZoomLevel < midZoomLevel) {
       store.dispatch(setZoomLevelNeeded(midZoomLevel))
       store.dispatch(setShowZoomNotice(true))
@@ -135,17 +132,7 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
   if (gridCodeToSearchIn) {
-    if (
-      _selectedCollection.aggregations.some(
-        (item) => item.name === 'grid_code_landsat_frequency'
-      )
-    ) {
-      // extract the path and row from gridcode value, e.g., WRS2-123123
-      query['landsat:wrs_path'] = { eq: gridCodeToSearchIn.substring(5, 8) }
-      query['landsat:wrs_row'] = { eq: gridCodeToSearchIn.slice(-3) }
-    } else {
-      query['grid:code'] = { eq: gridCodeToSearchIn }
-    }
+    query['grid:code'] = { eq: gridCodeToSearchIn }
   }
 
   let searchParamsStr
@@ -203,12 +190,7 @@ function buildSearchAggregateParams(gridType) {
     }
     aggregations = `grid_geohex_frequency,total_count&grid_geohex_frequency_precision=${precision}`
   } else {
-    const gridAggName = _selectedCollection.aggregations.some(
-      (item) => item.name === 'grid_code_frequency'
-    )
-      ? 'grid_code_frequency'
-      : 'grid_code_landsat_frequency'
-    aggregations = `${gridAggName},total_count`
+    aggregations = `grid_code_frequency,total_count`
   }
 
   const searchParams = new Map([
@@ -348,24 +330,15 @@ function fixAntiMeridianPoints(hexBoundary) {
 }
 
 export function mapGridCodeFromJson(json) {
-  const _selectedCollection = store.getState().mainSlice.selectedCollectionData
   const _gridCellData = store.getState().mainSlice.localGridData
-  const gridAggName = _selectedCollection.aggregations.some(
-    (item) => item.name === 'grid_code_frequency'
-  )
-    ? 'grid_code_frequency'
-    : 'grid_code_landsat_frequency'
   const buckets = json.aggregations?.find(
-    (el) => el.name === gridAggName
+    (el) => el.name === 'grid_code_frequency'
   ).buckets
-
   const numberMatched = json?.aggregations?.find(
     (el) => el.name === 'total_count'
   )?.value
   const overflow = json?.aggregations.find(
-    (el) =>
-      el.name === 'grid_code_frequency' ||
-      el.name === 'grid_code_landsat_frequency'
+    (el) => el.name === 'grid_code_frequency'
   ).overflow
 
   // create Geojson file with matched geometry and frequency
