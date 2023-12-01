@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Update link tag for manifest.json so that it uses basic auth credentials, fixes load when running behind CloudFront with basic auth
 
+### Removed
+
+- Special handling of `grid_code_landsat_frequency` aggregation
+
 ## 4.3.0 - 2023-10-13
 
 ### Fixed
