@@ -11,7 +11,7 @@
     "@vitejs/plugin-react": "^4.0.4",
     "@wojtekmaj/react-datetimerange-picker": "^5.4.2",
     "colormap": "^2.3.2",
-    "dompurify": "^3.0.3",
+    "dompurify": "^3.0.6",
     "h3-js": "^4.1.0",
     "leaflet": "^1.9.3",
     "leaflet-draw": "^1.0.4",
