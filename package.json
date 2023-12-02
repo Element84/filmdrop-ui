@@ -21,7 +21,7 @@
     "react-dropzone": "^14.2.3",
     "react-leaflet": "^4.2.1",
     "react-redux": "^8.1.2",
-    "react-tooltip": "^5.19.0"
+    "react-tooltip": "^5.22.0"
   },
   "devDependencies": {
     "@testing-library/dom": "^9.3.0",
