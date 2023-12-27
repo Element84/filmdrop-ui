@@ -74,6 +74,7 @@ export function processDisplayFieldValues(value) {
   switch (true) {
     case value === null:
     case value === undefined:
+      return 'No Data'
     case typeof value === 'boolean':
     case typeof value === 'number':
     case typeof value === 'string':
