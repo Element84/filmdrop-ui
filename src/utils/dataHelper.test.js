@@ -149,29 +149,22 @@ describe('dataHelper', () => {
       expect(actual).toEqual(expected)
     })
 
-    it('should recursively process object values', () => {
+    it('should process nested object values into string', () => {
       const input = {
-        bool: true,
-        arr: [1, 2, 3],
-        num: 42,
-        str: 'Hello, world!',
         nestedObj: {
           nestedBool: false,
-          nestedArr: [4, 5, 6]
+          nestedArr: [4, 5, 6],
+          platform: {
+            eq: 'landsat-8'
+          },
+          collections: ['landsat-c2-l2']
         }
       }
 
       const result = processDisplayFieldValues(input)
-      expect(result).toEqual({
-        bool: 'true',
-        arr: '1, 2, 3',
-        num: '42',
-        str: 'Hello, world!',
-        nestedObj: {
-          nestedBool: 'false',
-          nestedArr: '4, 5, 6'
-        }
-      })
+      expect(result).toEqual(
+        'nestedObj: {nestedBool: false, nestedArr: [4, 5, 6], platform: {eq: landsat-8}, collections: [landsat-c2-l2]}'
+      )
     })
 
     it('returns Unsupported Type for other types', () => {
