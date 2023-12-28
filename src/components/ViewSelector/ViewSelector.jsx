@@ -12,6 +12,9 @@ import { newSearch } from '../../utils/searchHelper'
 const ViewSelector = () => {
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
+  const _selectedCollectionData = useSelector(
+    (state) => state.mainSlice.selectedCollectionData
+  )
 
   const dispatch = useDispatch()
   const [selectedBtn, setSelectedBtn] = useState(_viewMode)
@@ -29,7 +32,7 @@ const ViewSelector = () => {
 
   useEffect(() => {
     dispatch(setViewMode(selectedBtn))
-    if (!_showAppLoading) {
+    if (!_showAppLoading && _selectedCollectionData) {
       newSearch()
     }
   }, [selectedBtn])
@@ -37,7 +40,7 @@ const ViewSelector = () => {
   return (
     <ThemeProvider theme={theme}>
       <Box sx={{ width: 165 }} className="viewSelector">
-        <label>View Mode</label>
+        <label htmlFor="ViewModeToggle">View Mode</label>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
             <ButtonGroup
