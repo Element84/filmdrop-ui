@@ -1,7 +1,9 @@
 import { store } from '../redux/store'
 import {
   setCollectionsData,
-  setShowAppLoading
+  setShowAppLoading,
+  setapplicationAlertMessage,
+  setshowApplicationAlert
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 
@@ -19,10 +21,27 @@ export async function GetCollectionsService(searchParams) {
       throw new Error()
     })
     .then((json) => {
-      const builtCollectionData = buildCollectionsData(json)
-      return builtCollectionData
+      if (!store.getState().mainSlice.appConfig.COLLECTIONS) {
+        const builtCollectionData = buildCollectionsData(json)
+        return builtCollectionData
+      }
+      if (json && json.collections && Array.isArray(json.collections)) {
+        json.collections = json.collections.filter((collection) => {
+          return store
+            .getState()
+            .mainSlice.appConfig.COLLECTIONS.includes(collection.id)
+        })
+        const builtCollectionData = buildCollectionsData(json)
+        return builtCollectionData
+      }
     })
     .then((formattedData) => {
+      if (Object.values(formattedData).length === 0) {
+        store.dispatch(
+          setapplicationAlertMessage('Error: No Collections Found')
+        )
+        store.dispatch(setshowApplicationAlert(true))
+      }
       store.dispatch(setCollectionsData(formattedData))
       store.dispatch(setShowAppLoading(false))
       loadLocalGridData()
