@@ -19,8 +19,19 @@ export async function GetCollectionsService(searchParams) {
       throw new Error()
     })
     .then((json) => {
-      const builtCollectionData = buildCollectionsData(json)
-      return builtCollectionData
+      if (!store.getState().mainSlice.appConfig.COLLECTIONS) {
+        const builtCollectionData = buildCollectionsData(json)
+        return builtCollectionData
+      }
+      if (json && json.collections && Array.isArray(json.collections)) {
+        json.collections = json.collections.filter((collection) => {
+          return store
+            .getState()
+            .mainSlice.appConfig.COLLECTIONS.includes(collection.id)
+        })
+        const builtCollectionData = buildCollectionsData(json)
+        return builtCollectionData
+      }
     })
     .then((formattedData) => {
       store.dispatch(setCollectionsData(formattedData))

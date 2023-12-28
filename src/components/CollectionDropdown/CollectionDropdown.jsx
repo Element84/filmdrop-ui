@@ -29,6 +29,10 @@ const Dropdown = () => {
 
   useEffect(() => {
     if (_collectionsData.length > 0) {
+      if (!_appConfig.DEFAULT_COLLECTION) {
+        setCollectionId(_collectionsData[0].id)
+        return
+      }
       const defaultCollectionFound = !!_collectionsData.find(
         (o) => o.id === _appConfig.DEFAULT_COLLECTION
       )
