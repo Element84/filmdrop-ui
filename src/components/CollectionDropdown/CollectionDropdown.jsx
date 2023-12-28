@@ -38,6 +38,7 @@ const Dropdown = () => {
       )
       if (!defaultCollectionFound) {
         console.log('Configuration Error: DEFAULT_COLLECTION not found in API')
+        setCollectionId(_collectionsData[0].id)
       } else {
         setCollectionId(_appConfig.DEFAULT_COLLECTION)
       }
