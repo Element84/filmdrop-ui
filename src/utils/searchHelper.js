@@ -344,25 +344,27 @@ export function mapGridCodeFromJson(json) {
   // create Geojson file with matched geometry and frequency
   const mappedKeysToGrid = buckets
     .map((feature) => {
+      const keyParts = feature.key.split('-')
+      const pattern = /^[A-Z0-9]+-[-_.A-Za-z0-9]+$/
+      if (keyParts.length !== 2 || !pattern.test(keyParts.join('-'))) {
+        return null // Ignore keys that don't match the pattern
+      }
+
       let gridCellDataIndex
       for (let i = 0; i < _gridCellData.length; i++) {
-        if (
-          Object.keys(_gridCellData[i])[0] ===
-          feature.key.split('-')[0].toLowerCase()
-        ) {
+        if (Object.keys(_gridCellData[i])[0] === keyParts[0].toLowerCase()) {
           gridCellDataIndex = i
         }
       }
       const coordinates =
-        _gridCellData[gridCellDataIndex][
-          feature.key.split('-')[0].toLowerCase()
-        ].cells[feature.key.split('-')[1]]
+        _gridCellData[gridCellDataIndex][keyParts[0].toLowerCase()].cells[
+          keyParts[1]
+        ]
 
       return {
         geometry: {
-          type: _gridCellData[gridCellDataIndex][
-            feature.key.split('-')[0].toLowerCase()
-          ].type,
+          type: _gridCellData[gridCellDataIndex][keyParts[0].toLowerCase()]
+            .type,
           coordinates
         },
         type: 'Feature',
