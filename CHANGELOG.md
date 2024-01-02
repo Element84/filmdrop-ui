@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 
 - Bug fix that made `DEFAULT_COLLECTION` required instead of optional, per the readme. It is now actually optional.
+- Fix bug where grid-code aggregation results didn't render if `grid_code_frequency` included a key that didn't match the expected pattern
 
 ## 4.4.0 - 2023-12-01
 
