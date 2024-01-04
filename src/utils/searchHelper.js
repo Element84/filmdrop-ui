@@ -343,26 +343,24 @@ export function mapGridCodeFromJson(json) {
 
   const mappedKeysToGrid = buckets
     .map((feature) => {
-      const keyParts = feature.key.split('-')
+      const keyParts = feature.key.split('-', 2)
       const pattern = /^[A-Z0-9]+-[-_.A-Za-z0-9]+$/
 
-      if (keyParts.length !== 2 || !pattern.test(keyParts.join('-'))) {
+      if (keyParts.length !== 2 || !pattern.test(feature.key)) {
         return null
       }
 
-      const gridCellDataIndex = _gridCellData.findIndex(
-        (item) => Object.keys(item)[0] === keyParts[0].toLowerCase()
-      )
-      if (gridCellDataIndex === -1) {
+      const prefix = keyParts[0]
+      const cell = keyParts[1]
+
+      const gridToMapInto = _gridCellData[prefix]
+
+      if (!gridToMapInto) {
         return null
       }
 
-      const { type } =
-        _gridCellData[gridCellDataIndex][keyParts[0].toLowerCase()]
-      const coordinates =
-        _gridCellData[gridCellDataIndex][keyParts[0].toLowerCase()].cells[
-          keyParts[1]
-        ]
+      const type = gridToMapInto.type
+      const coordinates = gridToMapInto.cells[cell]
 
       return {
         geometry: {
