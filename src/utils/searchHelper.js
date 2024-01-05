@@ -341,28 +341,30 @@ export function mapGridCodeFromJson(json) {
     (el) => el.name === 'grid_code_frequency'
   ).overflow
 
-  // create Geojson file with matched geometry and frequency
   const mappedKeysToGrid = buckets
     .map((feature) => {
-      let gridCellDataIndex
-      for (let i = 0; i < _gridCellData.length; i++) {
-        if (
-          Object.keys(_gridCellData[i])[0] ===
-          feature.key.split('-')[0].toLowerCase()
-        ) {
-          gridCellDataIndex = i
-        }
+      const keyParts = feature.key.split('-', 2)
+      const pattern = /^[A-Z0-9]+-[-_.A-Za-z0-9]+$/
+
+      if (keyParts.length !== 2 || !pattern.test(feature.key)) {
+        return null
       }
-      const coordinates =
-        _gridCellData[gridCellDataIndex][
-          feature.key.split('-')[0].toLowerCase()
-        ].cells[feature.key.split('-')[1]]
+
+      const prefix = keyParts[0]
+      const cell = keyParts[1]
+
+      const gridToMapInto = _gridCellData[prefix]
+
+      if (!gridToMapInto) {
+        return null
+      }
+
+      const type = gridToMapInto.type
+      const coordinates = gridToMapInto.cells[cell]
 
       return {
         geometry: {
-          type: _gridCellData[gridCellDataIndex][
-            feature.key.split('-')[0].toLowerCase()
-          ].type,
+          type,
           coordinates
         },
         type: 'Feature',
@@ -372,7 +374,7 @@ export function mapGridCodeFromJson(json) {
         }
       }
     })
-    .filter((feature) => feature.geometry.coordinates)
+    .filter((feature) => feature && feature.geometry.coordinates)
 
   return {
     type: 'FeatureCollection',

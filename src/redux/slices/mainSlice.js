@@ -21,7 +21,7 @@ const initialState = {
   collectionsData: [],
   selectedCollectionData: null,
   searchDateRangeValue: null,
-  localGridData: [],
+  localGridData: {},
   isAutoSearchSet: false,
   hasCollectionChanged: false,
   showAdvancedSearchOptions: false,
