@@ -15,10 +15,9 @@ export async function LoadLocalGridDataService(fileName) {
     })
     .then((json) => {
       const getLocalGridData = store.getState().mainSlice.localGridData
-      const newObject = {}
-      newObject[fileName] = json
-      if (!getLocalGridData.includes(newObject)) {
-        store.dispatch(setLocalGridData([...getLocalGridData, newObject]))
+      const newObject = { [fileName.toUpperCase()]: json }
+      if (!Object.prototype.hasOwnProperty.call(getLocalGridData, fileName)) {
+        store.dispatch(setLocalGridData({ ...getLocalGridData, ...newObject }))
       }
     })
     .catch((error) => {
