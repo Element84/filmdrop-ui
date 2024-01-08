@@ -209,3 +209,9 @@
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
+
+@media screen and (max-width: 1160px) {
+  .popupResultsContainer {
+    max-height: calc(100% - 150px);
+  }
+}
