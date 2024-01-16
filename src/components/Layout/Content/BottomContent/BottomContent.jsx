@@ -9,7 +9,6 @@ import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  setShowPublishModal,
   setShowZoomNotice,
   setisDrawingEnabled,
   setmappedScenes,
@@ -80,10 +79,6 @@ const BottomContent = () => {
 
   function onAnalyzeClick() {
     window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
-  }
-
-  function onPublishClick() {
-    dispatch(setShowPublishModal(true))
   }
 
   function onLaunchClick() {
@@ -219,11 +214,6 @@ const BottomContent = () => {
         {_appConfig.ANALYZE_BTN_URL && (
           <button className="actionButton" onClick={() => onAnalyzeClick()}>
             Analyze
-          </button>
-        )}
-        {_appConfig.SHOW_PUBLISH_BTN && (
-          <button className="actionButton" onClick={() => onPublishClick()}>
-            Publish
           </button>
         )}
         {_appConfig.LAUNCH_URL && (

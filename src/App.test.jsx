@@ -4,7 +4,6 @@ import App from './App'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import {
-  setShowPublishModal,
   setshowUploadGeojsonModal,
   setshowApplicationAlert,
   setappConfig,
@@ -55,19 +54,6 @@ describe('App', () => {
       setup()
       const ContentComponent = screen.queryByTestId('testContent')
       expect(ContentComponent).not.toBeNull()
-    })
-    describe('when conditionally rendering PublishModal', () => {
-      it('should not render PublishModal if showPublishModal in state is false', () => {
-        setup()
-        const PublishModalComponent = screen.queryByTestId('testPublishModal')
-        expect(PublishModalComponent).toBeNull()
-      })
-      it('should render PublishModal if showPublishModal in state is true', () => {
-        store.dispatch(setShowPublishModal(true))
-        setup()
-        const PublishModalComponent = screen.queryByTestId('testPublishModal')
-        expect(PublishModalComponent).not.toBeNull()
-      })
     })
     describe('when conditionally rendering UploadGeojsonModal', () => {
       it('should not render UploadGeojsonModal if showUploadGeojsonModal in state is false', () => {

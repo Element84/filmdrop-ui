@@ -154,27 +154,6 @@ describe('BottomContent', () => {
       ).not.toBeInTheDocument()
       expect(screen.queryByText(/loading test app/i)).not.toBeInTheDocument()
     })
-    it('should render publish Button if SHOW_PUBLISH_BTN set in config', () => {
-      const mockAppConfigSearchEnabled = {
-        ...mockAppConfig,
-        SHOW_PUBLISH_BTN: true
-      }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-      setup()
-      expect(
-        screen.queryByRole('button', {
-          name: /publish/i
-        })
-      ).toBeInTheDocument()
-    })
-    it('should not render publish Button if SHOW_PUBLISH_BTN not set in config', () => {
-      setup()
-      expect(
-        screen.queryByRole('button', {
-          name: /publish/i
-        })
-      ).not.toBeInTheDocument()
-    })
     it('should render analyze Button if ANALYZE_BTN_URL set in config', () => {
       setup()
       expect(
@@ -331,21 +310,6 @@ describe('BottomContent', () => {
         })
         await user.click(launchButton)
         expect(openSpy).toHaveBeenCalledWith(mockLaunchBtnUrl, '_blank')
-      })
-    })
-    describe('on publish clicked', () => {
-      it('should show publish modal', async () => {
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          SHOW_PUBLISH_BTN: true
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        setup()
-        const publishButton = screen.getByRole('button', {
-          name: /publish/i
-        })
-        await user.click(publishButton)
-        expect(store.getState().mainSlice.showPublishModal).toBeTruthy()
       })
     })
     describe('on zoom Clicked', () => {
