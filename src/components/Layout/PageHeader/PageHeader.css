@@ -24,7 +24,7 @@
 }
 
 .dashboardLink {
-  margin-right: 20px;
+  margin-right: 10px;
   font-size: 16px;
   height: 100%;
   display: flex;
@@ -47,6 +47,7 @@
 .filmDrop {
   padding: 6px;
   min-width: 90px;
+  margin-right: 10px;
 }
 
 .pageHeaderLink {
@@ -73,4 +74,10 @@
   border: 1px #6cc24a solid;
   background: #6cc24a;
   color: #12171a;
+}
+
+@media screen and (max-width: 950px) {
+  .dashboardLink {
+    display: none;
+  }
 }
