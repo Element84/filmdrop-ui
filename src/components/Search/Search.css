@@ -1,33 +1,28 @@
 .Search {
-  height: auto;
+  height: 100%;
   width: 100%;
   display: flex;
-  flex-direction: row;
-  transition: max-height 0.33s ease-in-out;
+  flex-direction: column;
+}
+.searchFilters {
+  height: calc(100% - 60px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-.firstSearchItemsGroup {
-  display: flex;
-  flex-direction: row;
-  width: 65%;
+.searchContainer.searchBoundary {
+  margin-top: 20px;
 }
-.secondSearchItemsGroup {
+.searchButtonContainer {
+  height: 60px;
+  border-top: solid rgba(0, 0, 0, 0.2) 2px;
   display: flex;
-  flex-direction: row;
-  width: 35%;
+  align-items: end;
 }
 
 .searchContainer {
-  height: 100px;
-  background-color: #353d4f;
   color: #ffffff;
   font-size: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  border-right: 2px solid rgba(0, 0, 0, 0.2);
 }
 
 .searchContainer label {
@@ -40,29 +35,16 @@
   top: 2px;
 }
 
-.autoSearchContainer {
-  padding-top: 5px;
-}
-
 .collectionDropdownComponent {
-  width: 80%;
+  width: 100%;
 }
 
 .dateTimeRangeComponent {
-  width: 80%;
+  width: 100%;
 }
 
-.cloudSliderComponent {
-  width: 80%;
-}
 .viewSelectorComponent {
-  width: 80%;
-  display: flex;
-  justify-content: center;
-}
-
-.cartComponent {
-  width: 80%;
+  width: 100%;
 }
 
 .defaultSearchContainer {
@@ -84,7 +66,7 @@
   display: block;
 }
 
-.advancedSearchContent {
+.searchByGeomContent {
   width: 100%;
   height: 100px;
   display: flex;
@@ -93,34 +75,24 @@
   align-items: center;
 }
 
-.advancedSearchOptionsContainer {
-  height: 167px;
-  width: 100%;
-  background-color: #4f5768;
-  display: flex;
-  flex-direction: column;
-  border-right: 2px solid rgba(0, 0, 0, 0.2);
-}
-
-.advancedSearchOptionsText {
-  font-size: 14px;
-  margin-top: 10px;
-  margin-left: 12px;
-  color: #fff;
-  font-weight: bold;
-}
-
-.advancedSearchOptionsButtons {
+.searchByGeomOptionsContainer {
   width: 100%;
   display: flex;
   flex-direction: column;
+}
+
+.searchByGeomOptionsButtons {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
   align-items: center;
   margin-top: 10px;
 }
 
-.advancedSearchOptionsButton {
+.searchByGeomOptionsButton {
   height: 32px;
-  width: 80%;
+  max-width: 100px;
+  margin-right: 10px;
   background-color: #4f5768;
   border: none;
   color: white;
@@ -136,48 +108,19 @@
   justify-content: center;
   border-radius: 5px;
 }
-.advancedSearchOptionsButton:hover {
+.searchByGeomOptionsButton:hover {
   background-color: #353d4f;
 }
 
-.advancedSearchOptionsButtonDisabled {
+.searchByGeomOptionsButtonDisabled {
   opacity: 0.35;
   cursor: default;
 }
-.advancedSearchOptionsButtonDisabled:hover {
+.searchByGeomOptionsButtonDisabled:hover {
   background-color: #4f5768;
 }
 
-.searchContainer.searchButton button {
-  margin-left: 0px;
-  height: 50px;
-}
-
-.searchContainer.searchButton button.disabled-true {
-  opacity: 0.2;
-  cursor: default;
-  background: #a9b0c1;
-}
-
-.searchContainer.searchButton button.disabled-true:hover {
-  opacity: 0.2;
-  cursor: default;
-  background: #a9b0c1;
-  color: #12171a;
-}
-
-.searchContainer .autoSearchContainer {
-  transform: scale(0.875);
-  display: flex;
-  flex-direction: row;
-  min-width: 160px;
-  align-items: center;
-  padding-top: 2px;
-  margin-top: -5px;
-  margin-bottom: -10px;
-}
-
-.advancedSearchOptions {
+.searchByGeomOptions {
   margin-top: 8px;
   font-size: 14px;
   color: #a9b0c1;
@@ -189,123 +132,14 @@
   user-select: none;
 }
 
-.searchContainer .actionButton {
-  height: 45px;
-  width: 145px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
 .disableSearchOverlay {
-  height: 100%;
-  width: 100%;
+  height: calc(100% - 20px);
+  width: 300px;
   background-color: #353d4f;
   opacity: 0.7;
   z-index: 5;
   position: absolute;
-}
-
-.cartButtonContainer {
-  max-width: 130px;
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
-  cursor: default;
-}
-
-.cartButton {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 60px;
-  width: 55px;
-  border-radius: 5px;
-  border-style: solid;
-  border-width: 1px;
-  padding: 10px;
-  font-size: 18px;
-  font-weight: bold;
-  border-color: #76829c;
-  color: #a9b0c1;
-  user-select: none;
-  margin-right: 10px;
-}
-
-.cartButtonEnabled {
-  cursor: pointer;
-  color: #12171a;
-  background-color: #6cc24a;
-  border-style: none;
-}
-
-.cartCountContainer {
-  width: 55px;
-  height: 30px;
-  background-color: #5d626d;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 7px;
-  border-radius: 5px;
-  font-weight: normal;
-}
-
-.carCountContainerEnabled {
-  background-color: #4f8f36;
-}
-
-@media screen and (max-width: 1460px) {
-  .Search {
-    flex-direction: column;
-    height: 200px;
-  }
-  .firstSearchItemsGroup {
-    width: 100%;
-  }
-  .secondSearchItemsGroup {
-    width: 100%;
-  }
-  .searchContainer {
-    border-bottom: 2px solid rgba(0, 0, 0, 0.2);
-  }
-  .cartButtonContainer {
-    max-width: unset;
-    align-items: center;
-  }
-  .defaultSearchContainer {
-    min-width: unset;
-  }
-}
-
-@media screen and (max-width: 975px) {
-  .Search {
-    flex-direction: column;
-    height: 200px;
-  }
-  .firstSearchItemsGroup {
-    width: 100%;
-    flex-direction: column;
-  }
-  .secondSearchItemsGroup {
-    width: 100%;
-    flex-direction: row;
-  }
-  .searchButtonAdvanced.active {
-    z-index: 100;
-  }
-  .disableSearchOverlay {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 600px) {
-  .secondSearchItemsGroup {
-    width: 100%;
-    flex-direction: column;
-  }
+  left: 0px;
 }
 
 /* Date Range Picker */
