@@ -291,6 +291,10 @@ div#attribution-tooltip {
 .layerListButtonIcon {
   color: #555;
 }
+.resultCount {
+  left: 52px;
+  transform: none;
+}
 
 @media screen and (max-width: 1460px) {
   .resultCount {
@@ -299,12 +303,7 @@ div#attribution-tooltip {
   }
 }
 
-@media screen and (max-width: 975px) {
-  .resultCount {
-    left: 52px;
-    transform: none;
-  }
-
+@media screen and (max-width: 775px) {
   .ZoomNotice {
     width: 70%;
   }
