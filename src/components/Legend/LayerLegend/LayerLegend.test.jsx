@@ -90,7 +90,7 @@ describe('LayerLegend', () => {
       it('should render search area legend item if searchGeojsonBoundary set in redux and advanced search enabled in config', () => {
         const mockAppConfigSearchEnabled = {
           ...mockAppConfig,
-          ADVANCED_SEARCH_ENABLED: 'true'
+          SEARCH_BY_GEOM_ENABLED: 'true'
         }
         store.dispatch(setappConfig(mockAppConfigSearchEnabled))
         store.dispatch(
@@ -102,7 +102,7 @@ describe('LayerLegend', () => {
       it('should not render search area legend item if searchGeojsonBoundary set in redux', () => {
         const mockAppConfigSearchEnabled = {
           ...mockAppConfig,
-          ADVANCED_SEARCH_ENABLED: 'true'
+          SEARCH_BY_GEOM_ENABLED: 'true'
         }
         store.dispatch(setappConfig(mockAppConfigSearchEnabled))
         setup()
