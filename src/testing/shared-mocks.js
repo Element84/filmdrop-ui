@@ -3447,7 +3447,6 @@ export const mockAppConfig = {
   PUBLIC_URL: 'http://example.com/',
   LOGO_URL: './logo.png',
   LOGO_ALT: 'Alt description for my custom logo',
-  SHOW_PUBLISH_BTN: false,
   DEFAULT_COLLECTION: 'cop-dem-glo-30',
   STAC_API_URL: 'https://api-endpoint.example.com',
   API_MAX_ITEMS: 200,
@@ -3545,7 +3544,7 @@ export const mockAppConfig = {
   BASEMAP_URL: 'https://tile-provider.example.com/{z}/{x}/{y}.png',
   BASEMAP_HTML_ATTRIBUTION:
     '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>',
-  ADVANCED_SEARCH_ENABLED: false,
+  SEARCH_BY_GEOM_ENABLED: false,
   CART_ENABLED: false,
   SHOW_BRAND_LOGO: true
 }
