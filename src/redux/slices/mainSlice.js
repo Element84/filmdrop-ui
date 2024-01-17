@@ -12,7 +12,6 @@ const initialState = {
   searchLoading: false,
   currentPopupResult: null,
   showPopupModal: false,
-  showPublishModal: false,
   showZoomNotice: false,
   zoomLevelNeeded: null,
   viewMode: 'scene',
@@ -24,7 +23,7 @@ const initialState = {
   localGridData: {},
   isAutoSearchSet: false,
   hasCollectionChanged: false,
-  showAdvancedSearchOptions: false,
+  showSearchByGeom: false,
   isDrawingEnabled: false,
   mapDrawPolygonHandler: null,
   searchGeojsonBoundary: null,
@@ -79,9 +78,6 @@ export const mainSlice = createSlice({
     setShowPopupModal: (state, action) => {
       state.showPopupModal = action.payload
     },
-    setShowPublishModal: (state, action) => {
-      state.showPublishModal = action.payload
-    },
     setShowZoomNotice: (state, action) => {
       state.showZoomNotice = action.payload
     },
@@ -115,8 +111,8 @@ export const mainSlice = createSlice({
     sethasCollectionChanged: (state, action) => {
       state.hasCollectionChanged = action.payload
     },
-    setshowAdvancedSearchOptions: (state, action) => {
-      state.showAdvancedSearchOptions = action.payload
+    setshowSearchByGeom: (state, action) => {
+      state.showSearchByGeom = action.payload
     },
     setisDrawingEnabled: (state, action) => {
       state.isDrawingEnabled = action.payload
@@ -181,7 +177,6 @@ export const { setClickResults } = mainSlice.actions
 export const { setSearchLoading } = mainSlice.actions
 export const { setCurrentPopupResult } = mainSlice.actions
 export const { setShowPopupModal } = mainSlice.actions
-export const { setShowPublishModal } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions
 export const { setZoomLevelNeeded } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
@@ -193,7 +188,7 @@ export const { setSearchDateRangeValue } = mainSlice.actions
 export const { setLocalGridData } = mainSlice.actions
 export const { setIsAutoSearchSet } = mainSlice.actions
 export const { sethasCollectionChanged } = mainSlice.actions
-export const { setshowAdvancedSearchOptions } = mainSlice.actions
+export const { setshowSearchByGeom } = mainSlice.actions
 export const { setisDrawingEnabled } = mainSlice.actions
 export const { setmapDrawPolygonHandler } = mainSlice.actions
 export const { setsearchGeojsonBoundary } = mainSlice.actions
