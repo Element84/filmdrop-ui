@@ -45,6 +45,14 @@ export async function AggregateSearchService(searchParams, gridType) {
                 interactive: false
               }
             )
+            layer.on('mouseout', function (e) {
+              const map = store.getState().mainSlice.map
+              map.eachLayer(function (layer) {
+                if (layer.getTooltip()) {
+                  layer.closeTooltip()
+                }
+              })
+            })
           }
         }
       }
