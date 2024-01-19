@@ -9,7 +9,7 @@ import {
   setcartItems,
   setCloudCover,
   setsearchGeojsonBoundary,
-  setshowAdvancedSearchOptions,
+  setshowSearchByGeom,
   setSearchLoading
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
@@ -30,34 +30,17 @@ describe('Search', () => {
   })
 
   describe('search button', () => {
-    describe('if advanced search enabled is false', () => {
-      beforeEach(() => {
-        store.dispatch(setappConfig(mockAppConfig))
-      })
-      describe('on render', () => {
-        it('should render auto search when ADVANCED_SEARCH_ENABLED is false', () => {
-          setup()
-          expect(screen.getByText(/auto search/i)).toBeInTheDocument()
-        })
-      })
-    })
-    describe('if advanced search enabled is true', () => {
+    describe('if SEARCH_BY_GEOM_ENABLED is true', () => {
       beforeEach(() => {
         vi.mock('../../utils/mapHelper')
         vi.mock('../../utils/searchHelper')
         const mockAppConfigSearchEnabled = {
           ...mockAppConfig,
-          ADVANCED_SEARCH_ENABLED: true
+          SEARCH_BY_GEOM_ENABLED: true
         }
         store.dispatch(setappConfig(mockAppConfigSearchEnabled))
       })
       describe('on render', () => {
-        it('should not render auto search when ADVANCED_SEARCH_ENABLED is true', () => {
-          setup()
-          expect(
-            screen.queryByText('test_autoSearchContainer')
-          ).not.toBeInTheDocument()
-        })
         it('should not render disabled search bar overlay div', async () => {
           setup()
           expect(
@@ -66,40 +49,22 @@ describe('Search', () => {
         })
       })
       describe('when search options changed', () => {
-        it('should set showAdvancedSearchOptions to false in redux', () => {
-          store.dispatch(setshowAdvancedSearchOptions(true))
+        it('should set showSearchByGeom to false in redux', () => {
+          store.dispatch(setshowSearchByGeom(true))
           setup()
           store.dispatch(setCloudCover(5))
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeFalsy()
+          expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
         })
       })
       describe('when search button clicked', () => {
-        it('should set showAdvancedSearchOptions to false in redux', async () => {
-          store.dispatch(setshowAdvancedSearchOptions(true))
+        it('should set showSearchByGeom to false in redux', async () => {
+          store.dispatch(setshowSearchByGeom(true))
           setup()
           const searchButton = screen.getByRole('button', {
             name: /search/i
           })
           await user.click(searchButton)
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeFalsy()
-        })
-      })
-      describe('when advanced clicked', () => {
-        it('should set showAdvancedSearchOptions be the opposite showAdvancedSearchOptions of in redux', async () => {
-          setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeTruthy()
-          await user.click(advancedButton)
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeFalsy()
+          expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
         })
       })
       describe('when draw boundary button clicked', () => {
@@ -115,10 +80,8 @@ describe('Search', () => {
             })
           )
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const drawBoundaryButton = screen.getByRole('button', {
-            name: /draw boundary/i
+            name: /draw/i
           })
           await user.click(drawBoundaryButton)
           expect(spyEnableMapPolyDrawing).not.toHaveBeenCalled()
@@ -128,18 +91,13 @@ describe('Search', () => {
             mapHelper,
             'enableMapPolyDrawing'
           )
-          store.dispatch(setshowAdvancedSearchOptions(true))
+          store.dispatch(setshowSearchByGeom(true))
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const drawBoundaryButton = screen.getByRole('button', {
-            name: /draw boundary/i
+            name: /draw/i
           })
           await user.click(drawBoundaryButton)
           expect(spyEnableMapPolyDrawing).toHaveBeenCalled()
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeFalsy()
           expect(store.getState().mainSlice.isDrawingEnabled).toBeTruthy()
         })
       })
@@ -147,8 +105,6 @@ describe('Search', () => {
         it('should not call functions if geom does not exists', async () => {
           const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const clearButton = screen.getByRole('button', {
             name: /clear/i
           })
@@ -164,17 +120,13 @@ describe('Search', () => {
             })
           )
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const clearButton = screen.getByRole('button', {
             name: /clear/i
           })
           await user.click(clearButton)
           expect(spyClearLayer).toHaveBeenCalled()
           expect(store.getState().mainSlice.searchGeojsonBoundary).toBeNull()
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeFalsy()
+          expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
         })
       })
       describe('when upload geojson button clicked', () => {
@@ -186,96 +138,33 @@ describe('Search', () => {
             })
           )
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const uploadGeojsonButton = screen.getByRole('button', {
-            name: /upload geojson/i
+            name: /upload/i
           })
           await user.click(uploadGeojsonButton)
           expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
         })
         it('should call dispatch functions if geom does not exists', async () => {
-          store.dispatch(setshowAdvancedSearchOptions(true))
+          store.dispatch(setshowSearchByGeom(true))
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const uploadGeojsonButton = screen.getByRole('button', {
-            name: /upload geojson/i
+            name: /upload/i
           })
           await user.click(uploadGeojsonButton)
-          expect(
-            store.getState().mainSlice.showAdvancedSearchOptions
-          ).toBeFalsy()
+          expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
           expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
         })
       })
       describe('when drawing mode enabled', () => {
         it('should render disabled search bar overlay div', async () => {
           setup()
-          const advancedButton = screen.getByText(/advanced/i)
-          await user.click(advancedButton)
           const drawBoundaryButton = screen.getByRole('button', {
-            name: /draw boundary/i
+            name: /draw/i
           })
           await user.click(drawBoundaryButton)
           expect(
             screen.queryByTestId('test_disableSearchOverlay')
           ).toBeInTheDocument()
-        })
-      })
-    })
-  })
-
-  describe('cart button', () => {
-    describe('if cartEnabled is set to false in config', () => {
-      beforeEach(() => {
-        store.dispatch(setappConfig(mockAppConfig))
-      })
-      describe('on render', () => {
-        it('should not render cart button when CART_ENABLED is false', () => {
-          setup()
-          expect(screen.queryByText(/cart/i)).not.toBeInTheDocument()
-        })
-      })
-    })
-    describe('if cartEnabled is set to true in config', () => {
-      beforeEach(() => {
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          CART_ENABLED: true
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-      })
-      describe('on render', () => {
-        it('should render cart button when CART_ENABLED is true', () => {
-          setup()
-          expect(screen.queryByText(/cart/i)).toBeInTheDocument()
-        })
-      })
-      describe('on cart button click', () => {
-        it('should not open modal if no items in cart', async () => {
-          setup()
-          expect(store.getState().mainSlice.showCartModal).toBeFalsy()
-          await user.click(screen.getByTestId('testCartButton'))
-          expect(store.getState().mainSlice.showCartModal).toBeFalsy()
-        })
-        it('should open modal if cart has items', async () => {
-          store.dispatch(setcartItems([{ name: 'test item' }]))
-          setup()
-          expect(store.getState().mainSlice.showCartModal).toBeFalsy()
-          await user.click(screen.getByTestId('testCartButton'))
-          expect(store.getState().mainSlice.showCartModal).toBeTruthy()
-        })
-      })
-      describe('show count from from cartItems in redux state', () => {
-        it('should show count of 0 items initial redux state', () => {
-          setup()
-          expect(screen.getByTestId('testCartCount').innerHTML).toBe('0')
-        })
-        it('should show count of 1 items if redux state changed', () => {
-          store.dispatch(setcartItems([{ name: 'test item' }]))
-          setup()
-          expect(screen.getByTestId('testCartCount').innerHTML).toBe('1')
         })
       })
     })
