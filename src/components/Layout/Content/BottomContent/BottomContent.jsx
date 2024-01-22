@@ -59,9 +59,6 @@ const BottomContent = () => {
   )
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   const _mappedScenes = useSelector((state) => state.mainSlice.mappedScenes)
-  const _isAutoSearchSet = useSelector(
-    (state) => state.mainSlice.isAutoSearchSet
-  )
   const _imageOverlayLoading = useSelector(
     (state) => state.mainSlice.imageOverlayLoading
   )
@@ -236,64 +233,62 @@ const BottomContent = () => {
             Showing {_mappedScenes.length} of {_searchResults.numberMatched}{' '}
             scenes
           </div>
-          {!_isAutoSearchSet ? (
-            <div className="resultCountButtons">
-              {_searchResults.numberReturned < _searchResults.numberMatched ? (
-                <div>
-                  {allScenesLoading ? (
-                    <button
-                      onClick={onCancelLoadAllScenesClicked}
-                      className="countButton"
-                    >
-                      <span>
-                        <span className="countButtonCancelText">Cancel</span>
-                        <CircularProgress
-                          size={14}
-                          color="inherit"
-                        ></CircularProgress>
-                      </span>
-                    </button>
-                  ) : (
-                    <button
-                      onClick={
-                        _mappedScenes.length === _searchResults.numberMatched ||
-                        _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
-                          ? null
-                          : onLoadAllScenesClicked
-                      }
-                      className={
-                        _mappedScenes.length === _searchResults.numberMatched ||
-                        _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
-                          ? 'countButton disabledCountButton'
-                          : 'countButton'
-                      }
-                    >
-                      {_mappedScenes.length === _searchResults.numberMatched ||
+          <div className="resultCountButtons">
+            {_searchResults.numberReturned < _searchResults.numberMatched ? (
+              <div>
+                {allScenesLoading ? (
+                  <button
+                    onClick={onCancelLoadAllScenesClicked}
+                    className="countButton"
+                  >
+                    <span>
+                      <span className="countButtonCancelText">Cancel</span>
+                      <CircularProgress
+                        size={14}
+                        color="inherit"
+                      ></CircularProgress>
+                    </span>
+                  </button>
+                ) : (
+                  <button
+                    onClick={
+                      _mappedScenes.length === _searchResults.numberMatched ||
                       _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
-                        ? 'Max scenes loaded'
-                        : 'Load all scenes'}
-                    </button>
-                  )}
-                </div>
-              ) : null}
-              <button
-                onClick={
-                  allScenesLoading ||
-                  _mappedScenes.length === _clickResults.length
-                    ? null
-                    : onSelectAllScenesClicked
-                }
-                className={
-                  allScenesLoading ||
-                  _mappedScenes.length === _clickResults.length
-                    ? 'countButton disabledCountButton'
-                    : 'countButton'
-                }
-              >
-                Select scenes
-              </button>
-            </div>
-          ) : null}
+                        ? null
+                        : onLoadAllScenesClicked
+                    }
+                    className={
+                      _mappedScenes.length === _searchResults.numberMatched ||
+                      _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
+                        ? 'countButton disabledCountButton'
+                        : 'countButton'
+                    }
+                  >
+                    {_mappedScenes.length === _searchResults.numberMatched ||
+                    _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
+                      ? 'Max scenes loaded'
+                      : 'Load all scenes'}
+                  </button>
+                )}
+              </div>
+            ) : null}
+            <button
+              onClick={
+                allScenesLoading ||
+                _mappedScenes.length === _clickResults.length
+                  ? null
+                  : onSelectAllScenesClicked
+              }
+              className={
+                allScenesLoading ||
+                _mappedScenes.length === _clickResults.length
+                  ? 'countButton disabledCountButton'
+                  : 'countButton'
+              }
+            >
+              Select scenes
+            </button>
+          </div>
         </div>
       ) : null}
       {_searchResults?.searchType === 'AggregatedResults' &&

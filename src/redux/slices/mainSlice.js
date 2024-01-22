@@ -21,7 +21,6 @@ const initialState = {
   selectedCollectionData: null,
   searchDateRangeValue: null,
   localGridData: {},
-  isAutoSearchSet: false,
   hasCollectionChanged: false,
   showSearchByGeom: false,
   isDrawingEnabled: false,
@@ -105,9 +104,6 @@ export const mainSlice = createSlice({
     setLocalGridData: (state, action) => {
       state.localGridData = action.payload
     },
-    setIsAutoSearchSet: (state, action) => {
-      state.isAutoSearchSet = action.payload
-    },
     sethasCollectionChanged: (state, action) => {
       state.hasCollectionChanged = action.payload
     },
@@ -186,7 +182,6 @@ export const { setCollectionsData } = mainSlice.actions
 export const { setSelectedCollectionData } = mainSlice.actions
 export const { setSearchDateRangeValue } = mainSlice.actions
 export const { setLocalGridData } = mainSlice.actions
-export const { setIsAutoSearchSet } = mainSlice.actions
 export const { sethasCollectionChanged } = mainSlice.actions
 export const { setshowSearchByGeom } = mainSlice.actions
 export const { setisDrawingEnabled } = mainSlice.actions

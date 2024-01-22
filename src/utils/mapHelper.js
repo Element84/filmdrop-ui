@@ -11,7 +11,7 @@ import {
   setimageOverlayLoading,
   setSearchLoading
 } from '../redux/slices/mainSlice'
-import { searchGridCodeScenes, debounceNewSearch } from './searchHelper'
+import { searchGridCodeScenes } from './searchHelper'
 import debounce from './debounce'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
 import GeoJSONValidation from './geojsonValidation'
@@ -327,12 +327,6 @@ export function clearMapSelection() {
   clearLayer('clickedSceneHighlightLayer')
   clearLayer('clickedSceneImageLayer')
   store.dispatch(setClickResults([]))
-}
-
-export function mapCallDebounceNewSearch() {
-  if (store.getState().mainSlice.isAutoSearchSet) {
-    debounceNewSearch()
-  }
 }
 
 export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)

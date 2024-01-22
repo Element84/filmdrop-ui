@@ -14,7 +14,6 @@ import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
 import {
   mapClickHandler,
-  mapCallDebounceNewSearch,
   setMosaicZoomMessage,
   addReferenceLayersToMap
 } from '../../utils/mapHelper'
@@ -146,16 +145,11 @@ const LeafMap = () => {
 
       // set up map events
       map.on('zoomend', function () {
-        mapCallDebounceNewSearch()
         setMosaicZoomMessage()
         if (!mapTouched) {
           setmapTouched(true)
           dispatch(setshowMapAttribution(false))
         }
-      })
-
-      map.on('dragend', function () {
-        mapCallDebounceNewSearch()
       })
 
       map.on('click', mapClickHandler)
