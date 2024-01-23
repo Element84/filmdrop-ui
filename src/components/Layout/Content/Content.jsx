@@ -6,7 +6,6 @@ import LeftContent from './LeftContent/LeftContent'
 const Content = () => {
   return (
     <div className="Content" data-testid="testContent">
-      {/* <TopContent></TopContent> */}
       <LeftContent></LeftContent>
       <BottomContent></BottomContent>
     </div>
