@@ -6,7 +6,6 @@ import { store } from '../../../redux/store'
 import {
   setSearchResults,
   setappConfig,
-  setsearchGeojsonBoundary,
   setSearchType,
   setcartItems
 } from '../../../redux/slices/mainSlice'
