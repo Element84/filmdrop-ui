@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react'
-import './BottomContent.css'
+import './RightContent.css'
 import {
   DEFAULT_MOSAIC_MIN_ZOOM,
   DEFAULT_MAX_SCENES_RENDERED
@@ -33,7 +33,7 @@ import { Tooltip } from 'react-tooltip'
 import LayersIcon from '@mui/icons-material/Layers'
 import LayerList from '../../../LayerList/LayerList'
 
-const BottomContent = () => {
+const RightContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
   const [mapAttribution, setmapAttribution] = useState('')
   const _showMapAttribution = useSelector(
@@ -188,7 +188,7 @@ const BottomContent = () => {
   }
 
   return (
-    <div className="BottomContent">
+    <div className="RightContent">
       <LeafMap></LeafMap>
       {_showZoomNotice && (
         <div className="ZoomNotice">
@@ -412,4 +412,4 @@ const BottomContent = () => {
   )
 }
 
-export default BottomContent
+export default RightContent

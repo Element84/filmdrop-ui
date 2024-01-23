@@ -1,7 +1,7 @@
 import { describe, vi } from 'vitest'
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import BottomContent from './BottomContent'
+import RightContent from './RightContent'
 import { Provider } from 'react-redux'
 import { store } from '../../../../redux/store'
 import {
@@ -32,12 +32,12 @@ import {
 import userEvent from '@testing-library/user-event'
 import * as mapHelper from '../../../../utils/mapHelper'
 
-describe('BottomContent', () => {
+describe('RightContent', () => {
   const user = userEvent.setup()
   const setup = () =>
     render(
       <Provider store={store}>
-        <BottomContent />
+        <RightContent />
       </Provider>
     )
 
