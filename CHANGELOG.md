@@ -10,11 +10,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Added support for `COLLECTIONS` to be defined in the `config.json` file.
+- Run search shortcut added for `SPACE` bar key press.
+
+### Changed
+
+- Move to vertical filter and search instead of top filters.
+- Change `ADVANCED_SEARCH_ENABLED` in config settings to be `SEARCH_BY_GEOM_ENABLED`.
+- Cart component from `stac-selector` effort moved to be in top nav bar.
+- Top nav bar and components hight reduced.
+- Search does not re-run automatically on view mode changed, search button must be clicked or `SPACE` key pressed.
+- Results info panel relocated to be sticky to top left of map frame.
 
 ### Fixed
 
 - Bug fix that made `DEFAULT_COLLECTION` required instead of optional, per the readme. It is now actually optional.
 - Fix bug where grid-code aggregation results didn't render if `grid_code_frequency` included a key that didn't match the expected pattern
+- Resolved bug with map tooltip not closing on mouseout that lead to extra tooltip rendering.
+
+### Removed
+
+- Auto-search function has been removed since it's behavior was deemed to be undesirable.
+- Publish button and modal from an old demo no longer needed for any projects.
 
 ## 4.4.0 - 2023-12-01
 
