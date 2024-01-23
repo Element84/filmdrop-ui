@@ -61,11 +61,6 @@
   height: 45px;
 }
 
-.searchContainer.searchButtonAdvanced.active {
-  background-color: #4f5768;
-  display: block;
-}
-
 .searchByGeomContent {
   width: 100%;
   height: 100px;
