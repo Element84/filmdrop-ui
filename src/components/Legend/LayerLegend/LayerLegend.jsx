@@ -15,9 +15,7 @@ const LayerLegend = () => {
     <div
       data-testid="testLayerLegend"
       className={
-        _appConfig.SHOW_PUBLISH_BTN ||
-        _appConfig.ANALYZE_BTN_URL ||
-        _appConfig.LAUNCH_URL
+        _appConfig.ANALYZE_BTN_URL || _appConfig.LAUNCH_URL
           ? 'LayerLegend'
           : 'LayerLegend LayerLegendBottom'
       }
@@ -42,7 +40,7 @@ const LayerLegend = () => {
           <span>Scene aggregation</span>
         </div>
       )}
-      {_appConfig.ADVANCED_SEARCH_ENABLED && _searchGeojsonBoundary && (
+      {_appConfig.SEARCH_BY_GEOM_ENABLED && _searchGeojsonBoundary && (
         <div className="legendRow">
           <div className="legendSymbol searchAreaLegendSymbol"></div>
           <img

@@ -31,8 +31,6 @@ label {
 
 .searchContainer .datePicker {
   height: 100px;
-  padding-left: 2%;
-  padding-right: 2%;
   background-color: #353d4f;
   color: #ffffff;
   font-size: 16px;
@@ -40,7 +38,7 @@ label {
   flex-direction: column;
   justify-content: center;
   flex-grow: 1;
-  width: 80%;
+  width: 100%;
 }
 
 .dateToolTipIcon {

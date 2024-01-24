@@ -4,6 +4,7 @@ import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 import { useSelector } from 'react-redux'
 import { Box } from '@mui/material'
+import CartButton from '../../Cart/CartButton/CartButton'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
@@ -30,14 +31,16 @@ const PageHeader = () => {
         )}
       </div>
       <div className="pageHeaderRight">
-        {_appConfig.DASHBOARD_BTN_URL && (
-          <Box className="dashboardLink" onClick={() => onDashboardClick()}>
-            <span className="pageHeaderLink pageHeaderLinkHoverable">
-              Dashboard
-              <OpenInNew className="OpenDashboardIcon" />
-            </span>
-          </Box>
-        )}
+        <div className="pageHeaderRightButtons">
+          {_appConfig.DASHBOARD_BTN_URL && (
+            <Box className="dashboardLink" onClick={() => onDashboardClick()}>
+              <span className="pageHeaderLink pageHeaderLinkHoverable">
+                Dashboard
+                <OpenInNew className="OpenDashboardIcon" />
+              </span>
+            </Box>
+          )}
+        </div>
         {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
           <a
             href="https://element84.com/filmdrop"
@@ -49,6 +52,9 @@ const PageHeader = () => {
               className="headerLogoImage filmDrop"
             />
           </a>
+        ) : null}
+        {_appConfig.CART_ENABLED ? (
+          <CartButton className="cartButtonHeaderBar"></CartButton>
         ) : null}
       </div>
     </div>

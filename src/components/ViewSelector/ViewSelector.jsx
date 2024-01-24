@@ -7,14 +7,9 @@ import Box from '@mui/material/Box'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
-import { newSearch } from '../../utils/searchHelper'
 
 const ViewSelector = () => {
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
-  const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
-  const _selectedCollectionData = useSelector(
-    (state) => state.mainSlice.selectedCollectionData
-  )
 
   const dispatch = useDispatch()
   const [selectedBtn, setSelectedBtn] = useState(_viewMode)
@@ -32,9 +27,6 @@ const ViewSelector = () => {
 
   useEffect(() => {
     dispatch(setViewMode(selectedBtn))
-    if (!_showAppLoading && _selectedCollectionData) {
-      newSearch()
-    }
   }, [selectedBtn])
 
   return (

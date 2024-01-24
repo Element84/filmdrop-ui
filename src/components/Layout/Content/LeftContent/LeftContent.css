@@ -1,0 +1,17 @@
+.LeftContent {
+  height: 100%;
+  width: 300px;
+  background-color: #353d4f;
+}
+
+.LeftContentHolder {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: 10px;
+  height: calc(100% - 30px);
+}
+
+.searchButton {
+  width: 100%;
+}

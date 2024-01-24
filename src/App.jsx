@@ -3,7 +3,6 @@ import './App.css'
 import './index.css'
 import Content from './components/Layout/Content/Content'
 import PageHeader from './components/Layout/PageHeader/PageHeader'
-import PublishModal from './components/PublishModal/PublishModal'
 import UploadGeojsonModal from './components/UploadGeojsonModal/UploadGeojsonModal'
 import SystemMessage from './components/SystemMessage/SystemMessage'
 import { GetCollectionsService } from './services/get-collections-service'
@@ -13,9 +12,6 @@ import CartModal from './components/Cart/CartModal/CartModal'
 import { InitializeAppFromConfig } from './utils/configHelper'
 
 function App() {
-  const _showPublishModal = useSelector(
-    (state) => state.mainSlice.showPublishModal
-  )
   const _showUploadGeojsonModal = useSelector(
     (state) => state.mainSlice.showUploadGeojsonModal
   )
@@ -42,7 +38,6 @@ function App() {
         <div className="App">
           <PageHeader></PageHeader>
           <Content></Content>
-          {_showPublishModal ? <PublishModal /> : null}
           {_showUploadGeojsonModal ? (
             <UploadGeojsonModal></UploadGeojsonModal>
           ) : null}

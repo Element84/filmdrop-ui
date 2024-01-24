@@ -1,7 +1,7 @@
 import { describe, vi } from 'vitest'
 import React from 'react'
 import { render, screen } from '@testing-library/react'
-import BottomContent from './BottomContent'
+import RightContent from './RightContent'
 import { Provider } from 'react-redux'
 import { store } from '../../../../redux/store'
 import {
@@ -32,12 +32,12 @@ import {
 import userEvent from '@testing-library/user-event'
 import * as mapHelper from '../../../../utils/mapHelper'
 
-describe('BottomContent', () => {
+describe('RightContent', () => {
   const user = userEvent.setup()
   const setup = () =>
     render(
       <Provider store={store}>
-        <BottomContent />
+        <RightContent />
       </Provider>
     )
 
@@ -153,27 +153,6 @@ describe('BottomContent', () => {
         screen.queryByTestId('test_applicationLoadingAnimation')
       ).not.toBeInTheDocument()
       expect(screen.queryByText(/loading test app/i)).not.toBeInTheDocument()
-    })
-    it('should render publish Button if SHOW_PUBLISH_BTN set in config', () => {
-      const mockAppConfigSearchEnabled = {
-        ...mockAppConfig,
-        SHOW_PUBLISH_BTN: true
-      }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-      setup()
-      expect(
-        screen.queryByRole('button', {
-          name: /publish/i
-        })
-      ).toBeInTheDocument()
-    })
-    it('should not render publish Button if SHOW_PUBLISH_BTN not set in config', () => {
-      setup()
-      expect(
-        screen.queryByRole('button', {
-          name: /publish/i
-        })
-      ).not.toBeInTheDocument()
     })
     it('should render analyze Button if ANALYZE_BTN_URL set in config', () => {
       setup()
@@ -331,21 +310,6 @@ describe('BottomContent', () => {
         })
         await user.click(launchButton)
         expect(openSpy).toHaveBeenCalledWith(mockLaunchBtnUrl, '_blank')
-      })
-    })
-    describe('on publish clicked', () => {
-      it('should show publish modal', async () => {
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          SHOW_PUBLISH_BTN: true
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        setup()
-        const publishButton = screen.getByRole('button', {
-          name: /publish/i
-        })
-        await user.click(publishButton)
-        expect(store.getState().mainSlice.showPublishModal).toBeTruthy()
       })
     })
     describe('on zoom Clicked', () => {

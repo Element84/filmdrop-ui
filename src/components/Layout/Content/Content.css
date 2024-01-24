@@ -1,17 +1,17 @@
 .Content {
-  height: calc(100% - 80px);
+  height: calc(100% - 64px);
   width: 100%;
   display: flex;
   flex-direction: column;
   color: #d3d3d3;
   font-size: 20px;
   position: absolute;
-  top: 80px;
+  top: 64px;
 }
 
 @media screen and (max-width: 730px) {
   .Content {
-    height: calc(100% - 80px);
-    top: 80px;
+    height: calc(100% - 64px);
+    top: 64px;
   }
 }

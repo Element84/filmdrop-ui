@@ -2,7 +2,6 @@
   height: calc(100% - 80px);
   width: 400px;
   position: absolute;
-  z-index: 2;
   bottom: 40px;
   right: 10px;
   display: flex;
@@ -11,7 +10,7 @@
   padding: 10px;
   border-radius: 2px;
   color: #dedede;
-  z-index: 5;
+  z-index: 6;
 }
 
 .popupResultsContainerMin {
@@ -208,4 +207,10 @@
   margin-left: -1px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+}
+
+@media screen and (max-width: 1325px) {
+  .popupResultsContainer {
+    max-height: calc(100% - 150px);
+  }
 }

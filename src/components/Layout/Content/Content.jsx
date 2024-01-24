@@ -1,13 +1,13 @@
 import React from 'react'
 import './Content.css'
-import BottomContent from './BottomContent/BottomContent'
-import TopContent from './TopContent/TopContent'
+import RightContent from './RightContent/RightContent'
+import LeftContent from './LeftContent/LeftContent'
 
 const Content = () => {
   return (
     <div className="Content" data-testid="testContent">
-      <TopContent></TopContent>
-      <BottomContent></BottomContent>
+      <LeftContent></LeftContent>
+      <RightContent></RightContent>
     </div>
   )
 }

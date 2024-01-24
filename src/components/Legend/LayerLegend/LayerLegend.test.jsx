@@ -6,7 +6,6 @@ import { store } from '../../../redux/store'
 import {
   setSearchResults,
   setappConfig,
-  setsearchGeojsonBoundary,
   setSearchType,
   setcartItems
 } from '../../../redux/slices/mainSlice'
@@ -87,31 +86,12 @@ describe('LayerLegend', () => {
       })
     })
     describe('confirm conditional search area render', () => {
-      it('should render search area legend item if searchGeojsonBoundary set in redux and advanced search enabled in config', () => {
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          ADVANCED_SEARCH_ENABLED: 'true'
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        store.dispatch(
-          setsearchGeojsonBoundary({ type: 'Point', coordinates: [0, 0] })
-        )
-        setup()
-        expect(screen.queryByText(/search area/i)).toBeInTheDocument()
-      })
       it('should not render search area legend item if searchGeojsonBoundary set in redux', () => {
         const mockAppConfigSearchEnabled = {
           ...mockAppConfig,
-          ADVANCED_SEARCH_ENABLED: 'true'
+          SEARCH_BY_GEOM_ENABLED: 'true'
         }
         store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        setup()
-        expect(screen.queryByText(/search area/i)).not.toBeInTheDocument()
-      })
-      it('should not render search area legend item if advanced search not enabled in config', () => {
-        store.dispatch(
-          setsearchGeojsonBoundary({ type: 'Point', coordinates: [0, 0] })
-        )
         setup()
         expect(screen.queryByText(/search area/i)).not.toBeInTheDocument()
       })

@@ -390,7 +390,7 @@ export function searchGridCodeScenes(gridCodeToSearchIn) {
   SearchService(searchScenesParams, 'grid-code')
 }
 
-export const debounceNewSearch = debounce(() => newSearch(), 800)
+export const debounceNewSearch = debounce(() => newSearch(), 300)
 
 function newMosaicSearch() {
   clearAllLayers()
