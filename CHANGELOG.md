@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Move to vertical filter and search instead of top filters.
 - Change `ADVANCED_SEARCH_ENABLED` in config settings to be `SEARCH_BY_GEOM_ENABLED`.
 - Cart component from `stac-selector` effort moved to be in top nav bar.
-- Top nav bar and components hight reduced.
+- Top nav bar and components height reduced.
 - Search does not re-run automatically on view mode changed, search button must be clicked or `SPACE` key pressed.
 - Results info panel relocated to be sticky to top left of map frame.
 
