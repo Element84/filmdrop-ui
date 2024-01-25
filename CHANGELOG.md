@@ -20,7 +20,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Top nav bar and components height reduced.
 - Search does not re-run automatically on view mode changed, search button must be clicked or `SPACE` key pressed.
 - Results info panel relocated to be sticky to top left of map frame.
-- Fetch requests to files in hosted app build directory now use relative path.
 
 ### Fixed
 
