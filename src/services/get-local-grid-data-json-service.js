@@ -3,7 +3,10 @@ import { setLocalGridData } from '../redux/slices/mainSlice'
 
 export async function LoadLocalGridDataService(fileName) {
   const cacheBuster = Date.now()
-  await fetch(`/data/${fileName}.json?_cb=${cacheBuster}`, {
+  const configUrl = `${
+    import.meta.env.BASE_URL
+  }data/${fileName}.json?_cb=${cacheBuster}`
+  await fetch(configUrl, {
     method: 'GET',
     cache: 'no-store'
   })

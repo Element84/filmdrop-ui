@@ -69,7 +69,6 @@ The file `./public/config/config.example.json` is included in this repository as
 
 > NOTE: This project uses a "build-once, deploy-anywhere" approach with config variables. The config is read on application load by a fetch to the `/config/config.json` path.
 > There is a cachebreaker included in the request to prevent stale config files from being used.
-> This works if the app is deployed with at the root. If nested, the config path may need adjusting and will require a new build step.
 
 ### `config.json`
 

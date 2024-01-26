@@ -8,6 +8,7 @@ import { defineConfig, configDefaults } from 'vitest/config'
 import svgrPlugin from 'vite-plugin-svgr'
 
 export default defineConfig({
+  base: './',
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
     outDir: 'build'

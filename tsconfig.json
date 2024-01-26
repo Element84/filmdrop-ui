@@ -26,7 +26,7 @@
       "node_modules/@testing-library"
     ]
   },
-  "include": ["src"],
+  "include": ["./src"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "exclude": ["node_modules"]
 }
