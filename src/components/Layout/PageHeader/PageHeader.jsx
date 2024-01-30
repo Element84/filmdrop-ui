@@ -13,6 +13,10 @@ const PageHeader = () => {
     window.open(_appConfig.DASHBOARD_BTN_URL, '_blank')
   }
 
+  function onAnalyzeClick() {
+    window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
+  }
+
   return (
     <div className="PageHeader" data-testid="testPageHeader">
       <div className="pageHeaderLeft">
@@ -32,11 +36,27 @@ const PageHeader = () => {
       </div>
       <div className="pageHeaderRight">
         <div className="pageHeaderRightButtons">
+          {_appConfig.ANALYZE_BTN_URL && (
+            <Box
+              className="buttonLink"
+              data-testid="testAnalyzeButton"
+              onClick={() => onAnalyzeClick()}
+            >
+              <span className="pageHeaderLink pageHeaderLinkHoverable">
+                Analyze
+                <OpenInNew className="OpenIcon" />
+              </span>
+            </Box>
+          )}
           {_appConfig.DASHBOARD_BTN_URL && (
-            <Box className="dashboardLink" onClick={() => onDashboardClick()}>
+            <Box
+              className="buttonLink"
+              data-testid="testDashboardButton"
+              onClick={() => onDashboardClick()}
+            >
               <span className="pageHeaderLink pageHeaderLinkHoverable">
                 Dashboard
-                <OpenInNew className="OpenDashboardIcon" />
+                <OpenInNew className="OpenIcon" />
               </span>
             </Box>
           )}
@@ -54,7 +74,9 @@ const PageHeader = () => {
           </a>
         ) : null}
         {_appConfig.CART_ENABLED ? (
-          <CartButton className="cartButtonHeaderBar"></CartButton>
+          <Box className="cartButtonHeaderBar">
+            <CartButton></CartButton>
+          </Box>
         ) : null}
       </div>
     </div>

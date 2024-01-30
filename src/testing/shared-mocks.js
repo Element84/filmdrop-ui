@@ -3454,6 +3454,10 @@ export const mockAppConfig = {
   DASHBOARD_BTN_URL: 'https://dashboard.example.com',
   ANALYZE_BTN_URL: 'https://dashboard.example.com',
   LAUNCH_URL: 'https://github.com/Element84/filmdrop-ui',
+  ACTION_BUTTON: {
+    text: 'Launch Your Own',
+    url: 'https://github.com/Element84/filmdrop-ui'
+  },
   SCENE_TILER_PARAMS: {
     'sentinel-2-l2a': {
       assets: ['red', 'green', 'blue'],

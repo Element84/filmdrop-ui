@@ -16,6 +16,11 @@
                                   supported by Chrome, Edge, Opera and Firefox */
 }
 
+.pageHeaderRightButtons {
+  display: flex;
+  flex-direction: row;
+}
+
 .pageHeaderLeft {
   padding: 15px;
   display: flex;
@@ -47,14 +52,13 @@
 .filmDrop {
   padding: 6px;
   min-width: 90px;
-  margin-right: 10px;
 }
 
 .pageHeaderLink {
-  margin-left: 10px;
+  margin-left: 0px;
   margin-right: 10px;
   border: 1px #76829c solid;
-  padding: 10px 30px;
+  padding: 5px 20px;
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -63,7 +67,7 @@
   transition: all 0.33s ease-in-out;
 }
 
-.OpenDashboardIcon {
+.OpenIcon {
   padding-left: 10px;
   height: 100%;
   transition: all 0.33s ease-in-out;
@@ -76,8 +80,12 @@
   color: #12171a;
 }
 
+.cartButtonHeaderBar {
+  margin-left: 10px;
+}
+
 @media screen and (max-width: 950px) {
-  .dashboardLink {
+  .buttonLink {
     display: none;
   }
 }

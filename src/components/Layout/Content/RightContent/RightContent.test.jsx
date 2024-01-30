@@ -50,7 +50,7 @@ describe('RightContent', () => {
   })
 
   describe('on render', () => {
-    it('should render Launch Your Own Viewer Button if LAUNCH_URL set in config', () => {
+    it('should render action button if ACTION_BUTTON set in config', () => {
       setup()
       expect(
         screen.queryByRole('button', {
@@ -58,12 +58,9 @@ describe('RightContent', () => {
         })
       ).toBeInTheDocument()
     })
-    it('should not render Launch Your Own Viewer Button if LAUNCH_URL not set in config', () => {
-      const mockAppConfigSearchEnabled = {
-        ...mockAppConfig,
-        LAUNCH_URL: ''
-      }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+    it('should not render action button if ACTION_BUTTON not set in config', () => {
+      const { ACTION_BUTTON, ...mockAppConfigNoAction } = mockAppConfig
+      store.dispatch(setappConfig(mockAppConfigNoAction))
       setup()
       expect(
         screen.queryByRole('button', {
@@ -153,27 +150,6 @@ describe('RightContent', () => {
         screen.queryByTestId('test_applicationLoadingAnimation')
       ).not.toBeInTheDocument()
       expect(screen.queryByText(/loading test app/i)).not.toBeInTheDocument()
-    })
-    it('should render analyze Button if ANALYZE_BTN_URL set in config', () => {
-      setup()
-      expect(
-        screen.queryByRole('button', {
-          name: /analyze/i
-        })
-      ).toBeInTheDocument()
-    })
-    it('should not render analyze Button if ANALYZE_BTN_URL not set in config', () => {
-      const mockAppConfigSearchEnabled = {
-        ...mockAppConfig,
-        ANALYZE_BTN_URL: ''
-      }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-      setup()
-      expect(
-        screen.queryByRole('button', {
-          name: /analyze/i
-        })
-      ).not.toBeInTheDocument()
     })
     it('should render zoom notice if showZoomNotice set to true in redux', () => {
       store.dispatch(setShowZoomNotice(true))
@@ -276,40 +252,25 @@ describe('RightContent', () => {
     })
   })
   describe('on button clicks', () => {
-    describe('on analyze clicked', () => {
-      it('should open a new window with analyze URL', async () => {
+    describe('on action button clicked', () => {
+      it('should open a new window with action button URL', async () => {
         window.open = vi.fn()
         const openSpy = vi.spyOn(window, 'open')
-        const mockAnalyzeBtnUrl = 'https://example.com/analyze'
+        const mockActionBtnUrl = 'https://example.com/launch'
         const mockAppConfigSearchEnabled = {
           ...mockAppConfig,
-          ANALYZE_BTN_URL: mockAnalyzeBtnUrl
+          ACTION_BUTTON: {
+            text: 'Launch Your Own',
+            url: mockActionBtnUrl
+          }
         }
         store.dispatch(setappConfig(mockAppConfigSearchEnabled))
         setup()
-        const analyzeButton = screen.getByRole('button', {
-          name: /analyze/i
-        })
-        await user.click(analyzeButton)
-        expect(openSpy).toHaveBeenCalledWith(mockAnalyzeBtnUrl, '_blank')
-      })
-    })
-    describe('on launch clicked', () => {
-      it('should open a new window with launch URL', async () => {
-        window.open = vi.fn()
-        const openSpy = vi.spyOn(window, 'open')
-        const mockLaunchBtnUrl = 'https://example.com/launch'
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          LAUNCH_URL: mockLaunchBtnUrl
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        setup()
-        const launchButton = screen.getByRole('button', {
+        const actionButton = screen.getByRole('button', {
           name: /launch your own/i
         })
-        await user.click(launchButton)
-        expect(openSpy).toHaveBeenCalledWith(mockLaunchBtnUrl, '_blank')
+        await user.click(actionButton)
+        expect(openSpy).toHaveBeenCalledWith(mockActionBtnUrl, '_blank')
       })
     })
     describe('on zoom Clicked', () => {

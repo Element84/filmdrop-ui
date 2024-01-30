@@ -70,16 +70,10 @@ const RightContent = () => {
   const abortControllerRef = useRef(null)
   const attributionTimeout = useRef(null)
 
-  const VIEWER_BTN_TEXT = `Launch Your Own ${_appName}`
-
   const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
-  function onAnalyzeClick() {
-    window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
-  }
-
-  function onLaunchClick() {
-    window.open(_appConfig.LAUNCH_URL, '_blank')
+  function onActionClick() {
+    window.open(_appConfig.ACTION_BUTTON.url, '_blank')
   }
 
   function onZoomClick() {
@@ -208,14 +202,12 @@ const RightContent = () => {
       )}
       {_showLayerList && <LayerList></LayerList>}
       <div className="actionButtons">
-        {_appConfig.ANALYZE_BTN_URL && (
-          <button className="actionButton" onClick={() => onAnalyzeClick()}>
-            Analyze
-          </button>
-        )}
-        {_appConfig.LAUNCH_URL && (
-          <button className="actionButton" onClick={() => onLaunchClick()}>
-            {VIEWER_BTN_TEXT}
+        {_appConfig.ACTION_BUTTON && (
+          <button
+            className="actionButton actionButtonCTA"
+            onClick={() => onActionClick()}
+          >
+            {_appConfig.ACTION_BUTTON.text}
           </button>
         )}
       </div>
@@ -267,7 +259,7 @@ const RightContent = () => {
                     {_mappedScenes.length === _searchResults.numberMatched ||
                     _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
                       ? 'Max scenes loaded'
-                      : 'Load all scenes'}
+                      : 'Load more scenes'}
                   </button>
                 )}
               </div>

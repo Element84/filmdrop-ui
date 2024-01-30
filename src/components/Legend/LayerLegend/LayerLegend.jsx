@@ -12,14 +12,7 @@ const LayerLegend = () => {
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   return (
-    <div
-      data-testid="testLayerLegend"
-      className={
-        _appConfig.ANALYZE_BTN_URL || _appConfig.LAUNCH_URL
-          ? 'LayerLegend'
-          : 'LayerLegend LayerLegendBottom'
-      }
-    >
+    <div data-testid="testLayerLegend" className="LayerLegend">
       {_appConfig.CART_ENABLED && _cartItems.length > 0 ? (
         <div className="legendRow">
           <div className="legendSymbol sceneInCartLegendSymbol"></div>
