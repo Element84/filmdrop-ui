@@ -9,11 +9,11 @@
 
 .ZoomNotice {
   position: absolute;
-  top: 11px;
-  left: 52px;
+  bottom: 10px;
+  left: 12px;
   z-index: 1;
   background: #353d4f;
-  padding: 6px 22px;
+  padding: 6px 15px;
   border-radius: 2px;
   font-size: 0.75em;
   animation: fadeIn 0.45s ease-in-out 0.4s forwards;
@@ -47,8 +47,8 @@
 .actionButtons {
   position: absolute;
   z-index: 2;
-  top: 20px;
-  right: 15px;
+  top: 11px;
+  right: 10px;
   display: flex;
   flex-direction: row;
 }
@@ -61,8 +61,8 @@
   font-size: 18px;
   font-weight: bold;
   height: 44px;
-  padding-left: 30px;
-  padding-right: 30px;
+  padding-left: 15px;
+  padding-right: 15px;
   cursor: pointer;
   transition: all 0.33s ease-in-out;
   -webkit-touch-callout: none; /* iOS Safari */
@@ -137,6 +137,8 @@
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
+  padding-left: 7px;
+  padding-right: 7px;
   margin-left: 2.5px;
   margin-right: 2.5px;
 }
@@ -300,6 +302,12 @@ div#attribution-tooltip {
   .resultCount {
     left: 52px;
     transform: none;
+  }
+}
+
+@media screen and (max-width: 1000px) {
+  .actionButtonCTA {
+    display: none;
   }
 }
 

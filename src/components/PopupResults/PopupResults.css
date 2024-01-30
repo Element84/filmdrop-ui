@@ -1,5 +1,5 @@
 .popupResultsContainer {
-  height: calc(100% - 80px);
+  height: calc(100% - 70px);
   width: 400px;
   position: absolute;
   bottom: 40px;
@@ -209,8 +209,8 @@
   border-bottom-left-radius: 5px;
 }
 
-@media screen and (max-width: 1325px) {
+@media screen and (max-width: 1100px) {
   .popupResultsContainer {
-    max-height: calc(100% - 150px);
+    max-height: calc(100% - 160px);
   }
 }

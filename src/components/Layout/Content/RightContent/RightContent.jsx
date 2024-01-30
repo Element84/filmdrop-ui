@@ -203,7 +203,10 @@ const RightContent = () => {
       {_showLayerList && <LayerList></LayerList>}
       <div className="actionButtons">
         {_appConfig.ACTION_BUTTON && (
-          <button className="actionButton" onClick={() => onActionClick()}>
+          <button
+            className="actionButton actionButtonCTA"
+            onClick={() => onActionClick()}
+          >
             {_appConfig.ACTION_BUTTON.text}
           </button>
         )}
@@ -256,7 +259,7 @@ const RightContent = () => {
                     {_mappedScenes.length === _searchResults.numberMatched ||
                     _mappedScenes.length >= DEFAULT_MAX_SCENES_RENDERED
                       ? 'Max scenes loaded'
-                      : 'Load all scenes'}
+                      : 'Load more scenes'}
                   </button>
                 )}
               </div>
