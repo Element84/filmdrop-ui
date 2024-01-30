@@ -47,15 +47,12 @@
 .actionButtons {
   position: absolute;
   z-index: 2;
-  bottom: 20px;
-  left: 20px;
+  top: 20px;
+  right: 15px;
   display: flex;
   flex-direction: row;
 }
 
-.actionButtons .actionButton {
-  margin-right: 10px;
-}
 .actionButton {
   background-color: #6cc24a;
   color: #12171a;

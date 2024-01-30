@@ -57,7 +57,7 @@
   align-items: center;
   justify-content: center;
 }
-.searchContainer.searchButton .actionButton {
+.searchContainer.searchButton .linkButton {
   height: 45px;
 }
 
