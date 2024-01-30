@@ -1,7 +1,7 @@
 .LayerLegend {
   position: absolute;
   z-index: 5;
-  bottom: 80px;
+  bottom: 20px;
   left: 20px;
   padding: 10px;
   background-color: #13171a;
@@ -11,10 +11,6 @@
   justify-content: center;
   font-size: 14px;
   opacity: 0.9;
-}
-
-.LayerLegendBottom {
-  bottom: 20px;
 }
 
 .hexLegendContainer {
