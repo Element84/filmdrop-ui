@@ -91,30 +91,32 @@
   left: 50%;
   transform: translateX(-50%);
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   background-color: rgba(34, 34, 34, 0.8);
-  padding: 10px 20px;
+  padding: 10px 10px;
   border-radius: 5px;
   color: #fff;
   align-items: center;
   font-size: 0.75em;
   letter-spacing: 0.025em;
-  line-height: 1.8;
+  line-height: 1.5;
 }
 
 .resultCountText {
   display: flex;
   flex-direction: column;
   align-items: center;
+  font-weight: bold;
 }
 
 .resultCountCartText {
   display: flex;
   flex-direction: column;
+  font-weight: bold;
 }
 
 .resultCountButtons {
-  margin-left: 10px;
+  margin-top: 5px;
   display: flex;
   flex-direction: row;
 }
@@ -135,7 +137,8 @@
   -webkit-touch-callout: none;
   -webkit-user-select: none;
   user-select: none;
-  margin-left: 10px;
+  margin-left: 2.5px;
+  margin-right: 2.5px;
 }
 .countButton:hover {
   background-color: #252f36;
