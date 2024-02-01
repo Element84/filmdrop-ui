@@ -21,7 +21,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Search does not re-run automatically on view mode changed, search button must be clicked or `SPACE` key pressed.
 - Results info panel relocated to be sticky to top left of map frame.
 - Fetch requests to files in hosted app build directory now use relative path.
-- Config parameter for `LAUNCH` URL renamed to `ACTION_BUTTON` and structure changed to be an object objects.
+- Config parameter for `LAUNCH_URL` renamed to `ACTION_BUTTON` and structure changed to be an object.
 - Analyze button moved into top nav.
 - Scene count design refactored to reduce size.
 - `Images not visible...` message moved to be next to search button in bottom left of map pane.
