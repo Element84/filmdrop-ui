@@ -16,6 +16,7 @@ import ViewSelector from '../ViewSelector/ViewSelector'
 import { newSearch } from '../../utils/searchHelper'
 import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
 import { Box, Switch } from '@mui/material'
+import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -77,6 +78,14 @@ const Search = () => {
   function updateAutoCenterState() {
     dispatch(setautoCenterOnItemChanged(!_autoCenterOnItemChanged))
   }
+
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: '#76829c'
+      }
+    }
+  })
 
   return (
     <div className="Search" data-testid="Search">
@@ -158,10 +167,12 @@ const Search = () => {
               >
                 Item Auto-Zoom
               </label>
-              <Switch
-                checked={_autoCenterOnItemChanged}
-                onChange={() => updateAutoCenterState()}
-              ></Switch>
+              <ThemeProvider theme={theme}>
+                <Switch
+                  checked={_autoCenterOnItemChanged}
+                  onChange={() => updateAutoCenterState()}
+                ></Switch>
+              </ThemeProvider>
             </Box>
           </div>
         )}
