@@ -6,6 +6,7 @@
 }
 .searchFilters {
   height: calc(100% - 60px);
+  margin-top: 15px;
   overflow-y: auto;
   overflow-x: hidden;
 }
@@ -15,22 +16,24 @@
 }
 .searchButtonContainer {
   height: 60px;
-  border-top: solid rgba(0, 0, 0, 0.2) 2px;
+  border-top: solid #4f5768 2px;
   display: flex;
   align-items: end;
+  margin-bottom: 15px;
 }
 
 .searchContainer {
   color: #ffffff;
   font-size: 16px;
+  margin-right: 5px;
 }
 
 .searchContainer label {
   font-weight: bold;
-  color: #a9b0c1;
+  color: #fff;
 }
 
-.searchContainer.datePicker label {
+.searchContainer.datePickerComponent label {
   position: relative;
   top: 2px;
 }
@@ -89,7 +92,6 @@
   max-width: 100px;
   margin-right: 10px;
   background-color: #4f5768;
-  border: none;
   color: white;
   padding: 15px 15px;
   text-align: center;
@@ -127,25 +129,18 @@
   user-select: none;
 }
 
-.disableSearchOverlay {
-  height: calc(100% - 20px);
-  width: 300px;
-  background-color: #353d4f;
-  opacity: 0.7;
-  z-index: 5;
-  position: absolute;
-  left: 0px;
-}
-
 /* Date Range Picker */
 
-.datePicker {
+.datePickerComponent {
   z-index: 4;
   font-size: 16px;
-  min-width: 270px;
+  position: relative;
+  min-height: 50px;
+  margin-top: 15px;
+  margin-bottom: 20px;
 }
 
-.datePicker label a svg {
+.datePickerComponent label a svg {
   height: 16px;
   width: 16px;
   position: relative;
@@ -154,7 +149,7 @@
   margin-right: 10px;
 }
 
-.datePicker .react-tooltip {
+.datePickerComponent .react-tooltip {
   font-weight: normal;
   line-height: 1.6;
 }

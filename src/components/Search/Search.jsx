@@ -5,16 +5,17 @@ import {
   setshowSearchByGeom,
   setisDrawingEnabled,
   setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setshowUploadGeojsonModal,
+  setautoCenterOnItemChanged
 } from '../../redux/slices/mainSlice'
 import 'react-tooltip/dist/react-tooltip.css'
 import DateTimeRangeSelector from '../DateTimeRangeSelector/DateTimeRangeSelector'
 import CloudSlider from '../CloudSlider/CloudSlider'
 import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
-import { newSearch, debounceNewSearch } from '../../utils/searchHelper'
+import { newSearch } from '../../utils/searchHelper'
 import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
-import { Box } from '@mui/material'
+import { Box, Switch } from '@mui/material'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -29,14 +30,13 @@ const Search = () => {
   const _showSearchByGeom = useSelector(
     (state) => state.mainSlice.showSearchByGeom
   )
-  const _isDrawingEnabled = useSelector(
-    (state) => state.mainSlice.isDrawingEnabled
-  )
   const _searchGeojsonBoundary = useSelector(
     (state) => state.mainSlice.searchGeojsonBoundary
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
-  const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
+  const _autoCenterOnItemChanged = useSelector(
+    (state) => state.mainSlice.autoCenterOnItemChanged
+  )
   const mosaicTilerURL = _appConfig.MOSAIC_TILER_URL || ''
 
   useEffect(() => {
@@ -74,19 +74,9 @@ const Search = () => {
     clearLayer('drawBoundsLayer')
   }
 
-  const handleKeyPress = (event) => {
-    if (event.key === ' ') {
-      debounceNewSearch()
-    }
+  function updateAutoCenterState() {
+    dispatch(setautoCenterOnItemChanged(!_autoCenterOnItemChanged))
   }
-
-  // Adding event listener when the component mounts
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress)
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [])
 
   return (
     <div className="Search" data-testid="Search">
@@ -94,7 +84,14 @@ const Search = () => {
         <div className={`searchContainer collectionDropdown`}>
           <CollectionDropdown></CollectionDropdown>
         </div>
-        <div className="searchContainer datePicker">
+        <div
+          className="searchContainer datePickerComponent"
+          style={{
+            position: 'relative',
+            maxWidth: '200px',
+            overflow: 'visible'
+          }}
+        >
           <DateTimeRangeSelector></DateTimeRangeSelector>
         </div>
         <div className="searchContainer cloudSlider">
@@ -152,6 +149,22 @@ const Search = () => {
             </Box>
           </div>
         )}
+        {_appConfig.SHOW_ITEM_AUTO_ZOOM && (
+          <div className="searchContainer viewSelectorComponent">
+            <Box className="searchByGeomOptionsContainer">
+              <label
+                htmlFor="searchByGeomOptionsContainer"
+                className="searchByGeomOptionsText"
+              >
+                Item Auto-Zoom
+              </label>
+              <Switch
+                checked={_autoCenterOnItemChanged}
+                onChange={() => updateAutoCenterState()}
+              ></Switch>
+            </Box>
+          </div>
+        )}
       </div>
 
       <div className="searchButtonContainer">
@@ -162,12 +175,6 @@ const Search = () => {
           Search
         </button>
       </div>
-      {_isDrawingEnabled || _searchLoading ? (
-        <div
-          className="disableSearchOverlay"
-          data-testid="test_disableSearchOverlay"
-        ></div>
-      ) : null}
     </div>
   )
 }
