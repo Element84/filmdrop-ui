@@ -16,13 +16,13 @@ const DateTimeRangeSelector = () => {
     (state) => state.mainSlice.hasCollectionChanged
   )
 
+  const _SearchDateRangeValue = useSelector(
+    (state) => state.mainSlice.searchDateRangeValue
+  )
+
   const [startDate, setstartDate] = useState()
-  // set default date range (current minus 24hrs * 60min * 60sec * 1000ms per day * 14 days)
-  const twoWeeksAgo = new Date(Date.now() - 24 * 60 * 60 * 1000 * 14)
-  const [datePickerValue, setDatePickerValue] = useState([
-    twoWeeksAgo,
-    new Date()
-  ])
+  const [datePickerValue, setDatePickerValue] = useState(_SearchDateRangeValue)
+
   const [temporalRangeFound, settemporalRangeFound] = useState(false)
 
   useEffect(() => {
@@ -91,9 +91,9 @@ const DateTimeRangeSelector = () => {
         Date Range{' '}
         {temporalRangeFound && (
           <>
-            <a data-tooltip-id="dateRange-tooltip">
+            <span data-tooltip-id="dateRange-tooltip">
               <InfoOutlinedIcon className="dateToolTipIcon" />
-            </a>
+            </span>
             <Tooltip id="dateRange-tooltip">
               <strong>Collection Range:</strong>
               <br />
