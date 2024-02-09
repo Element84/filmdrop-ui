@@ -1,3 +1,7 @@
+.cloudSliderInputs {
+  padding-left: 10px;
+}
+
 .cloudSlider.disabled {
   opacity: 30%;
 }
