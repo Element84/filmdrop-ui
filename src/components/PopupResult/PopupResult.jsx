@@ -1,20 +1,27 @@
 import { React, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResult.css'
-import { useDispatch, useSelector } from 'react-redux'
-import { setCurrentPopupResult } from '../../redux/slices/mainSlice'
+import { useSelector } from 'react-redux'
 import { processDisplayFieldValues } from '../../utils/dataHelper'
+import { debounceTitilerOverlay, zoomToItemExtent } from '../../utils/mapHelper'
 
 const PopupResult = (props) => {
-  const dispatch = useDispatch()
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _selectedCollectionData = useSelector(
     (state) => state.mainSlice.selectedCollectionData
+  )
+  const _autoCenterOnItemChanged = useSelector(
+    (state) => state.mainSlice.autoCenterOnItemChanged
   )
   const [thumbnailURL, setthumbnailURL] = useState(null)
 
   useEffect(() => {
     if (props.result) {
+      // if state autoZoomOnItemChanged is true, zoom to item extent
+      if (_autoCenterOnItemChanged) {
+        zoomToItemExtent(props.result)
+      }
+      debounceTitilerOverlay(props.result)
       const thumbnailURLForSelection = props.result?.links?.find(
         ({ rel }) => rel === 'thumbnail'
       )?.href
@@ -32,13 +39,6 @@ const PopupResult = (props) => {
     }
     // eslint-disable-next-line
   }, [props.result])
-
-  useEffect(() => {
-    return () => {
-      dispatch(setCurrentPopupResult(null))
-    }
-    // eslint-disable-next-line
-  }, [])
 
   return (
     <div
@@ -107,6 +107,25 @@ const PopupResult = (props) => {
                   </div>
                 )
               )}
+            {_appConfig.STAC_LINK_ENABLED && (
+              <div className="detailRow">
+                <span
+                  className="popupResultDetailsRowKey"
+                  id="popupResultDetailsTitle"
+                >
+                  STAC Item:
+                </span>
+                <a
+                  href={props.result.links[0].href.toString()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="popupResultDetailsRowValue popupResultDetailsHrefLink"
+                  aria-labelledby="popupResultDetailsTitle"
+                >
+                  click to view item in STAC API
+                </a>
+              </div>
+            )}
           </div>
         </div>
       ) : null}

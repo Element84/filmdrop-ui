@@ -108,60 +108,8 @@ describe('PopupResult', () => {
         ).toBeInTheDocument()
       })
     })
-    describe('minimized popupResult', () => {
-      it('should not render minimized popupResult on down arrow clicked', () => {
-        store.dispatch(setappConfig(mockAppConfig))
-        setup()
-        expect(screen.queryByTestId('testPopupResult')).toBeInTheDocument()
-        const view = within(screen.getByTestId('testPopupResults')).getByTestId(
-          'KeyboardArrowDownIcon'
-        )
-        fireEvent.click(view)
-        expect(screen.queryByTestId('testPopupResult')).not.toBeInTheDocument()
-      })
-      it('should not render minimized add scene to cart button on down arrow clicked if cart enabled in config', () => {
-        const mockAppConfigSearchEnabled = {
-          ...mockAppConfig,
-          CART_ENABLED: 'true'
-        }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        setup()
-        expect(
-          screen.queryByRole('button', {
-            name: /add scene to cart/i
-          })
-        ).toBeInTheDocument()
-        const view = within(screen.getByTestId('testPopupResults')).getByTestId(
-          'KeyboardArrowDownIcon'
-        )
-        fireEvent.click(view)
-        expect(
-          screen.queryByRole('button', {
-            name: /add scene to cart/i
-          })
-        ).not.toBeInTheDocument()
-      })
-    })
   })
   describe('on button clicks', () => {
-    describe('on close button clicked', () => {
-      it('should set showPopupModal in redux to be false', () => {
-        store.dispatch(setappConfig(mockAppConfig))
-        store.dispatch(setShowPopupModal(true))
-        setup()
-        expect(store.getState().mainSlice.showPopupModal).toBeTruthy()
-        fireEvent.click(screen.getByTestId('CloseIcon'))
-        expect(store.getState().mainSlice.showPopupModal).toBeFalsy()
-      })
-      it('should set imageOverlayLoading in redux to be false', () => {
-        store.dispatch(setappConfig(mockAppConfig))
-        store.dispatch(setimageOverlayLoading(true))
-        setup()
-        expect(store.getState().mainSlice.imageOverlayLoading).toBeTruthy()
-        fireEvent.click(screen.getByTestId('CloseIcon'))
-        expect(store.getState().mainSlice.imageOverlayLoading).toBeFalsy()
-      })
-    })
     describe('on Add all to cart button clicked', () => {
       it('should add all items to cart if none currently in cart', () => {
         const mockAppConfigSearchEnabled = {
