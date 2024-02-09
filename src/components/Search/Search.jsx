@@ -113,7 +113,7 @@ const Search = () => {
         )}
         {_appConfig.SEARCH_BY_GEOM_ENABLED && (
           <div className="searchContainer searchBoundary">
-            <Box className="searchByGeomOptionsContainer">
+            <Box className="searchFilterContainer">
               <label
                 htmlFor="searchByGeomOptionsContainer"
                 className="searchByGeomOptionsText"
@@ -160,13 +160,8 @@ const Search = () => {
         )}
         {_appConfig.SHOW_ITEM_AUTO_ZOOM && (
           <div className="searchContainer viewSelectorComponent">
-            <Box className="searchByGeomOptionsContainer">
-              <label
-                htmlFor="searchByGeomOptionsContainer"
-                className="searchByGeomOptionsText"
-              >
-                Item Auto-Zoom
-              </label>
+            <Box className="searchFilterContainer">
+              <label htmlFor="ItemAutoSearch">Item Auto-Zoom</label>
               <ThemeProvider theme={theme}>
                 <Switch
                   checked={_autoCenterOnItemChanged}

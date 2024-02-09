@@ -3,10 +3,6 @@
   flex-direction: column;
 }
 
-/* .popupResultCartEnabled {
-  height: calc(100% - 90px);
-} */
-
 .popupResultThumbnailContainer {
   display: flex;
   flex-direction: row;

@@ -5,10 +5,6 @@
   flex-direction: column;
 }
 
-.popupResultsContainerMin {
-  height: unset;
-}
-
 .popupResults {
   height: 100%;
   display: flex;
@@ -101,28 +97,6 @@
 .popupResultsBottomButton:hover {
   background-color: #252f36;
   color: #fff;
-}
-
-.popupHeaderButtonsGroup {
-  display: flex;
-  flex-direction: row;
-}
-
-.popupHeaderButtons {
-  background-color: transparent;
-  color: #a9b0c1;
-  border: 0px;
-  font-weight: bold;
-  height: 30px;
-  width: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: color 0.33s ease-in-out;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 
 .popupResultsContent {

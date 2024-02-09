@@ -89,8 +89,6 @@
   position: absolute;
   z-index: 2;
   top: 11px;
-  left: 50%;
-  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
   background-color: rgba(34, 34, 34, 0.8);
@@ -101,6 +99,8 @@
   font-size: 0.75em;
   letter-spacing: 0.025em;
   line-height: 1.5;
+  left: 52px;
+  transform: none;
 }
 
 .resultCountText {
@@ -293,10 +293,6 @@ div#attribution-tooltip {
 
 .layerListButtonIcon {
   color: #555;
-}
-.resultCount {
-  left: 52px;
-  transform: none;
 }
 
 .LoadingImageryOverlayText {
