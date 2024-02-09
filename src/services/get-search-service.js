@@ -3,8 +3,8 @@ import {
   setClickResults,
   setSearchLoading,
   setSearchResults,
-  setShowPopupModal,
-  setmappedScenes
+  setmappedScenes,
+  settabSelected
 } from '../redux/slices/mainSlice'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
@@ -35,7 +35,7 @@ export async function SearchService(searchParams, typeOfSearch) {
       } else {
         store.dispatch(setSearchLoading(false))
         store.dispatch(setClickResults(json.features))
-        store.dispatch(setShowPopupModal(true))
+        store.dispatch(settabSelected('details'))
       }
     })
     .catch((error) => {
