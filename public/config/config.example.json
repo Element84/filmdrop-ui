@@ -4,6 +4,8 @@
   "LOGO_ALT": "Alt description for my custom logo",
   "DEFAULT_COLLECTION": "collection-name",
   "STAC_API_URL": "https://api-endpoint.example.com",
+  "STAC_LINK_ENABLED": true,
+  "SHOW_ITEM_AUTO_ZOOM": true,
   "API_MAX_ITEMS": 200,
   "SCENE_TILER_URL": "https://titiler.example.com",
   "DASHBOARD_BTN_URL": "https://dashboard.example.com",
