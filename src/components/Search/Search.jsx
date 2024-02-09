@@ -16,7 +16,7 @@ import ViewSelector from '../ViewSelector/ViewSelector'
 import { newSearch } from '../../utils/searchHelper'
 import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
 import { Box, Switch } from '@mui/material'
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
+import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 const Search = () => {
   const dispatch = useDispatch()
