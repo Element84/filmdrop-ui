@@ -11,7 +11,7 @@
   position: absolute;
   bottom: 10px;
   left: 12px;
-  z-index: 1;
+  z-index: 6;
   background: #353d4f;
   padding: 6px 15px;
   border-radius: 2px;
@@ -23,6 +23,7 @@
 }
 
 .zoomInText {
+  all: unset;
   color: #6cc24a;
   cursor: pointer;
   transition: border-color 0.33s ease-in-out;
@@ -93,7 +94,7 @@
   display: flex;
   flex-direction: column;
   background-color: rgba(34, 34, 34, 0.8);
-  padding: 10px 10px;
+  padding: 8px 10px;
   border-radius: 5px;
   color: #fff;
   align-items: center;
@@ -126,8 +127,8 @@
   color: #a9b0c1;
   border: 1px solid #a9b0c1;
   border-radius: 5px;
-  height: 32px;
-  font-size: 16px;
+  height: 28px;
+  font-size: 14px;
   display: flex;
   flex-direction: row;
   align-items: center;
@@ -296,6 +297,28 @@ div#attribution-tooltip {
 .resultCount {
   left: 52px;
   transform: none;
+}
+
+.LoadingImageryOverlayText {
+  position: absolute;
+  right: 10px;
+  bottom: 32px;
+  z-index: 10;
+  background-color: #555;
+  font-size: 16px;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  background-color: rgba(34, 34, 34, 0.8);
+  padding: 8px 10px;
+  border-radius: 5px;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+}
+
+.LoadingImageryOverlaySpinner {
+  margin-left: 8px;
 }
 
 @media screen and (max-width: 1460px) {
