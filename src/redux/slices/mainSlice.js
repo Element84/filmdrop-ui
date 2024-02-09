@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
+import { DEFAULT_DATE_RANGE } from '../../components/defaults'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want
 const initialState = {
   map: {},
   dateTime: [],
-  cloudCover: 0,
+  cloudCover: 30,
   showCloudSlider: true,
   searchResults: null,
   clickResults: [],
@@ -19,7 +20,7 @@ const initialState = {
   searchType: null,
   collectionsData: [],
   selectedCollectionData: null,
-  searchDateRangeValue: null,
+  searchDateRangeValue: DEFAULT_DATE_RANGE,
   localGridData: {},
   hasCollectionChanged: false,
   showSearchByGeom: false,
@@ -38,7 +39,11 @@ const initialState = {
   showMapAttribution: true,
   appName: '',
   showLayerList: false,
-  referenceLayers: []
+  referenceLayers: [],
+  selectedCollection: 'Select Collection',
+  tabSelected: 'filters',
+  selectedPopupResultIndex: 0,
+  autoCenterOnItemChanged: false
 }
 
 // next, for every key in the initialState
@@ -157,6 +162,15 @@ export const mainSlice = createSlice({
     },
     setreferenceLayers: (state, action) => {
       state.referenceLayers = action.payload
+    },
+    settabSelected: (state, action) => {
+      state.tabSelected = action.payload
+    },
+    setselectedPopupResultIndex: (state, action) => {
+      state.selectedPopupResultIndex = action.payload
+    },
+    setautoCenterOnItemChanged: (state, action) => {
+      state.autoCenterOnItemChanged = action.payload
     }
   }
 })
@@ -200,5 +214,8 @@ export const { setshowMapAttribution } = mainSlice.actions
 export const { setappName } = mainSlice.actions
 export const { setshowLayerList } = mainSlice.actions
 export const { setreferenceLayers } = mainSlice.actions
+export const { settabSelected } = mainSlice.actions
+export const { setselectedPopupResultIndex } = mainSlice.actions
+export const { setautoCenterOnItemChanged } = mainSlice.actions
 
 export default mainSlice.reducer
