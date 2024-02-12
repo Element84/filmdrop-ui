@@ -17,7 +17,6 @@ const PopupResult = (props) => {
 
   useEffect(() => {
     if (props.result) {
-      // if state autoZoomOnItemChanged is true, zoom to item extent
       if (_autoCenterOnItemChanged) {
         zoomToItemExtent(props.result)
       }
