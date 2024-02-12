@@ -24,7 +24,7 @@ const LeftContent = () => {
   }
 
   const handleKeyPress = (event) => {
-    if (event.shiftKey && event.key === 'S') {
+    if (event.ctrlKey && event.key === ' ') {
       debounceNewSearch()
     }
   }
