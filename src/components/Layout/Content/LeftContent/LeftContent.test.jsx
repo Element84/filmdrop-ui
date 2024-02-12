@@ -6,14 +6,10 @@ import { Provider } from 'react-redux'
 import { store } from '../../../../redux/store'
 import {
   setappConfig,
-  setShowPopupModal,
-  setClickResults,
-  setSearchLoading
+  setSearchLoading,
+  settabSelected
 } from '../../../../redux/slices/mainSlice'
-import {
-  mockAppConfig,
-  mockClickResults
-} from '../../../../testing/shared-mocks'
+import { mockAppConfig } from '../../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
 
 describe('LeftContent', () => {
@@ -38,46 +34,45 @@ describe('LeftContent', () => {
       setup()
       expect(screen.queryByTestId('Search')).toBeInTheDocument()
     })
-    // it('should render popup results if showPopupModal set to true in redux and clickResults greater than 0', () => {
-    //   store.dispatch(setShowPopupModal(true))
-    //   store.dispatch(setClickResults([mockClickResults[0]]))
-    //   setup()
-    //   expect(screen.queryByTestId('testPopupResults')).toBeInTheDocument()
-    // })
-    // it('should not render popup results if showPopupModal set to false in redux', () => {
-    //   store.dispatch(setClickResults([mockClickResults[0]]))
-    //   setup()
-    //   expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
-    // })
-    // it('should not render popup results clickResults has not results added', () => {
-    //   store.dispatch(setShowPopupModal(true))
-    //   store.dispatch(setClickResults([]))
-    //   setup()
-    //   expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
-    // })
+  })
 
-    // describe('when drawing mode enabled', () => {
-    //   it('should render disabled search bar overlay div', async () => {
-    //     setup()
-    //     const drawBoundaryButton = screen.getByRole('button', {
-    //       name: /draw/i
-    //     })
-    //     await user.click(drawBoundaryButton)
-    //     expect(
-    //       screen.queryByTestId('test_disableSearchOverlay')
-    //     ).toBeInTheDocument()
-    //   })
-    // })
+  describe('when search loading', () => {
+    it('should render disabled search bar overlay div', async () => {
+      store.dispatch(setSearchLoading(true))
+      store.dispatch(setappConfig(mockAppConfig))
+      setup()
+      expect(
+        screen.queryByTestId('test_disableSearchOverlay')
+      ).toBeInTheDocument()
+    })
+  })
 
-    // describe('when search loading', () => {
-    //   it('should render disabled search bar overlay div', async () => {
-    //     store.dispatch(setSearchLoading(true))
-    //     store.dispatch(setappConfig(mockAppConfig))
-    //     setup()
-    //     expect(
-    //       screen.queryByTestId('test_disableSearchOverlay')
-    //     ).toBeInTheDocument()
-    //   })
-    // })
+  describe('on user actions', () => {
+    describe('on Item Details tab clicked', () => {
+      it('should not render search results', async () => {
+        setup()
+        expect(screen.queryByTestId('Search')).toBeInTheDocument()
+        const itemDetailsButton = screen.getByRole('button', {
+          name: /item details/i
+        })
+        await user.click(itemDetailsButton)
+        expect(screen.queryByTestId('Search')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('testPopupResults')).toBeInTheDocument()
+      })
+    })
+    describe('on filters tab clicked', () => {
+      it('should render search results', async () => {
+        store.dispatch(settabSelected('item details'))
+        setup()
+        expect(screen.queryByTestId('Search')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('testPopupResults')).toBeInTheDocument()
+        const filtersButton = screen.getByRole('button', {
+          name: /filters/i
+        })
+        await user.click(filtersButton)
+        expect(screen.queryByTestId('Search')).toBeInTheDocument()
+        expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
+      })
+    })
   })
 })

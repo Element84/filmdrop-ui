@@ -65,6 +65,16 @@ describe('Search', () => {
           expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
         })
       })
+      describe('when drawing mode enabled', () => {
+        it('should render disabled search bar overlay div', async () => {
+          setup()
+          const drawBoundaryButton = screen.getByRole('button', {
+            name: /draw/i
+          })
+          await user.click(drawBoundaryButton)
+          expect(store.getState().mainSlice.isDrawingEnabled).toBeTruthy()
+        })
+      })
       describe('when draw boundary button clicked', () => {
         it('should not call functions if geom already exists', async () => {
           const spyEnableMapPolyDrawing = vi.spyOn(
