@@ -16,12 +16,12 @@ const LeftContent = () => {
   )
   const _tabSelected = useSelector((state) => state.mainSlice.tabSelected)
 
-  function setFiltersTab() {
-    dispatch(settabSelected('filters'))
-  }
-  function setDetailsTab() {
-    dispatch(settabSelected('details'))
-  }
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyPress)
+    return () => {
+      document.removeEventListener('keydown', handleKeyPress)
+    }
+  }, [])
 
   const handleKeyPress = (event) => {
     if (event.ctrlKey && event.key === ' ') {
@@ -29,13 +29,12 @@ const LeftContent = () => {
     }
   }
 
-  // Adding event listener when the component mounts
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyPress)
-    return () => {
-      document.removeEventListener('keydown', handleKeyPress)
-    }
-  }, [])
+  function setFiltersTab() {
+    dispatch(settabSelected('filters'))
+  }
+  function setDetailsTab() {
+    dispatch(settabSelected('details'))
+  }
 
   return (
     <div className="LeftContent">
