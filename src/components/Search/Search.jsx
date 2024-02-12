@@ -93,14 +93,7 @@ const Search = () => {
         <div className={`searchContainer collectionDropdown`}>
           <CollectionDropdown></CollectionDropdown>
         </div>
-        <div
-          className="searchContainer datePickerComponent"
-          style={{
-            position: 'relative',
-            maxWidth: '200px',
-            overflow: 'visible'
-          }}
-        >
+        <div className="searchContainer datePickerComponent">
           <DateTimeRangeSelector></DateTimeRangeSelector>
         </div>
         <div className="searchContainer cloudSlider">

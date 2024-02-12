@@ -116,6 +116,8 @@
   min-height: 50px;
   margin-top: 15px;
   margin-bottom: 20px;
+  max-width: 200px;
+  overflow: 'visible';
 }
 
 .datePickerComponent label a svg {
