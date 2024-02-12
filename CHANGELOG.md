@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Added support for `COLLECTIONS` to be defined in the `config.json` file.
 - Run search shortcut added for `SPACE` bar key press.
+- Added config option for `SHOW_ITEM_AUTO_ZOOM` to render switch that lets user toggle behavior of map center/zooming automatically on selected scene.
+- Added config option for `STAC_LINK_ENABLED` to render link out to item in STAC API when set to `true`.
 
 ### Changed
 
@@ -25,6 +27,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Analyze button moved into top nav.
 - Scene count design refactored to reduce size.
 - `Images not visible...` message moved to be next to search button in bottom left of map pane.
+- Results popup now renders in left panel.
+- Tabs added to left panel to switch between results and info panels.
+- Refactor of loading indicator to specify when imagery overlay is loading instead vs. search loading.
 
 ### Fixed
 
@@ -32,11 +37,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix bug where grid-code aggregation results didn't render if `grid_code_frequency` included a key that didn't match the expected pattern
 - Resolved bug with map tooltip not closing on mouseout that lead to extra tooltip rendering.
 - Improved responsiveness for mid-size screens.
+- Bug fix for when selecting multiple grid-code grids was only showing one grid-code in results.
+- Refactor keyboard shortcut for running search. Changed to use `ctrl+space`.
 
 ### Removed
 
 - Auto-search function has been removed since it's behavior was deemed to be undesirable.
 - Publish button and modal from an old demo no longer needed for any projects.
+- Collapsible feature search results panel removed.
 
 ## 4.4.0 - 2023-12-01
 
