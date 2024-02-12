@@ -37,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fix bug where grid-code aggregation results didn't render if `grid_code_frequency` included a key that didn't match the expected pattern
 - Resolved bug with map tooltip not closing on mouseout that lead to extra tooltip rendering.
 - Improved responsiveness for mid-size screens.
-- Bug fix for when selecting multiple grid-code grids was only showing one grid-code in results.
+- Bug fix for when multiple grid-code grids are selected, bug was only showing one grid-code in results.
 - Refactor keyboard shortcut for running search. Changed to use `ctrl+space`.
 
 ### Removed
