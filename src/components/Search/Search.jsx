@@ -80,9 +80,25 @@ const Search = () => {
   }
 
   const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#76829c'
+    components: {
+      MuiSwitch: {
+        styleOverrides: {
+          switchBase: {
+            color: '#fff'
+          },
+          colorPrimary: {
+            '&.Mui-checked': {
+              color: '#373d4d'
+            }
+          },
+          track: {
+            opacity: 0.9,
+            backgroundColor: '#dedede',
+            '.Mui-checked.Mui-checked + &': {
+              backgroundColor: '#a9b0c1'
+            }
+          }
+        }
       }
     }
   })
