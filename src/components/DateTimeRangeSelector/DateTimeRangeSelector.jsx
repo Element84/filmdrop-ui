@@ -7,6 +7,9 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import { setSearchDateRangeValue } from '../../redux/slices/mainSlice'
 
+import DatePicker from 'react-datepicker'
+import 'react-datepicker/dist/react-datepicker.css'
+
 const DateTimeRangeSelector = () => {
   const dispatch = useDispatch()
   const _selectedCollectionData = useSelector(
@@ -33,7 +36,7 @@ const DateTimeRangeSelector = () => {
         _selectedCollectionData.extent.temporal.interval[0]
       )
       settemporalRangeFound(true)
-      setstartDate(startDateFromCollection)
+      // setstartDate(startDateFromCollection)
       collectionEndDateOrCurrent =
         _selectedCollectionData.extent.temporal.interval[0][1] !== null
           ? new Date(_selectedCollectionData.extent.temporal.interval[0][1])
@@ -117,7 +120,7 @@ const DateTimeRangeSelector = () => {
           </span>
         )}
       </label>
-      <DateTimeRangePicker
+      {/* <DateTimeRangePicker
         className="dateTimePicker"
         format={'yy-MM-dd'}
         calendarType="gregory"
@@ -127,7 +130,19 @@ const DateTimeRangeSelector = () => {
         minDate={startDate}
         onChange={setDatePickerValue}
         value={datePickerValue}
-      ></DateTimeRangePicker>
+      ></DateTimeRangePicker> */}
+      <div className="datePickerContainer">
+        <DatePicker
+          className="reactDatePicker"
+          selected={startDate}
+          onChange={(date) => setstartDate(date)}
+        />
+        <DatePicker
+          className="reactDatePicker"
+          selected={startDate}
+          onChange={(date) => setstartDate(date)}
+        />
+      </div>
     </div>
   )
 }
