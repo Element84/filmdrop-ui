@@ -65,7 +65,21 @@ const PopupResult = (props) => {
               </picture>
             ) : null}
           </div>
+
           <div className="popupResultDetails">
+            {_appConfig.STAC_LINK_ENABLED && (
+              <div className="detailRow">
+                <a
+                  href={props.result.links[0].href.toString()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="popupResultDetailsRowValue popupResultDetailsHrefLink"
+                  aria-labelledby="popupResultDetailsTitle"
+                >
+                  STAC API Item
+                </a>
+              </div>
+            )}
             <div className="detailRow">
               <span
                 className="popupResultDetailsRowKey"
@@ -106,25 +120,6 @@ const PopupResult = (props) => {
                   </div>
                 )
               )}
-            {_appConfig.STAC_LINK_ENABLED && (
-              <div className="detailRow">
-                <span
-                  className="popupResultDetailsRowKey"
-                  id="popupResultDetailsTitle"
-                >
-                  STAC Item:
-                </span>
-                <a
-                  href={props.result.links[0].href.toString()}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="popupResultDetailsRowValue popupResultDetailsHrefLink"
-                  aria-labelledby="popupResultDetailsTitle"
-                >
-                  click to view item in STAC API
-                </a>
-              </div>
-            )}
           </div>
         </div>
       ) : null}
