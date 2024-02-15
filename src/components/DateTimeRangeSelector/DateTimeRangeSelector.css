@@ -10,12 +10,15 @@ label {
 /* Date Range Picker */
 
 .datePicker {
-  z-index: 4;
-  font-size: 16px;
+  font-size: 14px;
   min-width: 150px;
 }
 
-.datePicker label a svg {
+.datePicker label {
+  font-size: 16px;
+}
+
+.datePicker label span svg {
   height: 16px;
   width: 16px;
   position: relative;
@@ -29,22 +32,19 @@ label {
   line-height: 1.6;
 }
 
-.searchContainer .datePicker {
-  height: 100px;
-  background-color: #353d4f;
-  color: #ffffff;
-  font-size: 16px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  flex-grow: 1;
-  width: 100%;
-}
-
 .dateToolTipIcon {
   cursor: pointer;
 }
 
 span.error-true {
   color: #bc3131;
+}
+
+.react-calendar {
+  width: 270px;
+}
+
+#dateRange-tooltip {
+  opacity: 1;
+  z-index: 999;
 }

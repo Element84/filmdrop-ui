@@ -1,82 +1,82 @@
-import { React, useEffect, useState } from 'react'
+import { React, useEffect } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResults.css'
 import { useDispatch, useSelector } from 'react-redux'
 import PopupResult from '../PopupResult/PopupResult'
 import {
-  clearMapSelection,
-  debounceTitilerOverlay
-} from '../../utils/mapHelper'
-import {
-  setShowPopupModal,
   setCurrentPopupResult,
   setcartItems,
-  setimageOverlayLoading
+  setimageOverlayLoading,
+  setselectedPopupResultIndex
 } from '../../redux/slices/mainSlice'
 import { ChevronRight, ChevronLeft } from '@mui/icons-material'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
-import CloseIcon from '@mui/icons-material/Close'
 import {
   isSceneInCart,
   numberOfSelectedInCart,
   areAllScenesSelectedInCart
 } from '../../utils/dataHelper'
+import { debounceTitilerOverlay } from '../../utils/mapHelper'
 
 const PopupResults = (props) => {
   const dispatch = useDispatch()
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
-  const [currentResultIndex, setCurrentResultIndex] = useState(0)
-  const [minimizePopup, setminimizePopup] = useState(false)
+  const _currentPopupResult = useSelector(
+    (state) => state.mainSlice.currentPopupResult
+  )
+  const _selectedPopupResultIndex = useSelector(
+    (state) => state.mainSlice.selectedPopupResultIndex
+  )
 
   useEffect(() => {
-    setCurrentResultIndex(0)
-  }, [props.results])
-
-  useEffect(() => {
-    dispatch(setCurrentPopupResult(props.results[currentResultIndex]))
-    debounceTitilerOverlay()
+    if (props.results.length > 0) {
+      if (
+        !_currentPopupResult ||
+        !props.results.includes(_currentPopupResult)
+      ) {
+        dispatch(setselectedPopupResultIndex(0))
+      }
+      debounceTitilerOverlay(props.results[_selectedPopupResultIndex])
+      dispatch(setCurrentPopupResult(props.results[_selectedPopupResultIndex]))
+    }
     return () => {
       dispatch(setimageOverlayLoading(false))
     }
-  }, [currentResultIndex, props.results])
+  }, [props.results])
+
+  useEffect(() => {
+    if (props.results.length > 0) {
+      dispatch(setCurrentPopupResult(props.results[_selectedPopupResultIndex]))
+    }
+  }, [_selectedPopupResultIndex])
 
   function onNextClick() {
-    if (currentResultIndex < props.results.length - 1) {
-      setCurrentResultIndex(currentResultIndex + 1)
+    if (_selectedPopupResultIndex < props.results.length - 1) {
+      dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex + 1))
     }
   }
 
   function onPrevClick() {
-    if (currentResultIndex > 0) {
-      setCurrentResultIndex(currentResultIndex - 1)
+    if (_selectedPopupResultIndex > 0) {
+      dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex - 1))
     }
   }
 
-  function onMinimizeClicked() {
-    setminimizePopup(!minimizePopup)
-  }
-
-  function onCloseClick() {
-    clearMapSelection()
-    dispatch(setimageOverlayLoading(false))
-    dispatch(setShowPopupModal(false))
-  }
-
   function onAddRemoveSceneToCartClicked() {
-    if (isSceneInCart(props.results[currentResultIndex])) {
+    if (isSceneInCart(props.results[_selectedPopupResultIndex])) {
       dispatch(
         setcartItems(
           _cartItems.filter(
             (_cartItems) =>
-              _cartItems.id !== props.results[currentResultIndex].id
+              _cartItems.id !== props.results[_selectedPopupResultIndex].id
           )
         )
       )
       return
     }
-    dispatch(setcartItems([..._cartItems, props.results[currentResultIndex]]))
+    dispatch(
+      setcartItems([..._cartItems, props.results[_selectedPopupResultIndex]])
+    )
   }
 
   function onAddAllToCartClicked() {
@@ -94,15 +94,8 @@ const PopupResults = (props) => {
   }
 
   return (
-    <div
-      data-testid="testPopupResults"
-      className={
-        minimizePopup
-          ? 'popupResultsContainer popupResultsContainerMin'
-          : 'popupResultsContainer'
-      }
-    >
-      {props.results ? (
+    <div data-testid="testPopupResults" className="popupResultsContainer">
+      {props.results.length > 0 ? (
         <div className="popupResults">
           <div className="popupHeader">
             <div className="popupHeaderTop">
@@ -112,30 +105,6 @@ const PopupResults = (props) => {
                 numberOfSelectedInCart(props.results) > 0
                   ? '(' + numberOfSelectedInCart(props.results) + ' in cart)'
                   : null}
-              </div>
-              <div className="popupHeaderButtonsGroup">
-                <button
-                  className="popupHeaderButtons"
-                  onClick={onMinimizeClicked}
-                >
-                  {minimizePopup ? (
-                    <KeyboardArrowUpIcon
-                      sx={{ fontSize: 27, color: '#a9b0c1' }}
-                    ></KeyboardArrowUpIcon>
-                  ) : (
-                    <KeyboardArrowDownIcon
-                      sx={{ fontSize: 27, color: '#a9b0c1' }}
-                    ></KeyboardArrowDownIcon>
-                  )}
-                </button>
-                <button
-                  className="popupHeaderButtons"
-                  onClick={() => onCloseClick()}
-                >
-                  <CloseIcon
-                    sx={{ fontSize: 20, color: '#a9b0c1' }}
-                  ></CloseIcon>
-                </button>
               </div>
             </div>
             {_appConfig.CART_ENABLED ? (
@@ -153,36 +122,33 @@ const PopupResults = (props) => {
               </div>
             ) : null}
           </div>
-
-          {minimizePopup ? null : (
-            <div
-              className={
-                _appConfig.CART_ENABLED
-                  ? 'popupResultsContent popupResultsContentCartEnabled'
-                  : 'popupResultsContent'
-              }
-            >
-              <PopupResult
-                result={props.results[currentResultIndex]}
-              ></PopupResult>
-              {_appConfig.CART_ENABLED ? (
-                <div className="popupResultsBottom">
-                  <button
-                    className="popupResultsBottomButton"
-                    onClick={onAddRemoveSceneToCartClicked}
-                  >
-                    {isSceneInCart(props.results[currentResultIndex])
-                      ? 'Remove scene from cart'
-                      : 'Add scene to cart'}
-                  </button>
-                </div>
-              ) : null}
-            </div>
-          )}
+          <div
+            className={
+              _appConfig.CART_ENABLED
+                ? 'popupResultsContent popupResultsContentCartEnabled'
+                : 'popupResultsContent'
+            }
+          >
+            <PopupResult
+              result={props.results[_selectedPopupResultIndex]}
+            ></PopupResult>
+            {_appConfig.CART_ENABLED ? (
+              <div className="popupResultsBottom">
+                <button
+                  className="popupResultsBottomButton"
+                  onClick={onAddRemoveSceneToCartClicked}
+                >
+                  {isSceneInCart(props.results[_selectedPopupResultIndex])
+                    ? 'Remove scene from cart'
+                    : 'Add scene to cart'}
+                </button>
+              </div>
+            ) : null}
+          </div>
           <div className="popupFooter">
             <div className="popupFooterControls">
               <div className="popupFooterControlLeft">
-                {currentResultIndex + 1 + ' of ' + props.results.length}
+                {_selectedPopupResultIndex + 1 + ' of ' + props.results.length}
               </div>
               <div className="popupFooterButtonsGroup">
                 <div className="popupFooterPrev popupFooterIconContainer">
@@ -205,7 +171,14 @@ const PopupResults = (props) => {
             </div>
           </div>
         </div>
-      ) : null}
+      ) : (
+        <div className="popupResultsEmpty">
+          <span className="popupResultsEmptyPrimaryText">Nothing Selected</span>
+          <span className="popupResultsEmptySecondaryText">
+            search and click footprint on map to view details
+          </span>
+        </div>
+      )}
     </div>
   )
 }

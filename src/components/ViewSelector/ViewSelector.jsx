@@ -17,10 +17,10 @@ const ViewSelector = () => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#353D4F'
+        main: '#DEDEDE'
       },
       secondary: {
-        main: '#DEDEDE'
+        main: '#4f5768'
       }
     }
   })

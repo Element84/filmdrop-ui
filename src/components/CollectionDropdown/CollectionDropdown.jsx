@@ -7,9 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCollectionData,
   setShowZoomNotice,
-  setSearchResults,
   setSearchLoading,
-  sethasCollectionChanged
+  sethasCollectionChanged,
+  setSelectedCollection
 } from '../../redux/slices/mainSlice'
 import {
   zoomToCollectionExtent,
@@ -18,17 +18,22 @@ import {
 } from '../../utils/mapHelper'
 
 const Dropdown = () => {
+  const _selectedCollection = useSelector(
+    (state) => state.mainSlice.selectedCollection
+  )
   const dispatch = useDispatch()
-  const [collectionId, setCollectionId] = useState('Select Collection')
-
+  const [collectionId, setCollectionId] = useState(_selectedCollection)
   const _collectionsData = useSelector(
     (state) => state.mainSlice.collectionsData
   )
-
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
 
   useEffect(() => {
     if (_collectionsData.length > 0) {
+      if (_selectedCollection !== 'Select Collection') {
+        setCollectionId(_selectedCollection)
+        return
+      }
       if (!_appConfig.DEFAULT_COLLECTION) {
         setCollectionId(_collectionsData[0].id)
         return
@@ -50,19 +55,19 @@ const Dropdown = () => {
       (e) => e.id === collectionId
     )
     if (selectedCollection) {
+      dispatch(setSelectedCollection(collectionId))
       dispatch(setSelectedCollectionData(selectedCollection))
       dispatch(setShowZoomNotice(false))
-      dispatch(setSearchResults(null))
       dispatch(setSearchLoading(false))
       zoomToCollectionExtent(selectedCollection)
-      clearMapSelection()
-      clearAllLayers()
     }
   }, [collectionId])
 
   function onCollectionChanged(e) {
     dispatch(sethasCollectionChanged(true))
     setCollectionId(e.target.value)
+    clearMapSelection()
+    clearAllLayers()
   }
 
   return (

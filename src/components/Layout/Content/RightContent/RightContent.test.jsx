@@ -15,8 +15,6 @@ import {
   setShowAppLoading,
   setSearchLoading,
   setShowZoomNotice,
-  setShowPopupModal,
-  setClickResults,
   setZoomLevelNeeded,
   setViewMode,
   setmappedScenes,
@@ -26,8 +24,7 @@ import {
   mockSceneSearchResult,
   mockHexAggregateSearchResult,
   mockGridAggregateSearchResult,
-  mockAppConfig,
-  mockClickResults
+  mockAppConfig
 } from '../../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
 import * as mapHelper from '../../../../utils/mapHelper'
@@ -121,7 +118,7 @@ describe('RightContent', () => {
       store.dispatch(setappConfig(mockAppConfig))
       setup()
       expect(
-        screen.queryByTestId('test_imageOverlayLoadingAnimation')
+        screen.queryByTestId('test_loadingImageryOverlay')
       ).toBeInTheDocument()
     })
     it('should not render loading animation when imageOverlay loading is false', async () => {
@@ -129,7 +126,7 @@ describe('RightContent', () => {
       store.dispatch(setappConfig(mockAppConfig))
       setup()
       expect(
-        screen.queryByTestId('test_imageOverlayLoadingAnimation')
+        screen.queryByTestId('test_loadingImageryOverlay')
       ).not.toBeInTheDocument()
     })
     it('should render application loading animation when showAppLoading loading is true', async () => {
@@ -163,23 +160,6 @@ describe('RightContent', () => {
       expect(
         screen.queryByText(/images are not visible at this zoom level\./i)
       ).not.toBeInTheDocument()
-    })
-    it('should render popup results if showPopupModal set to true in redux and clickResults greater than 0', () => {
-      store.dispatch(setShowPopupModal(true))
-      store.dispatch(setClickResults([mockClickResults[0]]))
-      setup()
-      expect(screen.queryByTestId('testPopupResults')).toBeInTheDocument()
-    })
-    it('should not render popup results if showPopupModal set to false in redux', () => {
-      store.dispatch(setClickResults([mockClickResults[0]]))
-      setup()
-      expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
-    })
-    it('should not render popup results clickResults has not results added', () => {
-      store.dispatch(setShowPopupModal(true))
-      store.dispatch(setClickResults([]))
-      setup()
-      expect(screen.queryByTestId('testPopupResults')).not.toBeInTheDocument()
     })
   })
   describe('when isDrawingEnabled is true', () => {

@@ -9,11 +9,11 @@
 #collectionDropdown {
   border-color: white;
   color: white;
-  background-color: #353d4f;
+  background-color: #12171a;
 }
 
 #collectionDropdown option {
-  background-color: #353d4f !important;
+  background-color: #12171a !important;
 }
 
 .collectionDropdown.error-true select {

@@ -4,12 +4,13 @@ import { store } from '../redux/store'
 import { colorMap } from './colorMap'
 import {
   setClickResults,
-  setShowPopupModal,
   setShowZoomNotice,
   setisDrawingEnabled,
   setsearchGeojsonBoundary,
   setimageOverlayLoading,
-  setSearchLoading
+  setSearchLoading,
+  settabSelected,
+  setCurrentPopupResult
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes } from './searchHelper'
 import debounce from './debounce'
@@ -101,6 +102,7 @@ export function mapClickHandler(e) {
 
     // pull all items from search results that intersect with the click bounds
     let intersectingFeatures = []
+    const gridCodesToSearch = []
     if (_searchResults !== null) {
       for (const f in _searchResults.features) {
         const feature = _searchResults.features[f]
@@ -115,23 +117,28 @@ export function mapClickHandler(e) {
               clickedFootprintsFound.addTo(layer)
             }
           })
-
+          intersectingFeatures = [...intersectingFeatures, feature]
+          if (intersectingFeatures.length === 0) {
+            store.dispatch(setClickResults([]))
+          }
           if (_searchType === 'scene') {
-            // if at least one feature found, push to store else clear store
-            intersectingFeatures = [...intersectingFeatures, feature]
+            // if at least one feature found, push to store
             if (intersectingFeatures.length > 0) {
               // push to store
               store.dispatch(setClickResults(intersectingFeatures))
-              store.dispatch(setShowPopupModal(true))
-            } else {
-              // clear store
-              store.dispatch(setClickResults([]))
+              store.dispatch(settabSelected('details'))
             }
           } else if (_searchType === 'grid-code') {
-            // fetch all scenes from API with matching grid code
-            searchGridCodeScenes(feature.properties['grid:code'])
+            for (const i in intersectingFeatures) {
+              const feature = intersectingFeatures[i]
+              // fetch all scenes from API with matching grid code
+              gridCodesToSearch.push(feature.properties['grid:code'])
+            }
           }
         }
+      }
+      if (_searchType === 'grid-code') {
+        searchGridCodeScenes(gridCodesToSearch)
       }
     }
   }
@@ -153,7 +160,6 @@ export function selectMappedScenes() {
         }
       })
     }
-    store.dispatch(setShowPopupModal(true))
   }
 }
 
@@ -279,6 +285,13 @@ export function zoomToCollectionExtent(collection) {
   }
 }
 
+export function zoomToItemExtent(item) {
+  if (item.bbox) {
+    const itemBounds = leafletBoundsFromBBOX(item.bbox)
+    zoomToBounds(itemBounds)
+  }
+}
+
 export function getCurrentMapZoomLevel() {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
@@ -327,18 +340,28 @@ export function clearMapSelection() {
   clearLayer('clickedSceneHighlightLayer')
   clearLayer('clickedSceneImageLayer')
   store.dispatch(setClickResults([]))
+  store.dispatch(setCurrentPopupResult(null))
 }
 
-export const debounceTitilerOverlay = debounce(() => addImageOverlay(), 800)
+export const debounceTitilerOverlay = debounce(
+  (item) => addImageOverlay(item),
+  800
+)
 
-function addImageOverlay() {
-  if (!store.getState().mainSlice.currentPopupResult) {
+function addImageOverlay(item) {
+  const sceneTilerURL =
+    store.getState().mainSlice.appConfig.SCENE_TILER_URL || ''
+  if (
+    !item ||
+    !sceneTilerURL ||
+    !Object.prototype.hasOwnProperty.call(
+      store.getState().mainSlice.appConfig.SCENE_TILER_PARAMS,
+      item.collection
+    )
+  ) {
     store.dispatch(setimageOverlayLoading(false))
     return
   }
-  const sceneTilerURL =
-    store.getState().mainSlice.appConfig.SCENE_TILER_URL || ''
-  const _currentPopupResult = store.getState().mainSlice.currentPopupResult
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData
   // TODO: consider changing how spinner loads, or not at all?
@@ -347,7 +370,7 @@ function addImageOverlay() {
 
   clearLayer('clickedSceneImageLayer')
 
-  const featureURL = _currentPopupResult.links[0].href
+  const featureURL = item.links[0].href
   const tilerParams = constructSceneTilerParams(_selectedCollectionData.id)
 
   fetch(featureURL, {

@@ -1,15 +1,6 @@
 .popupResult {
-  overflow: auto;
-  height: calc(100% - 40px);
   display: flex;
   flex-direction: column;
-  background-color: #12171a;
-  margin-top: 10px;
-  padding-top: 10px;
-}
-
-.popupResultCartEnabled {
-  height: calc(100% - 90px);
 }
 
 .popupResultThumbnailContainer {
@@ -17,12 +8,13 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  min-height: 330px;
+  margin-top: 15px;
+  margin-bottom: 10px;
+  min-height: 230px;
 }
 
 .popupResultThumbnail {
-  width: 325px;
-  max-width: 100%;
+  width: 225px;
 }
 
 .popupResultDetails {
@@ -31,11 +23,11 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  margin-bottom: 10px;
 }
 
 .detailRow {
-  width: 340px;
-  padding-top: 10px;
+  width: 240px;
   display: flex;
   flex-direction: column;
   line-height: 1.6;
@@ -51,9 +43,18 @@
   word-wrap: break-word;
 }
 
-.detailRow:last-of-type {
-  margin-bottom: 20px;
+.popupResultDetailsHrefLink {
+  color: #d3d3d3;
+  text-decoration: underline;
+  width: 100%;
+  font-size: 14px;
+  margin-bottom: 5px;
 }
+
+.popupResultDetailsHrefLink:hover {
+  color: #fff;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 10px;

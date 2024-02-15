@@ -8,8 +8,7 @@ import {
   setappConfig,
   setCloudCover,
   setsearchGeojsonBoundary,
-  setshowSearchByGeom,
-  setSearchLoading
+  setshowSearchByGeom
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
@@ -64,6 +63,16 @@ describe('Search', () => {
           })
           await user.click(searchButton)
           expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
+        })
+      })
+      describe('when drawing mode enabled', () => {
+        it('should render disabled search bar overlay div', async () => {
+          setup()
+          const drawBoundaryButton = screen.getByRole('button', {
+            name: /draw/i
+          })
+          await user.click(drawBoundaryButton)
+          expect(store.getState().mainSlice.isDrawingEnabled).toBeTruthy()
         })
       })
       describe('when draw boundary button clicked', () => {
@@ -154,28 +163,6 @@ describe('Search', () => {
           expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
         })
       })
-      describe('when drawing mode enabled', () => {
-        it('should render disabled search bar overlay div', async () => {
-          setup()
-          const drawBoundaryButton = screen.getByRole('button', {
-            name: /draw/i
-          })
-          await user.click(drawBoundaryButton)
-          expect(
-            screen.queryByTestId('test_disableSearchOverlay')
-          ).toBeInTheDocument()
-        })
-      })
-    })
-  })
-  describe('when search loading', () => {
-    it('should render disabled search bar overlay div', async () => {
-      store.dispatch(setSearchLoading(true))
-      store.dispatch(setappConfig(mockAppConfig))
-      setup()
-      expect(
-        screen.queryByTestId('test_disableSearchOverlay')
-      ).toBeInTheDocument()
     })
   })
 })

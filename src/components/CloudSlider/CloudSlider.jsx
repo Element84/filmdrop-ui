@@ -17,9 +17,10 @@ const CloudSlider = () => {
   const _selectedCollectionData = useSelector(
     (state) => state.mainSlice.selectedCollectionData
   )
+  const _cloudCover = useSelector((state) => state.mainSlice.cloudCover)
 
   const dispatch = useDispatch()
-  const [value, setValue] = useState(30)
+  const [value, setValue] = useState(_cloudCover)
   const [disabled, setDisabled] = useState(false)
 
   useEffect(() => {
@@ -59,7 +60,7 @@ const CloudSlider = () => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: '#dedede'
+        main: '#76829c'
       },
       secondary: {
         main: '#edf2ff'
@@ -71,9 +72,19 @@ const CloudSlider = () => {
     <ThemeProvider theme={theme}>
       <Box className={`cloudSlider ${disabled && 'disabled'}`}>
         <label htmlFor="cloudSlider">Max Cloud Cover %</label>
-        <Grid container spacing={2} alignItems="center">
+        <Grid
+          className="cloudSliderInputs"
+          container
+          spacing={2}
+          alignItems="center"
+        >
           <Grid item xs>
             <Slider
+              sx={{
+                '& .MuiSlider-thumb': {
+                  boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)'
+                }
+              }}
               value={typeof value === 'number' ? value : 0}
               onChange={handleSliderChange}
               aria-labelledby="input-slider"

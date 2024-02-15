@@ -9,7 +9,8 @@ import {
   getCurrentMapZoomLevel,
   clearAllLayers,
   bboxFromMapBounds,
-  getTilerParams
+  getTilerParams,
+  clearMapSelection
 } from './mapHelper'
 import { convertDateForURL, convertDate } from './datetime'
 import { SearchService } from '../services/get-search-service'
@@ -19,7 +20,6 @@ import {
   setSearchType,
   setShowZoomNotice,
   setZoomLevelNeeded,
-  setShowPopupModal,
   setSearchResults
 } from '../redux/slices/mainSlice'
 import * as h3 from 'h3-js'
@@ -27,10 +27,10 @@ import debounce from './debounce'
 import { AddMosaicService } from '../services/post-mosaic-service'
 
 export function newSearch() {
+  clearMapSelection()
   clearAllLayers()
   store.dispatch(setSearchResults(null))
   store.dispatch(setShowZoomNotice(false))
-  store.dispatch(setShowPopupModal(false))
   store.dispatch(setSearchLoading(false))
 
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
@@ -132,7 +132,7 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
   if (gridCodeToSearchIn) {
-    query['grid:code'] = { eq: gridCodeToSearchIn }
+    query['grid:code'] = { in: gridCodeToSearchIn }
   }
 
   let searchParamsStr
@@ -396,7 +396,6 @@ function newMosaicSearch() {
   clearAllLayers()
   store.dispatch(setSearchResults(null))
   store.dispatch(setShowZoomNotice(false))
-  store.dispatch(setShowPopupModal(false))
   store.dispatch(setSearchLoading(true))
   const _selectedCollectionData =
     store.getState().mainSlice.selectedCollectionData

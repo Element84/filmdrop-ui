@@ -5,7 +5,6 @@ import {
   DEFAULT_MAX_SCENES_RENDERED
 } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
-import PopupResults from '../../../PopupResults/PopupResults'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import { useSelector, useDispatch } from 'react-redux'
 import {
@@ -23,7 +22,6 @@ import {
   clearMapSelection,
   selectMappedScenes
 } from '../../../../utils/mapHelper'
-import Box from '@mui/material/Box'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
 import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
 import { CircularProgress } from '@mui/material'
@@ -49,7 +47,6 @@ const RightContent = () => {
   )
   const _searchType = useSelector((state) => state.mainSlice.searchType)
   const _viewMode = useSelector((state) => state.mainSlice.viewMode)
-  const _showPopupModal = useSelector((state) => state.mainSlice.showPopupModal)
   const _isDrawingEnabled = useSelector(
     (state) => state.mainSlice.isDrawingEnabled
   )
@@ -187,9 +184,9 @@ const RightContent = () => {
       {_showZoomNotice && (
         <div className="ZoomNotice">
           Images are not visible at this zoom level.
-          <Box className="zoomInText" onClick={onZoomClick}>
+          <button className="zoomInText" onClick={onZoomClick}>
             <strong>Zoom in</strong>
-          </Box>
+          </button>
         </div>
       )}
       {_appConfig.LAYER_LIST_ENABLED && _appConfig.LAYER_LIST_SERVICES && (
@@ -295,9 +292,6 @@ const RightContent = () => {
           </div>
         </div>
       ) : null}
-      {_showPopupModal && _clickResults.length > 0 ? (
-        <PopupResults results={_clickResults}></PopupResults>
-      ) : null}
       {_searchLoading ? (
         <div
           className="loadingSpinnerContainer"
@@ -308,10 +302,15 @@ const RightContent = () => {
       ) : null}
       {_imageOverlayLoading ? (
         <div
-          className="loadingSpinnerContainer"
-          data-testid="test_imageOverlayLoadingAnimation"
+          className="LoadingImageryOverlayText"
+          data-testid="test_loadingImageryOverlay"
         >
-          <LoadingAnimation></LoadingAnimation>
+          Loading Imagery Overlay{' '}
+          <CircularProgress
+            className="LoadingImageryOverlaySpinner"
+            size={16}
+            color="inherit"
+          ></CircularProgress>
         </div>
       ) : null}
       {_showAppLoading && (
