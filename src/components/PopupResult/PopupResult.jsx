@@ -65,7 +65,21 @@ const PopupResult = (props) => {
               </picture>
             ) : null}
           </div>
+
           <div className="popupResultDetails">
+            {_appConfig.STAC_LINK_ENABLED && (
+              <div className="detailRow">
+                <a
+                  href={props.result.links[0].href.toString()}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="popupResultDetailsRowValue popupResultDetailsHrefLink"
+                  aria-labelledby="popupResultDetailsTitle"
+                >
+                  STAC API Item
+                </a>
+              </div>
+            )}
             <div className="detailRow">
               <span
                 className="popupResultDetailsRowKey"

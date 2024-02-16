@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux'
 import 'react-tooltip/dist/react-tooltip.css'
 import { Tooltip } from 'react-tooltip'
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
-import DateTimeRangePicker from '@wojtekmaj/react-datetimerange-picker'
 import { setSearchDateRangeValue } from '../../redux/slices/mainSlice'
 
 import DatePicker from 'react-datepicker'
