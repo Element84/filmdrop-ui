@@ -9,7 +9,6 @@
     "@mui/material": "^5.15.0",
     "@reduxjs/toolkit": "^2.0.1",
     "@vitejs/plugin-react": "^4.2.1",
-    "@wojtekmaj/react-datetimerange-picker": "^5.4.4",
     "colormap": "^2.3.2",
     "dayjs": "^1.11.10",
     "dayjs-plugin-utc": "^0.1.2",

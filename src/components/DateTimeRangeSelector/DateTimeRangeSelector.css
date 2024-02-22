@@ -1,13 +1,7 @@
-@import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker.css';
-@import './react-calendar-overrides.css';
-@import 'react-clock/dist/Clock.css';
-
 label {
   position: relative;
   top: 2px;
 }
-
-/* Date Range Picker */
 
 .datePickerContainer {
   display: flex;
