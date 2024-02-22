@@ -21,6 +21,9 @@ const Dropdown = () => {
   const _selectedCollection = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
+  const _selectedCollectionData = useSelector(
+    (state) => state.mainSlice.selectedCollectionData
+  )
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState(_selectedCollection)
   const _collectionsData = useSelector(
@@ -93,6 +96,22 @@ const Dropdown = () => {
           </NativeSelect>
         </Grid>
       </Grid>
+      {_selectedCollectionData && _selectedCollectionData.extent.temporal && (
+        <div className="collectionRangeText">
+          <span>Range:&nbsp;</span>
+          {_selectedCollectionData.extent.temporal.interval[0][0]
+            ? _selectedCollectionData.extent.temporal.interval[0][0].split(
+                'T'
+              )[0]
+            : 'No Lower Limit'}{' '}
+          to{' '}
+          {_selectedCollectionData.extent.temporal.interval[0][1]
+            ? _selectedCollectionData.extent.temporal.interval[0][1].split(
+                'T'
+              )[0]
+            : 'Present'}
+        </div>
+      )}
     </Box>
   )
 }

@@ -27,3 +27,12 @@
   padding-top: 1px;
   min-width: 100%;
 }
+
+.collectionRangeText {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  font-size: 12px;
+  font-weight: 100;
+  margin-top: 10px;
+}
