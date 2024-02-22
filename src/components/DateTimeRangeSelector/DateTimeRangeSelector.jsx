@@ -2,14 +2,16 @@ import React, { useEffect, useState } from 'react'
 import './DateTimeRangeSelector.css'
 import { useSelector, useDispatch } from 'react-redux'
 import 'react-tooltip/dist/react-tooltip.css'
-import { Tooltip } from 'react-tooltip'
-import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { setSearchDateRangeValue } from '../../redux/slices/mainSlice'
-
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import { convertToUTC } from '../../utils/datetime'
 
 const DateTimeRangeSelector = () => {
+  dayjs.extend(utc)
   const dispatch = useDispatch()
   const _selectedCollectionData = useSelector(
     (state) => state.mainSlice.selectedCollectionData
@@ -17,130 +19,131 @@ const DateTimeRangeSelector = () => {
   const _hasCollectionChanged = useSelector(
     (state) => state.mainSlice.hasCollectionChanged
   )
-
   const _SearchDateRangeValue = useSelector(
     (state) => state.mainSlice.searchDateRangeValue
   )
-
-  const [startDate, setstartDate] = useState()
-  const [datePickerValue, setDatePickerValue] = useState(_SearchDateRangeValue)
-
-  const [temporalRangeFound, settemporalRangeFound] = useState(false)
+  const [startDate, setstartDate] = useState(_SearchDateRangeValue[0])
+  const [endDate, setendDate] = useState(_SearchDateRangeValue[1])
 
   useEffect(() => {
-    let collectionEndDateOrCurrent
+    if (!_selectedCollectionData) {
+      return
+    }
 
-    if (_selectedCollectionData) {
-      const startDateFromCollection = new Date(
-        _selectedCollectionData.extent.temporal.interval[0]
-      )
-      settemporalRangeFound(true)
-      // setstartDate(startDateFromCollection)
-      collectionEndDateOrCurrent =
-        _selectedCollectionData.extent.temporal.interval[0][1] !== null
-          ? new Date(_selectedCollectionData.extent.temporal.interval[0][1])
-          : new Date()
-    }
+    const currentDateUTCString = dayjs(new Date()).utc().startOf('day').format()
+    const collectionEndDateOrCurrentLocal =
+      _selectedCollectionData.extent.temporal.interval[0][1] !== null
+        ? convertToUTC(_selectedCollectionData.extent.temporal.interval[0][1])
+        : convertToUTC(currentDateUTCString)
+
     // if temporal range not in last two week on init, set to match collection
-    if (_selectedCollectionData && !_hasCollectionChanged) {
+    if (!_hasCollectionChanged) {
       if (
-        (datePickerValue[0] <
-          new Date(_selectedCollectionData.extent.temporal.interval[0][0]) &&
-          datePickerValue[1] <
-            new Date(_selectedCollectionData.extent.temporal.interval[0][0])) ||
-        (datePickerValue[0] > collectionEndDateOrCurrent &&
-          datePickerValue[1] > collectionEndDateOrCurrent)
+        (startDate <
+          convertToUTC(
+            _selectedCollectionData.extent.temporal.interval[0][0]
+          ) &&
+          endDate <
+            convertToUTC(
+              _selectedCollectionData.extent.temporal.interval[0][0]
+            )) ||
+        (startDate > collectionEndDateOrCurrentLocal &&
+          endDate > collectionEndDateOrCurrentLocal)
       ) {
-        setDatePickerValue([
-          new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
-          collectionEndDateOrCurrent
-        ])
+        setstartDate(
+          convertToUTC(_selectedCollectionData.extent.temporal.interval[0][0])
+        )
+        setendDate(collectionEndDateOrCurrentLocal)
       }
-    }
-    if (_selectedCollectionData && _hasCollectionChanged) {
-      if (datePickerValue) {
-        if (
-          (datePickerValue[0] <
-            new Date(_selectedCollectionData.extent.temporal.interval[0][0]) &&
-            datePickerValue[1] <
-              new Date(
-                _selectedCollectionData.extent.temporal.interval[0][0]
-              )) ||
-          (datePickerValue[0] > collectionEndDateOrCurrent &&
-            datePickerValue[1] > collectionEndDateOrCurrent)
-        ) {
-          setDatePickerValue([
-            new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
-            collectionEndDateOrCurrent
-          ])
-        }
-      } else {
-        setDatePickerValue([
-          new Date(_selectedCollectionData.extent.temporal.interval[0][0]),
-          collectionEndDateOrCurrent
-        ])
-      }
+    } else {
+      setstartDate(convertToUTC(_SearchDateRangeValue[0]))
+      setendDate(convertToUTC(_SearchDateRangeValue[1]))
     }
   }, [_selectedCollectionData])
 
   useEffect(() => {
-    dispatch(setSearchDateRangeValue(datePickerValue))
-  }, [datePickerValue])
+    const StartDateAsDateObject =
+      startDate instanceof Date ? startDate : new Date(startDate)
+    const EndDateAsDateObject =
+      endDate instanceof Date ? endDate : new Date(endDate)
+
+    // Get the local timezone offset in minutes
+    const offsetInMinutes = StartDateAsDateObject.getTimezoneOffset()
+
+    // Reverse the offset from the UI values back to the Zulu UTC date to get the correct search date
+    const correctStartSearchDate = new Date(
+      StartDateAsDateObject.getTime() - offsetInMinutes * 60 * 1000
+    ).toISOString()
+    const correctEndSearchDate = new Date(
+      EndDateAsDateObject.getTime() - offsetInMinutes * 60 * 1000
+    ).toISOString()
+
+    dispatch(
+      setSearchDateRangeValue([correctStartSearchDate, correctEndSearchDate])
+    )
+  }, [startDate, endDate])
 
   return (
     <div className="datePicker">
       <label>
         Date Range{' '}
-        {temporalRangeFound && (
-          <>
-            <span data-tooltip-id="dateRange-tooltip">
-              <InfoOutlinedIcon className="dateToolTipIcon" />
-            </span>
-            <Tooltip id="dateRange-tooltip">
-              <strong>Collection Range:</strong>
-              <br />
-              {_selectedCollectionData.extent.temporal.interval[0][0]
-                ? new Date(
-                    _selectedCollectionData.extent.temporal.interval[0][0]
-                  ).toDateString()
-                : 'No Lower Limit'}{' '}
-              -{' '}
-              {_selectedCollectionData.extent.temporal.interval[0][1]
-                ? new Date(
-                    _selectedCollectionData.extent.temporal.interval[0][1]
-                  ).toDateString()
-                : 'Present'}
-            </Tooltip>
-          </>
-        )}
-        {!datePickerValue && (
+        {!startDate || !endDate ? (
           <span className="error-true">
             <em>Required</em>
           </span>
-        )}
+        ) : null}
       </label>
-      {/* <DateTimeRangePicker
-        className="dateTimePicker"
-        format={'yy-MM-dd'}
-        calendarType="gregory"
-        showLeadingZeros={false}
-        disableClock={true}
-        required={true}
-        minDate={startDate}
-        onChange={setDatePickerValue}
-        value={datePickerValue}
-      ></DateTimeRangePicker> */}
       <div className="datePickerContainer">
         <DatePicker
           className="reactDatePicker"
-          selected={startDate}
+          selected={
+            startDate instanceof Date
+              ? startDate.setHours(0, 0, 0)
+              : new Date(startDate)
+          }
+          maxDate={endDate}
+          showPopperArrow={false}
+          todayButton="Today"
+          showIcon
+          icon={
+            <CalendarTodayIcon className="datePicker-icon"></CalendarTodayIcon>
+          }
+          toggleCalendarOnIconClick
+          closeOnScroll={true}
+          peekNextMonth
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+          dateFormat="yyyy-MM-dd"
+          popperPlacement="top-end"
+          shouldCloseOnSelect={true}
           onChange={(date) => setstartDate(date)}
-        />
+        ></DatePicker>
+        <span className="dateRangeSpanText">to</span>
         <DatePicker
           className="reactDatePicker"
-          selected={startDate}
-          onChange={(date) => setstartDate(date)}
-        />
+          selected={
+            endDate instanceof Date
+              ? endDate.setHours(23, 59, 59)
+              : new Date(endDate)
+          }
+          minDate={startDate}
+          maxDate={new Date()}
+          showPopperArrow={false}
+          todayButton="Today"
+          showIcon
+          icon={
+            <CalendarTodayIcon className="datePicker-icon"></CalendarTodayIcon>
+          }
+          toggleCalendarOnIconClick
+          closeOnScroll={true}
+          showMonthDropdown
+          showYearDropdown
+          dropdownMode="select"
+          dateFormat="yyyy-MM-dd"
+          popperPlacement="top-end"
+          onChange={(date) => setendDate(date)}
+        ></DatePicker>
       </div>
     </div>
   )

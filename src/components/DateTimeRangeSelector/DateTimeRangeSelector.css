@@ -18,7 +18,7 @@ label {
 }
 
 .reactDatePicker {
-  width: 50%;
+  width: 80px;
 }
 
 .datePicker {
@@ -28,6 +28,10 @@ label {
 
 .datePicker label {
   font-size: 16px;
+}
+
+.datePicker select {
+  margin-top: 5px;
 }
 
 .datePicker label span svg {
@@ -59,4 +63,23 @@ span.error-true {
 #dateRange-tooltip {
   opacity: 1;
   z-index: 999;
+}
+
+.dateRangeSpanText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+.datePicker-icon {
+  color: #373d4d;
+  height: 1rem !important;
+  width: 1rem !important;
+  cursor: pointer;
+}
+
+.react-datepicker__today-button:hover {
+  background-color: #d3d3d3;
 }
