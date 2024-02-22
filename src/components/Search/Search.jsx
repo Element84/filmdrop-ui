@@ -88,14 +88,13 @@ const Search = () => {
           },
           colorPrimary: {
             '&.Mui-checked': {
-              color: '#373d4d'
+              color: '#fff'
             }
           },
           track: {
-            opacity: 0.9,
             backgroundColor: '#dedede',
             '.Mui-checked.Mui-checked + &': {
-              backgroundColor: '#a9b0c1'
+              backgroundColor: '#6cc24a'
             }
           }
         }
