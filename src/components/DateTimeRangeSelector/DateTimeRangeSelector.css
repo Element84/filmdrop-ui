@@ -67,6 +67,7 @@ span.error-true {
   margin-right: 5px;
 }
 
+/* !important used here to override a MUI icon style to work in non-MUI datepicker */
 .datePicker-icon {
   color: #373d4d;
   height: 1rem !important;
