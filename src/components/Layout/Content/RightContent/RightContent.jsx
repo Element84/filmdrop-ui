@@ -313,6 +313,14 @@ const RightContent = () => {
           ></CircularProgress>
         </div>
       ) : null}
+      {_searchResults && _searchResults.features?.length === 0 ? (
+        <div
+          className="LoadingImageryOverlayText"
+          data-testid="test_loadingImageryOverlay"
+        >
+          No Results Found
+        </div>
+      ) : null}
       {_showAppLoading && (
         <div
           className="appLoadingContainer"
