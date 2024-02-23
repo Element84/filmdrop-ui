@@ -4,7 +4,10 @@ import Search from '../../../Search/Search'
 import PopupResults from '../../../PopupResults/PopupResults'
 import { useSelector, useDispatch } from 'react-redux'
 import { debounceNewSearch } from '../../../../utils/searchHelper'
-import { settabSelected } from '../../../../redux/slices/mainSlice'
+import {
+  settabSelected,
+  sethasLeftPanelTabChanged
+} from '../../../../redux/slices/mainSlice'
 
 const LeftContent = () => {
   const dispatch = useDispatch()
@@ -34,6 +37,7 @@ const LeftContent = () => {
   }
   function setDetailsTab() {
     dispatch(settabSelected('details'))
+    dispatch(sethasLeftPanelTabChanged(true))
   }
 
   return (

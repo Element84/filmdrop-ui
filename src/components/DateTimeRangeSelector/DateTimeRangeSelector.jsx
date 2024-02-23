@@ -22,6 +22,9 @@ const DateTimeRangeSelector = () => {
   const _SearchDateRangeValue = useSelector(
     (state) => state.mainSlice.searchDateRangeValue
   )
+  const _hasLeftPanelTabChanged = useSelector(
+    (state) => state.mainSlice.hasLeftPanelTabChanged
+  )
   const [startDate, setstartDate] = useState(_SearchDateRangeValue[0])
   const [endDate, setendDate] = useState(_SearchDateRangeValue[1])
 
@@ -62,26 +65,41 @@ const DateTimeRangeSelector = () => {
   }, [_selectedCollectionData])
 
   useEffect(() => {
+    let correctStartSearchDate
+    let correctEndSearchDate
+
     const StartDateAsDateObject =
       startDate instanceof Date ? startDate : new Date(startDate)
-    const EndDateAsDateObject =
-      endDate instanceof Date ? endDate : new Date(endDate)
+    const offsetInMilliseconds =
+      StartDateAsDateObject.getTimezoneOffset() * 60 * 1000
 
-    // Get the local timezone offset in minutes
-    const offsetInMinutes = StartDateAsDateObject.getTimezoneOffset()
+    if (startDate instanceof Date) {
+      correctStartSearchDate = new Date(
+        startDate.getTime() - offsetInMilliseconds
+      ).toISOString()
+    } else {
+      correctStartSearchDate = new Date(startDate).toISOString()
+    }
 
-    // Reverse the offset from the UI values back to the Zulu UTC date to get the correct search date
-    const correctStartSearchDate = new Date(
-      StartDateAsDateObject.getTime() - offsetInMinutes * 60 * 1000
-    ).toISOString()
-    const correctEndSearchDate = new Date(
-      EndDateAsDateObject.getTime() - offsetInMinutes * 60 * 1000
-    ).toISOString()
+    if (endDate instanceof Date) {
+      correctEndSearchDate = new Date(
+        endDate.getTime() - offsetInMilliseconds
+      ).toISOString()
+    } else {
+      correctEndSearchDate = new Date(endDate).toISOString()
+    }
 
     dispatch(
       setSearchDateRangeValue([correctStartSearchDate, correctEndSearchDate])
     )
   }, [startDate, endDate])
+
+  useEffect(() => {
+    if (_hasLeftPanelTabChanged) {
+      setstartDate(convertToUTC(_SearchDateRangeValue[0]))
+      setendDate(convertToUTC(_SearchDateRangeValue[1]))
+    }
+  }, [])
 
   return (
     <div className="datePicker">
