@@ -10,7 +10,8 @@ import {
   setimageOverlayLoading,
   setSearchLoading,
   settabSelected,
-  setCurrentPopupResult
+  setCurrentPopupResult,
+  sethasLeftPanelTabChanged
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes } from './searchHelper'
 import debounce from './debounce'
@@ -127,6 +128,7 @@ export function mapClickHandler(e) {
               // push to store
               store.dispatch(setClickResults(intersectingFeatures))
               store.dispatch(settabSelected('details'))
+              store.dispatch(sethasLeftPanelTabChanged(true))
             }
           } else if (_searchType === 'grid-code') {
             for (const i in intersectingFeatures) {
