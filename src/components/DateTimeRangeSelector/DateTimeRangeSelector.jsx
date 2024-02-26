@@ -104,7 +104,7 @@ const DateTimeRangeSelector = () => {
   return (
     <div className="datePicker">
       <label>
-        Date Range{' '}
+        Date Range <span className="datePickerLabelUTCText">(UTC)</span>{' '}
         {!startDate || !endDate ? (
           <span className="error-true">
             <em>Required</em>

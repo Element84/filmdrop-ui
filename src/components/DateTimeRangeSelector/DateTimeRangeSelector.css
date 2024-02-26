@@ -78,3 +78,8 @@ span.error-true {
 .react-datepicker__today-button:hover {
   background-color: #d3d3d3;
 }
+
+.datePickerLabelUTCText {
+  font-weight: 100;
+  font-size: 12px;
+}
