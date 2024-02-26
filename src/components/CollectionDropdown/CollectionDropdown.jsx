@@ -73,6 +73,11 @@ const Dropdown = () => {
     clearAllLayers()
   }
 
+  // Function to format date string
+  function formatDate(dateString) {
+    return dateString ? dateString.split('T')[0] : null
+  }
+
   return (
     <Box>
       <label htmlFor="collectionDropdown">Collection</label>
@@ -96,20 +101,14 @@ const Dropdown = () => {
           </NativeSelect>
         </Grid>
       </Grid>
-      {_selectedCollectionData && _selectedCollectionData.extent.temporal && (
+      {_selectedCollectionData?.extent?.temporal && (
         <div className="collectionRangeText">
           <span>Range:&nbsp;</span>
-          {_selectedCollectionData.extent.temporal.interval[0][0]
-            ? _selectedCollectionData.extent.temporal.interval[0][0].split(
-                'T'
-              )[0]
-            : 'No Lower Limit'}{' '}
+          {formatDate(_selectedCollectionData.extent.temporal.interval[0][0]) ||
+            'No Lower Limit'}{' '}
           to{' '}
-          {_selectedCollectionData.extent.temporal.interval[0][1]
-            ? _selectedCollectionData.extent.temporal.interval[0][1].split(
-                'T'
-              )[0]
-            : 'Present'}
+          {formatDate(_selectedCollectionData.extent.temporal.interval[0][1]) ||
+            'Present'}
         </div>
       )}
     </Box>
