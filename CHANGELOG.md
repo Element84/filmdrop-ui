@@ -34,6 +34,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Style adjusted for switch to be in line with other UI elements.
 - Replace date picker library `DateTimeRangePicker` to use `react-datepicker`.
 - Collection range is now always visible in search panel.
+- Date Range Picker does not get changed on collection change. Only set on initial load and then manually by user.
 
 ### Fixed
 
