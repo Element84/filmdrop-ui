@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Run search shortcut added for `SPACE` bar key press.
 - Added config option for `SHOW_ITEM_AUTO_ZOOM` to render switch that lets user toggle behavior of map center/zooming automatically on selected scene.
 - Added config option for `STAC_LINK_ENABLED` to render link out to item in STAC API when set to `true`.
+- Added `results not found message` when search results are empty.
 
 ### Changed
 
@@ -30,6 +31,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Results popup now renders in left panel.
 - Tabs added to left panel to switch between results and info panels.
 - Refactor of loading indicator to specify when imagery overlay is loading instead vs. search loading.
+- Style adjusted for switch to be in line with other UI elements.
+- Replace date picker library `DateTimeRangePicker` to use `react-datepicker`.
+- Collection range is now always visible in search panel.
 
 ### Fixed
 
@@ -39,6 +43,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Improved responsiveness for mid-size screens.
 - Bug fix for when multiple grid-code grids are selected, bug was only showing one grid-code in results.
 - Refactor keyboard shortcut for running search. Changed to use `ctrl+space`.
+- Date range format now renders and searches correctly using UTC instead of using local timezone.
 
 ### Removed
 
