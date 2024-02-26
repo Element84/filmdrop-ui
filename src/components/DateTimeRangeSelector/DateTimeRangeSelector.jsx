@@ -134,7 +134,6 @@ const DateTimeRangeSelector = () => {
           dropdownMode="select"
           dateFormat="yyyy-MM-dd"
           popperPlacement="top-end"
-          shouldCloseOnSelect={true}
           onChange={(date) => setstartDate(date)}
         ></DatePicker>
         <span className="dateRangeSpanText">to</span>
