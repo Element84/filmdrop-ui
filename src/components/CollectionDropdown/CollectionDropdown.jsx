@@ -73,7 +73,6 @@ const Dropdown = () => {
     clearAllLayers()
   }
 
-  // Function to format date string
   function formatDate(dateString) {
     return dateString ? dateString.split('T')[0] : null
   }
