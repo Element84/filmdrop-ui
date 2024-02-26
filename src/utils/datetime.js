@@ -1,9 +1,6 @@
 // date used for STAC API request for mosaic view
 export const convertDate = (dateTimeRef) => {
-  const fromDate = dateTimeRef[0]
-  const toDate = dateTimeRef[1]
-
-  return `${fromDate}/${toDate}`
+  return `${dateTimeRef[0]}/${dateTimeRef[1]}`
 }
 
 // date used for STAC API request for scene view
