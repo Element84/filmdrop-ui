@@ -1,13 +1,19 @@
-@import '@wojtekmaj/react-datetimerange-picker/dist/DateTimeRangePicker.css';
-@import './react-calendar-overrides.css';
-@import 'react-clock/dist/Clock.css';
-
 label {
   position: relative;
   top: 2px;
 }
 
-/* Date Range Picker */
+.datePickerContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.reactDatePicker {
+  width: 80px;
+}
 
 .datePicker {
   font-size: 14px;
@@ -16,6 +22,10 @@ label {
 
 .datePicker label {
   font-size: 16px;
+}
+
+.datePicker select {
+  margin-top: 5px;
 }
 
 .datePicker label span svg {
@@ -47,4 +57,29 @@ span.error-true {
 #dateRange-tooltip {
   opacity: 1;
   z-index: 999;
+}
+
+.dateRangeSpanText {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 5px;
+  margin-right: 5px;
+}
+
+/* !important used here to override a MUI icon style to work in non-MUI datepicker */
+.datePicker-icon {
+  color: #373d4d;
+  height: 1rem !important;
+  width: 1rem !important;
+  cursor: pointer;
+}
+
+.react-datepicker__today-button:hover {
+  background-color: #d3d3d3;
+}
+
+.datePickerLabelUTCText {
+  font-weight: 100;
+  font-size: 12px;
 }

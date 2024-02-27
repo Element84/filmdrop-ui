@@ -292,6 +292,14 @@ const RightContent = () => {
           </div>
         </div>
       ) : null}
+      {_searchResults?.searchType !== 'AggregatedResults' &&
+      !_isDrawingEnabled &&
+      _searchResults &&
+      _searchResults.features?.length === 0 ? (
+        <div className="resultCount">
+          <div className="resultCountText">No Results Found</div>
+        </div>
+      ) : null}
       {_searchLoading ? (
         <div
           className="loadingSpinnerContainer"

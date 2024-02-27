@@ -21,6 +21,9 @@ const Dropdown = () => {
   const _selectedCollection = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
+  const _selectedCollectionData = useSelector(
+    (state) => state.mainSlice.selectedCollectionData
+  )
   const dispatch = useDispatch()
   const [collectionId, setCollectionId] = useState(_selectedCollection)
   const _collectionsData = useSelector(
@@ -70,6 +73,10 @@ const Dropdown = () => {
     clearAllLayers()
   }
 
+  function formatDate(dateString) {
+    return dateString ? dateString.split('T')[0] : null
+  }
+
   return (
     <Box>
       <label htmlFor="collectionDropdown">Collection</label>
@@ -93,6 +100,16 @@ const Dropdown = () => {
           </NativeSelect>
         </Grid>
       </Grid>
+      {_selectedCollectionData?.extent?.temporal && (
+        <div className="collectionRangeText">
+          <span>Extent:&nbsp;</span>
+          {formatDate(_selectedCollectionData.extent.temporal.interval[0][0]) ||
+            'No Lower Limit'}{' '}
+          to{' '}
+          {formatDate(_selectedCollectionData.extent.temporal.interval[0][1]) ||
+            'Present'}
+        </div>
+      )}
     </Box>
   )
 }

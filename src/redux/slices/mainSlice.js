@@ -43,7 +43,8 @@ const initialState = {
   selectedCollection: 'Select Collection',
   tabSelected: 'filters',
   selectedPopupResultIndex: 0,
-  autoCenterOnItemChanged: false
+  autoCenterOnItemChanged: false,
+  hasLeftPanelTabChanged: false
 }
 
 // next, for every key in the initialState
@@ -171,6 +172,9 @@ export const mainSlice = createSlice({
     },
     setautoCenterOnItemChanged: (state, action) => {
       state.autoCenterOnItemChanged = action.payload
+    },
+    sethasLeftPanelTabChanged: (state, action) => {
+      state.hasLeftPanelTabChanged = action.payload
     }
   }
 })
@@ -217,5 +221,6 @@ export const { setreferenceLayers } = mainSlice.actions
 export const { settabSelected } = mainSlice.actions
 export const { setselectedPopupResultIndex } = mainSlice.actions
 export const { setautoCenterOnItemChanged } = mainSlice.actions
+export const { sethasLeftPanelTabChanged } = mainSlice.actions
 
 export default mainSlice.reducer

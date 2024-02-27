@@ -4,7 +4,8 @@ import {
   setSearchLoading,
   setSearchResults,
   setmappedScenes,
-  settabSelected
+  settabSelected,
+  sethasLeftPanelTabChanged
 } from '../redux/slices/mainSlice'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
@@ -36,6 +37,7 @@ export async function SearchService(searchParams, typeOfSearch) {
         store.dispatch(setSearchLoading(false))
         store.dispatch(setClickResults(json.features))
         store.dispatch(settabSelected('details'))
+        store.dispatch(sethasLeftPanelTabChanged(true))
       }
     })
     .catch((error) => {
