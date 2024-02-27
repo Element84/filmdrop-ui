@@ -102,7 +102,7 @@ const Dropdown = () => {
       </Grid>
       {_selectedCollectionData?.extent?.temporal && (
         <div className="collectionRangeText">
-          <span>Range:&nbsp;</span>
+          <span>Extent:&nbsp;</span>
           {formatDate(_selectedCollectionData.extent.temporal.interval[0][0]) ||
             'No Lower Limit'}{' '}
           to{' '}
