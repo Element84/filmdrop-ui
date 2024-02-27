@@ -292,6 +292,14 @@ const RightContent = () => {
           </div>
         </div>
       ) : null}
+      {_searchResults?.searchType !== 'AggregatedResults' &&
+      !_isDrawingEnabled &&
+      _searchResults &&
+      _searchResults.features?.length === 0 ? (
+        <div className="resultCount" data-testid="testShowingAggregatedMessage">
+          <div className="resultCountText">No Results Found</div>
+        </div>
+      ) : null}
       {_searchLoading ? (
         <div
           className="loadingSpinnerContainer"
@@ -311,14 +319,6 @@ const RightContent = () => {
             size={16}
             color="inherit"
           ></CircularProgress>
-        </div>
-      ) : null}
-      {_searchResults && _searchResults.features?.length === 0 ? (
-        <div
-          className="LoadingImageryOverlayText"
-          data-testid="test_loadingImageryOverlay"
-        >
-          No Results Found
         </div>
       ) : null}
       {_showAppLoading && (
