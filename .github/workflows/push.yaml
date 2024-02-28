@@ -35,7 +35,7 @@ jobs:
       - name: Run audit (prod, no exclusions)
         run: npm run audit-prod
       - name: Copy config file
-        run: cp ./public/config/config.example.json ./public/config/config.json
+        run: mkdir -p ./public/config && cp config_helper/config.example.json ./public/config/config.json
       - name: Run unit tests
         run: npm run test
       - name: Run dev build
