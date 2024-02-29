@@ -13,7 +13,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
-- Moved example config out of public so it doesn't get added to build
+- Moved example config out of public so it doesn't get added to build.
+- Update readme for config keys showing as `required` to correctly reflect app run requirements.
 
 ## 5.0.0 - 2024-02-27
 
