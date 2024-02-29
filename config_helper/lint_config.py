@@ -65,7 +65,7 @@ def lint_config(file_path):
     print("*********************************************************************")
 
     # Check for missing required keys
-    required_keys = ["STAC_API_URL, PUBLIC_URL, SEARCH_MIN_ZOOM_LEVELS"]
+    required_keys = ["STAC_API_URL","PUBLIC_URL","SEARCH_MIN_ZOOM_LEVELS"]
     missing_required_keys = [key for key in required_keys if key not in config]
     if missing_required_keys:
         print("Required key(s) missing:")
