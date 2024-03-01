@@ -28,8 +28,12 @@ const PageHeader = () => {
           ></img>
         ) : (
           <img
-            src={_appConfig.PUBLIC_URL + '/logo.png'}
-            alt="FilmDrop default app name logo"
+            src={
+              _appConfig.PUBLIC_URL
+                ? _appConfig.PUBLIC_URL + '/logo.png'
+                : './logo.png'
+            }
+            alt="FilmDrop default app logo"
             className="headerLogoImage"
           />
         )}
