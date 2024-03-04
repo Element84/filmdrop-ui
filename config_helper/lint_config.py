@@ -4,7 +4,7 @@ Usage: python3 lint_config.py path/to/config.json
 Purpose: Lints a config.json configuration file used by a deployment of the Filmdrop UI application (https://github.com/Element84/filmdrop-ui).
 Checks for missing required keys, extra keys, type errors, and optional keys not included.
 
-Supported console version this works for: v.5.0.0
+Supported console version this works for: 5.0.0
 """
 
 import sys
