@@ -1,8 +1,10 @@
 """
 Usage: python3 lint_config.py path/to/config.json
 
-Purpose: Lints a config.json configuration file used by a depolyment of the Filmdrop UI application (https://github.com/Element84/filmdrop-ui).
+Purpose: Lints a config.json configuration file used by a deployment of the Filmdrop UI application (https://github.com/Element84/filmdrop-ui).
 Checks for missing required keys, extra keys, type errors, and optional keys not included.
+
+Supported console version this works for: 5.0.0
 """
 
 import sys
@@ -63,7 +65,7 @@ def lint_config(file_path):
     print("*********************************************************************")
 
     # Check for missing required keys
-    required_keys = ["STAC_API_URL"]
+    required_keys = ["STAC_API_URL","SEARCH_MIN_ZOOM_LEVELS"]
     missing_required_keys = [key for key in required_keys if key not in config]
     if missing_required_keys:
         print("Required key(s) missing:")
