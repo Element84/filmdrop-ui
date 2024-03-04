@@ -62,7 +62,9 @@ const Dropdown = () => {
       dispatch(setSelectedCollectionData(selectedCollection))
       dispatch(setShowZoomNotice(false))
       dispatch(setSearchLoading(false))
-      zoomToCollectionExtent(selectedCollection)
+      if (selectedCollection !== _selectedCollectionData) {
+        zoomToCollectionExtent(selectedCollection)
+      }
     }
   }, [collectionId])
 

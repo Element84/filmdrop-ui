@@ -16,6 +16,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Moved example config out of public so it doesn't get added to build.
 - Update readme for config keys showing as `required` to correctly reflect app run requirements.
 
+### Fixed
+
+- Bug fixed for zoom to collection extent running on every collection dropdown re-render.
+- Bug fixed for `select scenes` button not changing to item details tab when clicked.
+
 ## 5.0.0 - 2024-02-27
 
 ### Added
