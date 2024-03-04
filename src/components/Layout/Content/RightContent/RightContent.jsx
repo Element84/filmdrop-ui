@@ -13,7 +13,9 @@ import {
   setmappedScenes,
   setSearchLoading,
   setshowMapAttribution,
-  setshowLayerList
+  setshowLayerList,
+  settabSelected,
+  sethasLeftPanelTabChanged
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
@@ -133,6 +135,8 @@ const RightContent = () => {
 
   function onSelectAllScenesClicked() {
     selectMappedScenes()
+    dispatch(settabSelected('details'))
+    dispatch(sethasLeftPanelTabChanged(true))
   }
 
   useEffect(() => {
