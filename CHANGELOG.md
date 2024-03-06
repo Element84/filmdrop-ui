@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- Added .gitkeep to empty config directory so it gets put into version control.
+- Added `.gitkeep` to empty config directory so it gets put into version control.
 
 ## 5.0.1 - 2024-03-04
 
