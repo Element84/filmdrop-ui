@@ -26,7 +26,7 @@ function App() {
     try {
       console.log('Version: ' + process.env.REACT_APP_VERSION)
     } catch (err) {
-      console.log('Version: undefined')
+      console.error('Error logging version:', err)
     }
   }, [])
 
