@@ -9,6 +9,11 @@ import svgrPlugin from 'vite-plugin-svgr'
 
 export default defineConfig({
   base: './',
+  define: {
+    'process.env.REACT_APP_VERSION': JSON.stringify(
+      require('./package.json').version
+    )
+  },
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
     outDir: 'build'

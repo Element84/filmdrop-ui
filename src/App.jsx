@@ -23,6 +23,11 @@ function App() {
 
   useEffect(() => {
     LoadConfigIntoStateService()
+    try {
+      console.log('Version: ' + process.env.REACT_APP_VERSION)
+    } catch (err) {
+      console.error('Error logging version:', err)
+    }
   }, [])
 
   useEffect(() => {
