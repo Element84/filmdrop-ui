@@ -215,6 +215,7 @@ The configurations include:
   image to composite.
 - `colormap_name`: the colormap to use for mapping values (typically used for single band)
 - `rescale`: the rescale range to apply prior to color mapping (typically used for single band)
+- `nodata`: the nodata value to use, if not in image metadata
 
 ### Mosaic Tiling Configuration
 

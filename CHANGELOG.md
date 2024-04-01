@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Added initial console log of application deploy version number read from `package.json`
+- Add support for `nodata` to tiling configurations.
 
 ## 5.0.2 - 2024-03-06
 
