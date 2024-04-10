@@ -444,6 +444,9 @@ const constructSceneTilerParams = (collection) => {
   const assetBidx = parameters.bidx(tilerParams, collection, asset)
   if (assetBidx) params.push(assetBidx)
 
+  const nodata = parameters.nodata(tilerParams, collection)
+  if (nodata) params.push(nodata)
+
   const colorFormula = parameters.colorFormula(tilerParams, collection)
   if (colorFormula) params.push(colorFormula)
 
@@ -481,6 +484,10 @@ const constructSceneAssetsParam = (collection, tilerParams) => {
 }
 
 const parameters = {
+  nodata: (tilerParams, collection) => {
+    const value = tilerParams[collection]?.nodata
+    return value == null ? null : `nodata=${value}`
+  },
   colorFormula: (tilerParams, collection) => {
     const value = tilerParams[collection]?.color_formula
     return value && `color_formula=${value}`
@@ -539,6 +546,9 @@ export const constructMosaicTilerParams = (collection) => {
 
   const bidx = parameters.bidx(tilerParams, collection)
   if (bidx) params.push(bidx)
+
+  const nodata = parameters.nodata(tilerParams, collection)
+  if (nodata) params.push(nodata)
 
   const colorFormula = parameters.colorFormula(tilerParams, collection)
   if (colorFormula) params.push(colorFormula)
