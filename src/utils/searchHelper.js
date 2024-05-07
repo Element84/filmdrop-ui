@@ -122,13 +122,13 @@ function buildSearchScenesParams(gridCodeToSearchIn) {
   }
 
   const query = {}
-  if (_selectedCollection.queryables['eo:cloud_cover']) {
+  if (_selectedCollection.queryables?.['eo:cloud_cover']) {
     query['eo:cloud_cover'] = {
       gte: 0,
       lte: store.getState().mainSlice.cloudCover
     }
   }
-  if (_selectedCollection.queryables['sar:polarizations']) {
+  if (_selectedCollection.queryables?.['sar:polarizations']) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
   if (gridCodeToSearchIn) {
@@ -208,13 +208,13 @@ function buildSearchAggregateParams(gridType) {
   }
 
   const query = {}
-  if (_selectedCollection.queryables['eo:cloud_cover']) {
+  if (_selectedCollection.queryables?.['eo:cloud_cover']) {
     query['eo:cloud_cover'] = {
       gte: 0,
       lte: store.getState().mainSlice.cloudCover
     }
   }
-  if (_selectedCollection.queryables['sar:polarizations']) {
+  if (_selectedCollection.queryables?.['sar:polarizations']) {
     query['sar:polarizations'] = { in: ['VV', 'VH'] }
   }
 

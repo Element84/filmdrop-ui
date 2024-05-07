@@ -26,7 +26,7 @@ const CloudSlider = () => {
   useEffect(() => {
     if (_selectedCollectionData) {
       const supportsCloudCover =
-        _selectedCollectionData.queryables['eo:cloud_cover']
+        _selectedCollectionData.queryables?.['eo:cloud_cover']
       if (supportsCloudCover) {
         setDisabled(!supportsCloudCover)
         dispatch(setShowCloudSlider(true))
