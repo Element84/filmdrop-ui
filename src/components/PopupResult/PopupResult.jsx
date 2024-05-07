@@ -70,7 +70,9 @@ const PopupResult = (props) => {
             {_appConfig.STAC_LINK_ENABLED && (
               <div className="detailRow">
                 <a
-                  href={props.result.links[0].href.toString()}
+                  href={props.result?.links
+                    ?.find((x) => x?.rel === 'self')
+                    ?.href?.toString()}
                   target="_blank"
                   rel="noreferrer"
                   className="popupResultDetailsRowValue popupResultDetailsHrefLink"
