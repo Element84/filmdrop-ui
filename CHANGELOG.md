@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- UI no longer throws an error if the STAC API does not support a queryables endpoint.
 - STAC API Item link used the first link in the links array, instead of looking
   up the "self" relation link by "rel" value
 
