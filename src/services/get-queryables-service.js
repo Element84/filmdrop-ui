@@ -6,7 +6,8 @@ export function GetCollectionQueryablesService(collectionId) {
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/collections/${collectionId}/queryables`,
     {
-      method: 'GET'
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
     }
   )
     .then((response) => {

@@ -9,8 +9,8 @@ export async function LoadConfigIntoStateService() {
   }config/config.json?_cb=${cacheBuster}`
 
   await fetch(configUrl, {
-    method: 'GET',
-    cache: 'no-store'
+    cache: 'no-store',
+    credentials: 'same-origin'
   })
     .then((response) => {
       if (response.ok) {
@@ -39,7 +39,8 @@ export async function DoesFaviconExistService() {
       }?_cb=${cacheBuster}`,
       {
         method: 'HEAD',
-        cache: 'no-store'
+        cache: 'no-store',
+        credentials: 'same-origin'
       }
     )
 

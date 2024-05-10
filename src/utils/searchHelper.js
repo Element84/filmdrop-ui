@@ -433,7 +433,9 @@ function newMosaicSearch() {
     headers: {
       'Content-Type': 'application/vnd.titiler.stac-api-query+json'
     },
-    body: JSON.stringify(createMosaicBody)
+    body: JSON.stringify(createMosaicBody),
+    credentials:
+      store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
   }
 
   AddMosaicService(requestOptions)

@@ -13,7 +13,8 @@ export async function AggregateSearchService(searchParams, gridType) {
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/aggregate?${searchParams}`,
     {
-      method: 'GET'
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
     }
   )
     .then((response) => {

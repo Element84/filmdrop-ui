@@ -15,7 +15,8 @@ export async function SearchService(searchParams, typeOfSearch) {
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/search?${searchParams}`,
     {
-      method: 'GET'
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
     }
   )
     .then((response) => {
