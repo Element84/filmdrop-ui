@@ -62,7 +62,7 @@
     "remark-preset-lint-recommended": "^6.1.2",
     "remark-validate-links": "^13.0.1",
     "resize-observer-polyfill": "^1.5.1",
-    "typescript": "^5.0.4",
+    "typescript": "^5.4.5",
     "vite": "^5.1.4",
     "vite-plugin-svgr": "^4.2.0",
     "vite-tsconfig-paths": "^4.3.2",
