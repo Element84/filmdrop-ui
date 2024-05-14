@@ -1,7 +1,10 @@
+import { store } from '../redux/store'
+
 export function GetMosaicBoundsService(mosaicURL) {
   return new Promise(function (resolve, reject) {
     fetch(mosaicURL, {
-      method: 'GET'
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
     })
       .then((response) => {
         if (response.ok) {

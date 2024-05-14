@@ -11,7 +11,8 @@ export async function GetCollectionsService(searchParams) {
   await fetch(
     `${store.getState().mainSlice.appConfig.STAC_API_URL}/collections`,
     {
-      method: 'GET'
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
     }
   )
     .then((response) => {

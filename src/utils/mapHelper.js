@@ -376,7 +376,8 @@ function addImageOverlay(item) {
   const tilerParams = constructSceneTilerParams(_selectedCollectionData.id)
 
   fetch(featureURL, {
-    method: 'GET'
+    credentials:
+      store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
   })
     .then(function (response) {
       return response.json()

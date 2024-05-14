@@ -8,7 +8,11 @@ import {
 import { DEFAULT_MAX_SCENES_RENDERED } from '../components/defaults'
 
 async function fetchFeatures(url, abortSignal) {
-  const response = await fetch(url, { signal: abortSignal })
+  const response = await fetch(url, {
+    signal: abortSignal,
+    credentials:
+      store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+  })
   const data = await response.json()
   clearLayer('clickedSceneImageLayer')
 

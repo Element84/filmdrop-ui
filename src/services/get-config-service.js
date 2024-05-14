@@ -9,7 +9,6 @@ export async function LoadConfigIntoStateService() {
   }config/config.json?_cb=${cacheBuster}`
 
   await fetch(configUrl, {
-    method: 'GET',
     cache: 'no-store'
   })
     .then((response) => {

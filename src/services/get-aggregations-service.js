@@ -6,7 +6,8 @@ export async function GetCollectionAggregationsService(collectionId) {
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/collections/${collectionId}/aggregations`,
     {
-      method: 'GET'
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
     }
   )
     .then((response) => {
