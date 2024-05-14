@@ -7,8 +7,7 @@ export async function LoadLocalGridDataService(fileName) {
     import.meta.env.BASE_URL
   }data/${fileName}.json?_cb=${cacheBuster}`
   await fetch(configUrl, {
-    cache: 'no-store',
-    credentials: 'same-origin'
+    cache: 'no-store'
   })
     .then((response) => {
       if (response.ok) {
