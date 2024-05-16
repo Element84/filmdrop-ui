@@ -372,7 +372,9 @@ function addImageOverlay(item) {
 
   clearLayer('clickedSceneImageLayer')
 
-  const featureURL = item.links[0].href
+  const featureURL = item?.links
+    ?.find((x) => x?.rel === 'self')
+    ?.href?.toString()
   const tilerParams = constructSceneTilerParams(_selectedCollectionData.id)
 
   fetch(featureURL, {
