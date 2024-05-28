@@ -85,11 +85,11 @@ The file `config_helper/config.example.json` is included in this repository as r
 | DEFAULT_COLLECTION       | Default collection option for collection dropdown                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Optional |
 | COLLECTIONS              | Array of strings listing collections to show in dropdown. This is used to filter the collections endpoint from the list fetched from the `STAC_API_URL` defined in the config. Collection property of `id` must be used. If set, only the matched collections will show in the app. If not set, all collections in the STAC API will show in dropdown.                                                                                                                                                                        | Optional |
 | SCENE_TILER_URL          | URL for map tiling                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional |
-| SCENE_TILER_PARAMS       | Per-collection configuration of TiTiler `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [config.example.json](config_helper/config.example.json)                                                                                                                                                                                                                                                                                                                       | Optional |
+| SCENE_TILER_PARAMS       | Per-collection configuration of TiTiler `assets`, `color_formula`, `bidx`, `rescale`, `expression`, `colormap_name`, and `colormap` parameters. Example in [config.example.json](config_helper/config.example.json)                                                                                                                                                                                                                                                                                                           | Optional |
 | MOSAIC_MIN_ZOOM_LEVEL    | Minimum zoom level for mosaic view search results. If not set, the default zoom level will be 7.                                                                                                                                                                                                                                                                                                                                                                                                                              | Optional |
 | ACTION_BUTTON            | Button text and redirect URL used to link to external website as a prominent call to action. If not set, the button will not be visible. Should be an object with `text` and `url` keys. Example: [config.example.json](config_helper/config.example.json).                                                                                                                                                                                                                                                                   | Optional |
 | MOSAIC_TILER_URL         | URL for mosaic tiling. If not set, the View Mode selector will not be visible. The app requires the use of the [NASA IMPACT TiTiler fork](https://github.com/NASA-IMPACT/titiler) as it contains the mosaicjson endpoints needed.                                                                                                                                                                                                                                                                                             | Optional |
-| MOSAIC_TILER_PARAMS      | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, and `colormap_name` parameters. Example in [config.example.json](config_helper/config.example.json)                                                                                                                                                                                                                                                                                                                | Optional |
+| MOSAIC_TILER_PARAMS      | Per-collection configuration of TiTiler mosaic `assets`, `color_formula`, `bidx`, `rescale`, `expression`, `colormap_name`, and `colormap` parameters. Example in [config.example.json](config_helper/config.example.json)                                                                                                                                                                                                                                                                                                    | Optional |
 | MOSAIC_MAX_ITEMS         | Maximum number of items in mosaic. If not set, the default max items will be 100.                                                                                                                                                                                                                                                                                                                                                                                                                                             | Optional |
 | CONFIG_COLORMAP          | Color map used in low level hex grid search results. Complete list of colormaps are available here: [bpostlethwaite/colormap](https://github.com/bpostlethwaite/colormap). If not set, the default colormap will be "viridis".                                                                                                                                                                                                                                                                                                | Optional |
 | BASEMAP_URL              | URL to specify a basemap provider used by the leaflet map. Must be a raster tile provider as vector tiles are not supported. If not set, the default colormap will be `https://tile.openstreetmap.org/{z}/{x}/{y}.png`.                                                                                                                                                                                                                                                                                                       | Optional |
@@ -215,8 +215,28 @@ The configurations include:
 - `bidx`: if a single asset is defined, these indicies are used as the band indicies within that
   image to composite.
 - `colormap_name`: the colormap to use for mapping values (typically used for single band)
+- `colormap`: a colormap of values to hex colors to use for mapping values (typically used for single band)
 - `rescale`: the rescale range to apply prior to color mapping (typically used for single band)
 - `nodata`: the nodata value to use, if not in image metadata
+
+An example of a `colormap` configuration is:
+
+```text
+ "colormap": {
+        "0": "#000000",
+        "1": "#419bdf",
+        "2": "#397d49",
+        "3": "#000000",
+        "4": "#7a87c6",
+        "5": "#e49635",
+        "6": "#000000",
+        "7": "#c4281b",
+        "8": "#a59b8f",
+        "9": "#a8ebff",
+        "10": "#616161",
+        "11": "#e3e2c3"
+      }
+```
 
 ### Mosaic Tiling Configuration
 

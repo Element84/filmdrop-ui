@@ -462,6 +462,9 @@ const constructSceneTilerParams = (collection) => {
   const colormapName = parameters.colormapName(tilerParams, collection)
   if (colormapName) params.push(colormapName)
 
+  const colormap = parameters.colormap(tilerParams, collection)
+  if (colormap) params.push(colormap)
+
   return params.join('&')
 }
 
@@ -506,6 +509,10 @@ const parameters = {
   colormapName: (tilerParams, collection) => {
     const value = tilerParams[collection]?.colormap_name
     return value && `colormap_name=${value}`
+  },
+  colormap: (tilerParams, collection) => {
+    const value = tilerParams[collection]?.colormap
+    return value && `colormap=${encodeURIComponent(JSON.stringify(value))}`
   },
   bidx: (tilerParams, collection, asset) => {
     const value = tilerParams[collection]?.bidx
@@ -564,6 +571,9 @@ export const constructMosaicTilerParams = (collection) => {
 
   const colormapName = parameters.colormapName(tilerParams, collection)
   if (colormapName) params.push(colormapName)
+
+  const colormap = parameters.colormap(tilerParams, collection)
+  if (colormap) params.push(colormap)
 
   return params.join('&')
 }
