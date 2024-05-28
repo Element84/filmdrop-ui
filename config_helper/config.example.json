@@ -41,6 +41,23 @@
       "assets": ["vv"],
       "rescale": ["0,250"],
       "colormap_name": "plasma"
+    },
+    "io-10m-annual-lulc": {
+      "assets": ["supercell"],
+      "colormap": {
+        "0": "#000000",
+        "1": "#419bdf",
+        "2": "#397d49",
+        "3": "#000000",
+        "4": "#7a87c6",
+        "5": "#e49635",
+        "6": "#000000",
+        "7": "#c4281b",
+        "8": "#a59b8f",
+        "9": "#a8ebff",
+        "10": "#616161",
+        "11": "#e3e2c3"
+      }
     }
   },
   "MOSAIC_TILER_URL": "https://titiler-mosaic.example.com",
@@ -70,6 +87,23 @@
       "assets": ["vv"],
       "rescale": ["0,250"],
       "colormap_name": "plasma"
+    },
+    "io-10m-annual-lulc": {
+      "assets": ["supercell"],
+      "colormap": {
+        "0": "#000000",
+        "1": "#419bdf",
+        "2": "#397d49",
+        "3": "#000000",
+        "4": "#7a87c6",
+        "5": "#e49635",
+        "6": "#000000",
+        "7": "#c4281b",
+        "8": "#a59b8f",
+        "9": "#a8ebff",
+        "10": "#616161",
+        "11": "#e3e2c3"
+      }
     }
   },
   "MOSAIC_MAX_ITEMS": 100,
