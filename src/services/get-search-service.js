@@ -10,13 +10,19 @@ import {
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
 export async function SearchService(searchParams, typeOfSearch) {
+  const requestHeaders = new Headers()
+  const JWT = localStorage.getItem('STAC_Auth_Token')
+  if (JWT) {
+    requestHeaders.append('Authorization', `Bearer ${JWT}`)
+  }
   await fetch(
     `${
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/search?${searchParams}`,
     {
       credentials:
-        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
+      headers: requestHeaders
     }
   )
     .then((response) => {
@@ -26,6 +32,7 @@ export async function SearchService(searchParams, typeOfSearch) {
       throw new Error()
     })
     .then((json) => {
+      console.log(json)
       if (typeOfSearch === 'scene') {
         store.dispatch(setSearchResults(json))
         store.dispatch(setmappedScenes(json.features))

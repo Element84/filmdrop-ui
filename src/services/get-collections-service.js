@@ -8,11 +8,17 @@ import {
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 
 export async function GetCollectionsService(searchParams) {
+  const requestHeaders = new Headers()
+  const JWT = localStorage.getItem('STAC_Auth_Token')
+  if (JWT) {
+    requestHeaders.append('Authorization', `Bearer ${JWT}`)
+  }
   await fetch(
     `${store.getState().mainSlice.appConfig.STAC_API_URL}/collections`,
     {
       credentials:
-        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
+      headers: requestHeaders
     }
   )
     .then((response) => {
