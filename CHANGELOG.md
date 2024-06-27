@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
-- Resole high vulnerabilities in npm packages
+- Resolve high vulnerabilities in npm packages
 
 ## 5.5.0 - 2024-05-28
 
