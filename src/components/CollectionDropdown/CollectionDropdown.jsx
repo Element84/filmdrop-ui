@@ -96,7 +96,7 @@ const Dropdown = () => {
             {_collectionsData &&
               _collectionsData.map(({ id, title }) => (
                 <option key={id} value={id}>
-                  {title}
+                  {title ?? id}
                 </option>
               ))}
           </NativeSelect>
