@@ -32,7 +32,6 @@ export async function SearchService(searchParams, typeOfSearch) {
       throw new Error()
     })
     .then((json) => {
-      console.log(json)
       if (typeOfSearch === 'scene') {
         store.dispatch(setSearchResults(json))
         store.dispatch(setmappedScenes(json.features))
