@@ -3,7 +3,7 @@ import './PageHeader.css'
 import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 import { useSelector } from 'react-redux'
-import { Box } from '@mui/material'
+import { Stack } from '@mui/material'
 import CartButton from '../../Cart/CartButton/CartButton'
 
 const PageHeader = () => {
@@ -41,7 +41,7 @@ const PageHeader = () => {
       <div className="pageHeaderRight">
         <div className="pageHeaderRightButtons">
           {_appConfig.ANALYZE_BTN_URL && (
-            <Box
+            <Stack
               className="buttonLink"
               data-testid="testAnalyzeButton"
               onClick={() => onAnalyzeClick()}
@@ -50,10 +50,10 @@ const PageHeader = () => {
                 Analyze
                 <OpenInNew className="OpenIcon" />
               </span>
-            </Box>
+            </Stack>
           )}
           {_appConfig.DASHBOARD_BTN_URL && (
-            <Box
+            <Stack
               className="buttonLink"
               data-testid="testDashboardButton"
               onClick={() => onDashboardClick()}
@@ -62,7 +62,7 @@ const PageHeader = () => {
                 Dashboard
                 <OpenInNew className="OpenIcon" />
               </span>
-            </Box>
+            </Stack>
           )}
         </div>
         {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
@@ -78,9 +78,9 @@ const PageHeader = () => {
           </a>
         ) : null}
         {_appConfig.CART_ENABLED ? (
-          <Box className="cartButtonHeaderBar">
+          <Stack className="cartButtonHeaderBar">
             <CartButton></CartButton>
-          </Box>
+          </Stack>
         ) : null}
       </div>
     </div>

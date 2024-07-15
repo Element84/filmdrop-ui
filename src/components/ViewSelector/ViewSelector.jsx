@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { setViewMode } from '../../redux/slices/mainSlice'
 import './ViewSelector.css'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
-import Box from '@mui/material/Box'
+import { Stack } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import Button from '@mui/material/Button'
 import ButtonGroup from '@mui/material/ButtonGroup'
@@ -31,7 +31,7 @@ const ViewSelector = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ width: 165 }} className="viewSelector">
+      <Stack sx={{ width: 165 }} className="viewSelector">
         <label htmlFor="ViewModeToggle">View Mode</label>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs>
@@ -54,7 +54,7 @@ const ViewSelector = () => {
             </ButtonGroup>
           </Grid>
         </Grid>
-      </Box>
+      </Stack>
     </ThemeProvider>
   )
 }

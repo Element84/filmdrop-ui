@@ -1,6 +1,6 @@
 import { React, useState, useEffect } from 'react'
 import './CollectionDropdown.css'
-import Box from '@mui/material/Box'
+import { Stack } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import NativeSelect from '@mui/material/NativeSelect'
 import { useDispatch, useSelector } from 'react-redux'
@@ -80,7 +80,7 @@ const Dropdown = () => {
   }
 
   return (
-    <Box>
+    <Stack>
       <label htmlFor="collectionDropdown">Collection</label>
       <Grid container alignItems="center">
         <Grid item xs>
@@ -112,7 +112,7 @@ const Dropdown = () => {
             'Present'}
         </div>
       )}
-    </Box>
+    </Stack>
   )
 }
 
