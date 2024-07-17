@@ -10,12 +10,23 @@ import {
 
 export async function buildCollectionsData(collections) {
   for (const collection of collections.collections) {
-    const [queryables, aggregations] = await Promise.all([
-      GetCollectionQueryablesService(collection.id),
-      GetCollectionAggregationsService(collection.id)
-    ])
+    let queryables
+    let aggregations
+    const hasAggregations =
+      store.getState().mainSlice.appConfig.SUPPORTS_AGGREGATIONS ?? true
+    if (hasAggregations) {
+      ;[queryables, aggregations] = await Promise.all([
+        GetCollectionQueryablesService(collection.id),
+        GetCollectionAggregationsService(collection.id)
+      ])
+    } else {
+      queryables = await GetCollectionQueryablesService(collection.id)
+    }
+
     collection.queryables = queryables
-    collection.aggregations = aggregations
+    if (hasAggregations) {
+      collection.aggregations = aggregations
+    }
   }
 
   collections.collections = collections.collections.sort((a, b) =>
