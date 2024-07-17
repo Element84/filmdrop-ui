@@ -3,6 +3,7 @@ import {
   setCollectionsData,
   setShowAppLoading,
   setapplicationAlertMessage,
+  setauthTokenExists,
   setshowApplicationAlert
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
@@ -25,7 +26,13 @@ export async function GetCollectionsService(searchParams) {
       if (response.ok) {
         return response.json()
       }
-      throw new Error()
+      const error = new Error('Server responded with an error')
+      error.status = response.status
+      error.statusText = response.statusText
+      return response.json().then((err) => {
+        error.response = err
+        throw error
+      })
     })
     .then((json) => {
       if (!store.getState().mainSlice.appConfig.COLLECTIONS) {
@@ -54,6 +61,10 @@ export async function GetCollectionsService(searchParams) {
       loadLocalGridData()
     })
     .catch((error) => {
+      if (error.status === 403) {
+        localStorage.removeItem('STAC_Auth_Token')
+        store.dispatch(setauthTokenExists(false))
+      }
       const message = 'Error Fetching Collections'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
