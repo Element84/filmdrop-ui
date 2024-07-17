@@ -7,11 +7,14 @@ import UploadGeojsonModal from './components/UploadGeojsonModal/UploadGeojsonMod
 import SystemMessage from './components/SystemMessage/SystemMessage'
 import { GetCollectionsService } from './services/get-collections-service'
 import { LoadConfigIntoStateService } from './services/get-config-service'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CartModal from './components/Cart/CartModal/CartModal'
 import { InitializeAppFromConfig } from './utils/configHelper'
+import Login from './components/Login/Login'
+import { setauthTokenExists } from './redux/slices/mainSlice'
 
 function App() {
+  const dispatch = useDispatch()
   const _showUploadGeojsonModal = useSelector(
     (state) => state.mainSlice.showUploadGeojsonModal
   )
@@ -20,8 +23,14 @@ function App() {
   )
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _showCartModal = useSelector((state) => state.mainSlice.showCartModal)
+  const _authTokenExists = useSelector(
+    (state) => state.mainSlice.authTokenExists
+  )
 
   useEffect(() => {
+    if (localStorage.getItem('STAC_Auth_Token')) {
+      dispatch(setauthTokenExists(true))
+    }
     LoadConfigIntoStateService()
     try {
       console.log('Version: ' + process.env.REACT_APP_VERSION)
@@ -32,23 +41,32 @@ function App() {
 
   useEffect(() => {
     if (_appConfig) {
+      if (_appConfig.STAC_AUTH_ENABLED && !_authTokenExists) {
+        return
+      }
       InitializeAppFromConfig()
       GetCollectionsService()
     }
-  }, [_appConfig])
+  }, [_appConfig, _authTokenExists])
 
   return (
     <React.StrictMode>
       {_appConfig ? (
-        <div className="App">
-          <PageHeader></PageHeader>
-          <Content></Content>
-          {_showUploadGeojsonModal ? (
-            <UploadGeojsonModal></UploadGeojsonModal>
-          ) : null}
-          {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
-          {_showCartModal ? <CartModal></CartModal> : null}
-        </div>
+        _appConfig.STAC_AUTH_ENABLED && !_authTokenExists ? (
+          <div className="App">
+            <Login></Login>
+          </div>
+        ) : (
+          <div className="App">
+            <PageHeader></PageHeader>
+            <Content></Content>
+            {_showUploadGeojsonModal ? (
+              <UploadGeojsonModal></UploadGeojsonModal>
+            ) : null}
+            {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
+            {_showCartModal ? <CartModal></CartModal> : null}
+          </div>
+        )
       ) : (
         <div className="App">
           <div className="appLoading" data-testid="testAppLoading"></div>
