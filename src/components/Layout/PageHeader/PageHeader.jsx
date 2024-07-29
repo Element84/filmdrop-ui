@@ -5,6 +5,7 @@ import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 import { useSelector } from 'react-redux'
 import { Stack } from '@mui/material'
 import CartButton from '../../Cart/CartButton/CartButton'
+import { logoutUser } from '../../../utils/authHelper'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
@@ -15,6 +16,10 @@ const PageHeader = () => {
 
   function onAnalyzeClick() {
     window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
+  }
+
+  function onLogoutClick() {
+    logoutUser()
   }
 
   return (
@@ -80,6 +85,13 @@ const PageHeader = () => {
         {_appConfig.CART_ENABLED ? (
           <Stack className="cartButtonHeaderBar">
             <CartButton></CartButton>
+          </Stack>
+        ) : null}
+        {_appConfig.STAC_AUTH_ENABLED ? (
+          <Stack className="cartButtonHeaderBar">
+            <button className="logoutButton" onClick={() => onLogoutClick()}>
+              logout
+            </button>
           </Stack>
         ) : null}
       </div>

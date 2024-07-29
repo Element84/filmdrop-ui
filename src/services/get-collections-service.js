@@ -3,10 +3,10 @@ import {
   setCollectionsData,
   setShowAppLoading,
   setapplicationAlertMessage,
-  setauthTokenExists,
   setshowApplicationAlert
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
+import { logoutUser } from '../utils/authHelper'
 
 export async function GetCollectionsService(searchParams) {
   const requestHeaders = new Headers()
@@ -62,8 +62,7 @@ export async function GetCollectionsService(searchParams) {
     })
     .catch((error) => {
       if (error.status === 403) {
-        localStorage.removeItem('STAC_Auth_Token')
-        store.dispatch(setauthTokenExists(false))
+        logoutUser()
       }
       const message = 'Error Fetching Collections'
       // log full error for diagnosing client side errors if needed
