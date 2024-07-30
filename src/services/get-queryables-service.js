@@ -2,7 +2,7 @@ import { store } from '../redux/store'
 
 export function GetCollectionQueryablesService(collectionId) {
   const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('STAC_Auth_Token')
+  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
   const isSTACTokenAuthEnabled =
     store.getState().mainSlice.appConfig.STAC_TOKEN_AUTH_ENABLED ?? false
   if (JWT && isSTACTokenAuthEnabled) {

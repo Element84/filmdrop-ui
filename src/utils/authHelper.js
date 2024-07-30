@@ -1,4 +1,4 @@
 export function logoutUser() {
-  localStorage.removeItem('STAC_Auth_Token')
+  localStorage.removeItem('APP_AUTH_TOKEN')
   window.location.reload()
 }

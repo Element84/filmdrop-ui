@@ -26,7 +26,7 @@ export async function AuthService(username, password) {
       throw new Error()
     })
     .then((json) => {
-      localStorage.setItem('STAC_Auth_Token', json.access_token)
+      localStorage.setItem('APP_AUTH_TOKEN', json.access_token)
       store.dispatch(setauthTokenExists(true))
     })
     .catch((error) => {

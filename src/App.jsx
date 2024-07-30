@@ -28,7 +28,7 @@ function App() {
   )
 
   useEffect(() => {
-    if (localStorage.getItem('STAC_Auth_Token')) {
+    if (localStorage.getItem('APP_AUTH_TOKEN')) {
       dispatch(setauthTokenExists(true))
     }
     LoadConfigIntoStateService()
