@@ -6,12 +6,13 @@ import {
   setshowApplicationAlert
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
-import { logoutUser } from '../utils/authHelper'
 
 export async function GetCollectionsService(searchParams) {
   const requestHeaders = new Headers()
   const JWT = localStorage.getItem('STAC_Auth_Token')
-  if (JWT) {
+  const isSTACTokenAuthEnabled =
+    store.getState().mainSlice.appConfig.STAC_TOKEN_AUTH_ENABLED ?? false
+  if (JWT && isSTACTokenAuthEnabled) {
     requestHeaders.append('Authorization', `Bearer ${JWT}`)
   }
   await fetch(
@@ -62,7 +63,14 @@ export async function GetCollectionsService(searchParams) {
     })
     .catch((error) => {
       if (error.status === 403) {
-        logoutUser()
+        store.dispatch(
+          setapplicationAlertMessage(
+            'STAC API returned 403. Bad Token OR needs STAC Auth Enabled in config.',
+            'error'
+          )
+        )
+        store.dispatch(setshowApplicationAlert(true))
+        // logoutUser()
       }
       const message = 'Error Fetching Collections'
       // log full error for diagnosing client side errors if needed

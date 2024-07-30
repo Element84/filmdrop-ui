@@ -3,7 +3,9 @@ import { store } from '../redux/store'
 export async function GetCollectionAggregationsService(collectionId) {
   const requestHeaders = new Headers()
   const JWT = localStorage.getItem('STAC_Auth_Token')
-  if (JWT) {
+  const isSTACTokenAuthEnabled =
+    store.getState().mainSlice.appConfig.STAC_TOKEN_AUTH_ENABLED ?? false
+  if (JWT && isSTACTokenAuthEnabled) {
     requestHeaders.append('Authorization', `Bearer ${JWT}`)
   }
   return fetch(

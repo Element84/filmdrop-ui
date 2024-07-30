@@ -41,7 +41,7 @@ function App() {
 
   useEffect(() => {
     if (_appConfig) {
-      if (_appConfig.STAC_AUTH_ENABLED && !_authTokenExists) {
+      if (_appConfig.APP_TOKEN_AUTH_ENABLED && !_authTokenExists) {
         return
       }
       InitializeAppFromConfig()
@@ -52,7 +52,7 @@ function App() {
   return (
     <React.StrictMode>
       {_appConfig ? (
-        _appConfig.STAC_AUTH_ENABLED && !_authTokenExists ? (
+        _appConfig.APP_TOKEN_AUTH_ENABLED && !_authTokenExists ? (
           <div className="App">
             <Login></Login>
           </div>

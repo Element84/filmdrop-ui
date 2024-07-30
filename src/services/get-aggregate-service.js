@@ -10,7 +10,9 @@ import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
 export async function AggregateSearchService(searchParams, gridType) {
   const requestHeaders = new Headers()
   const JWT = localStorage.getItem('STAC_Auth_Token')
-  if (JWT) {
+  const isSTACTokenAuthEnabled =
+    store.getState().mainSlice.appConfig.STAC_TOKEN_AUTH_ENABLED ?? false
+  if (JWT && isSTACTokenAuthEnabled) {
     requestHeaders.append('Authorization', `Bearer ${JWT}`)
   }
   await fetch(

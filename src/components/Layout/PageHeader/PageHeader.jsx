@@ -87,7 +87,7 @@ const PageHeader = () => {
             <CartButton></CartButton>
           </Stack>
         ) : null}
-        {_appConfig.STAC_AUTH_ENABLED ? (
+        {_appConfig.APP_TOKEN_AUTH_ENABLED ? (
           <Stack className="cartButtonHeaderBar">
             <button className="logoutButton" onClick={() => onLogoutClick()}>
               logout
