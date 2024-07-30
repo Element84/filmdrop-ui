@@ -7,9 +7,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Added optional login feature
+- Added optional token auth for STAC API calls feature
+- Added optional config for ignoring aggregations feature if not supported by the STAC API
+
 ### Fixed
 
 - Resolve high vulnerabilities in npm packages
+- Fix bug with not showing search result count when Matched is not returned from a STAC API
+- Changes from MUI Box to use a Stack component to fix build/rendering bug
+
+### Changed
+
+- Alerts of type `error` now force logout when encountered
+- Alerts of type `warning` are used for non logout warnings shown to users
 
 ## 5.5.0 - 2024-05-28
 
