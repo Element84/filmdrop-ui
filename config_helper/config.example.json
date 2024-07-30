@@ -194,7 +194,6 @@
   ],
   "COLLECTIONS": ["naip", "cop-dem-glo-30", "sentinel-2-l2a"],
   "APP_TOKEN_AUTH_ENABLED": true,
-  "STAC_TOKEN_AUTH_ENABLED": true,
   "AUTH_URL": "https://sample-auth-service/login",
   "SUPPORTS_AGGREGATIONS": false
 }
