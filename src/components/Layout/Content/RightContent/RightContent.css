@@ -230,7 +230,7 @@
   align-items: center;
   justify-content: center;
   background: rgb(53, 61, 79);
-  z-index: 99999;
+  z-index: 499;
   opacity: 0.75;
 }
 
