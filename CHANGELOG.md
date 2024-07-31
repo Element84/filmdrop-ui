@@ -10,7 +10,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Added optional login feature
-- Added optional token auth for STAC API calls feature
 - Added optional config for ignoring aggregations feature if not supported by the STAC API
 
 ### Fixed
