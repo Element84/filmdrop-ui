@@ -55,6 +55,7 @@ function App() {
         _appConfig.APP_TOKEN_AUTH_ENABLED && !_authTokenExists ? (
           <div className="App">
             <Login></Login>
+            {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
           </div>
         ) : (
           <div className="App">
