@@ -84,6 +84,20 @@
   margin-left: 10px;
 }
 
+.logoutButton {
+  background-color: #4f5768;
+  color: white;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  border: 1px solid #a9b0c1;
+  border-radius: 5px;
+}
+
+.logoutButton:hover {
+  background-color: #353d4f;
+}
+
 @media screen and (max-width: 950px) {
   .buttonLink {
     display: none;

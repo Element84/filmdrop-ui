@@ -58,6 +58,10 @@ def lint_config(file_path):
         "LAYER_LIST_SERVICES": list,
         "STAC_LINK_ENABLED": bool,
         "SHOW_ITEM_AUTO_ZOOM": bool,
+        "FETCH_CREDENTIALS": str,
+        "APP_TOKEN_AUTH_ENABLED": bool,
+        "AUTH_URL": str,
+        "SUPPORTS_AGGREGATIONS": bool
     }
 
     print("*********************************************************************")

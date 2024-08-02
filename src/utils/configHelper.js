@@ -100,7 +100,7 @@ async function parseLayerListConfig(config) {
       })
   } catch (error) {
     console.error('Error loading reference layers', error.message)
-    showApplicationAlert('error', 'Error loading reference layers', 5000)
+    showApplicationAlert('warning', 'Error loading reference layers', 5000)
     return []
   }
 }

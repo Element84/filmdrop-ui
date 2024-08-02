@@ -36,7 +36,7 @@ describe('UploadGeojsonModal', () => {
     afterEach(() => {
       vi.resetAllMocks()
     })
-    it('should show error if json is not valid and not close modal', async () => {
+    it('should show warning if json is not valid and not close modal', async () => {
       const spyshowApplicationAlert = vi.spyOn(
         alertHelper,
         'showApplicationAlert'
@@ -54,13 +54,13 @@ describe('UploadGeojsonModal', () => {
       const cancelButton = screen.getByRole('button', { name: /add/i })
       await user.click(cancelButton)
       expect(spyshowApplicationAlert).toHaveBeenCalledWith(
-        'error',
+        'warning',
         'ERROR: JSON format invalid',
         5000
       )
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
     })
-    it('should show error and not close modal if parseGeomUpload throws an error', async () => {
+    it('should show warning and not close modal if parseGeomUpload throws an warning', async () => {
       const spyshowApplicationAlert = vi.spyOn(
         alertHelper,
         'showApplicationAlert'
@@ -93,7 +93,7 @@ describe('UploadGeojsonModal', () => {
       const cancelButton = screen.getByRole('button', { name: /add/i })
       await user.click(cancelButton)
       expect(spyshowApplicationAlert).toHaveBeenCalledWith(
-        'error',
+        'warning',
         'ERROR: Parse error',
         5000
       )

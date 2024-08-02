@@ -8,13 +8,21 @@ import {
 import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
 
 export async function AggregateSearchService(searchParams, gridType) {
+  const requestHeaders = new Headers()
+  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const isSTACTokenAuthEnabled =
+    store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
+  if (JWT && isSTACTokenAuthEnabled) {
+    requestHeaders.append('Authorization', `Bearer ${JWT}`)
+  }
   await fetch(
     `${
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/aggregate?${searchParams}`,
     {
       credentials:
-        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
+      headers: requestHeaders
     }
   )
     .then((response) => {

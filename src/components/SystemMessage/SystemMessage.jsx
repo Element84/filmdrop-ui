@@ -5,6 +5,7 @@ import './SystemMessage.css'
 import { useSelector } from 'react-redux'
 import { store } from '../../redux/store'
 import { setshowApplicationAlert } from '../../redux/slices/mainSlice'
+import { logoutUser } from '../../utils/authHelper'
 
 const SystemMessage = () => {
   const _applicationAlertMessage = useSelector(
@@ -19,6 +20,9 @@ const SystemMessage = () => {
       <Alert
         onClose={() => {
           store.dispatch(setshowApplicationAlert(false))
+          if (_applicationAlertSeverity === 'error') {
+            logoutUser()
+          }
         }}
         severity={_applicationAlertSeverity}
         sx={{

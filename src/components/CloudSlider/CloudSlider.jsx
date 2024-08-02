@@ -1,7 +1,7 @@
 import { React, useState, useEffect } from 'react'
 import './CloudSlider.css'
 import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
-import Box from '@mui/material/Box'
+import { Stack } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
@@ -70,7 +70,7 @@ const CloudSlider = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box className={`cloudSlider ${disabled && 'disabled'}`}>
+      <Stack className={`cloudSlider ${disabled && 'disabled'}`}>
         <label htmlFor="cloudSlider">Max Cloud Cover %</label>
         <Grid
           className="cloudSliderInputs"
@@ -115,7 +115,7 @@ const CloudSlider = () => {
             />
           </Grid>
         </Grid>
-      </Box>
+      </Stack>
     </ThemeProvider>
   )
 }

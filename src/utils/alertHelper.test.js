@@ -16,7 +16,7 @@ describe('AlertHelper', () => {
       )
     })
     it('should set Alert message in state if message param passed', () => {
-      showApplicationAlert('error', 'this is a user message')
+      showApplicationAlert('warning', 'this is a user message')
       expect(store.getState().mainSlice.applicationAlertMessage).toBe(
         'this is a user message'
       )
@@ -24,7 +24,7 @@ describe('AlertHelper', () => {
     it('should set ShowApplicationAlert in state to false if duration param passed and specified duration has finished', async () => {
       vi.useFakeTimers()
       const durationParam = 5000
-      showApplicationAlert('error', null, durationParam)
+      showApplicationAlert('warning', null, durationParam)
       expect(store.getState().mainSlice.showApplicationAlert).toBeTruthy()
       vi.runAllTimers()
       expect(store.getState().mainSlice.showApplicationAlert).toBeFalsy()

@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react'
 import './RightContent.css'
 import {
   DEFAULT_MOSAIC_MIN_ZOOM,
-  DEFAULT_MAX_SCENES_RENDERED
+  DEFAULT_MAX_SCENES_RENDERED,
+  DEFAULT_API_MAX_ITEMS
 } from '../../../defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
@@ -302,6 +303,20 @@ const RightContent = () => {
       _searchResults.features?.length === 0 ? (
         <div className="resultCount">
           <div className="resultCountText">No Results Found</div>
+        </div>
+      ) : null}
+      {_searchResults?.searchType !== 'AggregatedResults' &&
+      !_isDrawingEnabled &&
+      _searchResults &&
+      !_searchResults?.numberMatched &&
+      _searchResults.features?.length !== 0 ? (
+        <div className="resultCount">
+          <div className="resultCountText">
+            {_searchResults.features?.length +
+              ' Results (Max Limit ' +
+              _appConfig.API_MAX_ITEMS || DEFAULT_API_MAX_ITEMS}
+            {')'}
+          </div>
         </div>
       ) : null}
       {_searchLoading ? (

@@ -1,0 +1,65 @@
+.Login {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  color: #fff;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background-color: #12171a;
+  color: #fff;
+}
+
+.loginFormContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 400px;
+  min-height: 350px;
+  background-color: #373d4d;
+  border-radius: 0px 0px 10px 10px;
+}
+
+.loginFormLogo {
+  border: 3px #373d4d solid;
+  min-width: 394px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  border-radius: 10px 10px 0px 0px;
+}
+
+.loginLogoImage {
+  max-width: 300px;
+  max-height: 40px;
+}
+
+.loginFormContainer h1 {
+  margin-top: 0px;
+}
+
+.submitForm {
+  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.submitForm label {
+  width: 100%;
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+
+.submitForm input {
+  width: 100%;
+  font-size: 18px;
+  margin-bottom: 5px;
+}
+
+.submitForm button {
+  margin-top: 20px;
+}

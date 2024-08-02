@@ -1,6 +1,6 @@
 import React from 'react'
 import './CartButton.css'
-import { Box } from '@mui/material'
+import { Stack } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
 import { setshowCartModal } from '../../../redux/slices/mainSlice'
 
@@ -16,7 +16,7 @@ const CartButton = () => {
   }
   return (
     <div className="CartButton">
-      <Box
+      <Stack
         className={
           _cartItems.length > 0 ? 'cartButton cartButtonEnabled' : 'cartButton'
         }
@@ -34,7 +34,7 @@ const CartButton = () => {
         >
           {_cartItems.length}
         </div>
-      </Box>
+      </Stack>
     </div>
   )
 }

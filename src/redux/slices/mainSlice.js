@@ -44,7 +44,8 @@ const initialState = {
   tabSelected: 'filters',
   selectedPopupResultIndex: 0,
   autoCenterOnItemChanged: false,
-  hasLeftPanelTabChanged: false
+  hasLeftPanelTabChanged: false,
+  authTokenExists: false
 }
 
 // next, for every key in the initialState
@@ -175,6 +176,9 @@ export const mainSlice = createSlice({
     },
     sethasLeftPanelTabChanged: (state, action) => {
       state.hasLeftPanelTabChanged = action.payload
+    },
+    setauthTokenExists: (state, action) => {
+      state.authTokenExists = action.payload
     }
   }
 })
@@ -222,5 +226,6 @@ export const { settabSelected } = mainSlice.actions
 export const { setselectedPopupResultIndex } = mainSlice.actions
 export const { setautoCenterOnItemChanged } = mainSlice.actions
 export const { sethasLeftPanelTabChanged } = mainSlice.actions
+export const { setauthTokenExists } = mainSlice.actions
 
 export default mainSlice.reducer

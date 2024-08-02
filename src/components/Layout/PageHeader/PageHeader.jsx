@@ -3,8 +3,9 @@ import './PageHeader.css'
 import { OpenInNew } from '@mui/icons-material'
 import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 import { useSelector } from 'react-redux'
-import { Box } from '@mui/material'
+import { Stack } from '@mui/material'
 import CartButton from '../../Cart/CartButton/CartButton'
+import { logoutUser } from '../../../utils/authHelper'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
@@ -15,6 +16,10 @@ const PageHeader = () => {
 
   function onAnalyzeClick() {
     window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
+  }
+
+  function onLogoutClick() {
+    logoutUser()
   }
 
   return (
@@ -41,7 +46,7 @@ const PageHeader = () => {
       <div className="pageHeaderRight">
         <div className="pageHeaderRightButtons">
           {_appConfig.ANALYZE_BTN_URL && (
-            <Box
+            <Stack
               className="buttonLink"
               data-testid="testAnalyzeButton"
               onClick={() => onAnalyzeClick()}
@@ -50,10 +55,10 @@ const PageHeader = () => {
                 Analyze
                 <OpenInNew className="OpenIcon" />
               </span>
-            </Box>
+            </Stack>
           )}
           {_appConfig.DASHBOARD_BTN_URL && (
-            <Box
+            <Stack
               className="buttonLink"
               data-testid="testDashboardButton"
               onClick={() => onDashboardClick()}
@@ -62,7 +67,7 @@ const PageHeader = () => {
                 Dashboard
                 <OpenInNew className="OpenIcon" />
               </span>
-            </Box>
+            </Stack>
           )}
         </div>
         {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
@@ -78,9 +83,16 @@ const PageHeader = () => {
           </a>
         ) : null}
         {_appConfig.CART_ENABLED ? (
-          <Box className="cartButtonHeaderBar">
+          <Stack className="cartButtonHeaderBar">
             <CartButton></CartButton>
-          </Box>
+          </Stack>
+        ) : null}
+        {_appConfig.APP_TOKEN_AUTH_ENABLED ? (
+          <Stack className="cartButtonHeaderBar">
+            <button className="logoutButton" onClick={() => onLogoutClick()}>
+              logout
+            </button>
+          </Stack>
         ) : null}
       </div>
     </div>

@@ -15,7 +15,7 @@ import CollectionDropdown from '../CollectionDropdown/CollectionDropdown'
 import ViewSelector from '../ViewSelector/ViewSelector'
 import { newSearch } from '../../utils/searchHelper'
 import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
-import { Box, Switch } from '@mui/material'
+import { Stack, Switch } from '@mui/material'
 import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 const Search = () => {
@@ -121,7 +121,7 @@ const Search = () => {
         )}
         {_appConfig.SEARCH_BY_GEOM_ENABLED && (
           <div className="searchContainer searchBoundary">
-            <Box className="searchFilterContainer">
+            <Stack className="searchFilterContainer">
               <label
                 htmlFor="searchByGeomOptionsContainer"
                 className="searchByGeomOptionsText"
@@ -163,12 +163,12 @@ const Search = () => {
                   Clear
                 </button>
               </div>
-            </Box>
+            </Stack>
           </div>
         )}
         {_appConfig.SHOW_ITEM_AUTO_ZOOM && (
           <div className="searchContainer viewSelectorComponent">
-            <Box className="searchFilterContainer">
+            <Stack className="searchFilterContainer">
               <label htmlFor="ItemAutoSearch">Item Auto-Zoom</label>
               <ThemeProvider theme={theme}>
                 <Switch
@@ -176,7 +176,7 @@ const Search = () => {
                   onChange={() => updateAutoCenterState()}
                 ></Switch>
               </ThemeProvider>
-            </Box>
+            </Stack>
           </div>
         )}
       </div>

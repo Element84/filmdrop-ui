@@ -42,7 +42,7 @@ const UploadGeojsonModal = () => {
     const file = acceptedFiles[0]
     if (file.size >= 100000) {
       setFileData(null)
-      showApplicationAlert('error', 'File size exceeded (100KB max)', 5000)
+      showApplicationAlert('warning', 'File size exceeded (100KB max)', 5000)
       return
     }
     if (file.name.endsWith('.geojson') || file.name.endsWith('.json')) {
@@ -54,7 +54,7 @@ const UploadGeojsonModal = () => {
     } else {
       setFileData(null)
       showApplicationAlert(
-        'error',
+        'warning',
         'ERROR: Only .json or .geojson supported',
         5000
       )
@@ -96,7 +96,7 @@ const UploadGeojsonModal = () => {
     try {
       geoJsonData = JSON.parse(fileData)
     } catch (e) {
-      showApplicationAlert('error', 'ERROR: JSON format invalid', 5000)
+      showApplicationAlert('warning', 'ERROR: JSON format invalid', 5000)
       return
     }
     if (fileData) {
@@ -108,14 +108,14 @@ const UploadGeojsonModal = () => {
         // eslint-disable-next-line n/handle-callback-err
         (error) => {
           showApplicationAlert(
-            'error',
+            'warning',
             'ERROR: ' + error.message.toString(),
             5000
           )
         }
       )
     } else {
-      showApplicationAlert('error', 'No file selected', 5000)
+      showApplicationAlert('warning', 'No file selected', 5000)
     }
   }
 

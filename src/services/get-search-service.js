@@ -10,13 +10,21 @@ import {
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 
 export async function SearchService(searchParams, typeOfSearch) {
+  const requestHeaders = new Headers()
+  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const isSTACTokenAuthEnabled =
+    store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
+  if (JWT && isSTACTokenAuthEnabled) {
+    requestHeaders.append('Authorization', `Bearer ${JWT}`)
+  }
   await fetch(
     `${
       store.getState().mainSlice.appConfig.STAC_API_URL
     }/search?${searchParams}`,
     {
       credentials:
-        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
+      headers: requestHeaders
     }
   )
     .then((response) => {
