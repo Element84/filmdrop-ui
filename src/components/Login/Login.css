@@ -16,9 +16,28 @@
   align-items: center;
   justify-content: center;
   min-width: 400px;
-  min-height: 400px;
+  min-height: 350px;
   background-color: #373d4d;
-  border-radius: 10px;
+  border-radius: 0px 0px 10px 10px;
+}
+
+.loginFormLogo {
+  border: 3px #373d4d solid;
+  min-width: 394px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100px;
+  border-radius: 10px 10px 0px 0px;
+}
+
+.loginLogoImage {
+  max-width: 300px;
+  max-height: 40px;
+}
+
+.loginFormContainer h1 {
+  margin-top: 0px;
 }
 
 .submitForm {

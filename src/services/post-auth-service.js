@@ -1,5 +1,6 @@
 import { store } from '../redux/store'
 import { setauthTokenExists } from '../redux/slices/mainSlice'
+import { showApplicationAlert } from '../utils/alertHelper'
 
 export async function AuthService(username, password) {
   const AuthServiceURL = store.getState().mainSlice.appConfig.AUTH_URL
@@ -26,12 +27,16 @@ export async function AuthService(username, password) {
       throw new Error()
     })
     .then((json) => {
+      if (!json.access_token) {
+        throw new Error('No Auth Token Found')
+      }
       localStorage.setItem('APP_AUTH_TOKEN', json.access_token)
       store.dispatch(setauthTokenExists(true))
     })
     .catch((error) => {
       store.dispatch(setauthTokenExists(false))
       const message = 'Authentication Error'
+      showApplicationAlert('warning', 'Login Failed', 5000)
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
     })

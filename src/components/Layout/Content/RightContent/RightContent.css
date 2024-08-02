@@ -85,6 +85,18 @@
   text-decoration: none;
 }
 
+.actionButtonDisabled {
+  background-color: #d3d3d3;
+  color: #676767;
+  cursor: default;
+}
+
+.actionButtonDisabled:hover {
+  background-color: #d3d3d3;
+  color: #676767;
+  cursor: default;
+}
+
 .resultCount {
   position: absolute;
   z-index: 2;
