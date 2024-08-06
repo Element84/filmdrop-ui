@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Simple export feature to allow exporting search results as geojson
+
+### Changed
+
+- Refactor call to action button to reduce prominence and match export button size
+
+### Fixed
+
+- bump version in `package-lock.json` file ot match `package.json`
+
 ## 5.6.0 - 2024-08-02
 
 ### Added
