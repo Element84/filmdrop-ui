@@ -97,6 +97,11 @@
   cursor: default;
 }
 
+.actionButtonCTA {
+  height: 35px;
+  font-size: 16px;
+}
+
 .resultCount {
   position: absolute;
   z-index: 2;
