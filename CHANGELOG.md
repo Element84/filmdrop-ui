@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 5.6.0 - 2024-08-07
+
 ### Added
 
 - Simple export feature to allow exporting search results as geojson
