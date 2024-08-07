@@ -33,6 +33,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined'
 import { Tooltip } from 'react-tooltip'
 import LayersIcon from '@mui/icons-material/Layers'
 import LayerList from '../../../LayerList/LayerList'
+import ExportButton from '../../../ExportButton/ExportButton'
 
 const RightContent = () => {
   const [allScenesLoading, setallScenesLoading] = useState(false)
@@ -212,6 +213,7 @@ const RightContent = () => {
             {_appConfig.ACTION_BUTTON.text}
           </button>
         )}
+        {_appConfig.EXPORT_ENABLED && <ExportButton></ExportButton>}
       </div>
       {_searchResults?.numberMatched &&
       _searchResults?.searchType !== 'AggregatedResults' &&

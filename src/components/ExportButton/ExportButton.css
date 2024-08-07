@@ -1,0 +1,16 @@
+.ExportButton {
+  margin: 0px 5px 0px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.downloadButton {
+  background-color: #4f5768;
+  color: white;
+  cursor: pointer;
+  border: 1px solid #a9b0c1;
+  border-radius: 5px;
+  padding: 5px 5px 3px 5px;
+  height: 33px;
+}
