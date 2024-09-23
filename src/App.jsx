@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import './index.css'
 import Content from './components/Layout/Content/Content'
@@ -26,6 +26,7 @@ function App() {
   const _authTokenExists = useSelector(
     (state) => state.mainSlice.authTokenExists
   )
+  const [showLogin, setShowLogin] = useState(false)
 
   useEffect(() => {
     if (localStorage.getItem('APP_AUTH_TOKEN')) {
@@ -42,8 +43,10 @@ function App() {
   useEffect(() => {
     if (_appConfig) {
       if (_appConfig.APP_TOKEN_AUTH_ENABLED && !_authTokenExists) {
+        setShowLogin(true)
         return
       }
+      setShowLogin(false)
       InitializeAppFromConfig()
       GetCollectionsService()
     }
@@ -52,7 +55,7 @@ function App() {
   return (
     <React.StrictMode>
       {_appConfig ? (
-        _appConfig.APP_TOKEN_AUTH_ENABLED && !_authTokenExists ? (
+        showLogin ? (
           <div className="App">
             <Login></Login>
             {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
