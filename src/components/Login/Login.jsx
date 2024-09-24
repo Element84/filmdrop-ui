@@ -59,12 +59,18 @@ const Login = () => {
         <h1>Login</h1>
         <form className="submitForm" onSubmit={submitLogin}>
           <label htmlFor="loginForm">Username:</label>
-          <input type="text" value={username} onChange={handleUsernameChange} />
+          <input
+            type="text"
+            value={username}
+            onChange={handleUsernameChange}
+            required={true}
+          />
           <label htmlFor="loginForm">Password:</label>
           <input
             type="password"
             value={password}
             onChange={handlePasswordChange}
+            required={true}
           />
           <button
             type="submit"

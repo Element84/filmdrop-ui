@@ -6,6 +6,7 @@ import {
   setshowApplicationAlert
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
+import { logoutUser } from '../utils/authHelper'
 
 export async function GetCollectionsService(searchParams) {
   const requestHeaders = new Headers()
@@ -27,13 +28,18 @@ export async function GetCollectionsService(searchParams) {
       if (response.ok) {
         return response.json()
       }
+      const contentType = response.headers.get('content-type')
       const error = new Error('Server responded with an error')
       error.status = response.status
       error.statusText = response.statusText
-      return response.json().then((err) => {
-        error.response = err
+      if (contentType && contentType.includes('application/json')) {
+        return response.json().then((err) => {
+          error.response = err
+          throw error
+        })
+      } else {
         throw error
-      })
+      }
     })
     .then((json) => {
       if (!store.getState().mainSlice.appConfig.COLLECTIONS) {
@@ -70,7 +76,7 @@ export async function GetCollectionsService(searchParams) {
           )
         )
         store.dispatch(setshowApplicationAlert(true))
-        // logoutUser()
+        logoutUser()
       }
       const message = 'Error Fetching Collections'
       // log full error for diagnosing client side errors if needed

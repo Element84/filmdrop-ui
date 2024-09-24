@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Added
+
+- Client-side validation to login form fields
+
+### Fixed
+
+- User experience when re-authenticating due to token expiration or unauthorized request
+
 ### Changed
 
 - Resolves moderate vulnerabilities in npm packages
