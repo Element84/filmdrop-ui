@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- Resolves moderate vulnerabilities in npm packages
+  - Upgrades `@typescript-eslint/eslint-plugin` from 6.5 to 7.18
+  - Upgrades `@typescript-eslint/parser` from 6.5 to 7.18
+  - Upgrades `vite` from 5.1.4 to 5.1.8
+  - Removes `@types/vite-plugin-react-svg`
+
 ## 5.6.0 - 2024-08-07
 
 ### Added
