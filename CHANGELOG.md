@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## 5.7.1 - 2024-09-24
+
 ### Added
 
 - Client-side validation to login form fields
@@ -23,7 +25,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Upgrades `vite` from 5.1.4 to 5.1.8
   - Removes `@types/vite-plugin-react-svg`
 
-## 5.6.0 - 2024-08-07
+## 5.7.0 - 2024-08-07
 
 ### Added
 
