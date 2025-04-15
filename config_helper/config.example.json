@@ -14,6 +14,14 @@
     "text": "Action Text Here",
     "url": "https://redirect-url.example.com"
   },
+  "TILE_LAYER_PARAMS": {
+    "sentinel-2-l2a": {
+      "minZoom": 2,
+      "minNativeZoom": 2,
+      "maxZoom": 26,
+      "maxNativeZoom": 18
+    }
+  },
   "SCENE_TILER_PARAMS": {
     "sentinel-2-l2a": {
       "assets": ["red", "green", "blue"],
@@ -159,6 +167,7 @@
   "APP_FAVICON": "exampleFavicon.ico",
   "MAP_ZOOM": 3,
   "MAP_CENTER": [30, 0],
+  "MAP_ZOOM_MAX": 24,
   "LAYER_LIST_ENABLED": true,
   "LAYER_LIST_SERVICES": [
     {

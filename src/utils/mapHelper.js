@@ -17,7 +17,10 @@ import { searchGridCodeScenes } from './searchHelper'
 import debounce from './debounce'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
 import GeoJSONValidation from './geojsonValidation'
-import { DEFAULT_MOSAIC_MIN_ZOOM } from '../components/defaults'
+import {
+  DEFAULT_MOSAIC_MIN_ZOOM,
+  DEFAULT_TILE_LAYER_PARAMS
+} from '../components/defaults'
 
 export const footprintLayerStyle = {
   color: '#3183f5',
@@ -389,13 +392,17 @@ function addImageOverlay(item) {
       if (sceneTilerURL) {
         const map = store.getState().mainSlice.map
         if (map && Object.keys(map).length > 0) {
+          const collectionTileLayerParams = getTileLayerParams(
+            _selectedCollectionData.id
+          )
+          const tileLayerParams = {
+            ...DEFAULT_TILE_LAYER_PARAMS,
+            ...collectionTileLayerParams,
+            bounds: tileBounds
+          }
           const currentSelectionImageTileLayer = L.tileLayer(
             `${sceneTilerURL}/stac/tiles/{z}/{x}/{y}@${scale()}x.png?url=${featureURL}&${tilerParams}`,
-            {
-              tileSize: 256,
-              bounds: tileBounds,
-              pane: 'imagery'
-            }
+            tileLayerParams
           )
             .on('load', function () {
               store.dispatch(setimageOverlayLoading(false))
@@ -427,6 +434,23 @@ function setupBounds(bbox) {
   const swCorner = L.latLng(bbox[1], bbox[0])
   const neCorner = L.latLng(bbox[3], bbox[2])
   return L.latLngBounds(swCorner, neCorner)
+}
+
+const getTileLayerParams = (collection) => {
+  const envTileLayerParams =
+    store.getState().mainSlice.appConfig.TILE_LAYER_PARAMS || ''
+  if (!envTileLayerParams) {
+    console.log(`TILE_LAYER_PARAMS is not defined`)
+    return {}
+  }
+  const tileLayerParams = getTilerParams(envTileLayerParams)
+
+  const collectionTileLayerParams = tileLayerParams[collection] || ''
+  if (!collectionTileLayerParams) {
+    console.log(`TILE_LAYER_PARAMS not defined for ${collection}`)
+    return {}
+  }
+  return collectionTileLayerParams
 }
 
 const constructSceneTilerParams = (collection) => {
@@ -594,10 +618,11 @@ export async function addMosaicLayer(json) {
     )?.href
     GetMosaicBoundsService(baseTileLayerHrefForBounds).then(function (bounds) {
       const mosaicBounds = leafletBoundsFromBBOX(bounds)
+      const tileLayerParams = getTileLayerParams(_selectedCollectionData.id)
       const currentMosaicImageTileLayer = L.tileLayer(mosaicURL, {
-        tileSize: 256,
-        bounds: mosaicBounds,
-        pane: 'imagery'
+        ...DEFAULT_TILE_LAYER_PARAMS,
+        ...tileLayerParams,
+        bounds: mosaicBounds
       })
         .on('load', function () {
           store.dispatch(setSearchLoading(false))
