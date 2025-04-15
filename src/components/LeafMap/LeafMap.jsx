@@ -181,6 +181,7 @@ const LeafMap = () => {
         scrollWheelZoom={true}
         zoomControl={false}
         attributionControl={false}
+        maxZoom={22}
       >
         {/* set basemap layers here: */}
         <TileLayer
@@ -189,6 +190,8 @@ const LeafMap = () => {
             _appConfig.BASEMAP_URL ||
             'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
           }
+          maxNativeZoom={22}
+          maxZoom={22}
         />
       </MapContainer>
     </div>
