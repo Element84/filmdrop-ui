@@ -190,8 +190,10 @@ const LeafMap = () => {
             _appConfig.BASEMAP_URL ||
             'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
           }
-          maxNativeZoom={22}
+          maxNativeZoom={18}
+          minNativeZoom={2}
           maxZoom={22}
+          minZoom={2}
         />
       </MapContainer>
     </div>
