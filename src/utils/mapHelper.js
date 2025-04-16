@@ -394,7 +394,9 @@ function addImageOverlay(item) {
             {
               tileSize: 256,
               bounds: tileBounds,
-              pane: 'imagery'
+              pane: 'imagery',
+              maxNativeZoom: 22,
+              maxZoom: 22
             }
           )
             .on('load', function () {
