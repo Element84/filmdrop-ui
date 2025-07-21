@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Changed
+
+- Correct minor README.md errors. ([415](https://github.com/Element84/filmdrop-ui/pull/415))
+- Resolve package vulnerabilities. ([415](https://github.com/Element84/filmdrop-ui/pull/415))
+- Remove the `upgrade npm` step in the CI `test` job to avoid compatibilty problems between the version of Node
+  specified by the `.nvmrc` file and the latest `npm` version. ([415](https://github.com/Element84/filmdrop-ui/pull/415))
+
 ## 5.7.1 - 2024-09-24
 
 ### Added
