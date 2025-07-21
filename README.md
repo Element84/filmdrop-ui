@@ -108,9 +108,9 @@ The file `config_helper/config.example.json` is included in this repository as r
 | STAC_LINK_ENABLED        | If set to `true`, STAC Item link will render in Item Details.                                                                                                                                                                                                                                                                                                                                                                                                                                                                 | Optional |
 | SHOW_ITEM_AUTO_ZOOM      | If set to `true`, switch will render in `Filters` list to let the user toggle if the map automatically centers on item footprint when selected item is changed. Default when initialized is auto-zoom not enabled, user must opt-in by turning on (choice will persist for app session).                                                                                                                                                                                                                                      | Optional |
 | FETCH_CREDENTIALS        | Defines if API calls made from the app should include the basic authentication used to access the app. Can be set to `same-origin` (default), `include`, or `omit`.                                                                                                                                                                                                                                                                                                                                                           | Optional |
-| APP_TOKEN_AUTH_ENABLED   | If set to `true` login page renders initially and app only fully loads if a non expired token exists. STAC API calls made from the app will also send JWT as Bearer Token. **Note:** This approach provides a form of limited client-side authentication for the frontend, which is not fully secure. The STAC API endpoint must also require the JWT to ensure application data securtiy.                                                                                                                                    | Optional |
+| APP_TOKEN_AUTH_ENABLED   | If set to `true` login page renders initially and app only fully loads if a non expired token exists. STAC API calls made from the app will also send JWT as Bearer Token. **Note:** This approach provides a form of limited client-side authentication for the frontend, which is not fully secure. The STAC API endpoint must also require the JWT to ensure application data security.                                                                                                                                    | Optional |
 | AUTH_URL                 | Endpoint used to pass a username and password that returns as JWT that is used for STAC API calls. `APP_TOKEN_AUTH_ENABLED` config value must also be set to `true`.                                                                                                                                                                                                                                                                                                                                                          | Optional |
-| SUPPORTS_AGGREGATIONS    | If included and set to `true` aggregation features are disabled and API calls are not made to load the optional aggregations from the STAC API.                                                                                                                                                                                                                                                                                                                                                                               | Optional |
+| SUPPORTS_AGGREGATIONS    | If included and set to `false` aggregation features are disabled and API calls are not made to load the optional aggregations from the STAC API.                                                                                                                                                                                                                                                                                                                                                                               | Optional |
 | EXPORT_ENABLED           | If included and set to `true` a simple export button will render and allow for the simple export of search results as a geojson file.                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
 
 ### Links
@@ -154,8 +154,8 @@ FilmDrop family of services.
 ### Geohex Aggregated View
 
 Support for STAC API [Aggregation Extension](https://github.com/stac-api-extensions/aggregation)
-is necessary for the geohex aggregated view. As of September 2023, only stac-server implements
-this extension.
+is necessary for the geohex aggregated view. As of July 2025, only stac-server and
+stac-fastapi-elasticsearch-opensearch implement this extension.
 
 The geohex aggregated view requires:
 
@@ -166,8 +166,8 @@ The geohex aggregated view requires:
 ### Grid Code Aggregated View
 
 Support for STAC API [Aggregation Extension](https://github.com/stac-api-extensions/aggregation)
-is necessary for the grid code aggregated view. At present, only stac-server implements
-this extension.
+is necessary for the grid code aggregated view. As of July 2025, only stac-server and
+stac-fastapi-elasticsearch-opensearch implement this extension.
 
 The grid code view requires:
 
@@ -181,7 +181,7 @@ The grid code view requires:
 
 The Cloud Cover filter widget is enabled when a Collection's `/queryables` endpoint advertises
 it has a queryable named `eo:cloud_cover`. This should be configured for all Collections with the
-`eo:cloud_cover`` property defined`.
+`eo:cloud_cover` property defined.
 
 ### SAR
 
@@ -245,5 +245,5 @@ An example of a `colormap` configuration is:
 ### Mosaic Tiling Configuration
 
 Configuration of mosaic tiling is the same as for scene tiling, with the additional constraint
-that multi-asset compositing cannot be done, so only as single asset may be specified for the
+that multi-asset compositing cannot be done, so only a single asset may be specified for the
 `assets` list.
