@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+### Fixed
+
+- Cloud slider not expanding to fill available space. ([416](https://github.com/Element84/filmdrop-ui/pull/416))
+
 ### Changed
 
 - Correct minor README.md errors. ([415](https://github.com/Element84/filmdrop-ui/pull/415))
