@@ -24,6 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 
 - Client-side validation to login form fields
+- Added config option `MAP_ZOOM_MAX` to limit map zooming.
+- Added config option `TILE_LAYER_PARAMS` to allow per-collection layer tiling parameters for leaflet.
 
 ### Fixed
 
