@@ -1,6 +1,6 @@
 import { vi } from 'vitest'
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { act, render, screen } from '@testing-library/react'
 import Search from './Search'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
@@ -47,10 +47,14 @@ describe('Search', () => {
         })
       })
       describe('when search options changed', () => {
-        it('should set showSearchByGeom to false in redux', () => {
-          store.dispatch(setshowSearchByGeom(true))
-          setup()
-          store.dispatch(setCloudCover(5))
+        it('should set showSearchByGeom to false in redux', async () => {
+          await act(async () => {
+            store.dispatch(setshowSearchByGeom(true))
+            setup()
+          })
+          await act(async () => {
+            store.dispatch(setCloudCover(5))
+          })
           expect(store.getState().mainSlice.showSearchByGeom).toBeFalsy()
         })
       })
