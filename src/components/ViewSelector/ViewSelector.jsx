@@ -34,7 +34,7 @@ const ViewSelector = () => {
       <Stack sx={{ width: 165 }} className="viewSelector">
         <label htmlFor="ViewModeToggle">View Mode</label>
         <Grid container spacing={2} alignItems="center">
-          <Grid item xs>
+          <Grid size="grow">
             <ButtonGroup
               variant="contained"
               aria-label="outlined primary button group"

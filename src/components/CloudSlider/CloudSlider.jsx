@@ -78,7 +78,7 @@ const CloudSlider = () => {
           spacing={2}
           alignItems="center"
         >
-          <Grid item xs>
+          <Grid size="grow">
             <Slider
               sx={{
                 '& .MuiSlider-thumb': {
@@ -92,7 +92,7 @@ const CloudSlider = () => {
               disabled={disabled}
             />
           </Grid>
-          <Grid item>
+          <Grid size="auto">
             <Input
               value={value}
               size="small"

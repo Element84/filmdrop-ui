@@ -83,7 +83,7 @@ const Dropdown = () => {
     <Stack>
       <label htmlFor="collectionDropdown">Collection</label>
       <Grid container alignItems="center">
-        <Grid item xs>
+        <Grid size="grow">
           <NativeSelect
             id="collectionDropdown"
             value={collectionId}
