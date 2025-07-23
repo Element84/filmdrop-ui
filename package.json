@@ -20,7 +20,7 @@
     "react": "^18.3.1",
     "react-datepicker": "^6.9.0",
     "react-dom": "^18.3.1",
-    "react-dropzone": "^14.2.3",
+    "react-dropzone": "^14.3.8",
     "react-leaflet": "^4.2.1",
     "react-redux": "^9.1.2",
     "react-tooltip": "^5.26.3"
