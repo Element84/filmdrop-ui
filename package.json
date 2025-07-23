@@ -6,7 +6,7 @@
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^7.2.0",
-    "@mui/material": "^7.0.0",
+    "@mui/material": "^7.2.0",
     "@reduxjs/toolkit": "^2.8.2",
     "@vitejs/plugin-react": "^4.4.0",
     "colormap": "^2.3.2",
