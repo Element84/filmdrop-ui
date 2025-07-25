@@ -166,7 +166,7 @@
   --right-content-attribution-tooltip-data-color: #a9b0c1;
   --right-content-attribution-tooltip-bg: #12171a;
   --right-content-layer-list-button-bg: #fff;
-  --right-content-layer-list-button-border: #ccc;
+  --right-content-layer-list-button-border: rgba(0, 0, 0, 0.2);
   --right-content-layer-list-button-hover-bg: #f4f4f4;
   --right-content-layer-list-button-icon-color: #555;
   --right-content-loading-imagery-overlay-text-bg: rgba(34, 34, 34, 0.8);
@@ -419,7 +419,7 @@
   --right-content-attribution-tooltip-data-color: #a9b0c1;
   --right-content-attribution-tooltip-bg: #12171a;
   --right-content-layer-list-button-bg: #fff;
-  --right-content-layer-list-button-border: #ccc;
+  --right-content-layer-list-button-border: rgba(0, 0, 0, 0.2);
   --right-content-layer-list-button-hover-bg: #f4f4f4;
   --right-content-layer-list-button-icon-color: #555;
   --right-content-loading-imagery-overlay-text-bg: rgba(34, 34, 34, 0.8);
