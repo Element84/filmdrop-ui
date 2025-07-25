@@ -6,7 +6,7 @@
 .HeatMapSymbology .gradient {
   width: 100%;
   height: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  border-bottom: 1px solid var(--heat-map-symbology-gradient-border-bottom);
   opacity: 0.7;
 }
 
@@ -17,25 +17,25 @@
   justify-content: space-between;
   font-size: 0.6em;
   letter-spacing: 0.025em;
-  color: white;
+  color: var(--heat-map-symbology-values-color);
   position: relative;
-  background: rgba(18, 23, 26, 0.5);
+  background: var(--heat-map-symbology-values-bg);
 }
 
 .HeatMapSymbology .values .min {
-  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  border-left: 1px solid var(--heat-map-symbology-values-min-border-left);
   padding-left: 5px;
   padding-top: 5px;
 }
 
 .HeatMapSymbology .values .max {
-  border-right: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid var(--heat-map-symbology-values-max-border-right);
   padding-right: 5px;
   padding-top: 5px;
 }
 
 .HeatMapSymbology .values .mid {
-  border-right: 1px solid rgba(255, 255, 255, 0.5);
+  border-right: 1px solid var(--heat-map-symbology-values-mid-border-right);
   position: absolute;
   top: 0;
   left: 50%;

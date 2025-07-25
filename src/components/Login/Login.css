@@ -2,12 +2,11 @@
   height: 100%;
   width: 100%;
   display: flex;
-  color: #fff;
+  color: var(--login-color);
   align-items: center;
   justify-content: center;
   flex-direction: column;
-  background-color: #12171a;
-  color: #fff;
+  background-color: var(--login-bg);
 }
 
 .loginFormContainer {
@@ -17,12 +16,12 @@
   justify-content: center;
   min-width: 400px;
   min-height: 350px;
-  background-color: #373d4d;
+  background-color: var(--login-form-container-bg);
   border-radius: 0px 0px 10px 10px;
 }
 
 .loginFormLogo {
-  border: 3px #373d4d solid;
+  border: 3px var(--login-form-logo-border) solid;
   min-width: 394px;
   display: flex;
   align-items: center;

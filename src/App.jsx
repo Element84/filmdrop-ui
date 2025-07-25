@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
 import './index.css'
+import './themes/theme.css'
 import Content from './components/Layout/Content/Content'
 import PageHeader from './components/Layout/PageHeader/PageHeader'
 import UploadGeojsonModal from './components/UploadGeojsonModal/UploadGeojsonModal'
@@ -51,6 +52,15 @@ function App() {
       GetCollectionsService()
     }
   }, [_appConfig, _authTokenExists])
+
+  // Theme management
+  useEffect(() => {
+    if (_appConfig) {
+      const isDarkTheme = _appConfig.DARK_THEME !== false
+      const themeValue = isDarkTheme ? 'dark' : 'light'
+      document.documentElement.setAttribute('data-theme', themeValue)
+    }
+  }, [_appConfig])
 
   return (
     <React.StrictMode>

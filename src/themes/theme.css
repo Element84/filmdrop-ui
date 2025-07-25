@@ -1,0 +1,505 @@
+/* Default theme (dark - current behavior) */
+:root {
+  /* CartButton Component */
+  --cart-button-border: #76829c;
+  --cart-button-color: #a9b0c1;
+  --cart-button-enabled-color: #12171a;
+  --cart-button-enabled-bg: #6cc24a;
+  --cart-button-enabled-border: #6cc24a;
+  --cart-button-count-container-bg: #5d626d;
+  --cart-button-count-container-color: #fff;
+  --cart-button-count-container-enabled-bg: #4f8f36;
+
+  /* Search Component */
+  --search-button-container-border-top: #4f5768;
+  --search-container-color: #ffffff;
+  --search-container-label-color: #fff;
+  --search-by-geom-options-button-bg: #4f5768;
+  --search-by-geom-options-button-color: white;
+  --search-by-geom-options-button-border: #a9b0c1;
+  --search-by-geom-options-button-hover-bg: #353d4f;
+  --search-by-geom-options-button-disabled-hover-bg: #4f5768;
+  --search-by-geom-options-color: #a9b0c1;
+  --search-input-border-bottom: #76829c;
+  --search-input-color: white;
+  --search-tooltip-style-bg: #6cc24a;
+  --search-tooltip-style-border-top-color: #6cc24a;
+  --search-tooltip-style-border-bottom-color: #6cc24a;
+  --search-label-style-bg: transparent;
+  --search-label-style-color: rgba(255, 255, 255, 0.7);
+  --search-label-style-text-shadow: rgba(0, 0, 0, 0.8);
+
+  /* UploadGeojsonModal Component */
+  --upload-geojson-modal-bg: rgba(0, 0, 0, 0.7);
+  --upload-geojson-modal-container-bg: #353d4f;
+  --upload-geojson-modal-container-color: #dedede;
+  --upload-geojson-modal-action-button-bg: #4f5768;
+  --upload-geojson-modal-action-button-color: white;
+  --upload-geojson-modal-action-button-border: #a9b0c1;
+  --upload-geojson-modal-action-button-hover-bg: #353d4f;
+
+  /* ViewSelector Component */
+  --view-selector-button-border: #76829c;
+
+  /* CartModal Component */
+  --cart-modal-bg: #00000090;
+  --cart-modal-contents-bg: #13171a;
+  --cart-modal-top-bar-bg: #6cc24a;
+  --cart-modal-top-bar-color: #000;
+  --cart-modal-close-bg: transparent;
+  --cart-modal-close-color: #000;
+
+  /* CollectionDropdown Component */
+  --collection-dropdown-mui-input-underline-border: #76829c;
+  --collection-dropdown-svg-color: rgba(255, 255, 255, 0.5);
+  --collection-dropdown-border-color: white;
+  --collection-dropdown-color: white;
+  --collection-dropdown-bg: #12171a;
+  --collection-dropdown-option-bg: #12171a;
+  --collection-dropdown-error-true-select-color: #bc3131;
+  --collection-dropdown-error-true-select-border-bottom: #bc3131;
+
+  /* DateTimeRangeSelector Component */
+  --date-time-range-selector-span-error-true-color: #bc3131;
+  --date-time-range-selector-date-picker-icon-color: #373d4d;
+  --date-time-range-selector-react-datepicker-today-button-hover-bg: #d3d3d3;
+
+  /* react-calendar-overrides Component */
+  --react-calendar-overrides-react-calendar-bg: white;
+  --react-calendar-overrides-react-calendar-border: #a0a096;
+  --react-calendar-overrides-react-calendar-navigation-button-disabled-bg: #f0f0f0;
+  --react-calendar-overrides-react-calendar-navigation-button-enabled-hover-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-navigation-button-enabled-focus-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-month-view-days-day-weekend-color: #757575;
+  --react-calendar-overrides-react-calendar-month-view-days-day-neighboring-month-color: #757575;
+  --react-calendar-overrides-react-calendar-tile-disabled-bg: #f0f0f0;
+  --react-calendar-overrides-react-calendar-tile-enabled-hover-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-tile-enabled-focus-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-tile-now-bg: #6cc24a;
+  --react-calendar-overrides-react-calendar-tile-now-enabled-hover-bg: #d3d3d3;
+  --react-calendar-overrides-react-calendar-tile-now-enabled-focus-bg: #d3d3d3;
+  --react-calendar-overrides-react-calendar-tile-has-active-bg: #a9b0c1;
+  --react-calendar-overrides-react-calendar-tile-has-active-enabled-hover-bg: #a9b0c1;
+  --react-calendar-overrides-react-calendar-tile-has-active-enabled-focus-bg: #a9b0c1;
+  --react-calendar-overrides-react-calendar-tile-active-bg: #353d4f;
+  --react-calendar-overrides-react-calendar-tile-active-color: white;
+  --react-calendar-overrides-react-calendar-tile-active-enabled-hover-bg: #353d4f;
+  --react-calendar-overrides-react-calendar-tile-active-enabled-focus-bg: #353d4f;
+  --react-calendar-overrides-react-calendar-select-range-tile-hover-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-month-view-weekdays-color: #333;
+  --react-calendar-overrides-react-datetimerange-picker-input-group-border-bottom: #76829c;
+  --react-calendar-overrides-react-datetimerange-picker-input-group-hover-border-bottom: rgba(
+    0,
+    0,
+    0,
+    0.87
+  );
+  --react-calendar-overrides-react-datetimerange-picker-button-enabled-hover-stroke: #6cc24a;
+  --react-calendar-overrides-react-datetimerange-picker-button-enabled-focus-stroke: #6cc24a;
+  --react-calendar-overrides-react-datetimerange-picker-svg-stroke: #a9b0c1;
+  --react-calendar-overrides-date-picker-input-placeholder-color: #ffffff;
+  --react-calendar-overrides-date-picker-select-color: #353d4f;
+  --react-calendar-overrides-react-datetimerange-picker-input-group-input-color: white;
+
+  /* ExportButton Component */
+  --export-button-download-button-bg: #4f5768;
+  --export-button-download-button-color: white;
+  --export-button-download-button-border: #a9b0c1;
+
+  /* LayerList Component */
+  --layer-list-bg: rgba(34, 34, 34, 0.8);
+  --layer-list-title-border-bottom: #373d4d;
+  --layer-list-checkmark-bg: #eee;
+  --layer-list-layer-container-hover-checkmark-bg: #ccc;
+  --layer-list-layer-container-input-checked-checkmark-bg: #81c05b;
+  --layer-list-layer-container-checkmark-after-border: #fff;
+
+  /* Content Component */
+  --content-color: #d3d3d3;
+
+  /* LeftContent Component */
+  --left-content-bg: #12171a;
+  --left-content-tab-color: #fff;
+  --left-content-tab-bg: #373d4d;
+  --left-content-tab-border-bottom: #373d4d;
+  --left-content-tab-border-top: #373d4d;
+  --left-content-tab-selected-border-bottom: #6cc24a;
+  --left-content-disable-search-overlay-bg: #12171a;
+
+  /* RightContent Component */
+  --right-content-bg: #12171a;
+  --right-content-zoom-notice-bg: #353d4f;
+  --right-content-zoom-in-text-color: #6cc24a;
+  --right-content-zoom-in-text-border-bottom: transparent;
+  --right-content-zoom-in-text-hover-border-color: #6cc24a;
+  --right-content-action-button-bg: #6cc24a;
+  --right-content-action-button-color: #12171a;
+  --right-content-action-button-hover-bg: #35731c;
+  --right-content-action-button-hover-color: #dedede;
+  --right-content-action-button-a-color: #12171a;
+  --right-content-action-button-disabled-bg: #d3d3d3;
+  --right-content-action-button-disabled-color: #676767;
+  --right-content-action-button-disabled-hover-bg: #d3d3d3;
+  --right-content-action-button-disabled-hover-color: #676767;
+  --right-content-result-count-bg: rgba(34, 34, 34, 0.8);
+  --right-content-result-count-color: #fff;
+  --right-content-count-button-bg: transparent;
+  --right-content-count-button-color: #a9b0c1;
+  --right-content-count-button-border: #a9b0c1;
+  --right-content-count-button-hover-bg: #252f36;
+  --right-content-count-button-hover-color: #fff;
+  --right-content-disabled-count-button-color: #7f828a;
+  --right-content-disabled-count-button-border: #7f828a;
+  --right-content-disabled-count-button-hover-color: #7f828a;
+  --right-content-disabled-count-button-hover-bg: transparent;
+  --right-content-draw-geom-message-bg: rgba(34, 34, 34, 0.8);
+  --right-content-draw-geom-message-color: #fff;
+  --right-content-draw-geom-message-text-title-color: #abb0c0;
+  --right-content-draw-geom-message-cancel-button-bg: transparent;
+  --right-content-draw-geom-message-cancel-button-color: white;
+  --right-content-draw-geom-message-cancel-button-border: #a9b0c1;
+  --right-content-result-count-strong-color: #a9b0c1;
+  --right-content-app-loading-container-bg: rgb(53, 61, 79);
+  --right-content-map-attribution-bg: #12171a;
+  --right-content-map-attribution-a-color: #19a1d7;
+  --right-content-map-attribution-span-color: #bbb;
+  --right-content-attribution-tooltip-data-color: #a9b0c1;
+  --right-content-attribution-tooltip-bg: #12171a;
+  --right-content-layer-list-button-bg: #fff;
+  --right-content-layer-list-button-border: #ccc;
+  --right-content-layer-list-button-hover-bg: #f4f4f4;
+  --right-content-layer-list-button-icon-color: #555;
+  --right-content-loading-imagery-overlay-text-bg: rgba(34, 34, 34, 0.8);
+  --right-content-loading-imagery-overlay-text-color: #fff;
+
+  /* PageHeader Component */
+  --page-header-bg: #12171a;
+  --page-header-color: #a9b0c1;
+  --page-header-link-border: #76829c;
+  --page-header-link-bg: transparent;
+  --page-header-link-hover-border: #6cc24a;
+  --page-header-link-hover-bg: #6cc24a;
+  --page-header-link-hover-color: #12171a;
+  --page-header-logout-button-bg: #4f5768;
+  --page-header-logout-button-color: white;
+  --page-header-logout-button-border: #a9b0c1;
+  --page-header-logout-button-hover-bg: #353d4f;
+
+  /* LeafMap Component */
+  --leaf-map-color: #222;
+  --leaf-map-bg: lightblue;
+
+  /* HeatMapSymbology Component */
+  --heat-map-symbology-gradient-border-bottom: rgba(255, 255, 255, 0.5);
+  --heat-map-symbology-values-color: white;
+  --heat-map-symbology-values-bg: rgba(18, 23, 26, 0.5);
+  --heat-map-symbology-values-min-border-left: rgba(255, 255, 255, 0.5);
+  --heat-map-symbology-values-max-border-right: rgba(255, 255, 255, 0.5);
+  --heat-map-symbology-values-mid-border-right: rgba(255, 255, 255, 0.5);
+
+  /* LayerLegend Component */
+  --layer-legend-bg: #13171a;
+  --layer-legend-search-area-legend-symbol-border-color: #00c07b;
+  --layer-legend-scene-legend-symbol-border-color: #3183f5;
+  --layer-legend-scene-legend-symbol-bg: #3183f52e;
+  --layer-legend-scene-in-cart-legend-symbol-border-color: #ad5c11;
+  --layer-legend-scene-in-cart-legend-symbol-bg: #ad5c1129;
+
+  /* LoadingAnimation Component */
+  --loading-animation-animated-loader-svg-path-stroke: #ccc;
+  --loading-animation-animated-loader-svg-path-fill: transparent;
+
+  /* Login Component */
+  --login-color: #fff;
+  --login-bg: #12171a;
+  --login-form-container-bg: #373d4d;
+  --login-form-logo-border: #373d4d;
+
+  /* PopupResult Component */
+  --popup-result-details-row-key-color: #fff;
+  --popup-result-details-href-link-color: #d3d3d3;
+  --popup-result-details-href-link-hover-color: #fff;
+  --popup-result-webkit-scrollbar-track-bg: #dedede;
+  --popup-result-webkit-scrollbar-thumb-bg: #888;
+  --popup-result-webkit-scrollbar-thumb-hover-bg: #555;
+
+  /* PopupResults Component */
+  --popup-results-header-border-bottom: #353d4f;
+  --popup-results-header-bottom-button-bg: transparent;
+  --popup-results-header-bottom-button-color: #a9b0c1;
+  --popup-results-header-bottom-button-border: #a9b0c1;
+  --popup-results-header-bottom-button-hover-bg: #252f36;
+  --popup-results-header-bottom-button-hover-color: #fff;
+  --popup-results-header-bottom-button-disabled-color: #646566;
+  --popup-results-header-bottom-button-disabled-border: #646566;
+  --popup-results-header-bottom-button-disabled-hover-bg: transparent;
+  --popup-results-header-bottom-button-disabled-hover-color: #646566;
+  --popup-results-bottom-button-bg: transparent;
+  --popup-results-bottom-button-color: #a9b0c1;
+  --popup-results-bottom-button-border: #a9b0c1;
+  --popup-results-bottom-button-hover-bg: #252f36;
+  --popup-results-bottom-button-hover-color: #fff;
+  --popup-results-footer-border-top: #353d4f;
+  --popup-results-footer-button-bg: transparent;
+  --popup-results-footer-button-color: #a9b0c1;
+  --popup-results-footer-button-border: #dedede;
+  --popup-results-footer-button-hover-bg: #252f36;
+  --popup-results-footer-button-hover-color: #fff;
+
+  /* App Component */
+  --app-bg: #333;
+  --app-loading-bg: rgb(53, 61, 79);
+}
+
+/* Light theme override */
+:root[data-theme='light'] {
+  /* CartButton Component */
+  --cart-button-border: #76829c;
+  --cart-button-color: #a9b0c1;
+  --cart-button-enabled-color: #12171a;
+  --cart-button-enabled-bg: #6cc24a;
+  --cart-button-enabled-border: #6cc24a;
+  --cart-button-count-container-bg: #5d626d;
+  --cart-button-count-container-color: #fff;
+  --cart-button-count-container-enabled-bg: #4f8f36;
+
+  /* Search Component */
+  --search-button-container-border-top: #4f5768;
+  --search-container-color: #ffffff;
+  --search-container-label-color: #fff;
+  --search-by-geom-options-button-bg: #4f5768;
+  --search-by-geom-options-button-color: white;
+  --search-by-geom-options-button-border: #a9b0c1;
+  --search-by-geom-options-button-hover-bg: #353d4f;
+  --search-by-geom-options-button-disabled-hover-bg: #4f5768;
+  --search-by-geom-options-color: #a9b0c1;
+  --search-input-border-bottom: #76829c;
+  --search-input-color: white;
+  --search-tooltip-style-bg: #6cc24a;
+  --search-tooltip-style-border-top-color: #6cc24a;
+  --search-tooltip-style-border-bottom-color: #6cc24a;
+  --search-label-style-bg: transparent;
+  --search-label-style-color: rgba(255, 255, 255, 0.7);
+  --search-label-style-text-shadow: rgba(0, 0, 0, 0.8);
+
+  /* UploadGeojsonModal Component */
+  --upload-geojson-modal-bg: rgba(0, 0, 0, 0.7);
+  --upload-geojson-modal-container-bg: #353d4f;
+  --upload-geojson-modal-container-color: #dedede;
+  --upload-geojson-modal-action-button-bg: #4f5768;
+  --upload-geojson-modal-action-button-color: white;
+  --upload-geojson-modal-action-button-border: #a9b0c1;
+  --upload-geojson-modal-action-button-hover-bg: #353d4f;
+
+  /* ViewSelector Component */
+  --view-selector-button-border: #76829c;
+
+  /* CartModal Component */
+  --cart-modal-bg: #00000090;
+  --cart-modal-contents-bg: #13171a;
+  --cart-modal-top-bar-bg: #6cc24a;
+  --cart-modal-top-bar-color: #000;
+  --cart-modal-close-bg: transparent;
+  --cart-modal-close-color: #000;
+
+  /* CollectionDropdown Component */
+  --collection-dropdown-mui-input-underline-border: #76829c;
+  --collection-dropdown-svg-color: rgba(255, 255, 255, 0.5);
+  --collection-dropdown-border-color: white;
+  --collection-dropdown-color: white;
+  --collection-dropdown-bg: #12171a;
+  --collection-dropdown-option-bg: #12171a;
+  --collection-dropdown-error-true-select-color: #bc3131;
+  --collection-dropdown-error-true-select-border-bottom: #bc3131;
+
+  /* DateTimeRangeSelector Component */
+  --date-time-range-selector-span-error-true-color: #bc3131;
+  --date-time-range-selector-date-picker-icon-color: #373d4d;
+  --date-time-range-selector-react-datepicker-today-button-hover-bg: #d3d3d3;
+
+  /* react-calendar-overrides Component */
+  --react-calendar-overrides-react-calendar-bg: white;
+  --react-calendar-overrides-react-calendar-border: #a0a096;
+  --react-calendar-overrides-react-calendar-navigation-button-disabled-bg: #f0f0f0;
+  --react-calendar-overrides-react-calendar-navigation-button-enabled-hover-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-navigation-button-enabled-focus-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-month-view-days-day-weekend-color: #757575;
+  --react-calendar-overrides-react-calendar-month-view-days-day-neighboring-month-color: #757575;
+  --react-calendar-overrides-react-calendar-tile-disabled-bg: #f0f0f0;
+  --react-calendar-overrides-react-calendar-tile-enabled-hover-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-tile-enabled-focus-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-tile-now-bg: #6cc24a;
+  --react-calendar-overrides-react-calendar-tile-now-enabled-hover-bg: #d3d3d3;
+  --react-calendar-overrides-react-calendar-tile-now-enabled-focus-bg: #d3d3d3;
+  --react-calendar-overrides-react-calendar-tile-has-active-bg: #a9b0c1;
+  --react-calendar-overrides-react-calendar-tile-has-active-enabled-hover-bg: #a9b0c1;
+  --react-calendar-overrides-react-calendar-tile-has-active-enabled-focus-bg: #a9b0c1;
+  --react-calendar-overrides-react-calendar-tile-active-bg: #353d4f;
+  --react-calendar-overrides-react-calendar-tile-active-color: white;
+  --react-calendar-overrides-react-calendar-tile-active-enabled-hover-bg: #353d4f;
+  --react-calendar-overrides-react-calendar-tile-active-enabled-focus-bg: #353d4f;
+  --react-calendar-overrides-react-calendar-select-range-tile-hover-bg: #e6e6e6;
+  --react-calendar-overrides-react-calendar-month-view-weekdays-color: #333;
+  --react-calendar-overrides-react-datetimerange-picker-input-group-border-bottom: #76829c;
+  --react-calendar-overrides-react-datetimerange-picker-input-group-hover-border-bottom: rgba(
+    0,
+    0,
+    0,
+    0.87
+  );
+  --react-calendar-overrides-react-datetimerange-picker-button-enabled-hover-stroke: #6cc24a;
+  --react-calendar-overrides-react-datetimerange-picker-button-enabled-focus-stroke: #6cc24a;
+  --react-calendar-overrides-react-datetimerange-picker-svg-stroke: #a9b0c1;
+  --react-calendar-overrides-date-picker-input-placeholder-color: #ffffff;
+  --react-calendar-overrides-date-picker-select-color: #353d4f;
+  --react-calendar-overrides-react-datetimerange-picker-input-group-input-color: white;
+
+  /* ExportButton Component */
+  --export-button-download-button-bg: #4f5768;
+  --export-button-download-button-color: white;
+  --export-button-download-button-border: #a9b0c1;
+
+  /* LayerList Component */
+  --layer-list-bg: rgba(34, 34, 34, 0.8);
+  --layer-list-title-border-bottom: #373d4d;
+  --layer-list-checkmark-bg: #eee;
+  --layer-list-layer-container-hover-checkmark-bg: #ccc;
+  --layer-list-layer-container-input-checked-checkmark-bg: #81c05b;
+  --layer-list-layer-container-checkmark-after-border: #fff;
+
+  /* Content Component */
+  --content-color: #d3d3d3;
+
+  /* LeftContent Component */
+  --left-content-bg: #12171a;
+  --left-content-tab-color: #fff;
+  --left-content-tab-bg: #373d4d;
+  --left-content-tab-border-bottom: #373d4d;
+  --left-content-tab-border-top: #373d4d;
+  --left-content-tab-selected-border-bottom: #6cc24a;
+  --left-content-disable-search-overlay-bg: #12171a;
+
+  /* RightContent Component */
+  --right-content-bg: #12171a;
+  --right-content-zoom-notice-bg: #353d4f;
+  --right-content-zoom-in-text-color: #6cc24a;
+  --right-content-zoom-in-text-border-bottom: transparent;
+  --right-content-zoom-in-text-hover-border-color: #6cc24a;
+  --right-content-action-button-bg: #6cc24a;
+  --right-content-action-button-color: #12171a;
+  --right-content-action-button-hover-bg: #35731c;
+  --right-content-action-button-hover-color: #dedede;
+  --right-content-action-button-a-color: #12171a;
+  --right-content-action-button-disabled-bg: #d3d3d3;
+  --right-content-action-button-disabled-color: #676767;
+  --right-content-action-button-disabled-hover-bg: #d3d3d3;
+  --right-content-action-button-disabled-hover-color: #676767;
+  --right-content-result-count-bg: rgba(34, 34, 34, 0.8);
+  --right-content-result-count-color: #fff;
+  --right-content-count-button-bg: transparent;
+  --right-content-count-button-color: #a9b0c1;
+  --right-content-count-button-border: #a9b0c1;
+  --right-content-count-button-hover-bg: #252f36;
+  --right-content-count-button-hover-color: #fff;
+  --right-content-disabled-count-button-color: #7f828a;
+  --right-content-disabled-count-button-border: #7f828a;
+  --right-content-disabled-count-button-hover-color: #7f828a;
+  --right-content-disabled-count-button-hover-bg: transparent;
+  --right-content-draw-geom-message-bg: rgba(34, 34, 34, 0.8);
+  --right-content-draw-geom-message-color: #fff;
+  --right-content-draw-geom-message-text-title-color: #abb0c0;
+  --right-content-draw-geom-message-cancel-button-bg: transparent;
+  --right-content-draw-geom-message-cancel-button-color: white;
+  --right-content-draw-geom-message-cancel-button-border: #a9b0c1;
+  --right-content-result-count-strong-color: #a9b0c1;
+  --right-content-app-loading-container-bg: rgb(53, 61, 79);
+  --right-content-map-attribution-bg: #12171a;
+  --right-content-map-attribution-a-color: #19a1d7;
+  --right-content-map-attribution-span-color: #bbb;
+  --right-content-attribution-tooltip-data-color: #a9b0c1;
+  --right-content-attribution-tooltip-bg: #12171a;
+  --right-content-layer-list-button-bg: #fff;
+  --right-content-layer-list-button-border: #ccc;
+  --right-content-layer-list-button-hover-bg: #f4f4f4;
+  --right-content-layer-list-button-icon-color: #555;
+  --right-content-loading-imagery-overlay-text-bg: rgba(34, 34, 34, 0.8);
+  --right-content-loading-imagery-overlay-text-color: #fff;
+
+  /* PageHeader Component */
+  --page-header-bg: #12171a;
+  --page-header-color: #a9b0c1;
+  --page-header-link-border: #76829c;
+  --page-header-link-bg: transparent;
+  --page-header-link-hover-border: #6cc24a;
+  --page-header-link-hover-bg: #6cc24a;
+  --page-header-link-hover-color: #12171a;
+  --page-header-logout-button-bg: #4f5768;
+  --page-header-logout-button-color: white;
+  --page-header-logout-button-border: #a9b0c1;
+  --page-header-logout-button-hover-bg: #353d4f;
+
+  /* LeafMap Component */
+  --leaf-map-color: #222;
+  --leaf-map-bg: lightblue;
+
+  /* HeatMapSymbology Component */
+  --heat-map-symbology-gradient-border-bottom: rgba(255, 255, 255, 0.5);
+  --heat-map-symbology-values-color: white;
+  --heat-map-symbology-values-bg: rgba(18, 23, 26, 0.5);
+  --heat-map-symbology-values-min-border-left: rgba(255, 255, 255, 0.5);
+  --heat-map-symbology-values-max-border-right: rgba(255, 255, 255, 0.5);
+  --heat-map-symbology-values-mid-border-right: rgba(255, 255, 255, 0.5);
+
+  /* LayerLegend Component */
+  --layer-legend-bg: #13171a;
+  --layer-legend-search-area-legend-symbol-border-color: #00c07b;
+  --layer-legend-scene-legend-symbol-border-color: #3183f5;
+  --layer-legend-scene-legend-symbol-bg: #3183f52e;
+  --layer-legend-scene-in-cart-legend-symbol-border-color: #ad5c11;
+  --layer-legend-scene-in-cart-legend-symbol-bg: #ad5c1129;
+
+  /* LoadingAnimation Component */
+  --loading-animation-animated-loader-svg-path-stroke: #ccc;
+  --loading-animation-animated-loader-svg-path-fill: transparent;
+
+  /* Login Component */
+  --login-color: #fff;
+  --login-bg: #12171a;
+  --login-form-container-bg: #373d4d;
+  --login-form-logo-border: #373d4d;
+
+  /* PopupResult Component */
+  --popup-result-details-row-key-color: #fff;
+  --popup-result-details-href-link-color: #d3d3d3;
+  --popup-result-details-href-link-hover-color: #fff;
+  --popup-result-webkit-scrollbar-track-bg: #dedede;
+  --popup-result-webkit-scrollbar-thumb-bg: #888;
+  --popup-result-webkit-scrollbar-thumb-hover-bg: #555;
+
+  /* PopupResults Component */
+  --popup-results-header-border-bottom: #353d4f;
+  --popup-results-header-bottom-button-bg: transparent;
+  --popup-results-header-bottom-button-color: #a9b0c1;
+  --popup-results-header-bottom-button-border: #a9b0c1;
+  --popup-results-header-bottom-button-hover-bg: #252f36;
+  --popup-results-header-bottom-button-hover-color: #fff;
+  --popup-results-header-bottom-button-disabled-color: #646566;
+  --popup-results-header-bottom-button-disabled-border: #646566;
+  --popup-results-header-bottom-button-disabled-hover-bg: transparent;
+  --popup-results-header-bottom-button-disabled-hover-color: #646566;
+  --popup-results-bottom-button-bg: transparent;
+  --popup-results-bottom-button-color: #a9b0c1;
+  --popup-results-bottom-button-border: #a9b0c1;
+  --popup-results-bottom-button-hover-bg: #252f36;
+  --popup-results-bottom-button-hover-color: #fff;
+  --popup-results-footer-border-top: #353d4f;
+  --popup-results-footer-button-bg: transparent;
+  --popup-results-footer-button-color: #a9b0c1;
+  --popup-results-footer-button-border: #dedede;
+  --popup-results-footer-button-hover-bg: #252f36;
+  --popup-results-footer-button-hover-color: #fff;
+
+  /* App Component */
+  --app-bg: #333;
+  --app-loading-bg: rgb(53, 61, 79);
+}

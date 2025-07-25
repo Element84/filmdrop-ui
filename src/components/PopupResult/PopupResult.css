@@ -35,7 +35,7 @@
 
 .popupResultDetailsRowKey {
   font-weight: bold;
-  color: #fff;
+  color: var(--popup-result-details-row-key-color);
 }
 
 .popupResultDetailsRowValue {
@@ -44,7 +44,7 @@
 }
 
 .popupResultDetailsHrefLink {
-  color: #d3d3d3;
+  color: var(--popup-result-details-href-link-color);
   text-decoration: underline;
   width: 100%;
   font-size: 14px;
@@ -52,7 +52,7 @@
 }
 
 .popupResultDetailsHrefLink:hover {
-  color: #fff;
+  color: var(--popup-result-details-href-link-hover-color);
 }
 
 /* width */
@@ -63,15 +63,15 @@
 
 /* Track */
 ::-webkit-scrollbar-track {
-  background: #dedede;
+  background: var(--popup-result-webkit-scrollbar-track-bg);
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #888;
+  background: var(--popup-result-webkit-scrollbar-thumb-bg);
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: var(--popup-result-webkit-scrollbar-thumb-hover-bg);
 }

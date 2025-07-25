@@ -13,14 +13,14 @@
 
 .searchButtonContainer {
   height: 60px;
-  border-top: solid #4f5768 2px;
+  border-top: solid var(--search-button-container-border-top) 2px;
   display: flex;
   align-items: end;
   margin-bottom: 15px;
 }
 
 .searchContainer {
-  color: #ffffff;
+  color: var(--search-container-color);
   font-size: 16px;
   margin-right: 5px;
   margin-bottom: 15px;
@@ -28,7 +28,7 @@
 
 .searchContainer label {
   font-weight: bold;
-  color: #fff;
+  color: var(--search-container-label-color);
 }
 
 .searchContainer.datePickerComponent label {
@@ -67,21 +67,21 @@
   height: 32px;
   max-width: 100px;
   margin-right: 10px;
-  background-color: #4f5768;
-  color: white;
+  background-color: var(--search-by-geom-options-button-bg);
+  color: var(--search-by-geom-options-button-color);
   padding: 15px 15px;
   text-align: center;
   text-decoration: none;
   font-size: 14px;
   cursor: pointer;
-  border: 1px solid #a9b0c1;
+  border: 1px solid var(--search-by-geom-options-button-border);
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 5px;
 }
 .searchByGeomOptionsButton:hover {
-  background-color: #353d4f;
+  background-color: var(--search-by-geom-options-button-hover-bg);
 }
 
 .searchByGeomOptionsButtonDisabled {
@@ -89,13 +89,13 @@
   cursor: default;
 }
 .searchByGeomOptionsButtonDisabled:hover {
-  background-color: #4f5768;
+  background-color: var(--search-by-geom-options-button-disabled-hover-bg);
 }
 
 .searchByGeomOptions {
   margin-top: 8px;
   font-size: 14px;
-  color: #a9b0c1;
+  color: var(--search-by-geom-options-color);
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -140,13 +140,13 @@
 }
 
 input[class$='-MuiInputBase-root-MuiInput-root']::before {
-  border-bottom-color: #76829c !important;
+  border-bottom-color: var(--search-input-border-bottom) !important;
 }
 
 input[class$='-MuiInputBase-input-MuiInput-input'] {
   text-align: center;
   font-family: 'Inter', Arial, Helvetica, sans-serif !important;
-  color: white !important;
+  color: var(--search-input-color) !important;
 }
 
 /* Leaflet Search Icon Overrides */
@@ -177,7 +177,7 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
 
 .tooltip_style {
   font-weight: 600;
-  background-color: #6cc24a;
+  background-color: var(--search-tooltip-style-bg);
   border: 0 none;
   text-align: center;
   line-height: 15px;
@@ -189,11 +189,11 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
 }
 
 .tooltip_style:before {
-  border-top-color: #6cc24a;
+  border-top-color: var(--search-tooltip-style-border-top-color);
 }
 
 .tooltip_style:after {
-  border-bottom-color: #6cc24a;
+  border-bottom-color: var(--search-tooltip-style-border-bottom-color);
 }
 
 .tooltip_style span {
@@ -213,10 +213,10 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.7);
+  background: var(--search-label-style-bg);
+  color: var(--search-label-style-color);
   box-shadow: none;
-  text-shadow: 0px 1px 3px rgba(0, 0, 0, 0.8);
+  text-shadow: 0px 1px 3px var(--search-label-style-text-shadow);
 }
 
 .label_style span {

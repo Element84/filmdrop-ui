@@ -1,7 +1,7 @@
 .RightContent {
   width: calc(100% - 300px);
   height: 100%;
-  background-color: #12171a;
+  background-color: var(--right-content-bg);
   display: flex;
   position: absolute;
   left: 300px;
@@ -12,7 +12,7 @@
   bottom: 10px;
   left: 12px;
   z-index: 6;
-  background: #353d4f;
+  background: var(--right-content-zoom-notice-bg);
   padding: 6px 15px;
   border-radius: 2px;
   font-size: 0.75em;
@@ -24,16 +24,16 @@
 
 .zoomInText {
   all: unset;
-  color: #6cc24a;
+  color: var(--right-content-zoom-in-text-color);
   cursor: pointer;
   transition: border-color 0.33s ease-in-out;
-  border-bottom: 1px solid transparent;
+  border-bottom: 1px solid var(--right-content-zoom-in-text-border-bottom);
   display: inline-block;
   margin-left: 10px;
 }
 
 .zoomInText:hover {
-  border-color: #6cc24a;
+  border-color: var(--right-content-zoom-in-text-hover-border-color);
 }
 
 @keyframes fadeIn {
@@ -55,8 +55,8 @@
 }
 
 .actionButton {
-  background-color: #6cc24a;
-  color: #12171a;
+  background-color: var(--right-content-action-button-bg);
+  color: var(--right-content-action-button-color);
   border: 0px;
   border-radius: 6px;
   font-size: 18px;
@@ -76,24 +76,24 @@
 }
 
 .actionButton:hover {
-  background-color: #35731c;
-  color: #dedede;
+  background-color: var(--right-content-action-button-hover-bg);
+  color: var(--right-content-action-button-hover-color);
 }
 
 .actionButton a {
-  color: #12171a;
+  color: var(--right-content-action-button-a-color);
   text-decoration: none;
 }
 
 .actionButtonDisabled {
-  background-color: #d3d3d3;
-  color: #676767;
+  background-color: var(--right-content-action-button-disabled-bg);
+  color: var(--right-content-action-button-disabled-color);
   cursor: default;
 }
 
 .actionButtonDisabled:hover {
-  background-color: #d3d3d3;
-  color: #676767;
+  background-color: var(--right-content-action-button-disabled-hover-bg);
+  color: var(--right-content-action-button-disabled-hover-color);
   cursor: default;
 }
 
@@ -108,10 +108,10 @@
   top: 11px;
   display: flex;
   flex-direction: column;
-  background-color: rgba(34, 34, 34, 0.8);
+  background-color: var(--right-content-result-count-bg);
   padding: 8px 10px;
   border-radius: 5px;
-  color: #fff;
+  color: var(--right-content-result-count-color);
   align-items: center;
   font-size: 0.75em;
   letter-spacing: 0.025em;
@@ -140,9 +140,9 @@
 }
 
 .countButton {
-  background-color: transparent;
-  color: #a9b0c1;
-  border: 1px solid #a9b0c1;
+  background-color: var(--right-content-count-button-bg);
+  color: var(--right-content-count-button-color);
+  border: 1px solid var(--right-content-count-button-border);
   border-radius: 5px;
   height: 28px;
   font-size: 14px;
@@ -161,18 +161,18 @@
   margin-right: 2.5px;
 }
 .countButton:hover {
-  background-color: #252f36;
-  color: #fff;
+  background-color: var(--right-content-count-button-hover-bg);
+  color: var(--right-content-count-button-hover-color);
 }
 
 .disabledCountButton {
-  color: #7f828a;
-  border: 1px solid #7f828a;
+  color: var(--right-content-disabled-count-button-color);
+  border: 1px solid var(--right-content-disabled-count-button-border);
   cursor: default;
 }
 .disabledCountButton:hover {
-  color: #7f828a;
-  background-color: transparent;
+  color: var(--right-content-disabled-count-button-hover-color);
+  background-color: var(--right-content-disabled-count-button-hover-bg);
 }
 
 .countButtonCancelText {
@@ -187,10 +187,10 @@
   transform: translateX(-50%);
   display: flex;
   flex-direction: row;
-  background-color: rgba(34, 34, 34, 0.8);
+  background-color: var(--right-content-draw-geom-message-bg);
   padding: 10px 20px;
   border-radius: 5px;
-  color: #fff;
+  color: var(--right-content-draw-geom-message-color);
   align-items: center;
   justify-content: center;
   font-size: 0.75em;
@@ -204,19 +204,19 @@
   font-size: 16px;
 }
 .drawGeomMessageTextTitle {
-  color: #abb0c0;
+  color: var(--right-content-draw-geom-message-text-title-color);
   font-weight: bold;
 }
 
 .drawGeomMessageCancelButton {
   height: 32px;
   width: 75px;
-  background-color: transparent;
+  background-color: var(--right-content-draw-geom-message-cancel-button-bg);
   border: none;
-  color: white;
+  color: var(--right-content-draw-geom-message-cancel-button-color);
   font-size: 16px;
   cursor: pointer;
-  border: 1px solid #a9b0c1;
+  border: 1px solid var(--right-content-draw-geom-message-cancel-button-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -225,7 +225,7 @@
 }
 
 .resultCount strong {
-  color: #a9b0c1;
+  color: var(--right-content-result-count-strong-color);
 }
 
 .loadingSpinnerContainer {
@@ -246,7 +246,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background: rgb(53, 61, 79);
+  background: var(--right-content-app-loading-container-bg);
   z-index: 499;
   opacity: 0.75;
 }
@@ -256,17 +256,17 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  background-color: #12171a;
+  background-color: var(--right-content-map-attribution-bg);
   padding: 4px 6px;
 }
 
 .mapAttribution a {
-  color: #19a1d7;
+  color: var(--right-content-map-attribution-a-color);
   text-decoration: none;
 }
 
 .mapAttribution span {
-  color: #bbb;
+  color: var(--right-content-map-attribution-span-color);
 }
 
 .mapAttribution a:hover {
@@ -278,19 +278,19 @@ div[data-tooltip-id='attribution-tooltip'] {
   bottom: 0;
   right: 10px;
   z-index: 1;
-  color: #a9b0c1;
+  color: var(--right-content-attribution-tooltip-data-color);
 }
 
 div#attribution-tooltip {
   z-index: 999;
   white-space: nowrap;
   padding: 2px;
-  background-color: #12171a;
+  background-color: var(--right-content-attribution-tooltip-bg);
 }
 
 .layerListButton {
   position: absolute;
-  background-color: #fff;
+  background-color: var(--right-content-layer-list-button-bg);
   top: 130px;
   left: 12px;
   z-index: 1;
@@ -298,18 +298,18 @@ div#attribution-tooltip {
   width: 29px;
   cursor: pointer;
   border-radius: 4px;
-  border: solid 1px #ccc;
+  border: solid 1px var(--right-content-layer-list-button-border);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .layerListButton:hover {
-  background-color: #f4f4f4;
+  background-color: var(--right-content-layer-list-button-hover-bg);
 }
 
 .layerListButtonIcon {
-  color: #555;
+  color: var(--right-content-layer-list-button-icon-color);
 }
 
 .LoadingImageryOverlayText {
@@ -317,15 +317,14 @@ div#attribution-tooltip {
   right: 10px;
   bottom: 32px;
   z-index: 10;
-  background-color: #555;
   font-size: 16px;
   padding: 10px;
   display: flex;
   flex-direction: row;
-  background-color: rgba(34, 34, 34, 0.8);
+  background-color: var(--right-content-loading-imagery-overlay-text-bg);
   padding: 8px 10px;
   border-radius: 5px;
-  color: #fff;
+  color: var(--right-content-loading-imagery-overlay-text-color);
   align-items: center;
   justify-content: center;
 }

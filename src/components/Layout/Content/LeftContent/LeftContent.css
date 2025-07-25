@@ -1,7 +1,7 @@
 .LeftContent {
   height: 100%;
   width: 300px;
-  background-color: #12171a;
+  background-color: var(--left-content-bg);
 }
 
 .LeftContentTabs {
@@ -19,21 +19,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #fff;
+  color: var(--left-content-tab-color);
   font-size: 18px;
   text-align: center;
   text-decoration: none;
-  background-color: #373d4d;
+  background-color: var(--left-content-tab-bg);
   cursor: pointer;
   border: none;
   border-radius: 0px;
-  border-bottom: 4px solid #373d4d;
-  border-top: 4px solid #373d4d;
+  border-bottom: 4px solid var(--left-content-tab-border-bottom);
+  border-top: 4px solid var(--left-content-tab-border-top);
   font-weight: bold;
 }
 
 .LeftContentTabSelected {
-  border-bottom: 4px solid #6cc24a;
+  border-bottom: 4px solid var(--left-content-tab-selected-border-bottom);
 }
 
 .LeftContentSelectedTab {
@@ -68,7 +68,7 @@
 .disableSearchOverlay {
   height: 100%;
   width: 300px;
-  background-color: #12171a;
+  background-color: var(--left-content-disable-search-overlay-bg);
   opacity: 0.7;
   z-index: 10;
   position: absolute;

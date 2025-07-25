@@ -5,7 +5,7 @@
   right: 0;
   bottom: 0;
   z-index: 100;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--upload-geojson-modal-bg);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -15,8 +15,8 @@
   width: 600px;
   max-width: 80%;
   min-height: 280px;
-  background: #353d4f;
-  color: #dedede;
+  background: var(--upload-geojson-modal-container-bg);
+  color: var(--upload-geojson-modal-container-color);
   padding: 20px;
   position: relative;
   display: flex;
@@ -57,15 +57,15 @@
 .uploadGeojsonModalActionButton {
   height: 32px;
   width: 50px;
-  background-color: #4f5768;
+  background-color: var(--upload-geojson-modal-action-button-bg);
   border: none;
-  color: white;
+  color: var(--upload-geojson-modal-action-button-color);
   padding: 15px 32px;
   text-align: center;
   text-decoration: none;
   font-size: 16px;
   cursor: pointer;
-  border: 1px solid #a9b0c1;
+  border: 1px solid var(--upload-geojson-modal-action-button-border);
   margin-bottom: 10px;
   display: flex;
   align-items: center;
@@ -75,7 +75,7 @@
 }
 
 .uploadGeojsonModalActionButton:hover {
-  background: #353d4f;
+  background: var(--upload-geojson-modal-action-button-hover-bg);
 }
 
 @media (max-width: 650px) {

@@ -17,7 +17,7 @@
   align-items: center;
   justify-content: center;
   min-height: 50px;
-  border-bottom: #353d4f 3px solid;
+  border-bottom: var(--popup-results-header-border-bottom) 3px solid;
 }
 
 .popupHeaderTop {
@@ -37,9 +37,9 @@
 }
 
 .popupHeaderBottomButton {
-  background-color: transparent;
-  color: #a9b0c1;
-  border: 1px solid #a9b0c1;
+  background-color: var(--popup-results-header-bottom-button-bg);
+  color: var(--popup-results-header-bottom-button-color);
+  border: 1px solid var(--popup-results-header-bottom-button-border);
   border-radius: 5px;
   height: 32px;
   font-size: 16px;
@@ -54,17 +54,17 @@
   user-select: none;
 }
 .popupHeaderBottomButton:hover {
-  background-color: #252f36;
-  color: #fff;
+  background-color: var(--popup-results-header-bottom-button-hover-bg);
+  color: var(--popup-results-header-bottom-button-hover-color);
 }
 .popupHeaderBottomButtonDisabled {
-  color: #646566;
-  border: 1px solid #646566;
+  color: var(--popup-results-header-bottom-button-disabled-color);
+  border: 1px solid var(--popup-results-header-bottom-button-disabled-border);
   cursor: default;
 }
 .popupHeaderBottomButtonDisabled:hover {
-  background-color: transparent;
-  color: #646566;
+  background-color: var(--popup-results-header-bottom-button-disabled-hover-bg);
+  color: var(--popup-results-header-bottom-button-disabled-hover-color);
 }
 
 .popupResultsBottom {
@@ -78,9 +78,9 @@
 }
 
 .popupResultsBottomButton {
-  background-color: transparent;
-  color: #a9b0c1;
-  border: 1px solid #a9b0c1;
+  background-color: var(--popup-results-bottom-button-bg);
+  color: var(--popup-results-bottom-button-color);
+  border: 1px solid var(--popup-results-bottom-button-border);
   border-radius: 5px;
   height: 32px;
   font-size: 16px;
@@ -95,8 +95,8 @@
   user-select: none;
 }
 .popupResultsBottomButton:hover {
-  background-color: #252f36;
-  color: #fff;
+  background-color: var(--popup-results-bottom-button-hover-bg);
+  color: var(--popup-results-bottom-button-hover-color);
 }
 
 .popupResultsContent {
@@ -122,7 +122,7 @@
   align-items: center;
   justify-content: center;
   min-height: 50px;
-  border-top: #353d4f 3px solid;
+  border-top: var(--popup-results-footer-border-top) 3px solid;
 }
 
 .popupFooterControls {
@@ -138,13 +138,13 @@
 }
 
 .popupFooterButton {
-  background-color: transparent;
-  color: #a9b0c1;
+  background-color: var(--popup-results-footer-button-bg);
+  color: var(--popup-results-footer-button-color);
   border: 0px;
   font-weight: bold;
   height: 30px;
   width: 30px;
-  border: #dedede solid 1px;
+  border: var(--popup-results-footer-button-border) solid 1px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -156,8 +156,8 @@
 }
 
 .popupFooterButton:hover {
-  background-color: #252f36;
-  color: #fff;
+  background-color: var(--popup-results-footer-button-hover-bg);
+  color: var(--popup-results-footer-button-hover-color);
 }
 
 .popupFooterButtonRight {
