@@ -184,7 +184,7 @@ const LeafMap = () => {
       >
         {/* set basemap layers here: */}
         <TileLayer
-          className={_appConfig.BASEMAP_DARK_THEME === false ? '' : 'map-tiles'}
+          className={_appConfig.DARK_THEME === false ? '' : 'map-tiles'}
           url={
             _appConfig.BASEMAP_URL ||
             'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
