@@ -18,7 +18,11 @@ import {
   addReferenceLayersToMap
 } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
-import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../defaults'
+import {
+  DEFAULT_MAP_CENTER,
+  DEFAULT_MAP_ZOOM,
+  DEFAULT_MAP_ZOOM_MAX
+} from '../defaults'
 
 const LeafMap = () => {
   const dispatch = useDispatch()
@@ -181,6 +185,11 @@ const LeafMap = () => {
         scrollWheelZoom={true}
         zoomControl={false}
         attributionControl={false}
+        maxZoom={
+          _appConfig.MAP_ZOOM_MAX
+            ? _appConfig.MAP_ZOOM_MAX
+            : DEFAULT_MAP_ZOOM_MAX
+        }
       >
         {/* set basemap layers here: */}
         <TileLayer
@@ -189,6 +198,14 @@ const LeafMap = () => {
             _appConfig.BASEMAP_URL ||
             'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
           }
+          maxNativeZoom={18}
+          minNativeZoom={2}
+          maxZoom={
+            _appConfig.MAP_ZOOM_MAX
+              ? _appConfig.MAP_ZOOM_MAX
+              : DEFAULT_MAP_ZOOM_MAX
+          }
+          minZoom={2}
         />
       </MapContainer>
     </div>
