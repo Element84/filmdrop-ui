@@ -46,8 +46,8 @@ const initialState = {
   autoCenterOnItemChanged: false,
   hasLeftPanelTabChanged: false,
   authTokenExists: false,
-  currentTheme: 'system',
-  effectiveTheme: 'dark'
+  currentTheme: null,
+  effectiveTheme: null
 }
 
 // next, for every key in the initialState

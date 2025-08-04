@@ -115,26 +115,35 @@ export function setupSystemThemeListener(callback) {
 /**
  * Initializes the theme system with proper fallback priority
  * @param {Object} appConfig - The application configuration object
- * @returns {Object} - Object containing currentTheme and effectiveTheme
+ * @returns {Object} - Object containing currentTheme, effectiveTheme, and switchingEnabled
  */
 export function initializeTheme(appConfig) {
-  // Priority: localStorage → config → system
-  let currentTheme = getThemeFromStorage()
+  const switchingEnabled = appConfig.THEME_SWITCHING_ENABLED === true
 
-  if (!currentTheme) {
-    // Check config for DARK_THEME setting
-    if (appConfig && typeof appConfig.DARK_THEME === 'boolean') {
-      currentTheme = appConfig.DARK_THEME ? 'dark' : 'light'
-    } else {
-      // Fallback to system preference
-      currentTheme = 'system'
+  if (!switchingEnabled) {
+    // Simple mode: no theme system needed at all
+    // Just use whatever CSS is in :root
+    return {
+      currentTheme: null, // Not used in simple mode
+      effectiveTheme: null, // Not used in simple mode
+      switchingEnabled: false
     }
+  }
+
+  // Theme switching mode
+  const defaultTheme = appConfig.DEFAULT_THEME || 'dark'
+
+  // Existing logic: localStorage → defaultTheme → system
+  let currentTheme = getThemeFromStorage()
+  if (!currentTheme) {
+    currentTheme = defaultTheme
   }
 
   const effectiveTheme = calculateEffectiveTheme(currentTheme)
 
   return {
     currentTheme,
-    effectiveTheme
+    effectiveTheme,
+    switchingEnabled: true
   }
 }

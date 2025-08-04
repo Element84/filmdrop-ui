@@ -38,6 +38,7 @@ function App() {
   )
   const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
   const [showLogin, setShowLogin] = useState(false)
+  const [switchingEnabled, setSwitchingEnabled] = useState(false)
 
   useEffect(() => {
     if (localStorage.getItem('APP_AUTH_TOKEN')) {
@@ -66,20 +67,26 @@ function App() {
   // Theme initialization - run once when app config is loaded
   useEffect(() => {
     if (_appConfig) {
-      const { currentTheme, effectiveTheme } = initializeTheme(_appConfig)
+      // Always call initializeTheme for consistent API
+      const { currentTheme, effectiveTheme, switchingEnabled } =
+        initializeTheme(_appConfig)
 
-      // Update Redux state
-      dispatch(setCurrentTheme(currentTheme))
-      dispatch(setEffectiveTheme(effectiveTheme))
+      // Store switching enabled state for system theme listener
+      setSwitchingEnabled(switchingEnabled)
 
-      // Apply theme to DOM
-      applyTheme(effectiveTheme)
+      if (switchingEnabled) {
+        // Theme switching mode: full theme system
+        dispatch(setCurrentTheme(currentTheme))
+        dispatch(setEffectiveTheme(effectiveTheme))
+        applyTheme(effectiveTheme)
+      }
+      // Simple mode: no theme system needed - just use :root CSS colors
     }
   }, [_appConfig, dispatch])
 
-  // System theme change listener - only active when user chose 'system' mode
+  // System theme change listener - only active when switching enabled and user chose 'system' mode
   useEffect(() => {
-    if (_currentTheme === 'system') {
+    if (switchingEnabled && _currentTheme === 'system') {
       const cleanup = setupSystemThemeListener((newSystemTheme) => {
         // Update effective theme when system preference changes
         dispatch(setEffectiveTheme(newSystemTheme))
@@ -88,7 +95,7 @@ function App() {
 
       return cleanup
     }
-  }, [_currentTheme, dispatch])
+  }, [switchingEnabled, _currentTheme, dispatch])
 
   return (
     <React.StrictMode>

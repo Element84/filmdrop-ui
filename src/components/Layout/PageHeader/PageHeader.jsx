@@ -70,7 +70,7 @@ const PageHeader = () => {
               </span>
             </Stack>
           )}
-          <ThemeSwitcher />
+          {_appConfig.THEME_SWITCHING_ENABLED === true && <ThemeSwitcher />}
         </div>
         {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
           <a
