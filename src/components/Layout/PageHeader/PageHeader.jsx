@@ -5,6 +5,7 @@ import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 import { useSelector } from 'react-redux'
 import { Stack } from '@mui/material'
 import CartButton from '../../Cart/CartButton/CartButton'
+import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher'
 import { logoutUser } from '../../../utils/authHelper'
 
 const PageHeader = () => {
@@ -69,6 +70,7 @@ const PageHeader = () => {
               </span>
             </Stack>
           )}
+          <ThemeSwitcher />
         </div>
         {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
           <a

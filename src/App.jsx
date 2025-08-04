@@ -12,7 +12,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import CartModal from './components/Cart/CartModal/CartModal'
 import { InitializeAppFromConfig } from './utils/configHelper'
 import Login from './components/Login/Login'
-import { setauthTokenExists } from './redux/slices/mainSlice'
+import {
+  setauthTokenExists,
+  setCurrentTheme,
+  setEffectiveTheme
+} from './redux/slices/mainSlice'
+import {
+  initializeTheme,
+  applyTheme,
+  setupSystemThemeListener
+} from './utils/themeHelper'
 
 function App() {
   const dispatch = useDispatch()
@@ -27,6 +36,7 @@ function App() {
   const _authTokenExists = useSelector(
     (state) => state.mainSlice.authTokenExists
   )
+  const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
   const [showLogin, setShowLogin] = useState(false)
 
   useEffect(() => {
@@ -53,14 +63,32 @@ function App() {
     }
   }, [_appConfig, _authTokenExists])
 
-  // Theme management
+  // Theme initialization - run once when app config is loaded
   useEffect(() => {
     if (_appConfig) {
-      const isDarkTheme = _appConfig.DARK_THEME !== false
-      const themeValue = isDarkTheme ? 'dark' : 'light'
-      document.documentElement.setAttribute('data-theme', themeValue)
+      const { currentTheme, effectiveTheme } = initializeTheme(_appConfig)
+
+      // Update Redux state
+      dispatch(setCurrentTheme(currentTheme))
+      dispatch(setEffectiveTheme(effectiveTheme))
+
+      // Apply theme to DOM
+      applyTheme(effectiveTheme)
     }
-  }, [_appConfig])
+  }, [_appConfig, dispatch])
+
+  // System theme change listener - only active when user chose 'system' mode
+  useEffect(() => {
+    if (_currentTheme === 'system') {
+      const cleanup = setupSystemThemeListener((newSystemTheme) => {
+        // Update effective theme when system preference changes
+        dispatch(setEffectiveTheme(newSystemTheme))
+        applyTheme(newSystemTheme)
+      })
+
+      return cleanup
+    }
+  }, [_currentTheme, dispatch])
 
   return (
     <React.StrictMode>
