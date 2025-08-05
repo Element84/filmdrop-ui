@@ -1,15 +1,16 @@
 import React from 'react'
 import './PageHeader.css'
 import { OpenInNew } from '@mui/icons-material'
-import logoFilmDrop from '../../../assets/logo-filmdrop-e84.png'
 import { useSelector } from 'react-redux'
 import { Stack } from '@mui/material'
 import CartButton from '../../Cart/CartButton/CartButton'
 import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher'
 import { logoutUser } from '../../../utils/authHelper'
+import { getBrandLogoConfig } from '../../../utils/brandLogoHelper'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const _effectiveTheme = useSelector((state) => state.mainSlice.effectiveTheme)
 
   function onDashboardClick() {
     window.open(_appConfig.DASHBOARD_BTN_URL, '_blank')
@@ -22,6 +23,9 @@ const PageHeader = () => {
   function onLogoutClick() {
     logoutUser()
   }
+
+  // Get brand logo configuration
+  const brandLogoConfig = getBrandLogoConfig(_appConfig, _effectiveTheme)
 
   return (
     <div className="PageHeader" data-testid="testPageHeader">
@@ -72,18 +76,20 @@ const PageHeader = () => {
           )}
           {_appConfig.THEME_SWITCHING_ENABLED === true && <ThemeSwitcher />}
         </div>
-        {!('SHOW_BRAND_LOGO' in _appConfig) || _appConfig.SHOW_BRAND_LOGO ? (
+        {brandLogoConfig && (
           <a
-            href="https://element84.com/filmdrop"
-            title="Learn more about FilmDrop"
+            href={brandLogoConfig.url}
+            title={brandLogoConfig.title}
+            target="_blank"
+            rel="noopener noreferrer"
           >
             <img
-              src={logoFilmDrop}
-              alt="FilmDrop by Element 84"
-              className="headerLogoImage filmDrop"
+              src={brandLogoConfig.image}
+              alt={brandLogoConfig.alt}
+              className="brandLogoImage"
             />
           </a>
-        ) : null}
+        )}
         {_appConfig.CART_ENABLED ? (
           <Stack className="cartButtonHeaderBar">
             <CartButton></CartButton>

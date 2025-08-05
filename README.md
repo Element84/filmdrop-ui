@@ -98,7 +98,7 @@ The file `config_helper/config.example.json` is included in this repository as r
 | BASEMAP_HTML_ATTRIBUTION | String of HTML markup used to set the attribution for the basemap provider used by the leaflet map. Markup is sanitized prior to render with `DOMPurify` and only is retricted to only allow `html`, `'a' tags`, and `'href'` and `'target'` attributes. Custom attribution will not render if `BASEMAP_URL` is not also set. If not set, the default attribution will be `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`. (Note: Raw HTML was used here since attribution is non-standardized.) | Optional |
 | SEARCH_BY_GEOM_ENABLED   | If set to `true` search options will render and allow users to draw or upload a geojson file to use as search bounds.                                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
 | CART_ENABLED             | If set to `true` cart features will be enabled. These include: rendering cart button in search controls bar, adding cart management buttons to popup results, render buttons in messages to quickly add some or all scenes to cart after search completes.                                                                                                                                                                                                                                                                    | Optional |
-| SHOW_BRAND_LOGO          | If set to `true` filmdrop brand logo and clickable hyperlink are rendered at the top right of the UI. If not set or `false`, the logo will not be visible.                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| BRAND_LOGO               | Object configuration for displaying a brand logo with clickable hyperlink in the top right of the UI. Set to `null` or omit entirely to disable. When `THEME_SWITCHING_ENABLED` is `true`, supports theme-specific logos via `image_light` and `image_dark` properties. See [BRAND_LOGO Configuration Examples](#brand_logo-configuration-examples) section below.                                                                                                                                                            | Optional |
 | POPUP_DISPLAY_FIELDS     | Per-collection configuration of popup metadata fields properies to render. Example in [config.example.json](config_helper/config.example.json). Only `Title` field (which maps to the `id` property for STAC items) is rendered if collection used in application but not included in configuration.                                                                                                                                                                                                                          | Optional |
 | APP_NAME                 | String value used for html title and anywhere else that the text value for app name is used. If not set, default value of `FilmDrop Console` will be used.                                                                                                                                                                                                                                                                                                                                                                    | Optional |
 | APP_FAVICON              | If set, custom application favicon is used instead of default FilmDrop favicon. Favicon file of format `.ico` OR `.png` must be used and file must exist next to config in `/config` of the built deployment directory. Place in `public` directory during local development, but can also be added or adjusted post depolyment. File name in `config.json` must match extactly with file in config, see `config.example.json` for example. If not set or error in config/file, default FilmDrop favicon will be used.        | Optional |
@@ -113,6 +113,44 @@ The file `config_helper/config.example.json` is included in this repository as r
 | AUTH_URL                 | Endpoint used to pass a username and password that returns as JWT that is used for STAC API calls. `APP_TOKEN_AUTH_ENABLED` config value must also be set to `true`.                                                                                                                                                                                                                                                                                                                                                          | Optional |
 | SUPPORTS_AGGREGATIONS    | If included and set to `false` aggregation features are disabled and API calls are not made to load the optional aggregations from the STAC API.                                                                                                                                                                                                                                                                                                                                                                              | Optional |
 | EXPORT_ENABLED           | If included and set to `true` a simple export button will render and allow for the simple export of search results as a geojson file.                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
+
+#### BRAND_LOGO Configuration Examples
+
+**Disabled Brand Logo:**
+
+```json
+{
+  "BRAND_LOGO": null
+}
+```
+
+**Simple Single Logo:**
+
+```json
+{
+  "BRAND_LOGO": {
+    "url": "https://your-company.com",
+    "title": "Visit Your Company",
+    "alt": "Your Company Logo",
+    "image": "./your-logo.png"
+  }
+}
+```
+
+**Theme-Aware Logo (requires THEME_SWITCHING_ENABLED: true):**
+
+```json
+{
+  "BRAND_LOGO": {
+    "url": "https://your-company.com",
+    "title": "Visit Your Company",
+    "alt": "Your Company Logo",
+    "image": null,
+    "image_light": "./your-logo-light.png",
+    "image_dark": "./your-logo-dark.png"
+  }
+}
+```
 
 ### Links
 

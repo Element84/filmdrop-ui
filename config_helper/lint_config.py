@@ -44,11 +44,12 @@ def lint_config(file_path):
         "SEARCH_MIN_ZOOM_LEVELS": dict,
         "CONFIG_COLORMAP": str,
         "BASEMAP_URL": str,
-        "BASEMAP_DARK_THEME": bool,
+        "THEME_SWITCHING_ENABLED": bool,
+        "DEFAULT_THEME": str,
         "BASEMAP_HTML_ATTRIBUTION": str,
         "SEARCH_BY_GEOM_ENABLED": bool,
         "CART_ENABLED": bool,
-        "SHOW_BRAND_LOGO": bool,
+        "BRAND_LOGO": dict,
         "POPUP_DISPLAY_FIELDS": dict,
         "APP_NAME": str,
         "APP_FAVICON": str,
@@ -61,7 +62,8 @@ def lint_config(file_path):
         "FETCH_CREDENTIALS": str,
         "APP_TOKEN_AUTH_ENABLED": bool,
         "AUTH_URL": str,
-        "SUPPORTS_AGGREGATIONS": bool
+        "SUPPORTS_AGGREGATIONS": bool,
+        "EXPORT_ENABLED": bool
     }
 
     print("*********************************************************************")

@@ -251,6 +251,11 @@
   --app-loading-bg: rgb(53, 61, 79);
 }
 
+/* Map tiles styling */
+.map-tiles {
+  filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
+}
+
 /* Light theme override */
 :root[data-theme='light'] {
   /* Theme colors */
@@ -293,11 +298,6 @@
 /* Component-specific theme overrides */
 :root[data-theme='light'] .headerLogoImage {
   filter: invert(1); /* Invert logo colors for light theme */
-}
-
-/* Map tiles styling */
-.map-tiles {
-  filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
 }
 
 /* Light theme: no map tile inversion */

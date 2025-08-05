@@ -21,11 +21,11 @@ describe('PageHeader', () => {
     store.dispatch(setappConfig(mockAppConfig))
   })
   describe('on app render', () => {
-    it('should load the filmdrop logo into the document if SHOW_BRAND_LOGO set to true in config', () => {
+    it('should load the brand logo into the document if BRAND_LOGO is configured', () => {
       setup()
       expect(
         screen.queryByRole('img', {
-          name: /filmdrop by element 84/i
+          name: /Element 84 FilmDrop Logo/i
         })
       ).toBeInTheDocument()
     })
@@ -41,30 +41,30 @@ describe('PageHeader', () => {
       setup()
       expect(screen.getByTestId('testDashboardButton')).toBeInTheDocument()
     })
-    it('should load the filmdrop logo into the document if SHOW_BRAND_LOGO does not exists in config', () => {
-      const SHOW_BRAND_LOGO = mockAppConfig.SHOW_BRAND_LOGO
-      const mockAppConfigSearchEnabled = {
-        SHOW_BRAND_LOGO,
+    it('should load the brand logo into the document if BRAND_LOGO is configured with default config', () => {
+      const BRAND_LOGO = mockAppConfig.BRAND_LOGO
+      const mockAppConfigWithBrandLogo = {
+        BRAND_LOGO,
         ...mockAppConfig
       }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      store.dispatch(setappConfig(mockAppConfigWithBrandLogo))
       setup()
       expect(
         screen.queryByRole('img', {
-          name: /filmdrop by element 84/i
+          name: /Element 84 FilmDrop Logo/i
         })
       ).toBeInTheDocument()
     })
-    it('should not load the filmdrop logo into the document if SHOW_BRAND_LOGO set to false in config', () => {
-      const mockAppConfigSearchEnabled = {
+    it('should not load the brand logo into the document if BRAND_LOGO is null', () => {
+      const mockAppConfigNoBrandLogo = {
         ...mockAppConfig,
-        SHOW_BRAND_LOGO: false
+        BRAND_LOGO: null
       }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      store.dispatch(setappConfig(mockAppConfigNoBrandLogo))
       setup()
       expect(
         screen.queryByRole('img', {
-          name: /filmdrop by element 84/i
+          name: /Element 84 FilmDrop Logo/i
         })
       ).not.toBeInTheDocument()
     })
