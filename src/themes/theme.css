@@ -160,6 +160,7 @@
   --right-content-draw-geom-message-cancel-button-border: #a9b0c1;
   --right-content-result-count-strong-color: #a9b0c1;
   --right-content-app-loading-container-bg: rgb(53, 61, 79);
+  --right-content-app-loading-container-color: #d3d3d3;
   --right-content-map-attribution-bg: #12171a;
   --right-content-map-attribution-a-color: #19a1d7;
   --right-content-map-attribution-span-color: #bbb;
@@ -267,32 +268,40 @@
   --e84-brand-green: #6cc24a;
 
   /* Light mode color overrides */
+  --content-color: var(--light-mode-dark);
+
   --left-content-bg: var(--light-mode-surface-1);
   --left-content-tab-bg: var(--light-mode-surface-2);
   --left-content-tab-border-top: var(--light-mode-surface-2);
   --left-content-tab-border-bottom: var(--light-mode-surface-2);
   --left-content-tab-selected-border-bottom: var(--e84-brand-green);
   --left-content-tab-color: var(--light-mode-dark);
+  --left-content-disable-search-overlay-bg: var(--light-mode-surface-1);
+
+  --right-content-app-loading-container-color: var(--light-mode-light);
+
+  --loading-animation-animated-loader-svg-path-stroke: var(--light-mode-light);
 
   --search-container-label-color: var(--light-mode-dark);
   --search-container-color: var(--light-mode-dark);
   --search-input-color: var(--light-mode-dark);
+
   --collection-dropdown-bg: var(--light-mode-surface-1);
   --collection-dropdown-color: var(--light-mode-dark);
+  --collection-dropdown-svg-color: var(--light-mode-dark);
+
+  --search-label-style-color: var(--light-mode-dark);
+  --search-label-style-text-shadow: var(--light-mode-light);
 
   --page-header-bg: var(--light-mode-surface-1);
   --page-header-link-border: var(--light-mode-dark);
-  --page-header-color: var(
-    --light-mode-dark
-  ); /* Inherited by Analyze and Dashboard button text */
+  --page-header-color: var(--light-mode-dark);
 
   --search-button-container-border-top: var(--light-mode-surface-3);
   --right-content-action-button-hover-color: var(--light-mode-light);
 
   --popup-result-details-row-key-color: var(--light-mode-dark);
   --popup-result-details-href-link-color: var(--light-mode-dark);
-
-  --content-color: var(--light-mode-dark); /* Inherited by random elements */
 }
 
 /* Component-specific theme overrides */

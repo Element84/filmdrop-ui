@@ -247,6 +247,7 @@
   align-items: center;
   justify-content: center;
   background: var(--right-content-app-loading-container-bg);
+  color: var(--right-content-app-loading-container-color);
   z-index: 499;
   opacity: 0.75;
 }
