@@ -1,10 +1,12 @@
 .LayerList {
   position: absolute;
   top: 130px;
-  left: 50px;
+  left: 54px;
   z-index: 1;
   background-color: var(--layer-list-bg);
-  border-radius: 2px;
+  background-clip: padding-box;
+  border-radius: 4px;
+  border: solid 2px var(--layer-list-border);
   min-width: 200px;
   max-width: 400px;
   max-height: 300px;

@@ -123,9 +123,11 @@
   --export-button-download-button-bg: #4f5768;
   --export-button-download-button-color: white;
   --export-button-download-button-border: #a9b0c1;
+  --export-button-download-button-hover-bg: #373c48;
 
   /* LayerList Component */
   --layer-list-bg: rgba(34, 34, 34, 0.8);
+  --layer-list-border: rgba(0, 0, 0, 0.2);
   --layer-list-title-border-bottom: #373d4d;
   --layer-list-checkmark-bg: #eee;
   --layer-list-layer-container-hover-checkmark-bg: #ccc;
@@ -218,6 +220,7 @@
 
   /* LayerLegend Component */
   --layer-legend-bg: #13171a;
+  --layer-legend-opacity: 0.9;
   --layer-legend-search-area-legend-symbol-border-color: #00c07b;
   --layer-legend-scene-legend-symbol-border-color: #3183f5;
   --layer-legend-scene-legend-symbol-bg: #3183f52e;
@@ -284,6 +287,8 @@
   --light-mode-color-dark: #000000;
   --light-mode-color-light: #ffffff;
   --light-mode-accent-1: #76829c;
+  --light-mode-accent-2: #4f5768;
+  --light-mode-accent-3: #373c48;
   --e84-brand-green: #6cc24a;
 
   /* Overrides */
@@ -329,6 +334,30 @@
   --popup-result-details-href-link-color: var(--light-mode-color-dark);
   --popup-results-footer-button-color: var(--light-mode-color-dark);
   --popup-results-footer-button-border: var(--light-mode-gray-3);
+
+  --right-content-result-count-bg: var(--light-mode-gray-1);
+  --right-content-result-count-color: var(--light-mode-color-dark);
+  --right-content-result-count-strong-color: var(--light-mode-accent-2);
+  --right-content-count-button-bg: var(--light-mode-accent-2);
+  --right-content-count-button-color: var(--light-mode-color-light);
+  --right-content-count-button-border: var(--light-mode-color-dark);
+  --right-content-count-button-hover-bg: var(--light-mode-accent-3);
+  --right-content-count-button-hover-color: var(--light-mode-color-light);
+
+  --layer-legend-bg: var(--light-mode-gray-1);
+  --layer-legend-opacity: 1;
+
+  --layer-list-bg: var(--light-mode-color-light);
+  --layer-list-title-border-bottom: var(--light-mode-gray-1);
+
+  --export-button-download-button-border: var(--light-mode-color-dark);
+
+  --heat-map-symbology-gradient-border-bottom: var(--light-mode-color-dark);
+  --heat-map-symbology-values-min-border-left: var(--light-mode-color-dark);
+  --heat-map-symbology-values-mid-border-right: var(--light-mode-color-dark);
+  --heat-map-symbology-values-max-border-right: var(--light-mode-color-dark);
+  --heat-map-symbology-values-color: var(--light-mode-color-dark);
+  --heat-map-symbology-values-bg: var(--light-mode-gray-1);
 }
 
 /* Component-specific theme overrides */

@@ -14,3 +14,7 @@
   padding: 5px 5px 3px 5px;
   height: 33px;
 }
+
+.downloadButton:hover {
+  background-color: var(--export-button-download-button-hover-bg);
+}

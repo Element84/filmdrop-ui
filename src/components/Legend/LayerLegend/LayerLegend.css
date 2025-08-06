@@ -10,12 +10,13 @@
   flex-direction: column;
   justify-content: center;
   font-size: 14px;
-  opacity: 0.9;
+  opacity: var(--layer-legend-opacity);
 }
 
 .hexLegendContainer {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
 .hexLegendLabel {
