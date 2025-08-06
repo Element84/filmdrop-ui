@@ -21,3 +21,23 @@
 .viewSelector div[role='group'] {
   box-shadow: none;
 }
+
+/* Material-UI Button Component Overrides */
+
+.viewSelector .MuiButton-containedPrimary {
+  background-color: var(--view-selector-button-primary-bg);
+  color: var(--view-selector-button-primary-color);
+}
+
+.viewSelector .MuiButton-containedPrimary:hover {
+  background-color: var(--view-selector-button-primary-hover-bg);
+}
+
+.viewSelector .MuiButton-containedSecondary {
+  background-color: var(--view-selector-button-secondary-bg);
+  color: var(--view-selector-button-secondary-color);
+}
+
+.viewSelector .MuiButton-containedSecondary:hover {
+  background-color: var(--view-selector-button-secondary-hover-bg);
+}

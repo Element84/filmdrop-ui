@@ -149,6 +149,24 @@ input[class$='-MuiInputBase-input-MuiInput-input'] {
   color: var(--search-input-color) !important;
 }
 
+/* Material-UI Switch Component Overrides */
+
+.Search .MuiSwitch-switchBase {
+  color: var(--search-mui-switch-base-color);
+}
+
+.Search .MuiSwitch-switchBase.Mui-checked {
+  color: var(--search-mui-switch-base-checked-color);
+}
+
+.Search .MuiSwitch-track {
+  background-color: var(--search-mui-switch-track-bg);
+}
+
+.Search .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+  background-color: var(--search-mui-switch-track-checked-bg);
+}
+
 /* Leaflet Search Icon Overrides */
 
 .leaflet-control-geosearch a.leaflet-bar-part:before {

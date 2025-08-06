@@ -5,3 +5,35 @@
 .cloudSlider.disabled {
   opacity: 30%;
 }
+
+/* Material-UI Slider Component Overrides */
+
+.cloudSlider .MuiSlider-root {
+  color: var(--cloud-slider-mui-slider-root-color);
+}
+
+.cloudSlider .MuiSlider-track {
+  color: var(--cloud-slider-mui-slider-track-color);
+}
+
+.cloudSlider .MuiSlider-rail {
+  color: var(--cloud-slider-mui-slider-rail-color);
+}
+
+.cloudSlider .MuiSlider-thumb {
+  color: var(--cloud-slider-mui-slider-thumb-color);
+  box-shadow: 0px 0px 3px 1px var(--cloud-slider-mui-slider-thumb-shadow);
+}
+
+/* Material-UI Input Component Overrides */
+
+.cloudSlider .MuiInput-root {
+  width: 42px;
+}
+.cloudSlider .MuiInput-underline:before {
+  border-bottom-color: var(--cloud-slider-mui-input-border-color);
+}
+
+.cloudSlider .MuiInput-underline:after {
+  border-bottom-color: var(--cloud-slider-mui-input-border-color);
+}

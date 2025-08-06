@@ -10,14 +10,22 @@
   --cart-button-count-container-color: #fff;
   --cart-button-count-container-enabled-bg: #4f8f36;
 
+  /* CloudSlider Component */
+  --cloud-slider-mui-slider-root-color: #000000;
+  --cloud-slider-mui-slider-track-color: #76829c;
+  --cloud-slider-mui-slider-rail-color: #76829c;
+  --cloud-slider-mui-slider-thumb-color: #76829c;
+  --cloud-slider-mui-slider-thumb-shadow: rgba(0, 0, 0, 0.1);
+  --cloud-slider-mui-input-border-color: #76829c;
+
   /* Search Component */
   --search-button-container-border-top: #4f5768;
   --search-container-color: #ffffff;
   --search-container-label-color: #fff;
   --search-by-geom-options-button-bg: #4f5768;
-  --search-by-geom-options-button-color: white;
+  --search-by-geom-options-button-color: #ffffff;
   --search-by-geom-options-button-border: #a9b0c1;
-  --search-by-geom-options-button-hover-bg: #353d4f;
+  --search-by-geom-options-button-hover-bg: #373c48;
   --search-by-geom-options-button-disabled-hover-bg: #4f5768;
   --search-by-geom-options-color: #a9b0c1;
   --search-input-border-bottom: #76829c;
@@ -28,6 +36,10 @@
   --search-label-style-bg: transparent;
   --search-label-style-color: rgba(255, 255, 255, 0.7);
   --search-label-style-text-shadow: rgba(0, 0, 0, 0.8);
+  --search-mui-switch-base-color: #ffffff;
+  --search-mui-switch-base-checked-color: #ffffff;
+  --search-mui-switch-track-bg: #dedede;
+  --search-mui-switch-track-checked-bg: #6cc24a;
 
   /* UploadGeojsonModal Component */
   --upload-geojson-modal-bg: rgba(0, 0, 0, 0.7);
@@ -39,7 +51,13 @@
   --upload-geojson-modal-action-button-hover-bg: #353d4f;
 
   /* ViewSelector Component */
-  --view-selector-button-border: #76829c;
+  --view-selector-button-border: #a9b0c1;
+  --view-selector-button-primary-bg: #dedede;
+  --view-selector-button-primary-color: #1d1d1d;
+  --view-selector-button-primary-hover-bg: #9b9b9b;
+  --view-selector-button-secondary-bg: #4f5768;
+  --view-selector-button-secondary-color: #ffffff;
+  --view-selector-button-secondary-hover-bg: #373c48;
 
   /* CartModal Component */
   --cart-modal-bg: #00000090;
@@ -259,49 +277,58 @@
 
 /* Light theme override */
 :root[data-theme='light'] {
-  /* Theme colors */
-  --light-mode-surface-1: #f0f0f0;
-  --light-mode-surface-2: #d3d3d3;
-  --light-mode-surface-3: #b6b6b6;
-  --light-mode-dark: #000000;
-  --light-mode-light: #ffffff;
+  /* Theme color variables */
+  --light-mode-gray-1: #f0f0f0;
+  --light-mode-gray-2: #d3d3d3;
+  --light-mode-gray-3: #b6b6b6;
+  --light-mode-color-dark: #000000;
+  --light-mode-color-light: #ffffff;
+  --light-mode-accent-1: #76829c;
   --e84-brand-green: #6cc24a;
 
-  /* Light mode color overrides */
-  --content-color: var(--light-mode-dark);
+  /* Overrides */
+  --content-color: var(--light-mode-color-dark);
 
-  --left-content-bg: var(--light-mode-surface-1);
-  --left-content-tab-bg: var(--light-mode-surface-2);
-  --left-content-tab-border-top: var(--light-mode-surface-2);
-  --left-content-tab-border-bottom: var(--light-mode-surface-2);
+  --right-content-app-loading-container-color: var(--light-mode-color-light);
+  --loading-animation-animated-loader-svg-path-stroke: var(
+    --light-mode-color-light
+  );
+
+  --left-content-bg: var(--light-mode-gray-1);
+  --left-content-tab-bg: var(--light-mode-gray-2);
+  --left-content-tab-border-top: var(--light-mode-gray-2);
+  --left-content-tab-border-bottom: var(--light-mode-gray-2);
   --left-content-tab-selected-border-bottom: var(--e84-brand-green);
-  --left-content-tab-color: var(--light-mode-dark);
-  --left-content-disable-search-overlay-bg: var(--light-mode-surface-1);
+  --left-content-tab-color: var(--light-mode-color-dark);
+  --left-content-disable-search-overlay-bg: var(--light-mode-gray-1);
 
-  --right-content-app-loading-container-color: var(--light-mode-light);
+  --search-container-label-color: var(--light-mode-color-dark);
+  --search-container-color: var(--light-mode-color-dark);
+  --search-input-color: var(--light-mode-color-dark);
+  --search-mui-switch-track-bg: var(--light-mode-accent-1);
+  --search-by-geom-options-button-border: var(--light-mode-color-dark);
+  --view-selector-button-border: var(--light-mode-color-dark);
 
-  --loading-animation-animated-loader-svg-path-stroke: var(--light-mode-light);
+  --collection-dropdown-bg: var(--light-mode-gray-1);
+  --collection-dropdown-color: var(--light-mode-color-dark);
+  --collection-dropdown-svg-color: var(--light-mode-color-dark);
 
-  --search-container-label-color: var(--light-mode-dark);
-  --search-container-color: var(--light-mode-dark);
-  --search-input-color: var(--light-mode-dark);
+  --cloud-slider-mui-slider-thumb-color: var(--light-mode-color-light);
 
-  --collection-dropdown-bg: var(--light-mode-surface-1);
-  --collection-dropdown-color: var(--light-mode-dark);
-  --collection-dropdown-svg-color: var(--light-mode-dark);
+  --search-label-style-color: var(--light-mode-color-dark);
+  --search-label-style-text-shadow: var(--light-mode-color-light);
 
-  --search-label-style-color: var(--light-mode-dark);
-  --search-label-style-text-shadow: var(--light-mode-light);
+  --page-header-bg: var(--light-mode-gray-1);
+  --page-header-link-border: var(--light-mode-color-dark);
+  --page-header-color: var(--light-mode-color-dark);
 
-  --page-header-bg: var(--light-mode-surface-1);
-  --page-header-link-border: var(--light-mode-dark);
-  --page-header-color: var(--light-mode-dark);
+  --search-button-container-border-top: var(--light-mode-gray-3);
+  --right-content-action-button-hover-color: var(--light-mode-color-light);
 
-  --search-button-container-border-top: var(--light-mode-surface-3);
-  --right-content-action-button-hover-color: var(--light-mode-light);
-
-  --popup-result-details-row-key-color: var(--light-mode-dark);
-  --popup-result-details-href-link-color: var(--light-mode-dark);
+  --popup-result-details-row-key-color: var(--light-mode-color-dark);
+  --popup-result-details-href-link-color: var(--light-mode-color-dark);
+  --popup-results-footer-button-color: var(--light-mode-color-dark);
+  --popup-results-footer-button-border: var(--light-mode-gray-3);
 }
 
 /* Component-specific theme overrides */
