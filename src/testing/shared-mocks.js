@@ -3550,7 +3550,12 @@ export const mockAppConfig = {
     '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>',
   SEARCH_BY_GEOM_ENABLED: false,
   CART_ENABLED: false,
-  SHOW_BRAND_LOGO: true
+  BRAND_LOGO: {
+    url: 'https://element84.com/filmdrop',
+    title: 'Learn more about FilmDrop',
+    alt: 'Element 84 FilmDrop Logo',
+    image: './logo-filmdrop-e84.png'
+  }
 }
 
 export const mockClickResults = [

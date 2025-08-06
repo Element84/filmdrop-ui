@@ -1,17 +1,11 @@
 import { React, useState, useEffect } from 'react'
 import './CloudSlider.css'
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles'
 import { Stack } from '@mui/material'
 import Grid from '@mui/material/Grid'
 import Slider from '@mui/material/Slider'
 import MuiInput from '@mui/material/Input'
 import { useDispatch, useSelector } from 'react-redux'
 import { setCloudCover, setShowCloudSlider } from '../../redux/slices/mainSlice'
-
-const Input = styled(MuiInput)`
-  width: 42px;
-  color: #dedede;
-`
 
 const CloudSlider = () => {
   const _selectedCollectionData = useSelector(
@@ -57,66 +51,43 @@ const CloudSlider = () => {
     }
   }
 
-  const theme = createTheme({
-    palette: {
-      primary: {
-        main: '#76829c'
-      },
-      secondary: {
-        main: '#edf2ff'
-      }
-    }
-  })
-
   return (
-    <ThemeProvider theme={theme}>
-      <Stack className={`cloudSlider ${disabled && 'disabled'}`}>
-        <label htmlFor="cloudSlider">Max Cloud Cover %</label>
-        <Grid
-          className="cloudSliderInputs"
-          container
-          spacing={2}
-          alignItems="center"
-        >
-          <Grid size="grow">
-            <Slider
-              sx={{
-                '& .MuiSlider-thumb': {
-                  boxShadow: '0px 0px 3px 1px rgba(0, 0, 0, 0.1)'
-                }
-              }}
-              value={typeof value === 'number' ? value : 0}
-              onChange={handleSliderChange}
-              aria-labelledby="input-slider"
-              color="primary"
-              disabled={disabled}
-            />
-          </Grid>
-          <Grid size="auto">
-            <Input
-              value={value}
-              size="small"
-              onChange={handleInputChange}
-              onBlur={handleBlur}
-              className="sliderInput"
-              sx={{
-                ':before': { borderBottomColor: '#76829c' },
-                // underline when selected
-                ':after': { borderBottomColor: '#76829c' }
-              }}
-              inputProps={{
-                step: 1,
-                min: 0,
-                max: 100,
-                type: 'number',
-                'aria-labelledby': 'input-slider'
-              }}
-              disabled={disabled}
-            />
-          </Grid>
+    <Stack className={`cloudSlider ${disabled && 'disabled'}`}>
+      <label htmlFor="cloudSlider">Max Cloud Cover %</label>
+      <Grid
+        className="cloudSliderInputs"
+        container
+        spacing={2}
+        alignItems="center"
+      >
+        <Grid size="grow">
+          <Slider
+            value={typeof value === 'number' ? value : 0}
+            onChange={handleSliderChange}
+            aria-labelledby="input-slider"
+            color="primary"
+            disabled={disabled}
+          />
         </Grid>
-      </Stack>
-    </ThemeProvider>
+        <Grid size="auto">
+          <MuiInput
+            value={value}
+            size="small"
+            onChange={handleInputChange}
+            onBlur={handleBlur}
+            className="sliderInput"
+            inputProps={{
+              step: 1,
+              min: 0,
+              max: 100,
+              type: 'number',
+              'aria-labelledby': 'input-slider'
+            }}
+            disabled={disabled}
+          />
+        </Grid>
+      </Grid>
+    </Stack>
   )
 }
 

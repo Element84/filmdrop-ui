@@ -16,7 +16,6 @@ import ViewSelector from '../ViewSelector/ViewSelector'
 import { newSearch } from '../../utils/searchHelper'
 import { enableMapPolyDrawing, clearLayer } from '../../utils/mapHelper'
 import { Stack, Switch } from '@mui/material'
-import { createTheme, ThemeProvider } from '@mui/material/styles'
 
 const Search = () => {
   const dispatch = useDispatch()
@@ -78,29 +77,6 @@ const Search = () => {
   function updateAutoCenterState() {
     dispatch(setautoCenterOnItemChanged(!_autoCenterOnItemChanged))
   }
-
-  const theme = createTheme({
-    components: {
-      MuiSwitch: {
-        styleOverrides: {
-          switchBase: {
-            color: '#fff'
-          },
-          colorPrimary: {
-            '&.Mui-checked': {
-              color: '#fff'
-            }
-          },
-          track: {
-            backgroundColor: '#dedede',
-            '.Mui-checked.Mui-checked + &': {
-              backgroundColor: '#6cc24a'
-            }
-          }
-        }
-      }
-    }
-  })
 
   return (
     <div className="Search" data-testid="Search">
@@ -170,12 +146,10 @@ const Search = () => {
           <div className="searchContainer viewSelectorComponent">
             <Stack className="searchFilterContainer">
               <label htmlFor="ItemAutoSearch">Item Auto-Zoom</label>
-              <ThemeProvider theme={theme}>
-                <Switch
-                  checked={_autoCenterOnItemChanged}
-                  onChange={() => updateAutoCenterState()}
-                ></Switch>
-              </ThemeProvider>
+              <Switch
+                checked={_autoCenterOnItemChanged}
+                onChange={() => updateAutoCenterState()}
+              />
             </Stack>
           </div>
         )}

@@ -14,9 +14,9 @@
 }
 
 .animated-loader svg path {
-  stroke: #ccc;
+  stroke: var(--loading-animation-animated-loader-svg-path-stroke);
   stroke-width: 5;
-  fill: transparent;
+  fill: var(--loading-animation-animated-loader-svg-path-fill);
   stroke-dasharray: 250;
   animation: strokePath 2s linear infinite;
 }

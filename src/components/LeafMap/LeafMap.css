@@ -2,9 +2,9 @@
 @import 'leaflet-draw/dist/leaflet.draw.css';
 
 .LeafMap {
-  color: #222;
+  color: var(--leaf-map-color);
   width: 100%;
-  background-color: #12171a;
+  background-color: var(--leaf-map-bg);
   position: relative;
 }
 
@@ -12,21 +12,6 @@
   height: 100%;
   width: 100%;
   z-index: 1;
-}
-
-.LeafMap {
-  color: #222;
-  width: 100%;
-  background-color: lightblue;
-}
-
-.mainMap {
-  height: 100%;
-  width: 100%;
-}
-
-.map-tiles {
-  filter: brightness(1.125) invert(1) contrast(0.9) hue-rotate(0deg) saturate(0);
 }
 
 path.leaflet-interactive:focus {

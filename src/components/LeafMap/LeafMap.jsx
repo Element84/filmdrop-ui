@@ -28,6 +28,7 @@ const LeafMap = () => {
   const dispatch = useDispatch()
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
+  const _effectiveTheme = useSelector((state) => state.mainSlice.effectiveTheme)
   // set map ref to itself with useRef
   const mapRef = useRef()
 
@@ -193,7 +194,8 @@ const LeafMap = () => {
       >
         {/* set basemap layers here: */}
         <TileLayer
-          className={_appConfig.BASEMAP_DARK_THEME === false ? '' : 'map-tiles'}
+          key={_effectiveTheme} // Force re-mount when theme changes
+          className="map-tiles"
           url={
             _appConfig.BASEMAP_URL ||
             'https://tile.openstreetmap.org/{z}/{x}/{y}.png'

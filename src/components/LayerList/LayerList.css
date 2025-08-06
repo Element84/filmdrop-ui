@@ -1,10 +1,12 @@
 .LayerList {
   position: absolute;
   top: 130px;
-  left: 50px;
+  left: 54px;
   z-index: 1;
-  background-color: rgba(34, 34, 34, 0.8);
-  border-radius: 2px;
+  background-color: var(--layer-list-bg);
+  background-clip: padding-box;
+  border-radius: 4px;
+  border: solid 2px var(--layer-list-border);
   min-width: 200px;
   max-width: 400px;
   max-height: 300px;
@@ -14,7 +16,7 @@
 }
 
 .LayerListTitle {
-  border-bottom: solid 2px #373d4d;
+  border-bottom: solid 2px var(--layer-list-title-border-bottom);
   height: 35px;
   margin-bottom: 8px;
   display: flex;
@@ -64,15 +66,17 @@
   left: 0;
   height: 16px;
   width: 16px;
-  background-color: #eee;
+  background-color: var(--layer-list-checkmark-bg);
 }
 
 .LayerListLayerContainer:hover input ~ .LayerListCheckmark {
-  background-color: #ccc;
+  background-color: var(--layer-list-layer-container-hover-checkmark-bg);
 }
 
 .LayerListLayerContainer input:checked ~ .LayerListCheckmark {
-  background-color: #81c05b;
+  background-color: var(
+    --layer-list-layer-container-input-checked-checkmark-bg
+  );
 }
 
 .LayerListCheckmark:after {
@@ -90,7 +94,7 @@
   top: 1px;
   width: 4px;
   height: 8px;
-  border: solid #fff;
+  border: solid var(--layer-list-layer-container-checkmark-after-border);
   border-width: 0 3px 3px 0;
   -webkit-transform: rotate(45deg);
   -ms-transform: rotate(45deg);

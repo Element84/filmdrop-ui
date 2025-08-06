@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
 import './index.css'
+import './themes/theme.css'
 import Content from './components/Layout/Content/Content'
 import PageHeader from './components/Layout/PageHeader/PageHeader'
 import UploadGeojsonModal from './components/UploadGeojsonModal/UploadGeojsonModal'
@@ -11,7 +12,16 @@ import { useDispatch, useSelector } from 'react-redux'
 import CartModal from './components/Cart/CartModal/CartModal'
 import { InitializeAppFromConfig } from './utils/configHelper'
 import Login from './components/Login/Login'
-import { setauthTokenExists } from './redux/slices/mainSlice'
+import {
+  setauthTokenExists,
+  setCurrentTheme,
+  setEffectiveTheme
+} from './redux/slices/mainSlice'
+import {
+  initializeTheme,
+  applyTheme,
+  setupSystemThemeListener
+} from './utils/themeHelper'
 
 function App() {
   const dispatch = useDispatch()
@@ -26,7 +36,9 @@ function App() {
   const _authTokenExists = useSelector(
     (state) => state.mainSlice.authTokenExists
   )
+  const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
   const [showLogin, setShowLogin] = useState(false)
+  const [switchingEnabled, setSwitchingEnabled] = useState(false)
 
   useEffect(() => {
     if (localStorage.getItem('APP_AUTH_TOKEN')) {
@@ -51,6 +63,39 @@ function App() {
       GetCollectionsService()
     }
   }, [_appConfig, _authTokenExists])
+
+  // Theme initialization - run once when app config is loaded
+  useEffect(() => {
+    if (_appConfig) {
+      // Always call initializeTheme for consistent API
+      const { currentTheme, effectiveTheme, switchingEnabled } =
+        initializeTheme(_appConfig)
+
+      // Store switching enabled state for system theme listener
+      setSwitchingEnabled(switchingEnabled)
+
+      if (switchingEnabled) {
+        // Theme switching mode: full theme system
+        dispatch(setCurrentTheme(currentTheme))
+        dispatch(setEffectiveTheme(effectiveTheme))
+        applyTheme(effectiveTheme)
+      }
+      // Simple mode: no theme system needed - just use :root CSS colors
+    }
+  }, [_appConfig, dispatch])
+
+  // System theme change listener - only active when switching enabled and user chose 'system' mode
+  useEffect(() => {
+    if (switchingEnabled && _currentTheme === 'system') {
+      const cleanup = setupSystemThemeListener((newSystemTheme) => {
+        // Update effective theme when system preference changes
+        dispatch(setEffectiveTheme(newSystemTheme))
+        applyTheme(newSystemTheme)
+      })
+
+      return cleanup
+    }
+  }, [switchingEnabled, _currentTheme, dispatch])
 
   return (
     <React.StrictMode>

@@ -94,11 +94,12 @@ The file `config_helper/config.example.json` is included in this repository as r
 | MOSAIC_MAX_ITEMS         | Maximum number of items in mosaic. If not set, the default max items will be 100.                                                                                                                                                                                                                                                                                                                                                                                                                                             | Optional |
 | CONFIG_COLORMAP          | Color map used in low level hex grid search results. Complete list of colormaps are available here: [bpostlethwaite/colormap](https://github.com/bpostlethwaite/colormap). If not set, the default colormap will be "viridis".                                                                                                                                                                                                                                                                                                | Optional |
 | BASEMAP_URL              | URL to specify a basemap provider used by the leaflet map. Must be a raster tile provider as vector tiles are not supported. If not set, the default colormap will be `https://tile.openstreetmap.org/{z}/{x}/{y}.png`.                                                                                                                                                                                                                                                                                                       | Optional |
-| BASEMAP_DARK_THEME       | Boolean value. If set to `true` or not included in config, a dark theme is applied to the basemap. If set to `false`, the dark theme will not be applied to basemap and the default basemap provider style is used.                                                                                                                                                                                                                                                                                                           | Optional |
+| THEME_SWITCHING_ENABLED  | Boolean value. If set to `true`, enables user theme switching with light/dark/system modes and shows theme switcher button in header. If set to `false` (default), uses single theme mode with simple CSS customization in `:root`. Users can customize colors directly in theme.css without any theme switching functionality.                                                                                                                                                                                               | Optional |
+| DEFAULT_THEME            | String value (`"light"` or `"dark"`). Only used when `THEME_SWITCHING_ENABLED` is `true`. Specifies which theme serves as the base theme in `:root` CSS, with the other theme using `data-theme` attribute overrides. Defaults to `"dark"` if not specified. Has no effect when theme switching is disabled.                                                                                                                                                                                                                  | Optional |
 | BASEMAP_HTML_ATTRIBUTION | String of HTML markup used to set the attribution for the basemap provider used by the leaflet map. Markup is sanitized prior to render with `DOMPurify` and only is retricted to only allow `html`, `'a' tags`, and `'href'` and `'target'` attributes. Custom attribution will not render if `BASEMAP_URL` is not also set. If not set, the default attribution will be `&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>`. (Note: Raw HTML was used here since attribution is non-standardized.) | Optional |
 | SEARCH_BY_GEOM_ENABLED   | If set to `true` search options will render and allow users to draw or upload a geojson file to use as search bounds.                                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
 | CART_ENABLED             | If set to `true` cart features will be enabled. These include: rendering cart button in search controls bar, adding cart management buttons to popup results, render buttons in messages to quickly add some or all scenes to cart after search completes.                                                                                                                                                                                                                                                                    | Optional |
-| SHOW_BRAND_LOGO          | If set to `true` filmdrop brand logo and clickable hyperlink are rendered at the top right of the UI. If not set or `false`, the logo will not be visible.                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| BRAND_LOGO               | Object configuration for displaying a brand logo with clickable hyperlink in the top right of the UI. Set to `null` or omit entirely to disable. When `THEME_SWITCHING_ENABLED` is `true`, supports theme-specific logos via `image_light` and `image_dark` properties. See [BRAND_LOGO Configuration Examples](#brand_logo-configuration-examples) section below.                                                                                                                                                            | Optional |
 | POPUP_DISPLAY_FIELDS     | Per-collection configuration of popup metadata fields properies to render. Example in [config.example.json](config_helper/config.example.json). Only `Title` field (which maps to the `id` property for STAC items) is rendered if collection used in application but not included in configuration.                                                                                                                                                                                                                          | Optional |
 | APP_NAME                 | String value used for html title and anywhere else that the text value for app name is used. If not set, default value of `FilmDrop Console` will be used.                                                                                                                                                                                                                                                                                                                                                                    | Optional |
 | APP_FAVICON              | If set, custom application favicon is used instead of default FilmDrop favicon. Favicon file of format `.ico` OR `.png` must be used and file must exist next to config in `/config` of the built deployment directory. Place in `public` directory during local development, but can also be added or adjusted post depolyment. File name in `config.json` must match extactly with file in config, see `config.example.json` for example. If not set or error in config/file, default FilmDrop favicon will be used.        | Optional |
@@ -114,6 +115,44 @@ The file `config_helper/config.example.json` is included in this repository as r
 | AUTH_URL                 | Endpoint used to pass a username and password that returns as JWT that is used for STAC API calls. `APP_TOKEN_AUTH_ENABLED` config value must also be set to `true`.                                                                                                                                                                                                                                                                                                                                                          | Optional |
 | SUPPORTS_AGGREGATIONS    | If included and set to `false` aggregation features are disabled and API calls are not made to load the optional aggregations from the STAC API.                                                                                                                                                                                                                                                                                                                                                                              | Optional |
 | EXPORT_ENABLED           | If included and set to `true` a simple export button will render and allow for the simple export of search results as a geojson file.                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
+
+#### BRAND_LOGO Configuration Examples
+
+**Disabled Brand Logo:**
+
+```json
+{
+  "BRAND_LOGO": null
+}
+```
+
+**Simple Single Logo:**
+
+```json
+{
+  "BRAND_LOGO": {
+    "url": "https://your-company.com",
+    "title": "Visit Your Company",
+    "alt": "Your Company Logo",
+    "image": "./your-logo.png"
+  }
+}
+```
+
+**Theme-Aware Logo (requires THEME_SWITCHING_ENABLED: true):**
+
+```json
+{
+  "BRAND_LOGO": {
+    "url": "https://your-company.com",
+    "title": "Visit Your Company",
+    "alt": "Your Company Logo",
+    "image": null,
+    "image_light": "./your-logo-light.png",
+    "image_dark": "./your-logo-dark.png"
+  }
+}
+```
 
 ### Links
 

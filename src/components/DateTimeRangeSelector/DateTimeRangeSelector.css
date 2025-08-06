@@ -47,7 +47,7 @@ label {
 }
 
 span.error-true {
-  color: #bc3131;
+  color: var(--date-time-range-selector-span-error-true-color);
 }
 
 .react-calendar {
@@ -69,14 +69,16 @@ span.error-true {
 
 /* !important used here to override a MUI icon style to work in non-MUI datepicker */
 .datePicker-icon {
-  color: #373d4d;
+  color: var(--date-time-range-selector-date-picker-icon-color);
   height: 1rem !important;
   width: 1rem !important;
   cursor: pointer;
 }
 
 .react-datepicker__today-button:hover {
-  background-color: #d3d3d3;
+  background-color: var(
+    --date-time-range-selector-react-datepicker-today-button-hover-bg
+  );
 }
 
 .datePickerLabelUTCText {
