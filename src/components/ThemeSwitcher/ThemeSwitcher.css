@@ -1,7 +1,7 @@
 .theme-switcher {
   margin-left: 0px;
   margin-right: 10px;
-  border: 1px var(--page-header-link-border) solid;
+  border: 1px var(--theme-switcher-border) solid;
   border-radius: 6px;
   padding: 5px;
   cursor: pointer;
@@ -10,14 +10,14 @@
   align-items: center;
   justify-content: center;
   min-width: 40px;
-  background: var(--page-header-link-bg);
-  color: var(--page-header-color);
+  background: var(--theme-switcher-bg);
+  color: var(--theme-switcher-color);
 }
 
 .theme-switcher:hover {
-  background: var(--page-header-link-hover-bg);
-  border-color: var(--page-header-link-hover-border);
-  color: var(--page-header-link-hover-color);
+  background: var(--theme-switcher-hover-bg);
+  border-color: var(--theme-switcher-hover-border);
+  color: var(--theme-switcher-hover-color);
 }
 
 .theme-switcher:focus {
