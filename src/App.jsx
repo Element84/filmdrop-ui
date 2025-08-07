@@ -64,31 +64,24 @@ function App() {
     }
   }, [_appConfig, _authTokenExists])
 
-  // Theme initialization - run once when app config is loaded
   useEffect(() => {
     if (_appConfig) {
-      // Always call initializeTheme for consistent API
       const { currentTheme, effectiveTheme, switchingEnabled } =
         initializeTheme(_appConfig)
 
-      // Store switching enabled state for system theme listener
       setSwitchingEnabled(switchingEnabled)
 
       if (switchingEnabled) {
-        // Theme switching mode: full theme system
         dispatch(setCurrentTheme(currentTheme))
         dispatch(setEffectiveTheme(effectiveTheme))
         applyTheme(effectiveTheme)
       }
-      // Simple mode: no theme system needed - just use :root CSS colors
     }
   }, [_appConfig, dispatch])
 
-  // System theme change listener - only active when switching enabled and user chose 'system' mode
   useEffect(() => {
     if (switchingEnabled && _currentTheme === 'system') {
       const cleanup = setupSystemThemeListener((newSystemTheme) => {
-        // Update effective theme when system preference changes
         dispatch(setEffectiveTheme(newSystemTheme))
         applyTheme(newSystemTheme)
       })
