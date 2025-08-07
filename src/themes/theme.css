@@ -289,6 +289,7 @@
   --light-mode-accent-1: #76829c;
   --light-mode-accent-2: #4f5768;
   --light-mode-accent-3: #373c48;
+  --light-mode-modal-bg: rgba(255, 255, 255, 0.7);
   --e84-brand-green: #6cc24a;
 
   /* Overrides */
@@ -343,6 +344,18 @@
   --right-content-count-button-border: var(--light-mode-color-dark);
   --right-content-count-button-hover-bg: var(--light-mode-accent-3);
   --right-content-count-button-hover-color: var(--light-mode-color-light);
+  --right-content-draw-geom-message-bg: var(--light-mode-gray-1);
+  --right-content-draw-geom-message-color: var(--light-mode-color-dark);
+  --right-content-draw-geom-message-text-title-color: var(
+    --light-mode-accent-2
+  );
+  --right-content-draw-geom-message-cancel-button-bg: transparent;
+  --right-content-draw-geom-message-cancel-button-color: var(
+    --light-mode-color-dark
+  );
+  --right-content-draw-geom-message-cancel-button-border: var(
+    --light-mode-accent-2
+  );
 
   --layer-legend-bg: var(--light-mode-gray-1);
   --layer-legend-opacity: 1;
@@ -358,6 +371,14 @@
   --heat-map-symbology-values-max-border-right: var(--light-mode-color-dark);
   --heat-map-symbology-values-color: var(--light-mode-color-dark);
   --heat-map-symbology-values-bg: var(--light-mode-gray-1);
+
+  --upload-geojson-modal-bg: var(--light-mode-modal-bg);
+  --upload-geojson-modal-container-bg: var(--light-mode-accent-1);
+  --upload-geojson-modal-container-color: var(--light-mode-color-light);
+  --upload-geojson-modal-action-button-bg: var(--light-mode-accent-2);
+  --upload-geojson-modal-action-button-color: var(--light-mode-color-light);
+  --upload-geojson-modal-action-button-border: var(--light-mode-accent-3);
+  --upload-geojson-modal-action-button-hover-bg: var(--light-mode-accent-3);
 }
 
 /* Component-specific theme overrides */
