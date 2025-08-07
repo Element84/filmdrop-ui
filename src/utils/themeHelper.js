@@ -1,12 +1,5 @@
-// Theme Helper Utility
-// Manages theme detection, calculation, persistence, and application
-
 const THEME_STORAGE_KEY = 'APP_THEME_PREFERENCE'
 
-/**
- * Detects the system's preferred color scheme
- * @returns {'light' | 'dark'} - The system's preferred theme
- */
 export function getSystemTheme() {
   if (typeof window !== 'undefined' && window.matchMedia) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -17,11 +10,6 @@ export function getSystemTheme() {
   return 'dark'
 }
 
-/**
- * Calculates the effective theme based on user preference
- * @param {string} userPreference - 'light', 'dark', or 'system'
- * @returns {'light' | 'dark'} - The theme that should actually be applied
- */
 export function calculateEffectiveTheme(userPreference) {
   switch (userPreference) {
     case 'light':
@@ -35,20 +23,12 @@ export function calculateEffectiveTheme(userPreference) {
   }
 }
 
-/**
- * Applies the theme to the DOM by setting data-theme attribute
- * @param {'light' | 'dark'} theme - The theme to apply
- */
 export function applyTheme(theme) {
   if (typeof document !== 'undefined') {
     document.documentElement.setAttribute('data-theme', theme)
   }
 }
 
-/**
- * Retrieves the saved theme preference from localStorage
- * @returns {string | null} - The saved theme preference or null if not found
- */
 export function getThemeFromStorage() {
   if (typeof localStorage !== 'undefined') {
     return localStorage.getItem(THEME_STORAGE_KEY)
@@ -56,22 +36,14 @@ export function getThemeFromStorage() {
   return null
 }
 
-/**
- * Saves the theme preference to localStorage
- * @param {string} theme - The theme preference to save ('light', 'dark', or 'system')
- */
 export function saveThemeToStorage(theme) {
   if (typeof localStorage !== 'undefined') {
     localStorage.setItem(THEME_STORAGE_KEY, theme)
   }
 }
 
-/**
- * Cycles to the next theme in the sequence: light → dark → system → light
- * @param {string} currentTheme - The current theme preference
- * @returns {string} - The next theme in the cycle
- */
 export function getNextTheme(currentTheme) {
+  // Get next theme in the sequence: light → dark → system → light
   switch (currentTheme) {
     case 'light':
       return 'dark'
@@ -80,15 +52,10 @@ export function getNextTheme(currentTheme) {
     case 'system':
       return 'light'
     default:
-      return 'light'
+      return 'dark' // Fallback to dark theme
   }
 }
 
-/**
- * Sets up a listener for system theme changes
- * @param {Function} callback - Function to call when system theme changes
- * @returns {Function} - Cleanup function to remove the listener
- */
 export function setupSystemThemeListener(callback) {
   if (typeof window !== 'undefined' && window.matchMedia) {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
@@ -112,12 +79,6 @@ export function setupSystemThemeListener(callback) {
   return () => {}
 }
 
-/**
- * Gets the appropriate basemap configuration for the current theme
- * @param {Object} appConfig - The application configuration object
- * @param {string|null} effectiveTheme - The current effective theme ('light', 'dark', or null)
- * @returns {Object|null} - Object containing url and attribution for the basemap, or null if no basemap configured
- */
 export function getBasemapConfig(appConfig, effectiveTheme) {
   // Return null if no BASEMAP configuration exists
   if (!appConfig.BASEMAP) {
@@ -141,12 +102,6 @@ export function getBasemapConfig(appConfig, effectiveTheme) {
   return null
 }
 
-/**
- * Gets brand logo configuration based on current theme
- * @param {Object} appConfig - Application configuration
- * @param {string} effectiveTheme - Current effective theme ('light' or 'dark')
- * @returns {Object|null} - Brand logo config or null if disabled
- */
 export function getBrandLogoConfig(appConfig, effectiveTheme) {
   // Check if brand logo is configured
   if (!appConfig.BRAND_LOGO) {
@@ -163,10 +118,9 @@ export function getBrandLogoConfig(appConfig, effectiveTheme) {
     } else if (effectiveTheme === 'dark' && config.image_dark) {
       logoImage = config.image_dark
     }
-    // If no theme-specific image found, fall back to default config.image
   }
 
-  // If no valid image found, return null (don't render logo)
+  // If no valid image found, return null (do not render logo)
   if (!logoImage) {
     return null
   }
@@ -179,28 +133,19 @@ export function getBrandLogoConfig(appConfig, effectiveTheme) {
   }
 }
 
-/**
- * Initializes the theme system with proper fallback priority
- * @param {Object} appConfig - The application configuration object
- * @returns {Object} - Object containing currentTheme, effectiveTheme, and switchingEnabled
- */
 export function initializeTheme(appConfig) {
   const switchingEnabled = appConfig.THEME_SWITCHING_ENABLED === true
 
   if (!switchingEnabled) {
-    // Simple mode: no theme system needed at all
-    // Just use whatever CSS is in :root
     return {
-      currentTheme: null, // Not used in simple mode
-      effectiveTheme: null, // Not used in simple mode
+      currentTheme: null, // Not used if not switching themes
+      effectiveTheme: null, // Not used if not switching themes
       switchingEnabled: false
     }
   }
 
-  // Theme switching mode
   const defaultTheme = appConfig.DEFAULT_THEME || 'dark'
 
-  // Existing logic: localStorage → defaultTheme → system
   let currentTheme = getThemeFromStorage()
   if (!currentTheme) {
     currentTheme = defaultTheme
