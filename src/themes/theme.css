@@ -270,6 +270,8 @@
   --upload-geojson-modal-action-button-color: white;
   --upload-geojson-modal-action-button-border: #a9b0c1;
   --upload-geojson-modal-action-button-hover-bg: #353d4f;
+  --upload-geojson-modal-drop-zone-bg: #4f5768;
+  --upload-geojson-modal-drop-zone-color: #ffffff;
 
   /* ViewSelector Component */
   --view-selector-button-border: #a9b0c1;
@@ -288,7 +290,7 @@
 
 /* ------- LIGHT THEME (OVERRIDES DEFAULT DARK THEME) --------- */
 :root[data-theme='light'] {
-  /* Theme colors */
+  /* Light mode theme colors */
   --light-mode-gray-1: #f0f0f0;
   --light-mode-gray-2: #d3d3d3;
   --light-mode-gray-3: #b6b6b6;
@@ -297,7 +299,8 @@
   --light-mode-accent-1: #76829c;
   --light-mode-accent-2: #4f5768;
   --light-mode-accent-3: #373c48;
-  --light-mode-modal-bg: rgba(255, 255, 255, 0.7);
+  --light-mode-transparent: transparent;
+  --light-mode-transparent-white: rgba(255, 255, 255, 0.7);
   --e84-brand-green: #6cc24a;
 
   /* CloudSlider Component Overrides */
@@ -343,7 +346,9 @@
   --right-content-draw-geom-message-text-title-color: var(
     --light-mode-accent-2
   );
-  --right-content-draw-geom-message-cancel-button-bg: transparent;
+  --right-content-draw-geom-message-cancel-button-bg: var(
+    --light-mode-transparent
+  );
   --right-content-draw-geom-message-cancel-button-color: var(
     --light-mode-color-dark
   );
@@ -392,17 +397,19 @@
 
   /* ThemeSwitcher Component Overrides */
   --theme-switcher-border: var(--light-mode-color-dark);
-  --theme-switcher-bg: transparent;
+  --theme-switcher-bg: var(--light-mode-transparent);
   --theme-switcher-color: var(--light-mode-color-dark);
 
   /* UploadGeojsonModal Component Overrides */
-  --upload-geojson-modal-bg: var(--light-mode-modal-bg);
-  --upload-geojson-modal-container-bg: var(--light-mode-accent-1);
-  --upload-geojson-modal-container-color: var(--light-mode-color-light);
+  --upload-geojson-modal-bg: var(--light-mode-transparent-white);
+  --upload-geojson-modal-container-bg: var(--light-mode-gray-2);
+  --upload-geojson-modal-container-color: var(--light-mode-color-dark);
   --upload-geojson-modal-action-button-bg: var(--light-mode-accent-2);
   --upload-geojson-modal-action-button-color: var(--light-mode-color-light);
-  --upload-geojson-modal-action-button-border: var(--light-mode-accent-3);
+  --upload-geojson-modal-action-button-border: var(--light-mode-color-dark);
   --upload-geojson-modal-action-button-hover-bg: var(--light-mode-accent-3);
+  --upload-geojson-modal-drop-zone-bg: var(--light-mode-gray-3);
+  --upload-geojson-modal-drop-zone-color: var(--light-mode-color-dark);
 }
 
 /* Invert logo colors for light theme */
