@@ -113,6 +113,73 @@ export function setupSystemThemeListener(callback) {
 }
 
 /**
+ * Gets the appropriate basemap configuration for the current theme
+ * @param {Object} appConfig - The application configuration object
+ * @param {string|null} effectiveTheme - The current effective theme ('light', 'dark', or null)
+ * @returns {Object|null} - Object containing url and attribution for the basemap, or null if no basemap configured
+ */
+export function getBasemapConfig(appConfig, effectiveTheme) {
+  // Return null if no BASEMAP configuration exists
+  if (!appConfig.BASEMAP) {
+    return null
+  }
+
+  // Check if this is single basemap mode (has url property directly)
+  if (appConfig.BASEMAP.url) {
+    return {
+      url: appConfig.BASEMAP.url,
+      attribution: appConfig.BASEMAP.attribution
+    }
+  }
+
+  // Theme switching enabled and not single basemap mode - use the effective theme
+  if (appConfig.THEME_SWITCHING_ENABLED === true && effectiveTheme) {
+    return appConfig.BASEMAP[effectiveTheme]
+  }
+
+  // No valid basemap found for the current theme
+  return null
+}
+
+/**
+ * Gets brand logo configuration based on current theme
+ * @param {Object} appConfig - Application configuration
+ * @param {string} effectiveTheme - Current effective theme ('light' or 'dark')
+ * @returns {Object|null} - Brand logo config or null if disabled
+ */
+export function getBrandLogoConfig(appConfig, effectiveTheme) {
+  // Check if brand logo is configured
+  if (!appConfig.BRAND_LOGO) {
+    return null
+  }
+
+  const config = appConfig.BRAND_LOGO
+  let logoImage = config.image
+
+  // Theme-specific logo selection (only when theme switching is enabled)
+  if (appConfig.THEME_SWITCHING_ENABLED === true && effectiveTheme) {
+    if (effectiveTheme === 'light' && config.image_light) {
+      logoImage = config.image_light
+    } else if (effectiveTheme === 'dark' && config.image_dark) {
+      logoImage = config.image_dark
+    }
+    // If no theme-specific image found, fall back to default config.image
+  }
+
+  // If no valid image found, return null (don't render logo)
+  if (!logoImage) {
+    return null
+  }
+
+  return {
+    url: config.url,
+    title: config.title,
+    alt: config.alt,
+    image: logoImage
+  }
+}
+
+/**
  * Initializes the theme system with proper fallback priority
  * @param {Object} appConfig - The application configuration object
  * @returns {Object} - Object containing currentTheme, effectiveTheme, and switchingEnabled

@@ -3545,9 +3545,11 @@ export const mockAppConfig = {
       high: 7
     }
   },
-  BASEMAP_URL: 'https://tile-provider.example.com/{z}/{x}/{y}.png',
-  BASEMAP_HTML_ATTRIBUTION:
-    '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>',
+  BASEMAP: {
+    url: 'https://tile-provider.example.com/{z}/{x}/{y}.png',
+    attribution:
+      '&copy; <a href="https://www.tile-provider.example.com/copyright">TileProvider</a>'
+  },
   SEARCH_BY_GEOM_ENABLED: false,
   CART_ENABLED: false,
   BRAND_LOGO: {

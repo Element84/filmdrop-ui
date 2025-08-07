@@ -6,7 +6,7 @@ import { Stack } from '@mui/material'
 import CartButton from '../../Cart/CartButton/CartButton'
 import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher'
 import { logoutUser } from '../../../utils/authHelper'
-import { getBrandLogoConfig } from '../../../utils/brandLogoHelper'
+import { getBrandLogoConfig } from '../../../utils/themeHelper'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)

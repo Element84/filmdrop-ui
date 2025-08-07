@@ -18,6 +18,7 @@ import {
   addReferenceLayersToMap
 } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
+import { getBasemapConfig } from '../../utils/themeHelper'
 import { DEFAULT_MAP_CENTER, DEFAULT_MAP_ZOOM } from '../defaults'
 
 const LeafMap = () => {
@@ -187,10 +188,7 @@ const LeafMap = () => {
         <TileLayer
           key={_effectiveTheme} // Force re-mount when theme changes
           className="map-tiles"
-          url={
-            _appConfig.BASEMAP_URL ||
-            'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-          }
+          url={getBasemapConfig(_appConfig, _effectiveTheme)?.url}
         />
       </MapContainer>
     </div>
