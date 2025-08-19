@@ -64,7 +64,7 @@ function App() {
 
       applyTheme(currentTheme)
     }
-  }, [_appConfig, dispatch])
+  }, [_appConfig])
 
   return (
     <React.StrictMode>
