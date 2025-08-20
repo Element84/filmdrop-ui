@@ -133,7 +133,6 @@
   --light-background-secondary: #f8f9fa;
   --light-background-tertiary: #e9ecef;
   --light-surface-elevated: #ffffff;
-  --light-surface-subtle: #f1f3f5;
 
   --light-text-primary: #212529;
   --light-text-secondary: #495057;
@@ -143,12 +142,10 @@
   --light-border-primary: #dee2e6;
   --light-border-secondary: #e9ecef;
   --light-border-subtle: #ced4da;
-  --light-border-focus: #86b7fe;
 
   --light-overlay-background: rgba(255, 255, 255, 0.95);
   --light-disabled-overlay: rgba(108, 117, 125, 0.6);
-  --light-shadow-subtle: rgba(0, 0, 0, 0.1);
-  --light-shadow-medium: rgba(0, 0, 0, 0.15);
+  --light-shadow: rgba(0, 0, 0, 0.15);
 
   /* App */
   --app-background-disabled: var(--light-disabled-overlay);
@@ -237,7 +234,7 @@
   /* Aggregation */
   --hex-heatmap-legend: var(--light-text-primary);
   --hex-label-color: var(--light-text-primary);
-  --hex-label-shadow: var(--light-shadow-medium);
+  --hex-label-shadow: var(--light-shadow);
   --grid-cell-tooltip: var(--brand-accent-primary);
 
   /* Action Button */
