@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import './UploadGeojsonModal.css'
 import { useDispatch } from 'react-redux'
 import { setshowUploadGeojsonModal } from '../../redux/slices/mainSlice'
@@ -9,34 +9,6 @@ import { showApplicationAlert } from '../../utils/alertHelper'
 const UploadGeojsonModal = () => {
   const [fileData, setFileData] = useState(null)
   const dispatch = useDispatch()
-
-  const baseStyle = {
-    padding: '20px',
-    borderWidth: 2,
-    borderRadius: 2,
-    borderColor: 'var(--map-alert-overlay-accent-color)',
-    borderStyle: 'dashed',
-    backgroundColor: 'var(--map-alert-overlay-secondary-background)',
-    color: 'var(--map-alert-overlay-secondary-color)',
-    outline: 'none',
-    transition: 'border .24s ease-in-out',
-    height: '80px',
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  }
-
-  const focusedStyle = {
-    borderColor: 'var(--map-alert-overlay-accent-color)'
-  }
-
-  const acceptStyle = {
-    borderColor: 'var(--map-alert-overlay-accent-color)'
-  }
-
-  const rejectStyle = {
-    borderColor: '#ff1744'
-  }
 
   const handleFileDrop = (acceptedFiles) => {
     const file = acceptedFiles[0]
@@ -77,15 +49,14 @@ const UploadGeojsonModal = () => {
     <span key={file.path}>{file.path}</span>
   ))
 
-  const style = useMemo(
-    () => ({
-      ...baseStyle,
-      ...(isFocused ? focusedStyle : {}),
-      ...(isDragAccept ? acceptStyle : {}),
-      ...(isDragReject ? rejectStyle : {})
-    }),
-    [isFocused, isDragAccept, isDragReject]
-  )
+  const dropzoneClass = [
+    'uploadGeojsonDropZone',
+    isFocused && 'uploadGeojsonDropZoneFocused',
+    isDragAccept && 'uploadGeojsonDropZoneAccept',
+    isDragReject && 'uploadGeojsonDropZoneReject'
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   function onUploadGeojsonCancelClicked() {
     dispatch(setshowUploadGeojsonModal(false))
@@ -124,11 +95,7 @@ const UploadGeojsonModal = () => {
       <div className="uploadGeojsonModalContainerBackground"></div>
       <div className="uploadGeojsonModalContainer">
         <span className="uploadGeojsonModalTitle">Upload Geojson File</span>
-        <div
-          {...getRootProps({ style })}
-          id="dropzone"
-          className="uploadGeojsonDropZone"
-        >
+        <div {...getRootProps({ className: dropzoneClass })} id="dropzone">
           <p>
             Drag and drop a GeoJSON file here or click to{' '}
             <input

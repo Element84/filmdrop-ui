@@ -83,3 +83,32 @@
     font-size: 14px;
   }
 }
+
+.uploadGeojsonDropZone {
+  padding: 20px;
+  border-width: 2px;
+  border-radius: 2px;
+  border-style: dashed;
+  border-color: var(--map-alert-overlay-accent-color);
+  background-color: var(--map-alert-overlay-secondary-background);
+  color: var(--map-alert-overlay-secondary-color);
+  outline: none;
+  transition: border 0.24s ease-in-out;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.uploadGeojsonDropZoneFocused {
+  border-color: var(--map-alert-overlay-accent-color);
+}
+
+.uploadGeojsonDropZoneAccept {
+  border-color: var(--map-alert-overlay-accent-color);
+}
+
+/* Keep this after Accept so Reject wins if both apply */
+.uploadGeojsonDropZoneReject {
+  border-color: #ff1744;
+}
