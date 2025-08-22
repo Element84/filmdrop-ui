@@ -141,134 +141,131 @@
   --brand-accent-primary: #6cc24a;
   --brand-accent-primary-dark: #35731c;
   --transparent: transparent;
+  --white: #ffffff;
+  --black: #000000;
 
-  --light-background-primary: #ffffff;
-  --light-background-secondary: #f8f9fa;
-  --light-background-tertiary: #e9ecef;
-  --light-surface-elevated: #ffffff;
+  --blue-gray-1: #f8f9fa;
+  --blue-gray-2: #e9ecef;
+  --blue-gray-3: #dee2e6;
+  --blue-gray-4: #ced4da;
+  --blue-gray-5: #adb5bd;
+  --blue-gray-6: #6c757d;
+  --blue-gray-7: #495057;
+  --blue-gray-8: #212529;
 
-  --light-text-primary: #212529;
-  --light-text-secondary: #495057;
-  --light-text-tertiary: #6c757d;
-  --light-text-muted: #adb5bd;
-
-  --light-border-primary: #ced4da;
-  --light-border-secondary: #dee2e6;
-
-  --light-overlay-background: rgba(255, 255, 255, 0.95);
-  --light-disabled-overlay: rgba(108, 117, 125, 0.6);
-  --light-shadow: rgba(0, 0, 0, 0.15);
+  --blue-gray-alpha-60: rgba(108, 117, 125, 0.6);
+  --white-alpha-95: rgba(255, 255, 255, 0.95);
 
   /* App */
-  --app-background-disabled: var(--light-disabled-overlay);
-  --app-background-loading: var(--light-background-tertiary);
-  --app-color-loading: var(--light-text-secondary);
+  --app-background-disabled: var(--blue-gray-alpha-60);
+  --app-background-loading: var(--blue-gray-2);
+  --app-color-loading: var(--blue-gray-7);
 
   /* Login */
-  --login-page-background: var(--light-background-secondary);
-  --login-container-background: var(--light-surface-elevated);
-  --login-color: var(--light-text-primary);
+  --login-page-background: var(--blue-gray-1);
+  --login-container-background: var(--white);
+  --login-color: var(--blue-gray-8);
 
   /* Header */
-  --page-header-background: var(--light-surface-elevated);
+  --page-header-background: var(--white);
   --page-header-button-background: var(--transparent);
   --page-header-button-background-hover: var(--brand-accent-primary);
-  --page-header-button-color: var(--light-text-secondary);
-  --page-header-button-color-hover: var(--light-background-primary);
-  --page-header-button-border: var(--light-border-primary);
+  --page-header-button-color: var(--blue-gray-7);
+  --page-header-button-color-hover: var(--white);
+  --page-header-button-border: var(--blue-gray-4);
   --page-header-button-border-hover: var(--brand-accent-primary);
 
-  --cart-button-color: var(--light-surface-elevated);
+  --cart-button-color: var(--white);
   --cart-button-background: var(--brand-accent-primary);
   --cart-button-border: var(--brand-accent-primary);
-  --cart-button-color-disabled: var(--light-text-secondary);
+  --cart-button-color-disabled: var(--blue-gray-7);
   --cart-button-background-disabled: var(--transparent);
-  --cart-button-border-disabled: var(--light-border-primary);
+  --cart-button-border-disabled: var(--blue-gray-4);
 
-  --cart-button-count-color: var(--light-background-primary);
+  --cart-button-count-color: var(--white);
   --cart-button-count-background: var(--brand-accent-primary-dark);
-  --cart-button-count-color-disabled: var(--light-background-primary);
-  --cart-button-count-background-disabled: var(--light-text-secondary);
+  --cart-button-count-color-disabled: var(--white);
+  --cart-button-count-background-disabled: var(--blue-gray-7);
 
   /* Content */
-  --page-content-color: var(--light-text-secondary);
+  --page-content-color: var(--blue-gray-7);
 
   /* Side Panel */
-  --side-panel-background: var(--light-background-secondary);
-  --side-panel-background-disabled: var(--light-background-secondary);
-  --side-panel-heading-color: var(--light-text-primary);
-  --side-panel-horizontal-divider-color: var(--light-border-primary);
-  --side-panel-link-color: var(--light-text-secondary);
-  --side-panel-link-color-hover: var(--light-text-primary);
+  --side-panel-background: var(--blue-gray-1);
+  --side-panel-background-disabled: var(--blue-gray-1);
+  --side-panel-heading-color: var(--blue-gray-8);
+  --side-panel-horizontal-divider-color: var(--blue-gray-4);
+  --side-panel-link-color: var(--blue-gray-7);
+  --side-panel-link-color-hover: var(--blue-gray-8);
 
-  --side-panel-tab-background: var(--light-background-tertiary);
-  --side-panel-tab-color: var(--light-text-primary);
-  --side-panel-tab-border: var(--light-background-tertiary);
+  --side-panel-tab-background: var(--blue-gray-2);
+  --side-panel-tab-color: var(--blue-gray-8);
+  --side-panel-tab-border: var(--blue-gray-2);
   --side-panel-tab-bottom-selected: var(--brand-accent-primary);
 
-  --side-panel-dropdown-underline: var(--light-border-primary);
-  --side-panel-dropdown-arrow-color: var(--light-text-tertiary);
-  --side-panel-dropdown-border: var(--light-border-primary);
-  --side-panel-dropdown-color: var(--light-text-primary);
-  --side-panel-dropdown-background: var(--light-surface-elevated);
+  --side-panel-dropdown-underline: var(--blue-gray-4);
+  --side-panel-dropdown-arrow-color: var(--blue-gray-6);
+  --side-panel-dropdown-border: var(--blue-gray-4);
+  --side-panel-dropdown-color: var(--blue-gray-8);
+  --side-panel-dropdown-background: var(--white);
 
-  --side-panel-datepicker-icon-color: var(--light-text-tertiary);
+  --side-panel-datepicker-icon-color: var(--blue-gray-6);
 
-  --side-panel-slider-input-color: var(--light-text-primary);
-  --side-panel-slider-input-underline: var(--light-border-primary);
+  --side-panel-slider-input-color: var(--blue-gray-8);
+  --side-panel-slider-input-underline: var(--blue-gray-4);
   --side-panel-slider-track: var(--brand-accent-primary);
-  --side-panel-slider-rail: var(--light-border-primary);
-  --side-panel-slider-thumb: var(--light-surface-elevated);
+  --side-panel-slider-rail: var(--blue-gray-4);
+  --side-panel-slider-thumb: var(--white);
   --side-panel-slider-thumb: var(--brand-accent-primary);
 
-  --side-panel-button-color: var(--light-text-primary);
-  --side-panel-button-background: var(--light-surface-elevated);
-  --side-panel-button-background-hover: var(--light-background-tertiary);
-  --side-panel-button-secondary-color: var(--light-background-primary);
+  --side-panel-button-color: var(--blue-gray-8);
+  --side-panel-button-background: var(--white);
+  --side-panel-button-background-hover: var(--blue-gray-2);
+  --side-panel-button-secondary-color: var(--white);
   --side-panel-button-secondary-background: var(--brand-accent-primary);
   --side-panel-button-secondary-background-hover: var(
     --brand-accent-primary-dark
   );
-  --side-panel-button-border: var(--light-border-primary);
+  --side-panel-button-border: var(--blue-gray-4);
 
-  --side-panel-switch-thumb: var(--light-surface-elevated);
-  --side-panel-switch-track-background: var(--light-border-primary);
+  --side-panel-switch-thumb: var(--white);
+  --side-panel-switch-track-background: var(--blue-gray-4);
   --side-panel-switch-track-background-checked: var(--brand-accent-primary);
 
   /* Map Overlays*/
-  --map-info-overlay-background: var(--light-overlay-background);
-  --map-info-overlay-color: var(--light-text-primary);
+  --map-info-overlay-background: var(--white);
+  --map-info-overlay-color: var(--blue-gray-8);
   --map-info-overlay-button-background: var(--transparent);
-  --map-info-overlay-button-color: var(--light-text-secondary);
-  --map-info-overlay-button-border: var(--light-border-primary);
-  --map-info-overlay-button-background-hover: var(--light-background-tertiary);
-  --map-info-overlay-button-color-hover: var(--light-text-primary);
-  --map-info-overlay-heading-color: var(--light-text-secondary);
-  --map-info-overlay-heading-border: var(--light-border-secondary);
-  --map-info-overlay-checkbox-background: var(--light-border-secondary);
+  --map-info-overlay-button-color: var(--blue-gray-7);
+  --map-info-overlay-button-border: var(--blue-gray-4);
+  --map-info-overlay-button-background-hover: var(--blue-gray-2);
+  --map-info-overlay-button-color-hover: var(--blue-gray-8);
+  --map-info-overlay-heading-color: var(--blue-gray-7);
+  --map-info-overlay-heading-border: var(--blue-gray-3);
+  --map-info-overlay-checkbox-background: var(--blue-gray-3);
 
-  --map-alert-overlay-primary-background: var(--light-surface-elevated);
-  --map-alert-overlay-primary-color: var(--light-text-primary);
-  --map-alert-overlay-secondary-background: var(--light-background-tertiary);
-  --map-alert-overlay-secondary-color: var(--light-text-primary);
+  --map-alert-overlay-primary-background: var(--white);
+  --map-alert-overlay-primary-color: var(--blue-gray-8);
+  --map-alert-overlay-secondary-background: var(--blue-gray-2);
+  --map-alert-overlay-secondary-color: var(--blue-gray-8);
   --map-alert-overlay-accent-color: var(--brand-accent-primary);
 
-  --map-attribution-overlay-color: var(--light-text-tertiary);
-  --map-attribution-overlay-tooltip-color: var(--light-text-secondary);
+  --map-attribution-overlay-color: var(--blue-gray-6);
+  --map-attribution-overlay-tooltip-color: var(--blue-gray-7);
 
   /* Aggregation */
-  --hex-heatmap-legend: var(--light-text-primary);
-  --hex-label-color: var(--light-text-primary);
-  --hex-label-shadow: var(--light-shadow);
+  --hex-heatmap-legend: var(--blue-gray-8);
+  --hex-label-color: var(--black);
+  --hex-label-shadow: var(--white-alpha-95);
   --grid-cell-tooltip: var(--brand-accent-primary);
 
   /* Action Button */
   --action-button-background: var(--brand-accent-primary);
   --action-button-background-hover: var(--brand-accent-primary-dark);
-  --action-button-color: var(--light-background-primary);
-  --action-button-color-hover: var(--light-background-primary);
-  --action-button-color-disabled: var(--light-text-muted);
-  --action-button-background-disabled: var(--light-border-primary);
+  --action-button-color: var(--white);
+  --action-button-color-hover: var(--white);
+  --action-button-color-disabled: var(--blue-gray-5);
+  --action-button-background-disabled: var(--blue-gray-4);
 }
 
 /* Invert logo colors for light theme */
