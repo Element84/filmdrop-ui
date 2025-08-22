@@ -40,6 +40,18 @@
   --page-header-button-border: var(--blue-gray-2);
   --page-header-button-border-hover: var(--brand-accent-primary);
 
+  --cart-button-color: var(--blue-gray-5);
+  --cart-button-background: var(--brand-accent-primary);
+  --cart-button-border: var(--brand-accent-primary);
+  --cart-button-color-disabled: var(--blue-gray-1);
+  --cart-button-background-disabled: var(--transparent);
+  --cart-button-border-disabled: var(--blue-gray-2);
+
+  --cart-button-count-color: var(--white);
+  --cart-button-count-background: var(--brand-accent-primary-dark);
+  --cart-button-count-color-disabled: var(--white);
+  --cart-button-count-background-disabled: var(--blue-gray-1);
+
   /* Content */
   --page-content-color: var(--gray-2);
 
@@ -165,6 +177,18 @@
   --page-header-button-color-hover: var(--light-background-primary);
   --page-header-button-border: var(--light-border-primary);
   --page-header-button-border-hover: var(--brand-accent-primary);
+
+  --cart-button-color: var(--light-surface-elevated);
+  --cart-button-background: var(--brand-accent-primary);
+  --cart-button-border: var(--brand-accent-primary);
+  --cart-button-color-disabled: var(--light-text-secondary);
+  --cart-button-background-disabled: var(--transparent);
+  --cart-button-border-disabled: var(--light-border-primary);
+
+  --cart-button-count-color: var(--light-background-primary);
+  --cart-button-count-background: var(--brand-accent-primary-dark);
+  --cart-button-count-color-disabled: var(--light-background-primary);
+  --cart-button-count-background-disabled: var(--light-text-secondary);
 
   /* Content */
   --page-content-color: var(--light-text-secondary);

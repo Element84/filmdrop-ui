@@ -1,5 +1,5 @@
 .cartModal {
-  background-color: #00000090;
+  background-color: var(--app-background-disabled);
   height: 100%;
   width: 100%;
   display: flex;
@@ -16,7 +16,7 @@
   width: 95%;
   min-height: 300px;
   min-width: 500px;
-  background-color: #12171a;
+  background-color: var(--map-alert-overlay-secondary-background);
   border-radius: 5px;
 }
 
@@ -26,8 +26,8 @@
   height: 50px;
   width: 100%;
   align-items: center;
-  background-color: #6cc24a;
-  color: #000;
+  background-color: var(--map-alert-overlay-primary-background);
+  color: var(--map-alert-overlay-primary-color);
   display: flex;
   flex-direction: row;
   font-size: 18px;
@@ -43,7 +43,7 @@
 
 .closeCartModal {
   background-color: transparent;
-  color: #000;
+  color: var(--map-alert-overlay-primary-color);
   border: 0px;
   font-size: 24px;
   cursor: pointer;

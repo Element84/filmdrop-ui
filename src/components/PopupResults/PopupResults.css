@@ -37,12 +37,12 @@
 }
 
 .popupHeaderBottomButton {
-  background-color: transparent;
-  color: #a9b0c1;
-  border: 1px solid #a9b0c1;
+  background-color: var(--side-panel-button-background);
+  color: var(--side-panel-button-color);
+  border: 1px solid var(--side-panel-button-border);
   border-radius: 5px;
   height: 32px;
-  font-size: 16px;
+  font-size: 14px;
   width: 80%;
   display: flex;
   align-items: center;
@@ -54,17 +54,14 @@
   user-select: none;
 }
 .popupHeaderBottomButton:hover {
-  background-color: #252f36;
-  color: #fff;
+  background-color: var(--side-panel-button-background-hover);
 }
 .popupHeaderBottomButtonDisabled {
-  color: #646566;
-  border: 1px solid #646566;
+  opacity: 0.35;
   cursor: default;
 }
 .popupHeaderBottomButtonDisabled:hover {
-  background-color: transparent;
-  color: #646566;
+  background-color: var(--side-panel-button-background);
 }
 
 .popupResultsBottom {
@@ -78,12 +75,12 @@
 }
 
 .popupResultsBottomButton {
-  background-color: transparent;
-  color: #a9b0c1;
-  border: 1px solid #a9b0c1;
+  background-color: var(--side-panel-button-background);
+  color: var(--side-panel-button-color);
+  border: 1px solid var(--side-panel-button-border);
   border-radius: 5px;
   height: 32px;
-  font-size: 16px;
+  font-size: 14px;
   width: 80%;
   display: flex;
   align-items: center;
@@ -95,8 +92,7 @@
   user-select: none;
 }
 .popupResultsBottomButton:hover {
-  background-color: #252f36;
-  color: #fff;
+  background-color: var(--side-panel-button-background-hover);
 }
 
 .popupResultsContent {
