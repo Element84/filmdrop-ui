@@ -104,6 +104,7 @@
   --map-info-overlay-button-color-hover: var(--white);
   --map-info-overlay-heading-color: var(--blue-gray-1);
   --map-info-overlay-heading-border: var(--blue-gray-3);
+  --map-info-overlay-checkbox-background: var(--blue-gray-3);
 
   --map-alert-overlay-primary-background: var(--blue-gray-4);
   --map-alert-overlay-primary-color: var(--gray-1);
@@ -151,9 +152,8 @@
   --light-text-tertiary: #6c757d;
   --light-text-muted: #adb5bd;
 
-  --light-border-primary: #dee2e6;
-  --light-border-secondary: #e9ecef;
-  --light-border-subtle: #ced4da;
+  --light-border-primary: #ced4da;
+  --light-border-secondary: #dee2e6;
 
   --light-overlay-background: rgba(255, 255, 255, 0.95);
   --light-disabled-overlay: rgba(108, 117, 125, 0.6);
@@ -203,7 +203,7 @@
 
   --side-panel-tab-background: var(--light-background-tertiary);
   --side-panel-tab-color: var(--light-text-primary);
-  --side-panel-tab-border: var(--light-border-secondary);
+  --side-panel-tab-border: var(--light-background-tertiary);
   --side-panel-tab-bottom-selected: var(--brand-accent-primary);
 
   --side-panel-dropdown-underline: var(--light-border-primary);
@@ -217,7 +217,7 @@
   --side-panel-slider-input-color: var(--light-text-primary);
   --side-panel-slider-input-underline: var(--light-border-primary);
   --side-panel-slider-track: var(--brand-accent-primary);
-  --side-panel-slider-rail: var(--light-border-subtle);
+  --side-panel-slider-rail: var(--light-border-primary);
   --side-panel-slider-thumb: var(--light-surface-elevated);
   --side-panel-slider-thumb: var(--brand-accent-primary);
 
@@ -232,7 +232,7 @@
   --side-panel-button-border: var(--light-border-primary);
 
   --side-panel-switch-thumb: var(--light-surface-elevated);
-  --side-panel-switch-track-background: var(--light-border-subtle);
+  --side-panel-switch-track-background: var(--light-border-primary);
   --side-panel-switch-track-background-checked: var(--brand-accent-primary);
 
   /* Map Overlays*/
@@ -245,6 +245,7 @@
   --map-info-overlay-button-color-hover: var(--light-text-primary);
   --map-info-overlay-heading-color: var(--light-text-secondary);
   --map-info-overlay-heading-border: var(--light-border-secondary);
+  --map-info-overlay-checkbox-background: var(--light-border-secondary);
 
   --map-alert-overlay-primary-background: var(--light-surface-elevated);
   --map-alert-overlay-primary-color: var(--light-text-primary);
@@ -267,7 +268,7 @@
   --action-button-color: var(--light-background-primary);
   --action-button-color-hover: var(--light-background-primary);
   --action-button-color-disabled: var(--light-text-muted);
-  --action-button-background-disabled: var(--light-border-secondary);
+  --action-button-background-disabled: var(--light-border-primary);
 }
 
 /* Invert logo colors for light theme */

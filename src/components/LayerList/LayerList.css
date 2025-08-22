@@ -66,15 +66,15 @@
   left: 0;
   height: 16px;
   width: 16px;
-  background-color: #eee;
+  background-color: var(--map-info-overlay-checkbox-background);
 }
 
 .LayerListLayerContainer:hover input ~ .LayerListCheckmark {
-  background-color: #ccc;
+  background-color: var(--brand-accent-primary);
 }
 
 .LayerListLayerContainer input:checked ~ .LayerListCheckmark {
-  background-color: var(--action-button-background);
+  background-color: var(--brand-accent-primary);
 }
 
 .LayerListCheckmark:after {
