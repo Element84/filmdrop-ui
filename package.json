@@ -8,7 +8,7 @@
     "@mui/icons-material": "^7.3.2",
     "@mui/material": "^7.3.2",
     "@radiantearth/stac-fields": "^1.5.4",
-    "@reduxjs/toolkit": "^2.8.2",
+    "@reduxjs/toolkit": "^2.9.0",
     "@vitejs/plugin-react": "^5.0.3",
     "colormap": "^2.3.2",
     "dayjs": "^1.11.11",
