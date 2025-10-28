@@ -206,8 +206,10 @@ export function normalizeCollectionsConfig(config) {
         config.MOSAIC_TILER_PARAMS[collectionId]
     }
     if (config.SEARCH_MIN_ZOOM_LEVELS?.[collectionId]) {
-      collectionsConfig[collectionId].searchMinZoomLevels =
-        config.SEARCH_MIN_ZOOM_LEVELS[collectionId]
+      // Legacy: convert old searchMinZoomLevels.high to new sceneMinZoom
+      const legacyZoomLevels = config.SEARCH_MIN_ZOOM_LEVELS[collectionId]
+      collectionsConfig[collectionId].sceneMinZoom =
+        legacyZoomLevels?.high || legacyZoomLevels
     }
     if (config.POPUP_DISPLAY_FIELDS?.[collectionId]) {
       collectionsConfig[collectionId].popupDisplayFields =
@@ -251,7 +253,7 @@ export function getCollectionConfig(collectionId, paramName, config = null) {
   const legacyParamMap = {
     sceneTilerParams: 'SCENE_TILER_PARAMS',
     mosaicTilerParams: 'MOSAIC_TILER_PARAMS',
-    searchMinZoomLevels: 'SEARCH_MIN_ZOOM_LEVELS',
+    sceneMinZoom: 'SEARCH_MIN_ZOOM_LEVELS',
     popupDisplayFields: 'POPUP_DISPLAY_FIELDS',
     tileLayerParams: 'TILE_LAYER_PARAMS',
     enhancedDisplayConfig: 'ENHANCED_DISPLAY_CONFIG'
@@ -259,7 +261,12 @@ export function getCollectionConfig(collectionId, paramName, config = null) {
 
   const legacyParam = legacyParamMap[paramName]
   if (legacyParam && appConfig[legacyParam]?.[collectionId]) {
-    return appConfig[legacyParam][collectionId]
+    const legacyValue = appConfig[legacyParam][collectionId]
+    // Special handling for sceneMinZoom: extract 'high' value from legacy object
+    if (paramName === 'sceneMinZoom' && typeof legacyValue === 'object') {
+      return legacyValue.high || legacyValue
+    }
+    return legacyValue
   }
 
   return undefined

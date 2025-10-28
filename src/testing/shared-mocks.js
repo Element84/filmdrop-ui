@@ -142,12 +142,27 @@ export const mockCollectionsData = [
         frequency_distribution_data_type: 'string'
       },
       {
+        name: 'centroid_geohex_grid_frequency',
+        data_type: 'frequency_distribution',
+        frequency_distribution_data_type: 'string'
+      },
+      {
         name: 'grid_geohash_frequency',
         data_type: 'frequency_distribution',
         frequency_distribution_data_type: 'string'
       },
       {
+        name: 'centroid_geohash_grid_frequency',
+        data_type: 'frequency_distribution',
+        frequency_distribution_data_type: 'string'
+      },
+      {
         name: 'grid_geotile_frequency',
+        data_type: 'frequency_distribution',
+        frequency_distribution_data_type: 'string'
+      },
+      {
+        name: 'centroid_geotile_grid_frequency',
         data_type: 'frequency_distribution',
         frequency_distribution_data_type: 'string'
       }
@@ -296,12 +311,27 @@ export const mockCollectionsData = [
         frequency_distribution_data_type: 'string'
       },
       {
+        name: 'centroid_geohex_grid_frequency',
+        data_type: 'frequency_distribution',
+        frequency_distribution_data_type: 'string'
+      },
+      {
         name: 'grid_geohash_frequency',
         data_type: 'frequency_distribution',
         frequency_distribution_data_type: 'string'
       },
       {
+        name: 'centroid_geohash_grid_frequency',
+        data_type: 'frequency_distribution',
+        frequency_distribution_data_type: 'string'
+      },
+      {
         name: 'grid_geotile_frequency',
+        data_type: 'frequency_distribution',
+        frequency_distribution_data_type: 'string'
+      },
+      {
+        name: 'centroid_geotile_grid_frequency',
         data_type: 'frequency_distribution',
         frequency_distribution_data_type: 'string'
       }
@@ -3517,7 +3547,6 @@ export const mockAppConfig = {
     }
   },
   MOSAIC_MAX_ITEMS: 100,
-  MOSAIC_MIN_ZOOM_LEVEL: 7,
   CONFIG_COLORMAP: 'viridis',
   SEARCH_MIN_ZOOM_LEVELS: {
     'sentinel-2-l2a': {

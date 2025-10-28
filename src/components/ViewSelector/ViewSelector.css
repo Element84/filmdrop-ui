@@ -1,22 +1,35 @@
-.viewSelector button:nth-child(1) {
-  border-top-left-radius: 5px;
-  border-bottom-left-radius: 5px;
-}
-
-.viewSelector button:nth-child(2) {
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-  position: relative;
-  left: -1px;
-}
-
-.viewSelector button {
+/* All buttons default styling */
+.viewSelector .MuiButtonGroup-root button {
   border: 1px solid var(--side-panel-button-border) !important;
-  font-size: 12px;
+  font-size: 11px;
   line-height: 15px;
   margin-top: 7px;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.02em;
   height: 32px;
+  border-radius: 0 !important;
+  padding: 6px 8px;
+}
+
+/* Remove left border from all buttons except first to create connected look */
+.viewSelector .MuiButtonGroup-root > span:not(:first-child) {
+  margin-left: -1px;
+}
+
+/* First button gets left rounded corners */
+.viewSelector .MuiButtonGroup-root > span:first-child button {
+  border-top-left-radius: 5px !important;
+  border-bottom-left-radius: 5px !important;
+}
+
+/* Last button gets right rounded corners */
+.viewSelector .MuiButtonGroup-root > span:last-child button {
+  border-top-right-radius: 5px !important;
+  border-bottom-right-radius: 5px !important;
+}
+
+/* Ensure spans display inline */
+.viewSelector .MuiButtonGroup-root > span {
+  display: inline-flex;
 }
 
 .viewSelector div[role='group'] {
