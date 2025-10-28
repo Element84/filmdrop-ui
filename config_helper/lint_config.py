@@ -36,7 +36,6 @@ def lint_config(file_path):
         "COLLECTIONS": list,
         "SCENE_TILER_URL": str,
         "SCENE_TILER_PARAMS": dict,
-        "MOSAIC_MIN_ZOOM_LEVEL": int,
         "ACTION_BUTTON": dict,
         "MOSAIC_TILER_URL": str,
         "MOSAIC_TILER_PARAMS": dict,

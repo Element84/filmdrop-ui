@@ -100,10 +100,7 @@ Create `public/config/config.json` (development) or `build/config/config.json` (
       "sceneTilerParams": {
         "assets": ["red", "green", "blue"]
       },
-      "searchMinZoomLevels": {
-        "medium": 4,
-        "high": 7
-      },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform"]
     }
   }
@@ -117,6 +114,7 @@ Some FilmDrop features require specific STAC API extensions:
 - **Aggregation Views** - [Aggregation Extension](https://github.com/stac-api-extensions/aggregation)
   - Hex view requires items with `proj:centroid` property
   - Currently supported by [stac-server](https://github.com/stac-utils/stac-server) and stac-fastapi-elasticsearch-opensearch
+  - The aggregation `centroid_geohex_grid_frequency` or `grid_geohex_frequency` (Deprecated) must be advertised by the `/aggregations` endpoint
 
 - **Grid Code Aggregation** - Custom `grid:code` property
   - Items must include grid identifier (e.g., MGRS, WRS2)
@@ -140,7 +138,7 @@ Minimal configuration for viewing a single collection:
   },
   "COLLECTIONS_CONFIG": {
     "sentinel-2-l2a": {
-      "searchMinZoomLevels": { "medium": 4, "high": 7 }
+      "sceneMinZoom": 7
     }
   }
 }
@@ -164,7 +162,7 @@ Add TiTiler for on-the-fly tile generation:
         "assets": ["red", "green", "blue"],
         "color_formula": "Gamma+RGB+3.2+Saturation+0.8"
       },
-      "searchMinZoomLevels": { "medium": 4, "high": 7 }
+      "sceneMinZoom": 7
     }
   }
 }
@@ -177,12 +175,12 @@ Add TiTiler for on-the-fly tile generation:
   "COLLECTIONS_CONFIG": {
     "sentinel-2-l2a": {
       "sceneTilerParams": { "assets": ["red", "green", "blue"] },
-      "searchMinZoomLevels": { "medium": 4, "high": 7 },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"]
     },
     "landsat-c2-l2": {
       "sceneTilerParams": { "assets": ["red", "green", "blue"] },
-      "searchMinZoomLevels": { "medium": 4, "high": 7 },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform", "instruments"]
     }
   }

@@ -12,11 +12,7 @@ import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
-import {
-  mapClickHandler,
-  setMosaicZoomMessage,
-  addReferenceLayersToMap
-} from '../../utils/mapHelper'
+import { mapClickHandler, addReferenceLayersToMap } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
 import {
   DEFAULT_MAP_CENTER,
@@ -151,7 +147,6 @@ const LeafMap = () => {
 
       // set up map events
       map.on('zoomend', function () {
-        setMosaicZoomMessage()
         if (!mapTouched) {
           setmapTouched(true)
           dispatch(setshowMapAttribution(false))

@@ -1,7 +1,6 @@
 import { store } from '../redux/store'
 import {
-  DEFAULT_MED_ZOOM,
-  DEFAULT_HIGH_ZOOM,
+  DEFAULT_SCENE_MIN_ZOOM,
   DEFAULT_API_MAX_ITEMS,
   DEFAULT_MOSAIC_MAX_ITEMS
 } from '../components/defaults'
@@ -35,59 +34,73 @@ export function newSearch() {
 
   const _selectedCollection = store.getState().mainSlice.selectedCollectionData
 
-  const searchMinZoomLevels = getCollectionConfig(
-    _selectedCollection.id,
-    'searchMinZoomLevels'
-  )
-  const midZoomLevel = searchMinZoomLevels?.medium || DEFAULT_MED_ZOOM
-  const highZoomLevel = searchMinZoomLevels?.high || DEFAULT_HIGH_ZOOM
+  // Get minimum zoom level for scene/mosaic views
+  const sceneMinZoom =
+    getCollectionConfig(_selectedCollection.id, 'sceneMinZoom') ||
+    DEFAULT_SCENE_MIN_ZOOM
 
   const currentMapZoomLevel = getCurrentMapZoomLevel()
 
+  // Check for both new (stac-server >= 3.6.0) and old (deprecated) aggregation names
   const includesGeoHex = _selectedCollection.aggregations?.some(
-    (el) => el.name === 'grid_geohex_frequency'
+    (el) =>
+      el.name === 'centroid_geohex_grid_frequency' ||
+      el.name === 'grid_geohex_frequency'
   )
   const includesGridCode = _selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_code_frequency'
   )
 
-  if (store.getState().mainSlice.viewMode !== 'scene') {
-    if (currentMapZoomLevel < 7) {
-      store.dispatch(setZoomLevelNeeded(7))
+  const viewMode = store.getState().mainSlice.viewMode
+
+  // Handle mosaic mode
+  if (viewMode === 'mosaic') {
+    if (currentMapZoomLevel < sceneMinZoom) {
+      store.dispatch(setZoomLevelNeeded(sceneMinZoom))
       store.dispatch(setShowZoomNotice(true))
       return
     }
     newMosaicSearch()
     return
   }
-  if (currentMapZoomLevel >= highZoomLevel) {
+
+  // Handle user-selected view mode
+  if (viewMode === 'scene') {
+    // User wants scene view - check zoom level
+    if (currentMapZoomLevel < sceneMinZoom) {
+      store.dispatch(setZoomLevelNeeded(sceneMinZoom))
+      store.dispatch(setShowZoomNotice(true))
+      return
+    }
     const searchScenesParams = buildSearchScenesParams()
     store.dispatch(setSearchType('scene'))
     store.dispatch(setSearchLoading(true))
     SearchService(searchScenesParams, 'scene')
     return
-  }
-  if (includesGeoHex && currentMapZoomLevel < midZoomLevel) {
+  } else if (viewMode === 'hex' && includesGeoHex) {
+    // User wants hex view - no zoom restriction
     const searchAggregateParams = buildSearchAggregateParams('hex')
     store.dispatch(setSearchLoading(true))
     store.dispatch(setSearchType('hex'))
     AggregateSearchService(searchAggregateParams, 'hex')
     return
-  }
-  if (includesGridCode) {
-    if (currentMapZoomLevel < midZoomLevel) {
-      store.dispatch(setZoomLevelNeeded(midZoomLevel))
-      store.dispatch(setShowZoomNotice(true))
-      return
-    }
+  } else if (viewMode === 'grid-code' && includesGridCode) {
+    // User wants grid-code view - no zoom restriction
     const searchAggregateParams = buildSearchAggregateParams('grid-code')
     store.dispatch(setSearchType('grid-code'))
     store.dispatch(setSearchLoading(true))
     AggregateSearchService(searchAggregateParams, 'grid-code')
     return
   }
-  if (currentMapZoomLevel < highZoomLevel) {
-    store.dispatch(setZoomLevelNeeded(highZoomLevel))
+
+  // Fallback: if no valid selection, default to scene view if zoom allows
+  if (currentMapZoomLevel >= sceneMinZoom) {
+    const searchScenesParams = buildSearchScenesParams()
+    store.dispatch(setSearchType('scene'))
+    store.dispatch(setSearchLoading(true))
+    SearchService(searchScenesParams, 'scene')
+  } else {
+    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
     store.dispatch(setShowZoomNotice(true))
   }
 }
@@ -185,7 +198,15 @@ function buildSearchAggregateParams(gridType) {
         precision = 5
         break
     }
-    aggregations = `grid_geohex_frequency,total_count&grid_geohex_frequency_precision=${precision}`
+
+    // Determine which aggregation name to use (prefer new, fallback to old for backwards compatibility)
+    const hasNewAggregation = _selectedCollection.aggregations?.some(
+      (el) => el.name === 'centroid_geohex_grid_frequency'
+    )
+    const aggregationName = hasNewAggregation
+      ? 'centroid_geohex_grid_frequency'
+      : 'grid_geohex_frequency'
+    aggregations = `${aggregationName},total_count&${aggregationName}_precision=${precision}`
   } else {
     aggregations = `grid_code_frequency,total_count`
   }
@@ -246,15 +267,19 @@ function buildUrlParamFromBBOX() {
 export function mapHexGridFromJson(json) {
   let largestRatio = 0
   let largestFrequency = 0
-  const buckets = json.aggregations?.find(
-    (el) => el.name === 'grid_geohex_frequency'
-  ).buckets
+
+  // Check for both new (stac-server >= 3.6.0) and old (deprecated) aggregation names
+  const hexAggregation = json.aggregations?.find(
+    (el) =>
+      el.name === 'centroid_geohex_grid_frequency' ||
+      el.name === 'grid_geohex_frequency'
+  )
+
+  const buckets = hexAggregation?.buckets
   const numberMatched = json?.aggregations?.find(
     (el) => el.name === 'total_count'
   )?.value
-  const overflow = json?.aggregations.find(
-    (el) => el.name === 'grid_geohex_frequency'
-  ).overflow
+  const overflow = hexAggregation?.overflow
 
   const convertedItems = buckets.map((feature) => {
     const hexBoundary = h3.cellToBoundary(feature.key, true)
@@ -440,11 +465,14 @@ function newMosaicSearch() {
 
 const constructMosaicAssetVal = (collection) => {
   const mosaicTilerParams = getCollectionConfig(collection, 'mosaicTilerParams')
-  const asset = mosaicTilerParams?.assets || ''
-  if (!asset) {
+  const assets = mosaicTilerParams?.assets
+  if (!assets) {
     console.log(`Assets not defined for ${collection}`)
     return null
-  } else {
-    return asset.pop()
   }
+  // Handle both string and array formats without mutation
+  if (Array.isArray(assets)) {
+    return assets[assets.length - 1]
+  }
+  return assets
 }

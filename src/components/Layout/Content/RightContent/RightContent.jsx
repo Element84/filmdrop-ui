@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import './RightContent.css'
 import {
-  DEFAULT_MOSAIC_MIN_ZOOM,
+  DEFAULT_SCENE_MIN_ZOOM,
   DEFAULT_MAX_SCENES_RENDERED,
   DEFAULT_API_MAX_ITEMS
 } from '../../../defaults'
@@ -25,6 +25,7 @@ import {
   clearMapSelection,
   selectMappedScenes
 } from '../../../../utils/mapHelper'
+import { getCollectionConfig } from '../../../../utils/configHelper'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
 import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
 import { getBasemapConfig } from '../../../../utils/themeHelper'
@@ -70,6 +71,9 @@ const RightContent = () => {
   const _isEnhancedDetailsExpanded = useSelector(
     (state) => state.mainSlice.isEnhancedDetailsExpanded
   )
+  const _selectedCollectionData = useSelector(
+    (state) => state.mainSlice.selectedCollectionData
+  )
 
   const dispatch = useDispatch()
 
@@ -84,9 +88,14 @@ const RightContent = () => {
 
   function onZoomClick() {
     if (_viewMode === 'mosaic') {
-      const MOSAIC_MIN_ZOOM =
-        _appConfig.MOSAIC_MIN_ZOOM_LEVEL || DEFAULT_MOSAIC_MIN_ZOOM
-      setMapZoomLevel(MOSAIC_MIN_ZOOM)
+      // Get sceneMinZoom from collection config (same as scene view)
+      const sceneMinZoom =
+        getCollectionConfig(
+          _selectedCollectionData?.id,
+          'sceneMinZoom',
+          _appConfig
+        ) || DEFAULT_SCENE_MIN_ZOOM
+      setMapZoomLevel(sceneMinZoom)
       dispatch(setShowZoomNotice(false))
     } else if (_zoomLevelNeeded) {
       setMapZoomLevel(_zoomLevelNeeded)

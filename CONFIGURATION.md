@@ -51,7 +51,9 @@ After building with `npm run build`, place your config at `build/config/config.j
 | `BASEMAP`      | Object | Basemap provider configuration for the Leaflet map. Must be a raster tile provider (vector tiles not supported). See [Basemap Configuration](#basemap-configuration). |
 | `STAC_API_URL` | String | URL for the STAC API endpoint                                                                                                                                         |
 
-> **Note:** `SEARCH_MIN_ZOOM_LEVELS` was previously required but is now **deprecated**. Use `searchMinZoomLevels` within `COLLECTIONS_CONFIG` instead.
+> **Note:** `SEARCH_MIN_ZOOM_LEVELS` was previously required but is now **deprecated**.
+> Use `sceneMinZoom` within `COLLECTIONS_CONFIG` instead.
+> Legacy configurations with `{ "medium": X, "high": Y }` format will automatically use the "high" value.
 
 ### Optional Parameters
 
@@ -114,12 +116,11 @@ After building with `npm run build`, place your config at `build/config/config.j
 
 #### Tiling Configuration
 
-| Parameter               | Type   | Description                                                                                           |
-| ----------------------- | ------ | ----------------------------------------------------------------------------------------------------- |
-| `SCENE_TILER_URL`       | String | TiTiler endpoint for scene tiling                                                                     |
-| `MOSAIC_TILER_URL`      | String | TiTiler mosaic endpoint (requires [NASA IMPACT TiTiler fork](https://github.com/NASA-IMPACT/titiler)) |
-| `MOSAIC_MAX_ITEMS`      | Number | Maximum items in mosaic (default: `100`)                                                              |
-| `MOSAIC_MIN_ZOOM_LEVEL` | Number | Minimum zoom for mosaic view (default: `7`)                                                           |
+| Parameter          | Type   | Description                                                                                           |
+| ------------------ | ------ | ----------------------------------------------------------------------------------------------------- |
+| `SCENE_TILER_URL`  | String | TiTiler endpoint for scene tiling                                                                     |
+| `MOSAIC_TILER_URL` | String | TiTiler mosaic endpoint (requires [NASA IMPACT TiTiler fork](https://github.com/NASA-IMPACT/titiler)) |
+| `MOSAIC_MAX_ITEMS` | Number | Maximum items in mosaic (default: `100`)                                                              |
 
 #### Layer Configuration
 
@@ -143,7 +144,7 @@ improves maintainability.
     "collection-id": {
       "sceneTilerParams": {},
       "mosaicTilerParams": {},
-      "searchMinZoomLevels": {},
+      "sceneMinZoom": 7,
       "popupDisplayFields": [],
       "tileLayerParams": {},
       "enhancedDisplayConfig": {}
@@ -158,7 +159,7 @@ improves maintainability.
 | ----------------------- | ------ | --------------------------------------------------------------------------------------------------------------------------- |
 | `sceneTilerParams`      | Object | TiTiler scene parameters: `assets`, `color_formula`, `bidx`, `rescale`, `expression`, `colormap_name`, `colormap`, `nodata` |
 | `mosaicTilerParams`     | Object | TiTiler mosaic parameters (same as sceneTilerParams)                                                                        |
-| `searchMinZoomLevels`   | Object | `{ "medium": number, "high": number }` - Zoom thresholds for grid/scene views                                               |
+| `sceneMinZoom`          | Number | Minimum zoom level required for Scene and Mosaic views (default: 7)                                                         |
 | `popupDisplayFields`    | Array  | STAC property names to display in popup (e.g., `["datetime", "platform"]`)                                                  |
 | `tileLayerParams`       | Object | Leaflet tile layer options (e.g., `minZoom`, `maxZoom`, `opacity`)                                                          |
 | `enhancedDisplayConfig` | Object | Enhanced details configuration with `property_groups` and `asset_groups`                                                    |
@@ -176,10 +177,7 @@ improves maintainability.
       "mosaicTilerParams": {
         "assets": ["visual"]
       },
-      "searchMinZoomLevels": {
-        "medium": 4,
-        "high": 7
-      },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"],
       "tileLayerParams": {
         "minZoom": 2,
@@ -196,7 +194,7 @@ The following parameters are **deprecated** but still supported for backward com
 
 - `SCENE_TILER_PARAMS`
 - `MOSAIC_TILER_PARAMS`
-- `SEARCH_MIN_ZOOM_LEVELS`
+- `SEARCH_MIN_ZOOM_LEVELS` - Legacy format `{ "medium": number, "high": number }` converted to `sceneMinZoom` (uses the "high" value)
 - `POPUP_DISPLAY_FIELDS`
 - `TILE_LAYER_PARAMS`
 - `ENHANCED_DISPLAY_CONFIG`
@@ -434,7 +432,7 @@ collection ID appearing only once:
     "collection-id": {
       "sceneTilerParams": {},
       "mosaicTilerParams": {},
-      "searchMinZoomLevels": {},
+      "sceneMinZoom": 7,
       "popupDisplayFields": [],
       "tileLayerParams": {},
       "enhancedDisplayConfig": {}
@@ -505,10 +503,7 @@ If both formats are present in a config file, `COLLECTIONS_CONFIG` takes precede
       "mosaicTilerParams": {
         "assets": ["visual"]
       },
-      "searchMinZoomLevels": {
-        "medium": 4,
-        "high": 7
-      },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"]
     },
     "landsat-c2-l2": {
@@ -519,10 +514,7 @@ If both formats are present in a config file, `COLLECTIONS_CONFIG` takes precede
       "mosaicTilerParams": {
         "assets": ["red"]
       },
-      "searchMinZoomLevels": {
-        "medium": 4,
-        "high": 7
-      },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform", "instruments"]
     }
   }
@@ -544,26 +536,25 @@ FilmDrop UI supports two theming modes requiring different CSS structures in `sr
 
 - `:root[data-theme='filmdrop']` - Single theme variables
 
-### Search Zoom Levels
+### Scene Minimum Zoom Level
 
-The `searchMinZoomLevels` configuration controls when different search result types display:
+The `sceneMinZoom` configuration specifies the minimum zoom level required to view individual scenes and mosaic tiles:
 
-- **Below `medium`:** Hex aggregation view (H3 geohex grid)
-- **Between `medium` and `high`:** Grid code aggregation view (e.g., MGRS, WRS2)
-- **At or above `high`:** Individual scene/item view
+- **Below `sceneMinZoom`:** Aggregation views only (Hex or Grid, if available)
+- **At or above `sceneMinZoom`:** Scene and Mosaic views become available
+
+The application automatically switches between Hex aggregation (if available) and Scene view based on the zoom level.
+Users can manually select any view mode at any time (Grid is always available if supported by the collection).
 
 **Example:**
 
 ```json
 {
-  "searchMinZoomLevels": {
-    "medium": 4,
-    "high": 7
-  }
+  "sceneMinZoom": 7
 }
 ```
 
-If no grid code aggregation available, set `medium` equal to `high` to use hex until scene level.
+Default value is `7` if not specified.
 
 ### Favicon Configuration
 
@@ -604,10 +595,7 @@ Minimum required configuration:
   },
   "COLLECTIONS_CONFIG": {
     "your-collection": {
-      "searchMinZoomLevels": {
-        "medium": 7,
-        "high": 7
-      }
+      "sceneMinZoom": 7
     }
   }
 }

@@ -107,7 +107,7 @@ describe('ConfigHelper', () => {
             mosaicTilerParams: { param2: 'value2' }
           },
           collection2: {
-            searchMinZoomLevels: [10, 12]
+            sceneMinZoom: 7
           }
         }
       }
@@ -154,19 +154,17 @@ describe('ConfigHelper', () => {
       expect(result.MOSAIC_TILER_PARAMS).toBeDefined()
     })
 
-    it('should migrate legacy SEARCH_MIN_ZOOM_LEVELS to COLLECTIONS_CONFIG', () => {
+    it('should migrate legacy SEARCH_MIN_ZOOM_LEVELS to COLLECTIONS_CONFIG as sceneMinZoom', () => {
       const legacyConfig = {
         COLLECTIONS: ['collection1'],
         SEARCH_MIN_ZOOM_LEVELS: {
-          collection1: [5, 7, 9]
+          collection1: { medium: 5, high: 7 }
         }
       }
 
       const result = normalizeCollectionsConfig(legacyConfig)
 
-      expect(result.COLLECTIONS_CONFIG.collection1.searchMinZoomLevels).toEqual(
-        [5, 7, 9]
-      )
+      expect(result.COLLECTIONS_CONFIG.collection1.sceneMinZoom).toEqual(7)
       expect(result.SEARCH_MIN_ZOOM_LEVELS).toBeDefined()
     })
 
@@ -229,7 +227,7 @@ describe('ConfigHelper', () => {
           collection1: { mosaic: 'param1' }
         },
         SEARCH_MIN_ZOOM_LEVELS: {
-          collection2: [10, 12]
+          collection2: { medium: 5, high: 7 }
         },
         POPUP_DISPLAY_FIELDS: {
           collection2: ['field1']
@@ -244,9 +242,7 @@ describe('ConfigHelper', () => {
       expect(result.COLLECTIONS_CONFIG.collection1.mosaicTilerParams).toEqual({
         mosaic: 'param1'
       })
-      expect(result.COLLECTIONS_CONFIG.collection2.searchMinZoomLevels).toEqual(
-        [10, 12]
-      )
+      expect(result.COLLECTIONS_CONFIG.collection2.sceneMinZoom).toEqual(7)
       expect(result.COLLECTIONS_CONFIG.collection2.popupDisplayFields).toEqual([
         'field1'
       ])
@@ -282,7 +278,7 @@ describe('ConfigHelper', () => {
               popupDisplayFields: ['field1', 'field2']
             },
             collection2: {
-              searchMinZoomLevels: [5, 7, 9]
+              sceneMinZoom: 7
             }
           }
         })
@@ -343,7 +339,7 @@ describe('ConfigHelper', () => {
         setappConfig({
           COLLECTIONS: ['col1'],
           MOSAIC_TILER_PARAMS: { col1: { m: '1' } },
-          SEARCH_MIN_ZOOM_LEVELS: { col1: [1, 2] },
+          SEARCH_MIN_ZOOM_LEVELS: { col1: { medium: 5, high: 7 } },
           POPUP_DISPLAY_FIELDS: { col1: ['f1'] },
           TILE_LAYER_PARAMS: { col1: { t: '1' } },
           ENHANCED_DISPLAY_CONFIG: { col1: { e: '1' } },
@@ -354,7 +350,7 @@ describe('ConfigHelper', () => {
       expect(getCollectionConfig('col1', 'mosaicTilerParams')).toEqual({
         m: '1'
       })
-      expect(getCollectionConfig('col1', 'searchMinZoomLevels')).toEqual([1, 2])
+      expect(getCollectionConfig('col1', 'sceneMinZoom')).toEqual(7)
       expect(getCollectionConfig('col1', 'popupDisplayFields')).toEqual(['f1'])
       expect(getCollectionConfig('col1', 'tileLayerParams')).toEqual({
         t: '1'

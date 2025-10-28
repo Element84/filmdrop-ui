@@ -13,7 +13,6 @@
   "SCENE_TILER_URL": "https://titiler.example.com",
   "MOSAIC_TILER_URL": "https://titiler-mosaic.example.com",
   "MOSAIC_MAX_ITEMS": 100,
-  "MOSAIC_MIN_ZOOM_LEVEL": 7,
   "CONFIG_COLORMAP": "viridis",
   "BASEMAP": {
     "url": "https://tile-provider.example.com/{z}/{x}/{y}.png",
@@ -34,10 +33,7 @@
       "mosaicTilerParams": {
         "assets": ["visual"]
       },
-      "searchMinZoomLevels": {
-        "medium": 4,
-        "high": 7
-      },
+      "sceneMinZoom": 7,
       "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"],
       "tileLayerParams": {
         "minZoom": 2,
@@ -82,10 +78,7 @@
         "assets": ["red"],
         "color_formula": "Gamma+R+1.7+Sigmoidal+R+15+0.35"
       },
-      "searchMinZoomLevels": {
-        "medium": 4,
-        "high": 7
-      },
+      "sceneMinZoom": 7,
       "popupDisplayFields": [
         "datetime",
         "platform",
@@ -106,10 +99,7 @@
         "assets": ["image"],
         "bidx": "1,2,3"
       },
-      "searchMinZoomLevels": {
-        "medium": 10,
-        "high": 14
-      },
+      "sceneMinZoom": 14,
       "popupDisplayFields": ["datetime", "naip:state", "naip:year", "gsd"]
     }
   },
