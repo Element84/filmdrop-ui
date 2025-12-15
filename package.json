@@ -70,7 +70,7 @@
     "remark-validate-links": "^13.0.1",
     "resize-observer-polyfill": "^1.5.1",
     "typescript": "^5.9.2",
-    "vite": "^7.1.7",
+    "vite": "^7.2.7",
     "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.2.4"
