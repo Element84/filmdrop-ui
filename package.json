@@ -35,7 +35,7 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
-    "@tsconfig/node18": "^18.2.1",
+    "@tsconfig/node18": "^18.2.6",
     "@types/leaflet-draw": "^1.0.13",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
