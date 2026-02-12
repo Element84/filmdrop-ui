@@ -8,16 +8,13 @@ import QueryableFilters from '../QueryableFilters/QueryableFilters'
 import ViewSelector from '../ViewSelector/ViewSelector'
 import { useRenderableQueryables } from '../../hooks/useRenderableQueryables'
 import { newSearch } from '../../utils/searchHelper'
+import { flushAllPendingCallbacks } from '../../hooks/useDebouncedCallback'
 
 const Search = () => {
   const { hasFields } = useRenderableQueryables()
 
   const handleSearchClick = () => {
-    // Flush any pending text input changes by triggering blur
-    // This ensures debounced Redux updates complete before search executes
-    const textInputs = document.querySelectorAll('.TextField__input input')
-    textInputs.forEach((input) => input.blur())
-
+    flushAllPendingCallbacks()
     newSearch()
   }
 
