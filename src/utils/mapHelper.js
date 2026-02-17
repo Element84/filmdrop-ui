@@ -301,6 +301,12 @@ export function deselectFeature() {
 function zoomToBounds(bounds, options) {
   const map = store.getState().mainSlice.map
   if (map && Object.keys(map).length > 0) {
+    // Sync Leaflet's cached container size with the actual DOM dimensions.
+    // In iframe deployments the container may be resized by the parent page
+    // after Leaflet last read it, causing getBoundsZoom / fitBounds to use
+    // stale dimensions. This is cheap (no-op when size hasn't changed).
+    map.invalidateSize({ animate: false })
+
     // Prevent blank bands: on large viewports the map container can be
     // taller than the Mercator world at the zoom fitBounds would choose.
     // In that case, zoom to the center of the bounds at the minimum
