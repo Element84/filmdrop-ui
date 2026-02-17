@@ -359,10 +359,10 @@ export function zoomToCollectionExtent(collection, options) {
   }
 }
 
-export function zoomToItemExtent(item) {
+export function zoomToItemExtent(item, options) {
   if (item.bbox) {
     const itemBounds = leafletBoundsFromBBOX(item.bbox)
-    zoomToBounds(itemBounds)
+    zoomToBounds(itemBounds, options)
   }
 }
 
@@ -451,6 +451,15 @@ function addImageOverlay(item) {
   clearLayer('clickedSceneImageLayer')
 
   let featureURL = item?.links?.find((x) => x?.rel === 'self')?.href?.toString()
+
+  if (!featureURL) {
+    console.warn(
+      `[TiTiler Scene] Item '${item.id}' has no self link. Cannot load scene imagery.`
+    )
+    store.dispatch(setimageOverlayLoading(false))
+    return
+  }
+
   const tilerParams = constructSceneTilerParams(
     _selectedCollectionData.id,
     _selectedVisualization
@@ -504,6 +513,10 @@ function addImageOverlay(item) {
       } else {
         store.dispatch(setimageOverlayLoading(false))
       }
+    })
+    .catch(function (error) {
+      console.error('[TiTiler Scene] Error loading scene imagery:', error)
+      store.dispatch(setimageOverlayLoading(false))
     })
 }
 

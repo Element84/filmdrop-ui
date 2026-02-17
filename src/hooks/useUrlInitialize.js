@@ -194,7 +194,7 @@ export function useUrlInitialize(search, dispatch) {
       if (!item) return
       const fetchedItem = await fetchAndDisplayItem(col, item, prefetchedItem)
       if (fetchedItem && !hasExplicitMapPosition) {
-        zoomToItemExtent(fetchedItem)
+        zoomToItemExtent(fetchedItem, { animate: false })
       }
       // Default to details tab for item view, but respect URL tab if set
       if (!tab) {
