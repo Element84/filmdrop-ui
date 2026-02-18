@@ -5,7 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
-    "@floating-ui/react": "^0.27.16",
+    "@floating-ui/react": "^0.27.17",
     "@floating-ui/react-dom": "^2.1.6",
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.2",
