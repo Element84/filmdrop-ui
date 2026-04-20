@@ -13,7 +13,7 @@ import {
   DEFAULT_MAP_ZOOM,
   DEFAULT_MAP_ZOOM_MAX,
   DEFAULT_COLORMAP
-} from '../components/defaults'
+} from '../constants/defaults'
 import { DEFAULT_REL_TYPE_EXCLUDE_LIST } from './defaultLinkGrouping.js'
 import {
   ConfigValidationError,

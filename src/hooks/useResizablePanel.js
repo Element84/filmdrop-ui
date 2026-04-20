@@ -106,6 +106,9 @@ export const useResizablePanel = (panelRef) => {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
+      // Restore body styles if unmount occurs mid-drag.
+      document.body.style.cursor = ''
+      document.body.style.userSelect = ''
     }
   }, [handleMouseMove, handleMouseUp])
 

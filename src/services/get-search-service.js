@@ -13,7 +13,7 @@ import {
 } from '../redux/slices/mainSlice'
 import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
-import { DEFAULT_API_MAX_ITEMS } from '../components/defaults'
+import { DEFAULT_API_MAX_ITEMS } from '../constants/defaults'
 import {
   normalizeStacErrorResponse,
   normalizeStacNetworkError

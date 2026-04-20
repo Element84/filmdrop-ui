@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Slider } from '@mui/material'
 import PropTypes from 'prop-types'
 import Card from '../Card/Card'
@@ -18,6 +18,14 @@ const RangeSliderWithInputs = ({
   const [maxInput, setMaxInput] = useState(value.max)
   const [isEditingMin, setIsEditingMin] = useState(false)
   const [isEditingMax, setIsEditingMax] = useState(false)
+
+  // Sync local state when the parent `value` prop changes (e.g. URL-driven
+  // filter reset or external update). Skip while the user is actively
+  // editing a field to avoid clobbering in-progress input.
+  useEffect(() => {
+    if (!isEditingMin) setMinInput(value.min)
+    if (!isEditingMax) setMaxInput(value.max)
+  }, [value.min, value.max])
 
   const roundIfInteger = (val) => (integerType ? Math.round(val) : val)
 

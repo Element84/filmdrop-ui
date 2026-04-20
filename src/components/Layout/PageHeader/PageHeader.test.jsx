@@ -123,7 +123,11 @@ describe('PageHeader', () => {
         setup()
         const analyzeButton = screen.getByTestId('testAnalyzeButton')
         await user.click(analyzeButton)
-        expect(openSpy).toHaveBeenCalledWith(mockAnalyzeBtnUrl, '_blank')
+        expect(openSpy).toHaveBeenCalledWith(
+          mockAnalyzeBtnUrl,
+          '_blank',
+          'noopener,noreferrer'
+        )
       })
     })
     describe('dashboard button', () => {
@@ -139,7 +143,11 @@ describe('PageHeader', () => {
         setup()
         const dashboardButton = screen.getByTestId('testDashboardButton')
         await user.click(dashboardButton)
-        expect(openSpy).toHaveBeenCalledWith(mockDashboardBtnUrl, '_blank')
+        expect(openSpy).toHaveBeenCalledWith(
+          mockDashboardBtnUrl,
+          '_blank',
+          'noopener,noreferrer'
+        )
       })
     })
     describe('cart button', () => {

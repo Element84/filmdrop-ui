@@ -1,4 +1,5 @@
 import { store } from '../redux/store'
+import { getAuthToken } from '../utils/authHelper'
 import {
   setCollectionsData,
   setCollectionsLoadError,
@@ -13,7 +14,7 @@ import { appendStacHeaderCookies } from '../utils/stacRequest'
 
 export async function GetCollectionsService(searchParams) {
   const appConfig = store.getState().mainSlice.appConfig
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const JWT = getAuthToken()
   const isSTACTokenAuthEnabled = appConfig.APP_TOKEN_AUTH_ENABLED ?? false
 
   // Build custom headers for authentication

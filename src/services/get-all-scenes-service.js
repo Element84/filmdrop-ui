@@ -5,7 +5,7 @@ import {
   footprintLayerStyle,
   clearLayer
 } from '../utils/mapHelper'
-import { DEFAULT_MAX_SCENES_RENDERED } from '../components/defaults'
+import { DEFAULT_MAX_SCENES_RENDERED } from '../constants/defaults'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 
 async function fetchFeatures(url, abortSignal) {

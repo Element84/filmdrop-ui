@@ -154,9 +154,10 @@ export function escapeHtml(text) {
     return String(text || '')
   }
 
-  const div = document.createElement('div')
-  div.textContent = text
-  return div.innerHTML
+  // Pure string replacement (no DOM) so this is safe in SSR and at module
+  // import time. Matches browser `div.innerHTML` for text content: only
+  // `&`, `<`, `>` are escaped (not quotes or slashes).
+  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
 }
 
 /**

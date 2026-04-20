@@ -21,6 +21,14 @@ import {
 } from '@tanstack/react-router'
 import App from './App'
 
+// Active-router state lives in its own module so setupTests can import it
+// without pulling in App (which router.jsx imports for the root route).
+import {
+  setActiveRouter,
+  getActiveRouterOrNull,
+  __resetActiveRouterForTests
+} from './router-test-hooks'
+
 /**
  * Reserved search param names that are not queryable filters.
  * Any param not in this set is treated as a dynamic queryable filter
@@ -136,13 +144,48 @@ function stringifySearch(search) {
 
 export const router = createRouter({ routeTree, stringifySearch })
 
+// Route path constants — mirror the TanStack route tree above. Callers in
+// searchHelper, mapHelper, get-pagination-service, and useUrlNavigate import
+// these instead of hard-coding the path strings.
+export const ROUTE_INDEX = '/'
+export const ROUTE_COLLECTION = '/$collectionId'
+export const ROUTE_COLLECTION_ITEM = '/$collectionId/$itemId'
+
+// FilmDropRoot creates a router via createFilmDropRouter() and registers it
+// via setActiveRouter(). Non-hook call sites read it through getActiveRouter()
+// or accept a router argument. Legacy `import { router }` callers keep working
+// via the module-scope `router` above, which is the fallback before mount.
+
+/**
+ * Create a FilmDrop router instance. Accepts `basepath` (TanStack's native
+ * option; `FilmDropRoot` maps the public `basename` prop to this).
+ */
+export function createFilmDropRouter(options) {
+  const opts = options || {}
+  const config = { routeTree, stringifySearch }
+  if (opts.basepath) {
+    config.basepath = opts.basepath
+  }
+  return createRouter(config)
+}
+
+export { setActiveRouter, __resetActiveRouterForTests }
+
+export function getActiveRouter() {
+  // Fall back to the module-scope `router` (SPA / legacy) if no FilmDropRoot
+  // has mounted yet — keeps existing behavior for pre-FilmDropRoot callers.
+  return getActiveRouterOrNull() || router
+}
+
 /**
  * Read current path params from router state.
  * For use outside React (searchHelper, mapHelper, services).
+ * Accepts an optional router argument; falls back to the active router.
  * Returns { collectionId?, itemId? }.
  */
-export function getPathParams() {
-  const matches = router.state.matches
+export function getPathParams(routerArg) {
+  const r = routerArg || getActiveRouter()
+  const matches = r.state.matches
   // Accumulate params from all matched routes
   let params = {}
   for (const match of matches) {

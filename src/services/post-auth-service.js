@@ -3,6 +3,7 @@ import {
   setauthTokenExists,
   clearApplicationAlert
 } from '../redux/slices/mainSlice'
+import { setAuthToken } from '../utils/authHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 
 export async function AuthService(username, password) {
@@ -33,7 +34,7 @@ export async function AuthService(username, password) {
       if (!json.access_token) {
         throw new Error('No Auth Token Found')
       }
-      localStorage.setItem('APP_AUTH_TOKEN', json.access_token)
+      setAuthToken(json.access_token)
       store.dispatch(setauthTokenExists(true))
       store.dispatch(clearApplicationAlert())
 

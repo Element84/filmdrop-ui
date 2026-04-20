@@ -1,5 +1,5 @@
 import { store } from '../redux/store'
-import { logoutUser } from '../utils/authHelper'
+import { logoutUser, getAuthToken } from '../utils/authHelper'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 
 /**
@@ -25,7 +25,7 @@ export async function GetItemService(itemId, collectionId) {
   const appConfig = store.getState().mainSlice.appConfig
 
   const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const JWT = getAuthToken()
   if (JWT && (appConfig.APP_TOKEN_AUTH_ENABLED ?? false)) {
     requestHeaders.append('Authorization', `Bearer ${JWT}`)
   }

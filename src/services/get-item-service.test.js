@@ -5,9 +5,13 @@ import { setappConfig } from '../redux/slices/mainSlice'
 import * as authHelper from '../utils/authHelper'
 
 // Mock modules
-vi.mock('../utils/authHelper', () => ({
-  logoutUser: vi.fn()
-}))
+vi.mock('../utils/authHelper', async () => {
+  const actual = await vi.importActual('../utils/authHelper')
+  return {
+    ...actual,
+    logoutUser: vi.fn()
+  }
+})
 
 // Mock fetch globally
 global.fetch = vi.fn()

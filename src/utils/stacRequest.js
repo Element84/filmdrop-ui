@@ -1,9 +1,10 @@
 import Cookies from 'js-cookie'
 import { store } from '../redux/store'
+import { getAuthToken } from './authHelper'
 
 export function buildStacRequestHeaders() {
   const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const JWT = getAuthToken()
   const isSTACTokenAuthEnabled =
     store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
   if (JWT && isSTACTokenAuthEnabled) {

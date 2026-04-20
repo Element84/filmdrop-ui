@@ -2,12 +2,12 @@ import React from 'react'
 import Alert from '@mui/material/Alert'
 import './SystemMessage.css'
 
-import { useSelector } from 'react-redux'
-import { store } from '../../redux/store'
+import { useSelector, useDispatch } from 'react-redux'
 import { setshowApplicationAlert } from '../../redux/slices/mainSlice'
 import { logoutUser } from '../../utils/authHelper'
 
 const SystemMessage = () => {
+  const dispatch = useDispatch()
   const _applicationAlertMessage = useSelector(
     (state) => state.mainSlice.applicationAlertMessage
   )
@@ -22,7 +22,7 @@ const SystemMessage = () => {
     <div className="SystemMessage" data-testid="testSystemMessage">
       <Alert
         onClose={() => {
-          store.dispatch(setshowApplicationAlert(false))
+          dispatch(setshowApplicationAlert(false))
           if (_applicationAlertSeverity === 'error' && _isAuthErrorAlert) {
             logoutUser()
           }

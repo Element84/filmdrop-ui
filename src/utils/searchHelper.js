@@ -5,7 +5,7 @@ import {
   DEFAULT_MOSAIC_MAX_ITEMS,
   DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
   DEFAULT_DATE_RANGE
-} from '../components/defaults'
+} from '../constants/defaults'
 import {
   getCurrentMapZoomLevel,
   clearAllLayers,
@@ -43,7 +43,13 @@ import {
 import * as h3 from 'h3-js'
 import debounce from './debounce'
 import { AddMosaicService } from '../services/post-mosaic-service'
-import { router, getPathParams } from '../router'
+import {
+  getActiveRouter,
+  getPathParams,
+  ROUTE_INDEX,
+  ROUTE_COLLECTION,
+  ROUTE_COLLECTION_ITEM
+} from '../router'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 import { serializeQueryableFiltersForUrl } from './urlParamHelper'
 import {
@@ -136,12 +142,12 @@ export async function newSearch(options = {}) {
   const currentPathParams = getPathParams()
   const currentItemId = preserveItem ? currentPathParams.itemId || '' : ''
 
-  router.navigate({
+  getActiveRouter().navigate({
     to: currentItemId
-      ? '/$collectionId/$itemId'
+      ? ROUTE_COLLECTION_ITEM
       : collectionId
-        ? '/$collectionId'
-        : '/',
+        ? ROUTE_COLLECTION
+        : ROUTE_INDEX,
     params: currentItemId
       ? { collectionId, itemId: currentItemId }
       : collectionId
@@ -316,8 +322,8 @@ export function clearSearch() {
   const currentPathParams = getPathParams()
   const collectionId = currentPathParams.collectionId || ''
 
-  router.navigate({
-    to: collectionId ? '/$collectionId' : '/',
+  getActiveRouter().navigate({
+    to: collectionId ? ROUTE_COLLECTION : ROUTE_INDEX,
     params: collectionId ? { collectionId } : {},
     search: (prev) => ({
       dt: '',

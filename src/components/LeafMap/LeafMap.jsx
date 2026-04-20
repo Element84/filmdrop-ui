@@ -15,12 +15,12 @@ import 'leaflet-geosearch/dist/geosearch.css'
 import { mapClickHandler, addReferenceLayersToMap } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
 import debounce from '../../utils/debounce'
-import { router } from '../../router'
+import { getActiveRouter } from '../../router'
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
   DEFAULT_MAP_ZOOM_MAX
-} from '../defaults'
+} from '../../constants/defaults'
 import { getBasemapConfig, getMapGeometryColors } from '../../utils/themeHelper'
 
 const LeafMap = () => {
@@ -39,7 +39,7 @@ const LeafMap = () => {
   // position on first render. MapContainer only uses center/zoom on mount,
   // so this must be computed before the first render (not in an effect).
   const initialPosition = useMemo(() => {
-    const search = router.state.location.search
+    const search = getActiveRouter().state.location.search
     let center = _appConfig.MAP_CENTER || DEFAULT_MAP_CENTER
     // Ensure the initial zoom fills the viewport vertically so tiles
     // are pre-loaded behind the loading cover (no blank bands on reveal).
@@ -57,22 +57,30 @@ const LeafMap = () => {
     return { center, zoom }
   }, []) // Only compute once on mount
 
-  const mapMarkerIcon = L.icon({
-    iconSize: [25, 41],
-    iconAnchor: [10, 41],
-    popupAnchor: [2, -40],
-    iconUrl: '/marker-icon.png',
-    shadowUrl: '/marker-shadow.png'
-  })
+  const mapMarkerIcon = useMemo(
+    () =>
+      L.icon({
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [2, -40],
+        iconUrl: '/marker-icon.png',
+        shadowUrl: '/marker-shadow.png'
+      }),
+    []
+  )
 
-  const searchControl = new SearchControl({
-    style: 'button',
-    notFoundMessage: 'Sorry, that address could not be found.',
-    provider: new OpenStreetMapProvider(),
-    marker: {
-      icon: mapMarkerIcon
-    }
-  })
+  const searchControl = useMemo(
+    () =>
+      new SearchControl({
+        style: 'button',
+        notFoundMessage: 'Sorry, that address could not be found.',
+        provider: new OpenStreetMapProvider(),
+        marker: {
+          icon: mapMarkerIcon
+        }
+      }),
+    [mapMarkerIcon]
+  )
 
   useEffect(() => {
     if (mapRef) {
@@ -86,25 +94,29 @@ const LeafMap = () => {
 
   useEffect(() => {
     if (map && Object.keys(map).length) {
-      // override position of zoom controls
-      L.control
-        .zoom({
-          position: 'topleft'
-        })
-        .addTo(map)
+      // override position of zoom controls (tracked below for cleanup)
+      const zoomControl = L.control.zoom({
+        position: 'topleft'
+      })
+      zoomControl.addTo(map)
       // add geosearch/geocoder to map
       map.addControl(searchControl)
 
-      // setup custom panes for results
-      map.createPane('searchResults')
-      map.getPane('searchResults').style.zIndex = 600
-
-      map.createPane('imagery')
-      map.getPane('imagery').style.zIndex = 650
-      map.getPane('imagery').style.pointerEvents = 'none'
-
-      map.createPane('drawPane')
-      map.getPane('drawPane').style.zIndex = 700
+      // setup custom panes for results — guard each against duplicate
+      // creation when the effect re-fires.
+      const ensurePane = (name, zIndex, pointerEvents) => {
+        if (!map.getPane(name)) {
+          map.createPane(name)
+        }
+        const pane = map.getPane(name)
+        pane.style.zIndex = zIndex
+        if (pointerEvents !== undefined) {
+          pane.style.pointerEvents = pointerEvents
+        }
+      }
+      ensurePane('searchResults', 600)
+      ensurePane('imagery', 650, 'none')
+      ensurePane('drawPane', 700)
 
       // override existing panes for draw controls
       map.getPane('overlayPane').style.zIndex = 700
@@ -116,9 +128,10 @@ const LeafMap = () => {
       const bounds = L.latLngBounds(southWest, northEast)
       map.setMaxBounds(bounds)
 
-      map.on('drag', function () {
+      const onDrag = function () {
         map.panInsideBounds(bounds, { animate: false })
-      })
+      }
+      map.on('drag', onDrag)
 
       // set up map layers
       const referenceLayerGroup = L.layerGroup().addTo(map)
@@ -172,21 +185,23 @@ const LeafMap = () => {
       dispatch(setmapDrawPolygonHandler(drawPolygonHandler))
 
       // set up map events
-      map.on('zoomend', function () {
+      const onZoomEnd = function () {
         if (!mapTouched) {
           setmapTouched(true)
           dispatch(setshowMapAttribution(false))
         }
-      })
+      }
+      map.on('zoomend', onZoomEnd)
 
       map.on('click', mapClickHandler)
 
-      map.on('mousedown', function () {
+      const onMouseDown = function () {
         if (!mapTouched) {
           setmapTouched(true)
           dispatch(setshowMapAttribution(false))
         }
-      })
+      }
+      map.on('mousedown', onMouseDown)
 
       // Sync map viewport to URL (debounced)
       const syncViewportToUrl = debounce(() => {
@@ -198,7 +213,7 @@ const LeafMap = () => {
         try {
           const center = map.getCenter()
           const zoom = map.getZoom()
-          router.navigate({
+          getActiveRouter().navigate({
             search: (prev) => ({
               ...prev,
               z: Math.round(zoom),
@@ -220,6 +235,16 @@ const LeafMap = () => {
       return () => {
         syncViewportToUrl.cancel()
         map.off('moveend', syncViewportToUrl)
+        map.off('drag', onDrag)
+        map.off('zoomend', onZoomEnd)
+        map.off('click', mapClickHandler)
+        map.off('mousedown', onMouseDown)
+        try {
+          map.removeControl(zoomControl)
+          map.removeControl(searchControl)
+        } catch {
+          // map already destroyed (e.g. during test cleanup)
+        }
       }
     }
   }, [map])

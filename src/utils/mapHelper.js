@@ -14,8 +14,12 @@ import { searchGridCodeScenes } from './searchHelper'
 import debounce from './debounce'
 import { GetMosaicBoundsService } from '../services/get-mosaic-bounds'
 import GeoJSONValidation from './geojsonValidation'
-import { DEFAULT_TILE_LAYER_PARAMS } from '../components/defaults'
-import { router, getPathParams } from '../router'
+import { DEFAULT_TILE_LAYER_PARAMS } from '../constants/defaults'
+import {
+  getActiveRouter,
+  getPathParams,
+  ROUTE_COLLECTION_ITEM
+} from '../router'
 import { getCollectionConfig } from './configHelper'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 import { getMapGeometryColors } from './themeHelper'
@@ -90,13 +94,16 @@ export function getCartFootprintLayerStyle() {
   }
 }
 
-const customSearchPointIconStyle = L.icon({
-  iconSize: [25, 41],
-  iconAnchor: [10, 41],
-  popupAnchor: [2, -40],
-  iconUrl: '/marker-icon.png',
-  shadowUrl: '/marker-shadow.png'
-})
+const customSearchPointIconStyle =
+  typeof document !== 'undefined'
+    ? L.icon({
+        iconSize: [25, 41],
+        iconAnchor: [10, 41],
+        popupAnchor: [2, -40],
+        iconUrl: '/marker-icon.png',
+        shadowUrl: '/marker-shadow.png'
+      })
+    : null
 
 /**
  * Gets the style for user-drawn line boundaries.
@@ -131,14 +138,23 @@ export function getCustomSearchPolygonStyle() {
   }
 }
 
-// Backward-compatible exports - these evaluate at import time
-// For dynamic theme support, use the getter functions instead
-export const footprintLayerStyle = getFootprintLayerStyle()
-export const gridCodeLayerStyle = getGridCodeLayerStyle()
-export const clickedFootprintLayerStyle = getClickedFootprintLayerStyle()
-export const cartFootprintLayerStyle = getCartFootprintLayerStyle()
-export const customSearchLineStyle = getCustomSearchLineStyle()
-export const customSearchPolygonStyle = getCustomSearchPolygonStyle()
+// Backward-compatible exports — these evaluate at import time in a browser.
+// In SSR / pre-DOM contexts getComputedStyle isn't available, so they fall
+// back to empty objects; callers that can run before DOM load should prefer
+// the getter variants above. Browsers hit the happy path.
+const hasDom = typeof document !== 'undefined' && typeof window !== 'undefined'
+export const footprintLayerStyle = hasDom ? getFootprintLayerStyle() : {}
+export const gridCodeLayerStyle = hasDom ? getGridCodeLayerStyle() : {}
+export const clickedFootprintLayerStyle = hasDom
+  ? getClickedFootprintLayerStyle()
+  : {}
+export const cartFootprintLayerStyle = hasDom
+  ? getCartFootprintLayerStyle()
+  : {}
+export const customSearchLineStyle = hasDom ? getCustomSearchLineStyle() : {}
+export const customSearchPolygonStyle = hasDom
+  ? getCustomSearchPolygonStyle()
+  : {}
 
 export function mapClickHandler(e) {
   if (store.getState().mainSlice.isDrawingEnabled) {
@@ -189,8 +205,8 @@ export function mapClickHandler(e) {
               const firstItem = intersectingFeatures[0]
               if (firstItem.id) {
                 const { collectionId } = getPathParams()
-                router.navigate({
-                  to: '/$collectionId/$itemId',
+                getActiveRouter().navigate({
+                  to: ROUTE_COLLECTION_ITEM,
                   params: { collectionId, itemId: firstItem.id },
                   search: (prev) => ({ ...prev, tab: 'details' }),
                   replace: true

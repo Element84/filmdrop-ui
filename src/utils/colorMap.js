@@ -1,4 +1,4 @@
-import { DEFAULT_COLORMAP } from '../components/defaults'
+import { DEFAULT_COLORMAP } from '../constants/defaults'
 import colormap from 'colormap'
 import { store } from '../redux/store'
 

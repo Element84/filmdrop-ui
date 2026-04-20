@@ -10,7 +10,7 @@ import {
 import {
   DEFAULT_DATE_RANGE,
   DEFAULT_MOSAIC_TOP_COMPARE_ITEMS
-} from '../components/defaults'
+} from '../constants/defaults'
 import {
   newSearch,
   validateUploadedGeometry,

@@ -9,9 +9,8 @@ import './ViewSelector.css'
 import ButtonGroup from '../ButtonGroup/ButtonGroup'
 import { getCurrentMapZoomLevel } from '../../utils/mapHelper'
 import { getCollectionConfig } from '../../utils/configHelper'
-import { router } from '../../router'
-
-const DEFAULT_SCENE_MIN_ZOOM = 7
+import { getActiveRouter } from '../../router'
+import { DEFAULT_SCENE_MIN_ZOOM } from '../../constants/defaults'
 
 const ViewSelector = () => {
   const dispatch = useDispatch()
@@ -25,6 +24,14 @@ const ViewSelector = () => {
     (state) => state.mainSlice.autoCenterOnItemChanged
   )
 
+  // Read the initial `view` search param from the active router once at
+  // mount. urlHasView controls a one-time "skip default-view reset on
+  // initial load" behavior below.
+  const initialUrlView = (() => {
+    const r = getActiveRouter()
+    return !!r?.state?.location?.search?.view
+  })()
+
   const [currentZoom, setCurrentZoom] = useState(0)
   // Track whether user has manually selected a view mode.
   // Once true, auto-switching based on zoom level is disabled until
@@ -32,9 +39,9 @@ const ViewSelector = () => {
   // while still resetting on collection change.
   // Treat URL-provided view mode as a manual selection so auto-switch
   // doesn't override it on initial load.
-  const urlHasView = useRef(!!router.state.location.search.view)
+  const urlHasView = useRef(initialUrlView)
   const [isManualSelection, setIsManualSelection] = useState(
-    () => !!router.state.location.search.view
+    () => initialUrlView
   )
 
   // Check if collection supports hex and grid aggregations
@@ -83,7 +90,7 @@ const ViewSelector = () => {
         : 'scene'
     dispatch(setViewMode(defaultView))
     setIsManualSelection(false)
-  }, [selectedCollectionData?.id, supportsHex, supportsGrid, dispatch])
+  }, [selectedCollectionData?.id, supportsHex, supportsGrid])
 
   // Update current zoom when map changes
   useEffect(() => {
@@ -122,8 +129,7 @@ const ViewSelector = () => {
     appConfig?.SCENE_TILER_URL,
     supportsHex,
     viewMode,
-    isManualSelection,
-    dispatch
+    isManualSelection
   ])
 
   const handleViewChange = (view) => {
@@ -170,8 +176,12 @@ const ViewSelector = () => {
   return (
     <ButtonGroup label="View Mode" buttons={buttons}>
       {appConfig?.SHOW_ITEM_AUTO_ZOOM && (
-        <label className="ViewSelector__checkbox">
+        <label
+          className="ViewSelector__checkbox"
+          htmlFor="viewSelectorAutoZoom"
+        >
           <MuiCheckbox
+            id="viewSelectorAutoZoom"
             checked={autoCenterOnItemChanged}
             onChange={handleAutoZoomChange}
             size="small"

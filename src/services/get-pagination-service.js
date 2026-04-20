@@ -1,4 +1,5 @@
 import { store } from '../redux/store'
+import { getAuthToken } from '../utils/authHelper'
 import {
   setSearchLoading,
   setSearchResults,
@@ -17,8 +18,8 @@ import {
   clearMapSelection
 } from '../utils/mapHelper'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
-import { DEFAULT_API_MAX_ITEMS } from '../components/defaults'
-import { router, getPathParams } from '../router'
+import { DEFAULT_API_MAX_ITEMS } from '../constants/defaults'
+import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
 
 /**
  * Fetch a specific page of search results using pagination links
@@ -27,7 +28,7 @@ import { router, getPathParams } from '../router'
  */
 export async function FetchPageService(pageUrl, pageNumber) {
   const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const JWT = getAuthToken()
   const isSTACTokenAuthEnabled =
     store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
   if (JWT && isSTACTokenAuthEnabled) {
@@ -38,8 +39,8 @@ export async function FetchPageService(pageUrl, pageNumber) {
   // If currently viewing an item, navigate back to collection path
   const pathParams = getPathParams()
   if (pathParams.itemId) {
-    router.navigate({
-      to: '/$collectionId',
+    getActiveRouter().navigate({
+      to: ROUTE_COLLECTION,
       params: { collectionId: pathParams.collectionId },
       search: (prev) => ({ ...prev }),
       replace: true

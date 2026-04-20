@@ -7,17 +7,18 @@ import CartButton from '../../Cart/CartButton/CartButton'
 import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher'
 import { logoutUser } from '../../../utils/authHelper'
 import { getBrandLogoConfig } from '../../../utils/themeHelper'
+import { openExternal } from '../../../utils/openExternal'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
 
   function onDashboardClick() {
-    window.open(_appConfig.DASHBOARD_BTN_URL, '_blank')
+    openExternal(_appConfig.DASHBOARD_BTN_URL, { source: 'dashboard-btn' })
   }
 
   function onAnalyzeClick() {
-    window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
+    openExternal(_appConfig.ANALYZE_BTN_URL, { source: 'analyze-btn' })
   }
 
   function onLogoutClick() {

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Alert from '@mui/material/Alert'
 import './UploadGeojsonModal.css'
 import { useDispatch } from 'react-redux'
@@ -24,6 +24,14 @@ const UploadGeojsonModal = () => {
   const submissionInFlightRef = useRef(false)
   const uploadAbortControllerRef = useRef(null)
   const dispatch = useDispatch()
+
+  // Abort any in-flight submission when the modal unmounts.
+  useEffect(() => {
+    return () => {
+      uploadAbortControllerRef.current?.abort()
+      uploadAbortControllerRef.current = null
+    }
+  }, [])
 
   const clearInlineServerError = () => {
     setServerErrorSummary(null)

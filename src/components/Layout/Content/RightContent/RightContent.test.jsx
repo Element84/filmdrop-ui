@@ -18,7 +18,6 @@ import {
   setShowZoomNotice,
   setZoomLevelNeeded,
   setViewMode,
-  setmappedScenes,
   setappName
 } from '../../../../redux/slices/mainSlice'
 import {
@@ -276,7 +275,11 @@ describe('RightContent', () => {
           name: /launch your own/i
         })
         await user.click(actionButton)
-        expect(openSpy).toHaveBeenCalledWith(mockActionBtnUrl, '_blank')
+        expect(openSpy).toHaveBeenCalledWith(
+          mockActionBtnUrl,
+          '_blank',
+          'noopener,noreferrer'
+        )
       })
     })
     describe('on zoom Clicked', () => {

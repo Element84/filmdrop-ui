@@ -31,7 +31,11 @@ const Login = () => {
   }
 
   useEffect(() => {
+    const previousTitle = document.title
     document.title = 'Login'
+    return () => {
+      document.title = previousTitle
+    }
   }, [])
 
   return (

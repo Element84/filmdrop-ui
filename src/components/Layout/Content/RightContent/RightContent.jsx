@@ -2,31 +2,23 @@ import React, { useState, useRef, useEffect } from 'react'
 import './RightContent.css'
 import {
   DEFAULT_SCENE_MIN_ZOOM,
-  DEFAULT_MAX_SCENES_RENDERED,
   DEFAULT_API_MAX_ITEMS
-} from '../../../defaults'
+} from '../../../../constants/defaults'
 import LeafMap from '../../../LeafMap/LeafMap'
 import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowZoomNotice,
   setisDrawingEnabled,
-  setmappedScenes,
-  setSearchLoading,
   setshowMapAttribution,
-  setshowLayerList,
-  settabSelected
+  setshowLayerList
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
-  disableMapPolyDrawing,
-  clearLayer,
-  clearMapSelection,
-  selectMappedScenes
+  disableMapPolyDrawing
 } from '../../../../utils/mapHelper'
 import { getCollectionConfig } from '../../../../utils/configHelper'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
-import { fetchAllFeatures } from '../../../../services/get-all-scenes-service'
 import { getBasemapConfig } from '../../../../utils/themeHelper'
 import { CircularProgress } from '@mui/material'
 import DOMPurify from 'dompurify'
@@ -37,18 +29,17 @@ import LayersIcon from '@mui/icons-material/Layers'
 import LayerList from '../../../LayerList/LayerList'
 import ExportButton from '../../../ExportButton/ExportButton'
 import Pagination from '../../../Pagination/Pagination'
+import { openExternal } from '../../../../utils/openExternal'
 import { useLayout } from '../../../../contexts/LayoutContext'
 import { useMapResizeHandler } from '../../../../hooks/useMapResizeHandler'
 
 const RightContent = () => {
-  const [allScenesLoading, setallScenesLoading] = useState(false)
   const [mapAttribution, setmapAttribution] = useState('')
   const _showMapAttribution = useSelector(
     (state) => state.mainSlice.showMapAttribution
   )
   const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
   const _searchResults = useSelector((state) => state.mainSlice.searchResults)
-  const _clickResults = useSelector((state) => state.mainSlice.clickResults)
   const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
   const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
   const _zoomLevelNeeded = useSelector(
@@ -82,14 +73,13 @@ const RightContent = () => {
 
   const dispatch = useDispatch()
 
-  const abortControllerRef = useRef(null)
   const attributionTimeout = useRef(null)
   const rightContentRef = useRef(null)
 
   const resultType = _searchType === 'hex' ? 'hex cells' : 'grid cells'
 
   function onActionClick() {
-    window.open(_appConfig.ACTION_BUTTON.url, '_blank')
+    openExternal(_appConfig.ACTION_BUTTON.url, { source: 'action-button' })
   }
 
   function onZoomClick() {
@@ -111,53 +101,6 @@ const RightContent = () => {
   function onCancelDrawGeomClicked() {
     dispatch(setisDrawingEnabled(false))
     disableMapPolyDrawing()
-  }
-
-  function onLoadAllScenesClicked() {
-    dispatch(setmappedScenes([]))
-    clearMapSelection()
-    clearLayer('searchResultsLayer')
-    clearLayer('clickedSceneImageLayer')
-    setallScenesLoading(true)
-    dispatch(setSearchLoading(true))
-
-    const nextLinkObj = _searchResults.links.find((link) => link.rel === 'next')
-
-    const urlObj = new URL(nextLinkObj.href)
-    urlObj.searchParams.delete('next')
-    const baseURL = urlObj.toString()
-
-    abortControllerRef.current = new AbortController()
-    const featuresPromise = fetchAllFeatures(
-      baseURL,
-      abortControllerRef.current.signal
-    )
-
-    featuresPromise
-      .then(() => {
-        setallScenesLoading(false)
-        dispatch(setSearchLoading(false))
-        clearLayer('clickedSceneImageLayer')
-      })
-      .catch((error) => {
-        if (abortControllerRef.current.signal.aborted) {
-          setallScenesLoading(false)
-          dispatch(setSearchLoading(false))
-        } else {
-          setallScenesLoading(false)
-          dispatch(setSearchLoading(false))
-          console.error('An error occurred:', error)
-        }
-      })
-  }
-
-  function onCancelLoadAllScenesClicked() {
-    abortControllerRef.current.abort()
-  }
-
-  function onSelectAllScenesClicked() {
-    selectMappedScenes()
-    dispatch(settabSelected('details'))
   }
 
   useEffect(() => {

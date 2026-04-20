@@ -1,8 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { DEFAULT_DATE_RANGE } from '../../components/defaults'
+import { DEFAULT_DATE_RANGE } from '../../constants/defaults'
 
 // this is the initial state values for the redux store
 // add to this for new state and set whatever default you want
+//
+// NOTE: `state.map` holds a live Leaflet map instance (non-serializable).
+// `createFilmDropStore()` disables Redux Toolkit's serializableCheck to allow
+// this. Consequence: Redux DevTools time-travel won't work for map state.
 const initialState = {
   map: {},
   dateTime: [],

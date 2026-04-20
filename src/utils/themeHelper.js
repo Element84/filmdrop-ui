@@ -1,4 +1,4 @@
-import { DEFAULT_BASEMAP } from '../components/defaults'
+import { DEFAULT_BASEMAP } from '../constants/defaults'
 
 const THEME_STORAGE_KEY = 'APP_THEME_PREFERENCE'
 

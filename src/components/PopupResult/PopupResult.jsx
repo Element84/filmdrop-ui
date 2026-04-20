@@ -12,8 +12,11 @@ const PopupResult = (props) => {
     (state) => state.mainSlice.autoCenterOnItemChanged
   )
   const [thumbnailInfo, setThumbnailInfo] = useState(null)
+  const [thumbnailFailed, setThumbnailFailed] = useState(false)
 
   useEffect(() => {
+    // Reset failure state whenever the item changes.
+    setThumbnailFailed(false)
     if (props.result) {
       if (_autoCenterOnItemChanged) {
         zoomToItemExtent(props.result)
@@ -55,7 +58,7 @@ const PopupResult = (props) => {
     >
       {props.result ? (
         <div className="popupResultHero">
-          {thumbnailInfo && (
+          {thumbnailInfo && !thumbnailFailed && (
             <div
               className="popupResultThumbnailContainer"
               style={{
@@ -67,10 +70,7 @@ const PopupResult = (props) => {
                   src={thumbnailInfo.url}
                   alt="thumbnail"
                   className="popupResultThumbnail"
-                  onError={({ currentTarget }) => {
-                    currentTarget.onerror = null // prevents looping
-                    currentTarget.parentElement.parentElement.remove()
-                  }}
+                  onError={() => setThumbnailFailed(true)}
                 />
               </picture>
             </div>

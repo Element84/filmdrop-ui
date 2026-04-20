@@ -1,4 +1,5 @@
 import { store } from '../redux/store'
+import { getAuthToken } from '../utils/authHelper'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 
 /**
@@ -63,7 +64,7 @@ async function resolveRefs(schema) {
 export function GetCollectionQueryablesService(collection) {
   const collectionId = collection.id
   const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const JWT = getAuthToken()
   const isSTACTokenAuthEnabled =
     store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
   if (JWT && isSTACTokenAuthEnabled) {

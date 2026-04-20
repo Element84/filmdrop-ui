@@ -1,9 +1,10 @@
 import { store } from '../redux/store'
+import { getAuthToken } from '../utils/authHelper'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 
 export async function GetCollectionAggregationsService(collectionId) {
   const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const JWT = getAuthToken()
   const isSTACTokenAuthEnabled =
     store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
   if (JWT && isSTACTokenAuthEnabled) {

@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import './App.css'
-import './index.css'
 import './themes/theme.css'
 import Content from './components/Layout/Content/Content'
 import PageHeader from './components/Layout/PageHeader/PageHeader'
@@ -23,6 +22,7 @@ import {
 import { LayoutProvider } from './contexts/LayoutContext'
 import { useUrlStateSync } from './hooks/useUrlStateSync'
 import { Outlet } from '@tanstack/react-router'
+import { getAuthToken } from './utils/authHelper'
 
 function App() {
   useUrlStateSync()
@@ -45,20 +45,6 @@ function App() {
   const _autoCenterOnItemChanged = useSelector(
     (state) => state.mainSlice.autoCenterOnItemChanged
   )
-  const [showLogin, setShowLogin] = useState(false)
-
-  useEffect(() => {
-    if (localStorage.getItem('APP_AUTH_TOKEN')) {
-      dispatch(setauthTokenExists(true))
-    }
-    LoadConfigIntoStateService()
-    try {
-      console.log('Version: ' + process.env.REACT_APP_VERSION)
-    } catch (err) {
-      console.error('Error logging version:', err)
-    }
-  }, [])
-
   const _collectionsData = useSelector(
     (state) => state.mainSlice.collectionsData
   )
@@ -66,44 +52,61 @@ function App() {
     (state) => state.mainSlice.collectionsLoadError
   )
 
+  // Derived, not state — showLogin is a pure function of config and auth
+  // token and does not need to live in Redux or local state.
+  const showLogin = !!(_appConfig?.APP_TOKEN_AUTH_ENABLED && !_authTokenExists)
+
+  // Effect 1 — one-time init: auth token, config load, version log.
   useEffect(() => {
-    if (_appConfig) {
-      if (_appConfig.APP_TOKEN_AUTH_ENABLED && !_authTokenExists) {
-        setShowLogin(true)
-        return
-      }
-      setShowLogin(false)
-      InitializeAppFromConfig()
-      // Only load collections if not already loaded (router may have loaded them)
-      // Don't retry if there was a previous load error to prevent infinite loops
-      if (
-        !_collectionsLoadError &&
-        (!_collectionsData || _collectionsData.length === 0)
-      ) {
-        GetCollectionsService()
-      }
+    if (getAuthToken()) {
+      dispatch(setauthTokenExists(true))
     }
-  }, [_appConfig, _authTokenExists, _collectionsData, _collectionsLoadError])
+    LoadConfigIntoStateService()
+    try {
+      // process.env.REACT_APP_VERSION — defined in SPA build; may be absent
+      // in library mode. Swallow in try/catch.
+      console.log('Version: ' + process.env.REACT_APP_VERSION)
+    } catch (err) {
+      console.error('Error logging version:', err)
+    }
+  }, [])
 
+  // Effect 2 — config-reaction: runs once per config change. Handles
+  // collections load + theme initialization. Only applies branding/theme if
+  // FilmDropRoot has not opted out via applyDocumentBranding=false.
   useEffect(() => {
-    if (_appConfig) {
-      const { currentTheme, switchingEnabled } = initializeTheme(_appConfig)
+    if (!_appConfig) return
 
+    if (showLogin) return
+
+    InitializeAppFromConfig()
+
+    // Only load collections if not already loaded (router may have loaded them).
+    // Don't retry if there was a previous load error to prevent infinite loops.
+    if (
+      !_collectionsLoadError &&
+      (!_collectionsData || _collectionsData.length === 0)
+    ) {
+      GetCollectionsService()
+    }
+
+    const shouldApplyBranding =
+      typeof window === 'undefined' || window.__filmdropApplyBranding !== false
+
+    if (shouldApplyBranding) {
+      const { currentTheme, switchingEnabled } = initializeTheme(_appConfig)
       if (switchingEnabled) {
         dispatch(setCurrentTheme(currentTheme))
       }
-
       applyTheme(currentTheme)
     }
-  }, [_appConfig])
+  }, [_appConfig, _authTokenExists, _collectionsData, _collectionsLoadError])
 
-  // Render footprint when currentPopupResult changes (for routed items)
+  // Effect 3 — item display side-effects (genuine DOM/leaflet side effect).
   useEffect(() => {
     if (_currentPopupResult && _map && Object.keys(_map).length > 0) {
-      // Clear previous footprint
       clearLayer('clickedSceneHighlightLayer')
 
-      // Render new footprint
       const clickedFootprintsFound = L.geoJSON(_currentPopupResult, {
         style: clickedFootprintLayerStyle
       })
@@ -121,34 +124,32 @@ function App() {
   }, [_currentPopupResult, _map, _appConfig, _autoCenterOnItemChanged])
 
   return (
-    <React.StrictMode>
-      <LayoutProvider>
-        {_appConfig ? (
-          showLogin ? (
-            <div className="App">
-              <Login></Login>
-              {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
-            </div>
-          ) : (
-            <div className="App">
-              <PageHeader></PageHeader>
-              <Content></Content>
-              {_showUploadGeojsonModal ? (
-                <UploadGeojsonModal></UploadGeojsonModal>
-              ) : null}
-              {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
-              {_showCartModal ? <CartModal></CartModal> : null}
-              <Outlet />
-            </div>
-          )
-        ) : (
+    <LayoutProvider>
+      {_appConfig ? (
+        showLogin ? (
           <div className="App">
-            <div className="appLoading" data-testid="testAppLoading"></div>
+            <Login></Login>
             {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
           </div>
-        )}
-      </LayoutProvider>
-    </React.StrictMode>
+        ) : (
+          <div className="App">
+            <PageHeader></PageHeader>
+            <Content></Content>
+            {_showUploadGeojsonModal ? (
+              <UploadGeojsonModal></UploadGeojsonModal>
+            ) : null}
+            {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
+            {_showCartModal ? <CartModal></CartModal> : null}
+            <Outlet />
+          </div>
+        )
+      ) : (
+        <div className="App">
+          <div className="appLoading" data-testid="testAppLoading"></div>
+          {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
+        </div>
+      )}
+    </LayoutProvider>
   )
 }
 
