@@ -1,5 +1,7 @@
 import * as L from 'leaflet'
 import 'leaflet-draw'
+import markerIconUrl from '../assets/marker-icon.png'
+import markerShadowUrl from '../assets/marker-shadow.png'
 import { store } from '../redux/store'
 import { colorMap } from './colorMap'
 import {
@@ -100,8 +102,8 @@ const customSearchPointIconStyle =
         iconSize: [25, 41],
         iconAnchor: [10, 41],
         popupAnchor: [2, -40],
-        iconUrl: '/marker-icon.png',
-        shadowUrl: '/marker-shadow.png'
+        iconUrl: markerIconUrl,
+        shadowUrl: markerShadowUrl
       })
     : null
 

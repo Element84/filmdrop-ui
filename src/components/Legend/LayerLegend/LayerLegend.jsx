@@ -2,6 +2,7 @@ import React from 'react'
 import './LayerLegend.css'
 import { useSelector } from 'react-redux'
 import HeatMapSymbology from '../HeatMapSymbology/HeatMapSymbology'
+import markerIconUrl from '../../../assets/marker-icon.png'
 
 const LayerLegend = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
@@ -37,7 +38,7 @@ const LayerLegend = () => {
         <div className="legendRow">
           <div className="legendSymbol searchAreaLegendSymbol"></div>
           <img
-            src="/marker-icon.png"
+            src={markerIconUrl}
             alt="Search area point"
             className="searchAreaLegendIcon"
           ></img>

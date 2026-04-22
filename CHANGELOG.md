@@ -9,6 +9,21 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- **Phase 2 library packaging.** FilmDrop UI now builds as an installable
+  component package (`filmdrop-ui`) via `npm run build:lib`, producing
+  `dist/filmdrop-ui.js` (ESM), `dist/style.css`, and hand-authored
+  `dist/index.d.ts`. See `componentization_plan.md` Phase 2 and the new
+  "Use as a Library" section in the README.
+- Added `vite.lib.config.mts` (library build config) + `src/lib-entry.jsx`
+  (public API surface). Peer deps (React, Redux, TanStack Router, MUI,
+  Emotion, Leaflet, react-leaflet) are externalized; everything else
+  bundles.
+- Added `scripts/verify-lib-bundle.mjs` post-build guard: fails CI if core
+  Leaflet CSS leaks into `dist/style.css` (Decision 0.7).
+- Added `scripts/copy-types.mjs` to publish hand-authored TypeScript types.
+- Added `src/config.schema.json` — JSON Schema for `config.json`.
+- Added `CONTRIBUTING.md` and `TESTING.md` documenting quality gates,
+  release workflow, single-instance scope, and canonical test harness.
 - Added a NumericRangeInputs component for numeric fields that supports unbounded, min-only, and max-only queryables.
 - Added unit tests for bbox coordinate rounding/clamping (`mapHelper`) and URL/search param bbox handling (`searchHelper`).
 - Added mosaic search caching metadata to track the last mosaic request and top N item IDs for re-use across searches.
@@ -22,6 +37,24 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- **Dependency reclassification.** Peer dependencies
+  now include `react`, `react-dom`, `react-redux`, `@reduxjs/toolkit`,
+  `@tanstack/react-router`, `@mui/*`, `@emotion/*`, `leaflet`, `leaflet-draw`,
+  `react-leaflet`. `@vitejs/plugin-react` moved to devDependencies.
+  Orphan direct deps removed: `@floating-ui/react`, `@floating-ui/react-dom`
+  (transitive), `dayjs-plugin-utc` (unused).
+- **Leaflet CSS externalized** from the library bundle (Decision 0.7).
+  Library consumers must `import 'leaflet/dist/leaflet.css'` and
+  `'leaflet-draw/dist/leaflet.draw.css'` themselves. The SPA entry
+  (`src/index.jsx`) imports them for standalone mode.
+- Leaflet control theme overrides moved from `Search.css` → `LeafMap.css`
+  so removing the Search component does not silently drop map styling
+  (Step 2.16).
+- Marker icon assets (`marker-icon.png`, `marker-shadow.png`) now resolved
+  via bundler import from `src/assets/` instead of absolute `/marker-icon.png`
+  paths, so the library works under any `configUrl` base (Step 2.3).
+- `vite.config.mts` replaced `require('./package.json')` with an ESM
+  `readFileSync` + `JSON.parse` read (Step 2.14).
 - Moved Item pagination buttons from below to above the Item Details content.
 - Limited bbox precision to 6 decimals in map bounds and search/URL params; longitude clamped to [-180, 180]. Exported `roundCoord`, `clampAndRoundBbox` for reuse.
 - Item Details field grid: column layout set to `minmax(0, 40%) 1fr`, alignment and padding adjusted for clearer spacing and to avoid overflowing text.
@@ -41,6 +74,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Bumped `dompurify` to `^3.4.1` to resolve moderate advisory
+  [GHSA-39q2-94rc-95cp](https://github.com/advisories/GHSA-39q2-94rc-95cp)
+  (`ADD_TAGS` bypasses `FORBID_TAGS` via short-circuit evaluation).
+- Restored `check-markdown` (blocking) and `audit-prod` supply-chain
+  checks to CI and release workflows. `audit-prod` is
+  `continue-on-error` on PR CI to surface advisories without blocking
+  unrelated work, and blocking on the release workflow to prevent
+  publishing a tarball with known prod-dep CVEs.
+- Deduplicated `cosmiconfig` and `readdirp` override blocks in `package.json`; only the caret-range forms remain, silencing the esbuild "duplicate key" warning during `build:lib`.
+- Tightened `scripts/verify-consumer-smoke.mjs` peer-externals check
+  from "at least one peer present" to "every declared peer present"
+  as a bare import; expanded `peerNames` to match the actual library
+  bundle (`@mui/icons-material`, `@mui/x-date-pickers` added;
+  `react-dom` and `@emotion/react` removed — they are
+  consumer-installed but not directly imported by the library
+  bundle).
+- Hardened `.github/workflows/release.yml`: added workflow-level
+  `concurrency` block to prevent overlapping tag publishes, added
+  `npm run verify:consumer` step, and mirrored the JS/CSS
+  bundle-size budget checks from `ci.yml` so a force-pushed tag
+  cannot bypass the size gate.
 - Corrected the multi-select filter component to properly lose focus after deleting chips.
 - Fixed map auto-zoom when loading items via `/:collectionId/:itemId` URLs.
 - Fixed search and mosaic requests sending invalid or undefined bbox when viewport bounds are missing; URL bbox param and zoom-to-extent now handle null bounds safely.

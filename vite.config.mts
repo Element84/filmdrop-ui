@@ -2,17 +2,24 @@
 /// <reference types="vite/client" />
 /// <reference types="vite-plugin-svgr/client" />
 
+import { readFileSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import react from '@vitejs/plugin-react'
 import viteTsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig, configDefaults } from 'vitest/config'
 import svgrPlugin from 'vite-plugin-svgr'
 
+const pkg = JSON.parse(
+  readFileSync(
+    fileURLToPath(new URL('./package.json', import.meta.url)),
+    'utf8'
+  )
+)
+
 export default defineConfig({
   base: '/',
   define: {
-    'process.env.REACT_APP_VERSION': JSON.stringify(
-      require('./package.json').version
-    )
+    'process.env.REACT_APP_VERSION': JSON.stringify(pkg.version)
   },
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
@@ -32,7 +39,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text'],
-      exclude: [...configDefaults.coverage.exclude, 'src/redux/*'] // ignore the redux boilerplate for coverage report
+      exclude: [...(configDefaults.coverage.exclude ?? []), 'src/redux/*'] // ignore the redux boilerplate for coverage report
     }
   }
 })

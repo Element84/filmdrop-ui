@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+# Serialize tag releases. cancel-in-progress:false so an in-flight
+# publish completes before a second tag starts (avoids racing
+# `npm publish` against itself).
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Publish to npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          registry-url: 'https://registry.npmjs.org'
+          cache: npm
+      - run: npm ci
+      # Blocking: do not publish a tarball with known prod-dep CVEs.
+      - run: npm run audit-prod
+      - run: npm run check-markdown
+      - run: npm run lint
+      - run: npm run format
+      - run: npm run typecheck
+      - run: npm run test-pre-commit
+      # build:lib chains verify:lib in-package (see package.json
+      # scripts). Do not invoke verify:lib separately.
+      - run: npm run build:lib
+      - run: npm run verify:consumer
+      # Mirror ci.yml's size budget. Release must gate tags because a
+      # force-pushed tag can otherwise bypass the CI gate on commits.
+      - name: Bundle size budget
+        run: |
+          node -e "const fs=require('fs');const s=fs.statSync('dist/filmdrop-ui.js').size;const MAX=1600000;console.log('lib size:',s);if(s>MAX){console.error('dist/filmdrop-ui.js exceeds bundle budget:',s,'>',MAX);process.exit(1)}"
+          node -e "const fs=require('fs');const s=fs.statSync('dist/style.css').size;const MAX=120000;console.log('css size:',s);if(s>MAX){console.error('dist/style.css exceeds bundle budget:',s,'>',MAX);process.exit(1)}"
+      - name: Determine dist-tag
+        id: dist-tag
+        run: |
+          TAG_NAME="${GITHUB_REF_NAME#v}"
+          if [[ "$TAG_NAME" == *"-"* ]]; then
+            echo "tag=next" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=latest" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --tag ${{ steps.dist-tag.outputs.tag }}

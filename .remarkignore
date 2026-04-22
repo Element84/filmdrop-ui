@@ -1,3 +1,5 @@
 /ADRs
 /.github
 /.paw
+/.cursor
+/componentization_plan.md

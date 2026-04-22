@@ -12,6 +12,8 @@ import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
 import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
+import markerIconUrl from '../../assets/marker-icon.png'
+import markerShadowUrl from '../../assets/marker-shadow.png'
 import { mapClickHandler, addReferenceLayersToMap } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
 import debounce from '../../utils/debounce'
@@ -63,8 +65,8 @@ const LeafMap = () => {
         iconSize: [25, 41],
         iconAnchor: [10, 41],
         popupAnchor: [2, -40],
-        iconUrl: '/marker-icon.png',
-        shadowUrl: '/marker-shadow.png'
+        iconUrl: markerIconUrl,
+        shadowUrl: markerShadowUrl
       }),
     []
   )

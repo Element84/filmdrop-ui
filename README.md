@@ -242,6 +242,139 @@ based on the collection's STAC metadata if not specified:
 
 ![sentinel-2 grid aggregation MGRS](screenshots/s2-grid-aggregation.png)
 
+## 📦 Use as a Library
+
+FilmDrop UI is a React component library in addition to a standalone SPA.
+Install the package and peer dependencies, then mount one `<FilmDropRoot />`.
+
+```bash
+npm install filmdrop-ui \
+  react react-dom react-redux @reduxjs/toolkit \
+  @tanstack/react-router \
+  @mui/material @mui/icons-material @mui/x-date-pickers \
+  @emotion/react @emotion/styled \
+  leaflet leaflet-draw react-leaflet
+```
+
+```jsx
+import { FilmDropRoot } from 'filmdrop-ui'
+import 'filmdrop-ui/style.css'
+// Required by the Leaflet peer dependency (not bundled by filmdrop-ui):
+import 'leaflet/dist/leaflet.css'
+import 'leaflet-draw/dist/leaflet.draw.css'
+
+export default function App() {
+  return (
+    <FilmDropRoot
+      basename="/filmdrop"
+      configUrl="/filmdrop/config/config.json"
+      applyDocumentBranding={false}
+      onError={(err, info) => console.error(err, info)}
+    />
+  )
+}
+```
+
+### `<FilmDropRoot />` props
+
+| Prop                    | Type                    | Default                         |
+| ----------------------- | ----------------------- | ------------------------------- |
+| `basename`              | `string`                | `'/'`                           |
+| `configUrl`             | `string`                | Vite `BASE_URL`                 |
+| `applyDocumentBranding` | `boolean`               | `true`                          |
+| `onError`               | `(error, info) => void` | —                               |
+| `onOpenExternal`        | `(url, meta?) => void`  | `window.open(url, '_blank', …)` |
+
+- `basename` — public alias of TanStack Router's `basepath`.
+- `configUrl` — URL (or directory base) for `config/config.json` and `data/*.json`.
+- `applyDocumentBranding` — when `false`, FilmDrop does not mutate
+  `document.title`, favicon, or `<html>`.
+- `onError` — `(error, info: { componentStack, phase }) => void`; fired by
+  the library's ErrorBoundary.
+- `onOpenExternal` — override outbound link handling for embedded hosts
+  (default opens in a new tab with `noopener,noreferrer`).
+
+### Consumer checklist
+
+- **CSS imports (required).** `filmdrop-ui/style.css` plus the Leaflet
+  CSS peers. FilmDrop does NOT bundle `leaflet/dist/leaflet.css` to avoid
+  duplication with consumer code.
+- **Fonts.** The library does NOT bundle the Inter font. Provide Inter
+  (or an alternative) and your own `html, body` reset — `src/index.css`
+  is deliberately excluded from the library bundle (Google Fonts import,
+  body resets, and `#root` sizing are host-invasive).
+- **Config + data files.** Serve your `config.json` under
+  `${configUrl}` (or `${BASE_URL}config/config.json`). Grid-view data
+  files (`cdem.json`, `doqq.json`, `mgrs.json`, `wrs2.json`) must live at
+  `${configUrl base}/data/*.json` (Decision 0.4 / Step 2.17). Example layout:
+
+  ```text
+  your-host/
+    filmdrop/
+      config/
+        config.json
+        favicon.ico
+        logo.png
+      data/
+        mgrs.json
+        wrs2.json
+        cdem.json
+        doqq.json
+  ```
+
+- **Config asset paths.** `BRAND_LOGO`, `LOGIN_LOGO`, `APP_FAVICON`, and
+  `LOGO_URL` in `config.json` resolve relative to the `configUrl` base.
+  Copy your logos alongside `config.json` (Step 2.18).
+- **Reserved URL params.** `dt`, `view`, `viz`, `tab`, `z`, `c` are owned
+  by FilmDrop. Do not read/write them in host code; they are part of the
+  SemVer public surface.
+- **Single-instance (v1).** Mount exactly one `<FilmDropRoot />` per page.
+  `localStorage` keys `APP_AUTH_TOKEN`, `APP_THEME_PREFERENCE`, and
+  `sessionStorage` key `POST_AUTH_REDIRECT_URL` are shared across all
+  apps on the same origin — be aware in multi-app deployments.
+  Multi-instance support is deferred to Phase 5 of
+  [`componentization_plan.md`](componentization_plan.md).
+- **Next.js / SSR.** `lib-entry.jsx` declares `'use client'`, but Leaflet
+  and MUI date pickers are client-only. Wrap `FilmDropRoot` in
+  `next/dynamic` with `{ ssr: false }`.
+- **CSP origins.** Allowlist your STAC API origin, TiTiler origin,
+  `https://nominatim.openstreetmap.org` (leaflet-geosearch), and
+  `https://fonts.googleapis.com` / `https://fonts.gstatic.com` if you load
+  Inter via Google Fonts. `$ref` resolution in Queryables may fetch
+  arbitrary external URLs declared in your STAC extensions.
+- **React 19.** The library's peer range accepts React 18 and 19. React 19
+  compatibility (`use()`, automatic batching, Suspense boundaries,
+  ref-as-prop) is exercised via the StrictMode regression test
+  (`src/FilmDropRoot.strictmode.test.jsx`). DOMPurify sanitizes
+  user-supplied HTML in field formatting and STAC description rendering;
+  see `src/utils/securityHelper.js` for the policy.
+
+### Container-escape CSS contract
+
+Several layout rules (App loading overlay, UploadGeojsonModal,
+PanelToggle, attribution tooltip) use `position: fixed` + 100% viewport
+coverage. In embedded hosts these rules escape the FilmDrop container.
+Phase 3 Step 3.17 adds a `.filmdrop-root` wrapper that scopes positioning;
+until it lands, embed-only consumers should:
+
+1. Constrain `<FilmDropRoot />` inside a `position: relative; contain: layout;`
+   container.
+2. Set `applyDocumentBranding={false}` to avoid `<html>` mutations.
+3. Expect full-viewport overlays (loading, modal) to cover host chrome
+   when they appear.
+
+### Bundle surface
+
+The library ships:
+
+- `dist/filmdrop-ui.js` — ESM bundle (~1.1 MB unminified, ~285 kB gzipped).
+- `dist/style.css` — side-effect stylesheet (~75 kB).
+- `dist/index.d.ts` — hand-authored TypeScript types (see
+  `src/index.d.ts`).
+
+`scripts/verify-lib-bundle.mjs` (run by `npm run build:lib`) asserts no
+core Leaflet CSS rules leak into `dist/style.css`.
+
 ## 🏗️ Architecture
 
 FilmDrop UI is built with:

@@ -17,6 +17,8 @@ module.exports = {
     // Allow list item indent variations
     ['remark-lint-list-item-indent', false],
     // Allow emphasis as heading (sometimes useful for sub-emphasis)
-    ['remark-lint-no-emphasis-as-heading', false]
+    ['remark-lint-no-emphasis-as-heading', false],
+    // Allow underscore emphasis (Prettier's default format)
+    ['remark-lint-emphasis-marker', false]
   ]
 }

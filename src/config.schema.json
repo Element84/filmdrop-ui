@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://filmdrop.example.com/filmdrop-ui/config.schema.json",
+  "title": "FilmDrop UI config.json",
+  "description": "Runtime configuration consumed by FilmDropRoot via configUrl. See config_helper/ in the repository for full examples.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "PUBLIC_URL": {
+      "type": "string",
+      "description": "Absolute or relative URL prefix for branding assets (logo, favicon)."
+    },
+    "LOGO_URL": {
+      "type": "string",
+      "description": "URL for the primary header logo. Resolved relative to configUrl base when library-embedded."
+    },
+    "LOGO_ALT": { "type": "string" },
+    "APP_NAME": {
+      "type": "string",
+      "description": "Document.title source when applyDocumentBranding is true."
+    },
+    "APP_FAVICON": {
+      "type": "string",
+      "description": "Favicon asset name served from the configUrl base."
+    },
+    "BRAND_LOGO": {
+      "type": ["string", "object"],
+      "description": "Light/dark brand logo. String for a single asset; object of the form {\"light\": \"...\", \"dark\": \"...\"}."
+    },
+    "LOGIN_LOGO": { "type": "string" },
+    "COLLECTIONS": {
+      "type": "object",
+      "description": "Collection id defaults and per-collection configuration.",
+      "additionalProperties": true
+    },
+    "STAC_API_URL": {
+      "type": "string",
+      "format": "uri",
+      "description": "Root STAC API endpoint used for search, collections, aggregations, queryables."
+    },
+    "STAC_LINK_ENABLED": { "type": "boolean" },
+    "SHOW_ITEM_AUTO_ZOOM": { "type": "boolean" },
+    "API_MAX_ITEMS": { "type": "integer", "minimum": 1 },
+    "SCENE_TILER_URL": {
+      "type": "string",
+      "format": "uri",
+      "description": "TiTiler endpoint for scene visualization."
+    },
+    "MOSAIC_TILER_URL": { "type": "string", "format": "uri" },
+    "DASHBOARD_BTN_URL": { "type": "string" },
+    "ANALYZE_BTN_URL": { "type": "string" },
+    "APP_TOKEN_AUTH_ENABLED": {
+      "type": "boolean",
+      "description": "When true, the Login flow gates access until a JWT is persisted to localStorage under APP_AUTH_TOKEN."
+    },
+    "ACTION_BUTTON": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "url": { "type": "string" }
+      },
+      "required": ["text", "url"],
+      "additionalProperties": false
+    },
+    "TILE_LAYER_PARAMS": {
+      "type": "object",
+      "description": "Per-collection zoom/tile parameters.",
+      "additionalProperties": { "type": "object" }
+    },
+    "SCENE_TILER_PARAMS": {
+      "type": "object",
+      "description": "Per-collection TiTiler query parameters (assets, color_formula, colormap_name, rescale, ...).",
+      "additionalProperties": { "type": "object" }
+    },
+    "MOSAIC_TILER_PARAMS": {
+      "type": "object",
+      "additionalProperties": { "type": "object" }
+    },
+    "DEFAULT_TILE_LAYER": {
+      "type": "object",
+      "description": "Default Leaflet TileLayer configuration (url, attribution, minZoom, maxZoom, ...)."
+    },
+    "DEFAULT_AOI": {
+      "type": "object",
+      "description": "Default bounding box / GeoJSON used on initial load."
+    },
+    "RESERVED_PARAMS": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Reserved URL search params owned by FilmDrop. Consumers must not stomp on: dt, view, viz, tab, z, c."
+    }
+  },
+  "$comment": "Additional fields are allowed; FilmDrop's applyConfigDefaults() merges this document with built-in defaults (see src/constants/defaults.js). Legacy formats are preserved — see config_helper/config.example.json for historical examples."
+}
