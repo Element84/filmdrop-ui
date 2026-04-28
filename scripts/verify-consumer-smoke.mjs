@@ -98,7 +98,14 @@ const disallowed = pack.files
   .map((f) => f.path)
   .filter(
     (p) =>
-      p.startsWith('src/') || p.startsWith('build/') || p.startsWith('public/')
+      p.startsWith('src/') ||
+      p.startsWith('build/') ||
+      p.startsWith('public/') ||
+      p.startsWith('examples/') ||
+      p.startsWith('scripts/') ||
+      p.startsWith('ADRs/') ||
+      p.startsWith('config_helper/') ||
+      p.startsWith('screenshots/')
   )
 if (disallowed.length > 0) {
   fail(`npm tarball includes non-dist paths: ${disallowed.join(', ')}`)
@@ -106,5 +113,44 @@ if (disallowed.length > 0) {
 pass(
   `npm tarball clean: ${pack.files.length} files, unpacked ${pack.unpackedSize}B`
 )
+
+// Verify `.filmdrop-root` container-scoped theme selectors ship in
+// style.css so embedded consumers get themed CSS variables without
+// host DOM mutations.
+const styleCss = readFileSync(resolve(root, 'dist/style.css'), 'utf8')
+const requiredSelectorPairs = [
+  ['filmdrop-dark', /\.filmdrop-root\[data-theme=['"]?filmdrop-dark['"]?\]/],
+  ['filmdrop-light', /\.filmdrop-root\[data-theme=['"]?filmdrop-light['"]?\]/]
+]
+for (const [label, pattern] of requiredSelectorPairs) {
+  if (!pattern.test(styleCss)) {
+    fail(
+      `Expected \`.filmdrop-root[data-theme='${label}']\` in dist/style.css (container-scoped theme selector missing).`
+    )
+  }
+}
+pass(
+  'Container-scoped theme selectors (.filmdrop-root[data-theme=…]) present in style.css.'
+)
+
+// Lightweight schema check on the example starter's config.
+const starterConfigPath = resolve(
+  root,
+  'examples/starter/public/config/config.json'
+)
+if (existsSync(starterConfigPath)) {
+  let starterCfg
+  try {
+    starterCfg = JSON.parse(readFileSync(starterConfigPath, 'utf8'))
+  } catch (err) {
+    fail(`examples/starter config.json is not valid JSON: ${err.message}`)
+  }
+  if (!starterCfg.STAC_API_URL) {
+    fail('examples/starter config.json must set STAC_API_URL.')
+  }
+  pass(
+    `examples/starter config.json valid (STAC_API_URL=${starterCfg.STAC_API_URL}).`
+  )
+}
 
 console.log('\nAll consumer smoke checks passed.')

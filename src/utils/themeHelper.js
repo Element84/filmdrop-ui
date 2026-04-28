@@ -2,6 +2,27 @@ import { DEFAULT_BASEMAP } from '../constants/defaults'
 
 const THEME_STORAGE_KEY = 'APP_THEME_PREFERENCE'
 
+/**
+ * Returns true when FilmDrop should write branding to the host document
+ * (title, favicon, <html> data-theme). Default true for SPA mode;
+ * FilmDropRoot sets `window.__filmdropApplyBranding = false` when the
+ * consumer passes `applyDocumentBranding={false}`.
+ */
+export function shouldApplyDocumentBranding() {
+  if (typeof window === 'undefined') return true
+  return window.__filmdropApplyBranding !== false
+}
+
+/**
+ * Returns true when FilmDrop should persist theme preference to
+ * localStorage. Gated by the `persistThemePreference` prop on
+ * FilmDropRoot.
+ */
+export function shouldPersistThemePreference() {
+  if (typeof window === 'undefined') return true
+  return window.__filmdropPersistThemePreference !== false
+}
+
 export function getSystemTheme() {
   if (typeof window !== 'undefined' && window.matchMedia) {
     return window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -12,8 +33,14 @@ export function getSystemTheme() {
 }
 
 export function applyTheme(theme) {
-  if (typeof document !== 'undefined') {
-    const themeValue = theme === 'filmdrop' ? 'filmdrop' : `filmdrop-${theme}`
+  if (typeof document === 'undefined') return
+  const themeValue = theme === 'filmdrop' ? 'filmdrop' : `filmdrop-${theme}`
+  // Mirror onto any mounted .filmdrop-root container so the scoped
+  // selectors (`.filmdrop-root[data-theme='filmdrop-*']`) match in
+  // embedded mode.
+  const roots = document.querySelectorAll('.filmdrop-root')
+  roots.forEach((el) => el.setAttribute('data-theme', themeValue))
+  if (shouldApplyDocumentBranding()) {
     document.documentElement.setAttribute('data-theme', themeValue)
   }
 }
@@ -26,9 +53,9 @@ export function getThemeFromStorage() {
 }
 
 export function saveThemeToStorage(theme) {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(THEME_STORAGE_KEY, theme)
-  }
+  if (typeof localStorage === 'undefined') return
+  if (!shouldPersistThemePreference()) return
+  localStorage.setItem(THEME_STORAGE_KEY, theme)
 }
 
 export function getBasemapConfig(appConfig, currentTheme) {
@@ -98,25 +125,25 @@ function validateThemeCSS(switchingEnabled) {
           const rule = rules[j]
 
           if (rule.selectorText) {
-            if (
-              rule.selectorText.includes(':root[data-theme="filmdrop"]') ||
-              rule.selectorText.includes(":root[data-theme='filmdrop']")
-            ) {
-              hasFilmdropRootSelector = true
-            }
-            if (
-              rule.selectorText.includes(':root[data-theme="filmdrop-dark"]') ||
-              rule.selectorText.includes(":root[data-theme='filmdrop-dark']")
-            ) {
-              hasFilmdropDarkThemeSelector = true
-            }
-            if (
-              rule.selectorText.includes(
-                ':root[data-theme="filmdrop-light"]'
-              ) ||
-              rule.selectorText.includes(":root[data-theme='filmdrop-light']")
-            ) {
-              hasFilmdropLightThemeSelector = true
+            // Accept either the host-scoped `:root[data-theme=…]`
+            // selector (SPA mode) or the container-scoped
+            // `.filmdrop-root[data-theme=…]` variant that ships
+            // alongside it for embedded mode.
+            const matches = rule.selectorText.matchAll(
+              /(?::root|\.filmdrop-root)\[data-theme=['"](filmdrop(?:-dark|-light)?)['"]\]/g
+            )
+            for (const match of matches) {
+              switch (match[1]) {
+                case 'filmdrop':
+                  hasFilmdropRootSelector = true
+                  break
+                case 'filmdrop-dark':
+                  hasFilmdropDarkThemeSelector = true
+                  break
+                case 'filmdrop-light':
+                  hasFilmdropLightThemeSelector = true
+                  break
+              }
             }
           }
         }

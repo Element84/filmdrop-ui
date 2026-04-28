@@ -52,6 +52,8 @@ function App() {
     (state) => state.mainSlice.collectionsLoadError
   )
 
+  const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
+
   // Derived, not state — showLogin is a pure function of config and auth
   // token and does not need to live in Redux or local state.
   const showLogin = !!(_appConfig?.APP_TOKEN_AUTH_ENABLED && !_authTokenExists)
@@ -62,12 +64,9 @@ function App() {
       dispatch(setauthTokenExists(true))
     }
     LoadConfigIntoStateService()
-    try {
-      // process.env.REACT_APP_VERSION — defined in SPA build; may be absent
-      // in library mode. Swallow in try/catch.
-      console.log('Version: ' + process.env.REACT_APP_VERSION)
-    } catch (err) {
-      console.error('Error logging version:', err)
+    const version = import.meta.env?.VITE_APP_VERSION
+    if (version) {
+      console.log('Version: ' + version)
     }
   }, [])
 
@@ -123,16 +122,28 @@ function App() {
     }
   }, [_currentPopupResult, _map, _appConfig, _autoCenterOnItemChanged])
 
+  // Every `.App` div also carries `.filmdrop-root` + a mirrored
+  // `data-theme` so the container-scoped theme selectors
+  // (`.filmdrop-root[data-theme='filmdrop-*']`) resolve when FilmDrop
+  // is mounted with `applyDocumentBranding={false}`.
+  const themeAttr =
+    _currentTheme === 'filmdrop'
+      ? 'filmdrop'
+      : _currentTheme
+        ? `filmdrop-${_currentTheme}`
+        : undefined
+  const rootClassName = 'App filmdrop-root'
+
   return (
     <LayoutProvider>
       {_appConfig ? (
         showLogin ? (
-          <div className="App">
+          <div className={rootClassName} data-theme={themeAttr}>
             <Login></Login>
             {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
           </div>
         ) : (
-          <div className="App">
+          <div className={rootClassName} data-theme={themeAttr}>
             <PageHeader></PageHeader>
             <Content></Content>
             {_showUploadGeojsonModal ? (
@@ -144,7 +155,7 @@ function App() {
           </div>
         )
       ) : (
-        <div className="App">
+        <div className={rootClassName} data-theme={themeAttr}>
           <div className="appLoading" data-testid="testAppLoading"></div>
           {_showApplicationAlert ? <SystemMessage></SystemMessage> : null}
         </div>

@@ -25,19 +25,25 @@ import { store } from '../redux/store'
 import { DoesFaviconExistService } from '../services/get-config-service'
 import { setappName, setreferenceLayers } from '../redux/slices/mainSlice'
 import { showApplicationAlert } from './alertHelper'
+import { shouldApplyDocumentBranding } from './themeHelper'
+import { resolveFaviconUrl, getCacheBusterSuffix } from './configBase'
 
 function loadAppTitle() {
-  if (!store.getState().mainSlice.appConfig.APP_NAME) {
-    document.title = DEFAULT_APP_NAME
-    store.dispatch(setappName(DEFAULT_APP_NAME))
-    return
+  const configuredName = store.getState().mainSlice.appConfig.APP_NAME
+  const effectiveName = configuredName || DEFAULT_APP_NAME
+  // Skip document.title when embedded (applyDocumentBranding=false);
+  // the Redux dispatch still runs so internal UI labels are correct.
+  if (shouldApplyDocumentBranding()) {
+    document.title = effectiveName
   }
-  document.title = store.getState().mainSlice.appConfig.APP_NAME
-  store.dispatch(setappName(store.getState().mainSlice.appConfig.APP_NAME))
+  store.dispatch(setappName(effectiveName))
 }
 
 async function loadAppFavicon() {
   if (!store.getState().mainSlice.appConfig.APP_FAVICON) {
+    return
+  }
+  if (!shouldApplyDocumentBranding()) {
     return
   }
   const doesFaviconFileExist = await DoesFaviconExistService()
@@ -55,11 +61,12 @@ async function loadAppFavicon() {
       .endsWith('.ico')
   ) {
     const faviconFromConfig =
-      '/config/' +
-      store.getState().mainSlice.appConfig.APP_FAVICON +
-      `?_cb=${Date.now()}`
+      resolveFaviconUrl(store.getState().mainSlice.appConfig.APP_FAVICON) +
+      getCacheBusterSuffix()
     const newFaviconLink = document.querySelector("link[rel~='icon']")
-    newFaviconLink.href = faviconFromConfig
+    if (newFaviconLink) {
+      newFaviconLink.href = faviconFromConfig
+    }
   }
 }
 

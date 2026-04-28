@@ -1,10 +1,9 @@
 import { store } from '../redux/store'
 import { setLocalGridData } from '../redux/slices/mainSlice'
-import { resolveDataUrl } from '../utils/configBase'
+import { resolveDataUrl, getCacheBusterSuffix } from '../utils/configBase'
 
 export async function LoadLocalGridDataService(fileName) {
-  const cacheBuster = Date.now()
-  const configUrl = `${resolveDataUrl(fileName)}?_cb=${cacheBuster}`
+  const configUrl = `${resolveDataUrl(fileName)}${getCacheBusterSuffix()}`
   await fetch(configUrl, {
     cache: 'no-store'
   })

@@ -8,6 +8,27 @@
 
 let configBaseUrl = null
 
+// Cache-bust strategy for config/favicon/grid-data fetches.
+// FilmDropRoot sets this from its `configCacheBuster` prop:
+//   - 'timestamp'  (default) — append `?_cb=<Date.now()>` to every fetch
+//   - 'none'       — never append a cache-busting query param
+//   - any string   — literal revision stamp (`?_cb=<encoded value>`)
+let configCacheBusterMode = 'timestamp'
+
+export function setConfigCacheBuster(mode) {
+  if (!mode) {
+    configCacheBusterMode = 'timestamp'
+    return
+  }
+  configCacheBusterMode = String(mode)
+}
+
+export function getCacheBusterSuffix() {
+  if (configCacheBusterMode === 'none') return ''
+  if (configCacheBusterMode === 'timestamp') return `?_cb=${Date.now()}`
+  return `?_cb=${encodeURIComponent(configCacheBusterMode)}`
+}
+
 /**
  * @param {string|null|undefined} url - Base URL (with or without trailing slash),
  *   or a full config.json URL (we'll strip `config/config.json` if present).
@@ -29,8 +50,7 @@ export function setConfigBaseUrl(url) {
 
 export function getConfigBaseUrl() {
   if (configBaseUrl) return configBaseUrl
-  // Fallback: Vite BASE_URL (SPA default). import.meta.env is available in
-  // all supported bundlers; guard for non-bundler environments anyway.
+  // Fallback: Vite BASE_URL for SPA mode.
   try {
     return import.meta.env?.BASE_URL || '/'
   } catch {

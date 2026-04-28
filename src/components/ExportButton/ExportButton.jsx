@@ -26,13 +26,17 @@ const ExportButton = () => {
       type: 'application/json'
     })
     const url = URL.createObjectURL(blob)
+    // Detached-anchor download avoids mutating document.body, which
+    // would violate the container-scoping contract for embedded hosts.
     const a = document.createElement('a')
     a.href = url
     a.download = uniqueFileName
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+    a.rel = 'noopener'
+    try {
+      a.click()
+    } finally {
+      URL.revokeObjectURL(url)
+    }
   }
 
   return (

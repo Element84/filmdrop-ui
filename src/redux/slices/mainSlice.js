@@ -59,6 +59,8 @@ const initialState = {
   queryableFilters: {},
   detailsResetKey: 0,
   showSceneOverlay: true,
+  // Per-store mosaic request cache. Lifetime matches the owning
+  // FilmDropRoot — reset via mainSliceReset on unmount.
   mosaicCache: {
     lastMosaicRequestSignature: null,
     lastMosaicTopItemIds: null,

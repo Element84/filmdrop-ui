@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { RouterProvider } from '@tanstack/react-router'
 import { createFilmDropStore, setActiveStore } from './redux/store'
 import { createFilmDropRouter, setActiveRouter } from './router'
-import { setConfigBaseUrl } from './utils/configBase'
+import { setConfigBaseUrl, setConfigCacheBuster } from './utils/configBase'
 import { clearPendingAlertTimeout } from './utils/alertHelper'
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 
@@ -26,7 +26,9 @@ export default function FilmDropRoot(props) {
   const {
     basename,
     configUrl,
+    configCacheBuster,
     applyDocumentBranding = true,
+    persistThemePreference = true,
     onError,
     onOpenExternal,
     children
@@ -86,6 +88,13 @@ export default function FilmDropRoot(props) {
     }
   }, [configUrl])
 
+  useLayoutEffect(() => {
+    setConfigCacheBuster(configCacheBuster ?? 'timestamp')
+    return () => {
+      setConfigCacheBuster('timestamp')
+    }
+  }, [configCacheBuster])
+
   // Temporary window-property plumbing for the external-link handler until
   // it is threaded via context/props to PageHeader/RightContent.
   useLayoutEffect(() => {
@@ -109,6 +118,17 @@ export default function FilmDropRoot(props) {
     return undefined
   }, [applyDocumentBranding])
 
+  // Gate APP_THEME_PREFERENCE localStorage reads/writes.
+  useLayoutEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.__filmdropPersistThemePreference = persistThemePreference !== false
+      return () => {
+        delete window.__filmdropPersistThemePreference
+      }
+    }
+    return undefined
+  }, [persistThemePreference])
+
   return (
     <ErrorBoundary onError={onError}>
       <Provider store={store}>
@@ -122,7 +142,9 @@ export default function FilmDropRoot(props) {
 FilmDropRoot.propTypes = {
   basename: PropTypes.string,
   configUrl: PropTypes.string,
+  configCacheBuster: PropTypes.string,
   applyDocumentBranding: PropTypes.bool,
+  persistThemePreference: PropTypes.bool,
   onError: PropTypes.func,
   onOpenExternal: PropTypes.func,
   children: PropTypes.node

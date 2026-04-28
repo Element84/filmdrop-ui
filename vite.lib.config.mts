@@ -55,7 +55,7 @@ export default defineConfig({
   // public/ assets are consumer-supplied in library mode.
   publicDir: false,
   define: {
-    'process.env.REACT_APP_VERSION': JSON.stringify(pkg.version),
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version),
     // Required: `vite build` in lib mode does not replace this
     // automatically. Removing it regresses bundle size by ~23 KB
     // (dev-only branches in MUI/emotion stop being eliminated).

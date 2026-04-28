@@ -29,11 +29,7 @@ let activeStore = null
 const liveStores = new Set()
 
 function isDev() {
-  return (
-    typeof process !== 'undefined' &&
-    process.env &&
-    process.env.NODE_ENV !== 'production'
-  )
+  return Boolean(import.meta.env?.DEV)
 }
 
 export function setActiveStore(storeInstance, options) {

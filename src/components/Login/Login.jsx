@@ -2,6 +2,7 @@ import { React, useState, useEffect } from 'react'
 import './Login.css'
 import { AuthService } from '../../services/post-auth-service'
 import { useSelector } from 'react-redux'
+import { shouldApplyDocumentBranding } from '../../utils/themeHelper'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -31,6 +32,9 @@ const Login = () => {
   }
 
   useEffect(() => {
+    if (!shouldApplyDocumentBranding()) {
+      return undefined
+    }
     const previousTitle = document.title
     document.title = 'Login'
     return () => {

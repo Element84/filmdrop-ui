@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import PropTypes from 'prop-types'
 import { Select, MenuItem, OutlinedInput, Chip, Box } from '@mui/material'
 import Card from '../Card/Card'
 import './MultiSelect.css'
 
 const MultiSelect = ({ label, value, onChange, options, className = '' }) => {
+  const selectRef = useRef(null)
+
   const handleChange = (event) => {
     const newValue = event.target.value
     onChange(typeof newValue === 'string' ? newValue.split(',') : newValue)
@@ -12,12 +14,18 @@ const MultiSelect = ({ label, value, onChange, options, className = '' }) => {
 
   const handleDelete = (valueToDelete) => {
     onChange(value.filter((v) => v !== valueToDelete))
-    document.activeElement?.blur()
+    // Blur via the ref-owned input instead of `document.activeElement`
+    // so MultiSelect never touches host focus when embedded.
+    const input = selectRef.current?.querySelector?.('input')
+    if (input && typeof input.blur === 'function') {
+      input.blur()
+    }
   }
 
   return (
     <Card label={label} className={`MultiSelect ${className}`}>
       <Select
+        ref={selectRef}
         className="MultiSelect__select"
         multiple
         value={value}

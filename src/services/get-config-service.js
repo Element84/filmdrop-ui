@@ -7,11 +7,14 @@ import {
   autoConfigureCollections,
   autoConfigureRendering
 } from '../utils/configHelper'
-import { resolveConfigUrl, resolveFaviconUrl } from '../utils/configBase'
+import {
+  resolveConfigUrl,
+  resolveFaviconUrl,
+  getCacheBusterSuffix
+} from '../utils/configBase'
 
 export async function LoadConfigIntoStateService() {
-  const cacheBuster = Date.now()
-  const configUrl = `${resolveConfigUrl()}?_cb=${cacheBuster}`
+  const configUrl = `${resolveConfigUrl()}${getCacheBusterSuffix()}`
 
   await fetch(configUrl, {
     cache: 'no-store'
@@ -55,13 +58,11 @@ export async function LoadConfigIntoStateService() {
 }
 
 export async function DoesFaviconExistService() {
-  const cacheBuster = Date.now()
-
   try {
     const response = await fetch(
       `${resolveFaviconUrl(
         store.getState().mainSlice.appConfig.APP_FAVICON
-      )}?_cb=${cacheBuster}`,
+      )}${getCacheBusterSuffix()}`,
       {
         method: 'HEAD',
         cache: 'no-store'

@@ -1,3 +1,5 @@
+import { describe, it, expect, beforeEach, vi } from 'vitest'
+import StacFields from '@radiantearth/stac-fields'
 import {
   getStacFieldType,
   getFieldSpec,
@@ -5,7 +7,8 @@ import {
   getFieldTooltipInfo,
   isFieldSupported,
   discoverFieldMetadata,
-  getFallbackFieldLabel
+  getFallbackFieldLabel,
+  clearFieldCaches
 } from './fieldDiscovery.js'
 
 // Mock STAC item for testing
@@ -167,5 +170,63 @@ describe('fieldDiscovery', () => {
       const result = getFallbackFieldLabel('platform')
       expect(result).toBe('Platform')
     })
+  })
+})
+
+describe('fieldDiscovery LRU cache (via getFieldSpec)', () => {
+  let getSpecSpy
+
+  beforeEach(() => {
+    clearFieldCaches()
+    getSpecSpy = vi
+      .spyOn(StacFields.Registry, 'getSpecification')
+      .mockImplementation((name) => ({ label: `spec:${name}` }))
+  })
+
+  it('caches subsequent lookups of the same field', () => {
+    getFieldSpec('eo:cloud_cover')
+    getFieldSpec('eo:cloud_cover')
+    getFieldSpec('eo:cloud_cover')
+    expect(getSpecSpy).toHaveBeenCalledTimes(1)
+  })
+
+  it('clearFieldCaches forces the next lookup to re-invoke the registry', () => {
+    getFieldSpec('eo:cloud_cover')
+    expect(getSpecSpy).toHaveBeenCalledTimes(1)
+    clearFieldCaches()
+    getFieldSpec('eo:cloud_cover')
+    expect(getSpecSpy).toHaveBeenCalledTimes(2)
+  })
+
+  it('evicts the oldest entry when cache exceeds MAX_CACHE_SIZE (1000)', () => {
+    for (let i = 0; i < 1001; i++) getFieldSpec(`field:${i}`)
+    expect(getSpecSpy).toHaveBeenCalledTimes(1001)
+
+    // field:0 was evicted → lookup calls registry again.
+    getFieldSpec('field:0')
+    expect(getSpecSpy).toHaveBeenCalledTimes(1002)
+
+    // field:999 was the 1000th insert and should still be cached.
+    const callsBefore = getSpecSpy.mock.calls.length
+    getFieldSpec('field:999')
+    expect(getSpecSpy.mock.calls.length).toBe(callsBefore)
+  })
+
+  it('re-access promotes an entry (MRU) so older entries get evicted first', () => {
+    for (let i = 0; i < 1000; i++) getFieldSpec(`field:${i}`)
+    // Promote field:0 to MRU.
+    getFieldSpec('field:0')
+    // Insert one more → oldest (field:1) should now be evicted.
+    getFieldSpec('field:NEW')
+
+    const callsBeforeProbe = getSpecSpy.mock.calls.length
+
+    // field:0 still cached (MRU)
+    getFieldSpec('field:0')
+    expect(getSpecSpy.mock.calls.length).toBe(callsBeforeProbe)
+
+    // field:1 was evicted
+    getFieldSpec('field:1')
+    expect(getSpecSpy.mock.calls.length).toBe(callsBeforeProbe + 1)
   })
 })

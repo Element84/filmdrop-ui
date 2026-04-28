@@ -20,10 +20,24 @@ export interface FilmDropRootProps {
   /** URL (or directory base) for `config/config.json` and `data/*.json`. */
   configUrl?: string
   /**
+   * Cache-busting strategy for config/favicon/grid-data fetches:
+   * - `'timestamp'` (default) — append `?_cb=<Date.now()>`
+   * - `'none'` — never append a cache-busting query param
+   * - any other string — use as a literal revision stamp
+   *   (`?_cb=<encoded value>`). Ideal for per-deploy hashes.
+   */
+  configCacheBuster?: string
+  /**
    * When true (default), FilmDrop mutates `document.title`, favicon, and
    * theme CSS variables on `<html>`. Set false for embedded consumers.
    */
   applyDocumentBranding?: boolean
+  /**
+   * When true (default), persist the current theme to
+   * `localStorage['APP_THEME_PREFERENCE']`. Set false to let a host app
+   * manage theme preference in its own store.
+   */
+  persistThemePreference?: boolean
   /** Called from the library's ErrorBoundary on uncaught errors. */
   onError?: FilmDropOnError
   /**
@@ -36,5 +50,12 @@ export interface FilmDropRootProps {
 
 /** Root component for FilmDrop UI. Mount exactly one per page. */
 export const FilmDropRoot: ComponentType<FilmDropRootProps>
+
+/**
+ * Clear internal field-discovery LRU caches (STAC field types, specs,
+ * metadata). Useful for host apps that tear down and remount FilmDrop and
+ * want to reclaim memory.
+ */
+export function clearFieldCaches(): void
 
 export default FilmDropRoot

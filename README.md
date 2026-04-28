@@ -247,6 +247,10 @@ based on the collection's STAC metadata if not specified:
 FilmDrop UI is a React component library in addition to a standalone SPA.
 Install the package and peer dependencies, then mount one `<FilmDropRoot />`.
 
+For a runnable reference host-app that demonstrates embedded mount at a
+non-root basepath with `applyDocumentBranding={false}`, see
+[`examples/starter/`](examples/starter/README.md).
+
 ```bash
 npm install filmdrop-ui \
   react react-dom react-redux @reduxjs/toolkit \
@@ -277,18 +281,25 @@ export default function App() {
 
 ### `<FilmDropRoot />` props
 
-| Prop                    | Type                    | Default                         |
-| ----------------------- | ----------------------- | ------------------------------- |
-| `basename`              | `string`                | `'/'`                           |
-| `configUrl`             | `string`                | Vite `BASE_URL`                 |
-| `applyDocumentBranding` | `boolean`               | `true`                          |
-| `onError`               | `(error, info) => void` | —                               |
-| `onOpenExternal`        | `(url, meta?) => void`  | `window.open(url, '_blank', …)` |
+| Prop                     | Type                          | Default                         |
+| ------------------------ | ----------------------------- | ------------------------------- |
+| `basename`               | `string`                      | `'/'`                           |
+| `configUrl`              | `string`                      | Vite `BASE_URL`                 |
+| `configCacheBuster`      | `'timestamp'\|'none'\|string` | `'timestamp'`                   |
+| `applyDocumentBranding`  | `boolean`                     | `true`                          |
+| `persistThemePreference` | `boolean`                     | `true`                          |
+| `onError`                | `(error, info) => void`       | —                               |
+| `onOpenExternal`         | `(url, meta?) => void`        | `window.open(url, '_blank', …)` |
 
 - `basename` — public alias of TanStack Router's `basepath`.
 - `configUrl` — URL (or directory base) for `config/config.json` and `data/*.json`.
+- `configCacheBuster` — `'timestamp'` (default) appends `?_cb=<Date.now()>`;
+  `'none'` disables cache-busting so host CDN/ETag caching wins; any other
+  string is used literally (e.g. a per-deploy commit hash).
 - `applyDocumentBranding` — when `false`, FilmDrop does not mutate
   `document.title`, favicon, or `<html>`.
+- `persistThemePreference` — when `false`, FilmDrop does not read or write
+  `localStorage['APP_THEME_PREFERENCE']`.
 - `onError` — `(error, info: { componentStack, phase }) => void`; fired by
   the library's ErrorBoundary.
 - `onOpenExternal` — override outbound link handling for embedded hosts
@@ -306,7 +317,7 @@ export default function App() {
 - **Config + data files.** Serve your `config.json` under
   `${configUrl}` (or `${BASE_URL}config/config.json`). Grid-view data
   files (`cdem.json`, `doqq.json`, `mgrs.json`, `wrs2.json`) must live at
-  `${configUrl base}/data/*.json` (Decision 0.4 / Step 2.17). Example layout:
+  `${configUrl base}/data/*.json`. Example layout:
 
   ```text
   your-host/
@@ -324,7 +335,7 @@ export default function App() {
 
 - **Config asset paths.** `BRAND_LOGO`, `LOGIN_LOGO`, `APP_FAVICON`, and
   `LOGO_URL` in `config.json` resolve relative to the `configUrl` base.
-  Copy your logos alongside `config.json` (Step 2.18).
+  Copy your logos alongside `config.json`.
 - **Reserved URL params.** `dt`, `view`, `viz`, `tab`, `z`, `c` are owned
   by FilmDrop. Do not read/write them in host code; they are part of the
   SemVer public surface.
@@ -332,7 +343,7 @@ export default function App() {
   `localStorage` keys `APP_AUTH_TOKEN`, `APP_THEME_PREFERENCE`, and
   `sessionStorage` key `POST_AUTH_REDIRECT_URL` are shared across all
   apps on the same origin — be aware in multi-app deployments.
-  Multi-instance support is deferred to Phase 5 of
+  Multi-instance support is on the roadmap; see
   [`componentization_plan.md`](componentization_plan.md).
 - **Next.js / SSR.** `lib-entry.jsx` declares `'use client'`, but Leaflet
   and MUI date pickers are client-only. Wrap `FilmDropRoot` in
@@ -351,17 +362,43 @@ export default function App() {
 
 ### Container-escape CSS contract
 
+FilmDrop ships `.filmdrop-root` container-scoped selectors alongside the
+host-scoped `:root[data-theme=…]` ones, and `App.jsx` renders a
+`<div className="App filmdrop-root" data-theme=…>` wrapper. Embedded
+consumers that pass `applyDocumentBranding={false}` get themed CSS
+variables without FilmDrop writing to `<html>`.
+
 Several layout rules (App loading overlay, UploadGeojsonModal,
-PanelToggle, attribution tooltip) use `position: fixed` + 100% viewport
-coverage. In embedded hosts these rules escape the FilmDrop container.
-Phase 3 Step 3.17 adds a `.filmdrop-root` wrapper that scopes positioning;
-until it lands, embed-only consumers should:
+PanelToggle, attribution tooltip) still use `position: fixed` for
+viewport coverage. Embed-only consumers should:
 
 1. Constrain `<FilmDropRoot />` inside a `position: relative; contain: layout;`
-   container.
-2. Set `applyDocumentBranding={false}` to avoid `<html>` mutations.
-3. Expect full-viewport overlays (loading, modal) to cover host chrome
-   when they appear.
+   container so overflow clipping is well-defined.
+2. Set `applyDocumentBranding={false}` to avoid `<html>` mutations
+   (title, favicon, `<html data-theme>`).
+3. Set `persistThemePreference={false}` if your host app manages theme
+   in its own preference store (avoids shared
+   `localStorage['APP_THEME_PREFERENCE']`).
+4. Expect full-viewport overlays (loading, modal) to cover host chrome
+   when they appear — the `position: fixed` contract is part of the
+   library surface.
+
+### Post-authentication navigation
+
+When `APP_TOKEN_AUTH_ENABLED` is true, FilmDrop stores the pre-auth URL
+in `sessionStorage['POST_AUTH_REDIRECT_URL']` before the login form
+mounts and reads it back on successful login. The navigation matrix:
+
+| Mode                | `basename` | Stored URL       | Resolved target           |
+| ------------------- | ---------- | ---------------- | ------------------------- |
+| SPA                 | `'/'`      | `/collection/id` | `/collection/id`          |
+| Embedded            | `/app`     | `/collection/id` | `/app/collection/id`      |
+| Embedded (absolute) | `/app`     | `https://h/x`    | `https://h/x` (untouched) |
+
+FilmDrop applies the active basepath to stored redirect URLs via
+`applyBasepathToRedirect` (exported from
+`src/services/post-auth-service.js` for unit tests). Absolute URLs and
+already-prefixed paths are left alone.
 
 ### Bundle surface
 

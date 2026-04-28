@@ -5,3 +5,6 @@
 // SPA-only (fonts, body resets) and deliberately excluded here.
 
 export { default as FilmDropRoot } from './FilmDropRoot'
+
+// Maintenance utilities for long-lived host apps.
+export { clearFieldCaches } from './utils/fieldDiscovery'

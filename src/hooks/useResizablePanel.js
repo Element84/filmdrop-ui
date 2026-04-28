@@ -22,6 +22,11 @@ export const useResizablePanel = (panelRef) => {
   const isDraggingRef = useRef(false)
   const startXRef = useRef(0)
   const startWidthRef = useRef(0)
+  // Snapshot the host's body-style values so we restore them on drag
+  // end instead of clobbering with empty strings. Matters when the host
+  // page sets its own cursor / userSelect defaults.
+  const prevBodyCursorRef = useRef('')
+  const prevBodyUserSelectRef = useRef('')
 
   // Calculate columns based on panel width
   const calculateColumns = useCallback((width) => {
@@ -80,9 +85,10 @@ export const useResizablePanel = (panelRef) => {
 
   // Mouse up handler
   const handleMouseUp = useCallback(() => {
+    if (!isDraggingRef.current) return
     isDraggingRef.current = false
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
+    document.body.style.cursor = prevBodyCursorRef.current
+    document.body.style.userSelect = prevBodyUserSelectRef.current
   }, [])
 
   // Mouse down handler for drag handle
@@ -92,6 +98,8 @@ export const useResizablePanel = (panelRef) => {
       isDraggingRef.current = true
       startXRef.current = e.clientX
       startWidthRef.current = leftPanelWidth
+      prevBodyCursorRef.current = document.body.style.cursor
+      prevBodyUserSelectRef.current = document.body.style.userSelect
       document.body.style.cursor = 'ew-resize'
       document.body.style.userSelect = 'none'
     },
@@ -107,8 +115,11 @@ export const useResizablePanel = (panelRef) => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
       // Restore body styles if unmount occurs mid-drag.
-      document.body.style.cursor = ''
-      document.body.style.userSelect = ''
+      if (isDraggingRef.current) {
+        document.body.style.cursor = prevBodyCursorRef.current
+        document.body.style.userSelect = prevBodyUserSelectRef.current
+        isDraggingRef.current = false
+      }
     }
   }, [handleMouseMove, handleMouseUp])
 

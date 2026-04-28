@@ -37,9 +37,9 @@ const LeafMap = () => {
   const [mapTouched, setmapTouched] = useState(false)
   const hasInitializedViewport = useRef(false)
 
-  // Read initial map position from URL so the map starts at the shared
-  // position on first render. MapContainer only uses center/zoom on mount,
-  // so this must be computed before the first render (not in an effect).
+  // Mount-only snapshot: MapContainer reads center/zoom once on mount,
+  // so adding deps here would be silently ineffective. Runtime URL ↔ map
+  // sync happens via the `moveend` handler below (replace: true).
   const initialPosition = useMemo(() => {
     const search = getActiveRouter().state.location.search
     let center = _appConfig.MAP_CENTER || DEFAULT_MAP_CENTER
@@ -57,7 +57,7 @@ const LeafMap = () => {
       }
     }
     return { center, zoom }
-  }, []) // Only compute once on mount
+  }, [])
 
   const mapMarkerIcon = useMemo(
     () =>

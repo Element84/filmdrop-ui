@@ -1,0 +1,7 @@
+{
+  "STAC_API_URL": "https://earth-search.aws.element84.com/v1",
+  "APP_NAME": "FilmDrop Starter",
+  "THEME_SWITCHING_ENABLED": true,
+  "MAP_CENTER": [40, -100],
+  "MAP_ZOOM": 4
+}

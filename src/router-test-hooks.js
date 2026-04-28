@@ -8,11 +8,7 @@ let activeRouter = null
 const liveRouters = new Set()
 
 function isDev() {
-  return (
-    typeof process !== 'undefined' &&
-    process.env &&
-    process.env.NODE_ENV !== 'production'
-  )
+  return Boolean(import.meta.env?.DEV)
 }
 
 export function setActiveRouter(routerInstance, options) {

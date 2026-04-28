@@ -9,17 +9,103 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
-- **Phase 2 library packaging.** FilmDrop UI now builds as an installable
+- **Library-mode env reads.** Migrated `process.env` reads in `src/`
+  to `import.meta.env`:
+  - `src/utils/fieldFormatting.js` — dev-mode security warning now
+    triggers via `import.meta.env?.DEV` (previously gated by an
+    `isDev()` check that always returned `false` in the browser, so
+    the warning never fired).
+  - `src/App.jsx` — version log reads `import.meta.env.VITE_APP_VERSION`;
+    `try/catch` wrapper removed (no longer needed).
+  - `src/redux/store.js` and `src/router-test-hooks.js` — `isDev()`
+    helpers replaced with a one-liner over `import.meta.env.DEV`,
+    fixing the same browser-undefined-`process` issue.
+  - `vite.config.mts` define swap: `process.env.REACT_APP_VERSION` →
+    `import.meta.env.VITE_APP_VERSION`. `vite.lib.config.mts` matches.
+- **Starter NOTICE.** `examples/starter/README.md` now states the
+  starter intentionally ships no brand assets and points
+  consumers at `config.json` brand props.
+- **Test coverage.**
+  - New `src/services/post-auth-service.test.js` — 10 cases covering
+    success, sessionStorage `POST_AUTH_REDIRECT_URL` redirect with
+    basepath applied, `javascript:` scheme rejection, pre-mount
+    `getActiveRouter` fallback, network/non-OK/missing-token error
+    paths.
+  - New `src/utils/clipboardHelper.test.js` — 4 cases locking in the
+    post-fallback-removal contract (no `document.body.appendChild`)
+    across success / no-API / rejected-writeText / non-function-API.
+- **Host-integration hardening.** Every `FilmDropRoot` prop that
+  affects host state is now gated behind a default-true flag so embedded
+  consumers can opt out:
+  - `applyDocumentBranding={false}` — suppresses writes to
+    `document.title`, `<link rel=icon>`, and `<html data-theme>`
+    (`src/utils/configHelper.js`, `src/components/Login/Login.jsx`,
+    `src/utils/themeHelper.js`).
+  - `persistThemePreference={false}` — suppresses
+    `localStorage['APP_THEME_PREFERENCE']` reads/writes
+    (`ThemeSwitcher` + `themeHelper`).
+  - `configCacheBuster` — `'timestamp'` (default), `'none'`, or a literal
+    revision stamp. Threaded through `configBase.getCacheBusterSuffix()`
+    and consumed by `get-config-service` and
+    `get-local-grid-data-json-service`.
+- **CSS container scoping.** Theme CSS now ships dual selectors:
+  `:root[data-theme=…], .filmdrop-root[data-theme=…]`. `App.jsx` wraps
+  its root in `<div className="App filmdrop-root" data-theme=…>` so the
+  scoped selectors match in embedded mode. `scripts/verify-consumer-smoke.mjs`
+  asserts both selectors are present in `dist/style.css`.
+- **Basepath-aware post-auth redirect.** `applyBasepathToRedirect`
+  (exported from `src/services/post-auth-service.js`) prefixes the
+  router's basepath onto stored `POST_AUTH_REDIRECT_URL` values so
+  embedded hosts don't lose their route subtree on login.
+- **`examples/starter/`** — runnable reference host-app that mounts
+  `FilmDropRoot` at `/app` with `applyDocumentBranding={false}` and the
+  other opt-out flags. Excluded from the npm tarball via the
+  `package.json` `files` whitelist.
+- **Public API: `clearFieldCaches()`** — exported from `lib-entry.jsx`
+  for long-lived host apps that tear down and remount FilmDrop.
+- **Basepath regression suite** — `src/router.basepath.test.js`
+  exercises `createFilmDropRouter({ basepath })` option propagation +
+  `applyBasepathToRedirect` matrix. 9 new tests; suite total now 700
+  (+ 14 from this round: 10 post-auth, 4 clipboard).
+
+### Changed
+
+- `useUrlStateSync` — removed `dispatch` from the URL→Redux sync
+  effect's dep array.
+  Memoized callbacks (`fetchAndDisplayItem`, `clearItemSelection`)
+  retained as deps.
+- `clipboardHelper.copyToClipboard` — dropped the legacy
+  `document.execCommand('copy')` fallback that mounted a hidden
+  textarea on `document.body`. Uses `navigator.clipboard.writeText`
+  unconditionally; reports failures to the console instead of mutating
+  host DOM.
+- `ExportButton` — uses a detached `<a>` + synthetic click for GeoJSON
+  download. No longer appends/removes the anchor on `document.body`.
+- `MultiSelect` — chip delete handler blurs the Select input via a
+  React ref instead of `document.activeElement`.
+- `useResizablePanel` — snapshots the host's prior
+  `document.body.style.cursor` / `userSelect` into refs on
+  `mousedown` and restores them on `mouseup`/unmount, rather than
+  clobbering to empty strings.
+- `get-queryables-service` `resolveRefs` — adds cycle detection,
+  `MAX_REF_DEPTH=10`, and a per-resolve URL fetch cache so hostile or
+  self-referential queryable schemas cannot spin the resolver.
+- `fieldDiscovery` caches are now bounded LRU (replaces the nuclear
+  "clear on overflow" behavior that thrashed long sessions).
+- DOM audit documented in `CONTRIBUTING.md` as the per-PR checklist for
+  new host-DOM writes.
+
+- **Library packaging.** FilmDrop UI now builds as an installable
   component package (`filmdrop-ui`) via `npm run build:lib`, producing
   `dist/filmdrop-ui.js` (ESM), `dist/style.css`, and hand-authored
-  `dist/index.d.ts`. See `componentization_plan.md` Phase 2 and the new
-  "Use as a Library" section in the README.
+  `dist/index.d.ts`. See the new "Use as a Library" section in the
+  README.
 - Added `vite.lib.config.mts` (library build config) + `src/lib-entry.jsx`
   (public API surface). Peer deps (React, Redux, TanStack Router, MUI,
   Emotion, Leaflet, react-leaflet) are externalized; everything else
   bundles.
 - Added `scripts/verify-lib-bundle.mjs` post-build guard: fails CI if core
-  Leaflet CSS leaks into `dist/style.css` (Decision 0.7).
+  Leaflet CSS leaks into `dist/style.css`.
 - Added `scripts/copy-types.mjs` to publish hand-authored TypeScript types.
 - Added `src/config.schema.json` — JSON Schema for `config.json`.
 - Added `CONTRIBUTING.md` and `TESTING.md` documenting quality gates,
@@ -43,18 +129,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   `react-leaflet`. `@vitejs/plugin-react` moved to devDependencies.
   Orphan direct deps removed: `@floating-ui/react`, `@floating-ui/react-dom`
   (transitive), `dayjs-plugin-utc` (unused).
-- **Leaflet CSS externalized** from the library bundle (Decision 0.7).
+- **Leaflet CSS externalized** from the library bundle.
   Library consumers must `import 'leaflet/dist/leaflet.css'` and
   `'leaflet-draw/dist/leaflet.draw.css'` themselves. The SPA entry
   (`src/index.jsx`) imports them for standalone mode.
 - Leaflet control theme overrides moved from `Search.css` → `LeafMap.css`
-  so removing the Search component does not silently drop map styling
-  (Step 2.16).
+  so removing the Search component does not silently drop map styling.
 - Marker icon assets (`marker-icon.png`, `marker-shadow.png`) now resolved
   via bundler import from `src/assets/` instead of absolute `/marker-icon.png`
-  paths, so the library works under any `configUrl` base (Step 2.3).
+  paths, so the library works under any `configUrl` base.
 - `vite.config.mts` replaced `require('./package.json')` with an ESM
-  `readFileSync` + `JSON.parse` read (Step 2.14).
+  `readFileSync` + `JSON.parse` read.
 - Moved Item pagination buttons from below to above the Item Details content.
 - Limited bbox precision to 6 decimals in map bounds and search/URL params; longitude clamped to [-180, 180]. Exported `roundCoord`, `clampAndRoundBbox` for reuse.
 - Item Details field grid: column layout set to `minmax(0, 40%) 1fr`, alignment and padding adjusted for clearer spacing and to avoid overflowing text.

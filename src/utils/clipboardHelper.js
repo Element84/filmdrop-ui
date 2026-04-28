@@ -1,10 +1,14 @@
 /**
- * Copy text to clipboard with fallback support
+ * Copy text to clipboard via `navigator.clipboard.writeText`. Do not
+ * reintroduce a `document.execCommand('copy')` fallback — it required
+ * appending a hidden textarea to `document.body`, breaking
+ * container-scoping for embedded hosts.
+ *
  * @param {string} text - Text to copy
  * @param {Function} setCopiedState - State setter for copied state
  * @param {string} itemKey - Unique key for the item
  * @param {number} resetDelay - Delay before resetting state (default: 2000)
- * @returns {Promise<Object>} Success status and timeout ID
+ * @returns {Promise<{success: boolean, timeoutId: number|null}>}
  */
 export const copyToClipboard = async (
   text,
@@ -12,43 +16,28 @@ export const copyToClipboard = async (
   itemKey,
   resetDelay = 2000
 ) => {
+  if (
+    typeof navigator === 'undefined' ||
+    !navigator.clipboard ||
+    typeof navigator.clipboard.writeText !== 'function'
+  ) {
+    console.error(
+      'Clipboard API unavailable (non-secure context or unsupported browser).'
+    )
+    return { success: false, timeoutId: null }
+  }
+
   try {
     await navigator.clipboard.writeText(text)
     setCopiedState(itemKey)
 
-    // Set up cleanup for the copied state
     const timeoutId = setTimeout(() => {
       setCopiedState(null)
     }, resetDelay)
 
-    // Return the timeout ID for potential cleanup
     return { success: true, timeoutId }
   } catch (err) {
-    // Fallback for older browsers
-    try {
-      const textArea = document.createElement('textarea')
-      textArea.value = text
-      textArea.style.position = 'fixed'
-      textArea.style.left = '-999999px'
-      textArea.style.top = '-999999px'
-      document.body.appendChild(textArea)
-      textArea.focus()
-      textArea.select()
-
-      const successful = document.execCommand('copy')
-      document.body.removeChild(textArea)
-
-      if (successful) {
-        setCopiedState(itemKey)
-        const timeoutId = setTimeout(() => {
-          setCopiedState(null)
-        }, resetDelay)
-        return { success: true, timeoutId }
-      }
-    } catch (fallbackErr) {
-      console.error('Failed to copy URL:', fallbackErr)
-    }
-
+    console.error('Failed to copy to clipboard:', err)
     return { success: false, timeoutId: null }
   }
 }

@@ -19,7 +19,7 @@ const pkg = JSON.parse(
 export default defineConfig({
   base: '/',
   define: {
-    'process.env.REACT_APP_VERSION': JSON.stringify(pkg.version)
+    'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version)
   },
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
   build: {
