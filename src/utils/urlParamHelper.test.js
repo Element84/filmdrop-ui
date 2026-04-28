@@ -26,6 +26,26 @@ describe('serializeQueryableFiltersForUrl', () => {
     })
   })
 
+  it('serializes partial range with only min', () => {
+    expect(
+      serializeQueryableFiltersForUrl({
+        gsd: { min: 20 }
+      })
+    ).toEqual({
+      gsd_min: '20'
+    })
+  })
+
+  it('serializes partial range with only max', () => {
+    expect(
+      serializeQueryableFiltersForUrl({
+        gsd: { max: 50 }
+      })
+    ).toEqual({
+      gsd_max: '50'
+    })
+  })
+
   it('serializes arrays as comma-separated strings', () => {
     expect(
       serializeQueryableFiltersForUrl({
@@ -110,12 +130,32 @@ describe('deserializeQueryableFiltersFromURL', () => {
     expect(Number.isInteger(result.count.max)).toBe(true)
   })
 
-  it('skips range when only _min is present', () => {
+  it('deserializes partial range with only _min present', () => {
     const params = { 'eo:cloud_cover_min': '0' }
     const queryables = {
       properties: { 'eo:cloud_cover': { type: 'number' } }
     }
-    expect(deserializeQueryableFiltersFromURL(params, queryables)).toEqual({})
+    expect(deserializeQueryableFiltersFromURL(params, queryables)).toEqual({
+      'eo:cloud_cover': { min: 0 }
+    })
+  })
+
+  it('deserializes partial range with only _max present', () => {
+    const params = { 'eo:cloud_cover_max': '50.5' }
+    const queryables = {
+      properties: { 'eo:cloud_cover': { type: 'number' } }
+    }
+    expect(deserializeQueryableFiltersFromURL(params, queryables)).toEqual({
+      'eo:cloud_cover': { max: 50.5 }
+    })
+  })
+
+  it('deserializes partial range with only _max for integer type', () => {
+    const params = { count_max: '100' }
+    const queryables = { properties: { count: { type: 'integer' } } }
+    const result = deserializeQueryableFiltersFromURL(params, queryables)
+    expect(result).toEqual({ count: { max: 100 } })
+    expect(Number.isInteger(result.count.max)).toBe(true)
   })
 
   it('deserializes comma-separated strings into arrays', () => {
@@ -232,6 +272,28 @@ describe('serialize/deserialize roundtrip', () => {
         gsd: { type: 'number' },
         count: { type: 'integer' },
         constellation: { type: 'string' }
+      }
+    }
+
+    const serialized = serializeQueryableFiltersForUrl(originalFilters)
+    const deserialized = deserializeQueryableFiltersFromURL(
+      serialized,
+      queryables
+    )
+
+    expect(deserialized).toEqual(originalFilters)
+  })
+
+  it('preserves partial range filter state through serialization roundtrip', () => {
+    const originalFilters = {
+      gsd: { min: 20 },
+      score: { max: 80 }
+    }
+
+    const queryables = {
+      properties: {
+        gsd: { type: 'integer' },
+        score: { type: 'number' }
       }
     }
 

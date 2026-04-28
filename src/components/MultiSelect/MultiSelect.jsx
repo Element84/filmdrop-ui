@@ -12,6 +12,7 @@ const MultiSelect = ({ label, value, onChange, options, className = '' }) => {
 
   const handleDelete = (valueToDelete) => {
     onChange(value.filter((v) => v !== valueToDelete))
+    document.activeElement?.blur()
   }
 
   return (

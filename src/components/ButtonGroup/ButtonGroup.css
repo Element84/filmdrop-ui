@@ -48,6 +48,17 @@
 
 .ButtonGroup__buttons.MuiToggleButtonGroup-root
   .MuiToggleButtonGroup-grouped.Mui-disabled {
+  border-left: none;
+}
+
+.ButtonGroup__buttons.MuiToggleButtonGroup-root
+  .MuiToggleButtonGroup-grouped.Mui-disabled:not(.Mui-selected) {
   opacity: var(--opacity-disabled);
   color: var(--side-panel-toggle-button-color);
+}
+
+.ButtonGroup__buttons.MuiToggleButtonGroup-root
+  .MuiToggleButtonGroup-grouped.Mui-disabled.Mui-selected {
+  opacity: var(--opacity-disabled);
+  color: var(--side-panel-toggle-button-color-selected);
 }

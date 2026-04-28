@@ -17,7 +17,7 @@
     "colormap": "^2.3.2",
     "dayjs": "^1.11.19",
     "dayjs-plugin-utc": "^0.1.2",
-    "dompurify": "^3.3.1",
+    "dompurify": "^3.4.0",
     "h3-js": "^4.4.0",
     "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
@@ -69,7 +69,7 @@
     "remark-validate-links": "^13.0.1",
     "resize-observer-polyfill": "^1.5.1",
     "typescript": "^5.9.2",
-    "vite": "^7.3.1",
+    "vite": "^7.3.2",
     "vite-plugin-svgr": "^4.5.0",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.0.18"
@@ -81,8 +81,8 @@
     "test": "vitest",
     "test-pre-commit": "cross-env NODE_ENV=test vitest --run",
     "coverage": "vitest run --coverage ",
-    "lint": "eslint ./src --ext .js,.ts && echo \"👍  Passed linting check.\n\"",
-    "lint-fix": "eslint ./src --ext .js,.ts --fix",
+    "lint": "eslint ./src ./scripts --ext .js,.ts,.mjs && echo \"👍  Passed linting check.\n\"",
+    "lint-fix": "eslint ./src ./scripts --ext .js,.ts,.mjs --fix",
     "format": "npx prettier --check . && echo \"👍  Passed formatting check.\n\"",
     "format-fix": "npx prettier . --write .",
     "fix": "npm run format-fix && npm run lint-fix",
@@ -90,6 +90,8 @@
     "audit-all": "npx better-npm-audit audit",
     "audit-prod": "npx better-npm-audit audit --production",
     "check-markdown": "remark . --frail",
+    "config:lint": "node scripts/lint-config.mjs",
+    "config:migrate": "node scripts/migrate-config.mjs",
     "prepare": "husky"
   },
   "browserslist": {
@@ -186,15 +188,53 @@
     "npm": ">=8"
   },
   "overrides": {
+    "rollup": "^4.59.0",
+    "picomatch@<=2.3.1": "2.3.2",
+    "picomatch@>=4.0.0 <4.0.4": "4.0.4",
+    "yaml@>=2.0.0 <2.8.3": "2.8.3",
+    "cosmiconfig": {
+      "yaml": "1.10.3"
+    },
+    "readdirp": {
+      "picomatch": "2.3.2"
+    },
     "semver": "^7.5.3",
     "cross-spawn": "^7.0.5",
     "form-data": "^4.0.4",
     "nanoid": "^3.3.9",
-    "esbuild": "^0.25.0",
+    "esbuild": "^0.27.0",
     "brace-expansion": "^2.0.2",
     "@messageformat/runtime": "^3.0.2",
     "glob": "^10.5.0",
     "js-yaml": "^4.1.1",
-    "mdast-util-to-hast": "^13.2.1"
+    "mdast-util-to-hast": "^13.2.1",
+    "micromatch": {
+      "picomatch": "^2.3.2"
+    },
+    "anymatch": {
+      "picomatch": "^2.3.2"
+    },
+    "readdirp": {
+      "picomatch": "^2.3.2"
+    },
+    "vite": {
+      "picomatch": "^4.0.4",
+      "yaml": "^2.8.3"
+    },
+    "tinyglobby": {
+      "picomatch": "^4.0.4"
+    },
+    "@rollup/pluginutils": {
+      "picomatch": "^4.0.4"
+    },
+    "vitest": {
+      "picomatch": "^4.0.4"
+    },
+    "cosmiconfig": {
+      "yaml": "^1.10.3"
+    },
+    "unified-engine": {
+      "yaml": "^2.8.3"
+    }
   }
 }

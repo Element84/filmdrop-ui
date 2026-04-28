@@ -33,6 +33,7 @@ const LeafMap = () => {
 
   const [map, setLocalMap] = useState({})
   const [mapTouched, setmapTouched] = useState(false)
+  const hasInitializedViewport = useRef(false)
 
   // Read initial map position from URL so the map starts at the shared
   // position on first render. MapContainer only uses center/zoom on mount,
@@ -189,6 +190,11 @@ const LeafMap = () => {
 
       // Sync map viewport to URL (debounced)
       const syncViewportToUrl = debounce(() => {
+        // Skip syncing the initial viewport to avoid interfering with URL-based item zoom
+        if (!hasInitializedViewport.current) {
+          hasInitializedViewport.current = true
+          return
+        }
         try {
           const center = map.getCenter()
           const zoom = map.getZoom()

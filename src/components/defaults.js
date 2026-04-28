@@ -1,4 +1,6 @@
 export const DEFAULT_MOSAIC_MAX_ITEMS = 100
+// Top N item IDs used for mosaic cache comparison only (not mosaic creation limit).
+export const DEFAULT_MOSAIC_TOP_COMPARE_ITEMS = 100
 export const DEFAULT_API_MAX_ITEMS = 200
 export const DEFAULT_SCENE_MIN_ZOOM = 7
 export const DEFAULT_MAP_ZOOM_MAX = 18

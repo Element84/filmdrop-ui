@@ -17,16 +17,15 @@ export function serializeQueryableFiltersForUrl(filters) {
       return
     }
 
-    // Handle range values (objects with min/max from RangeSlider)
+    // Handle range values (objects with min and/or max)
     if (
       value &&
       typeof value === 'object' &&
       !Array.isArray(value) &&
-      'min' in value &&
-      'max' in value
+      ('min' in value || 'max' in value)
     ) {
-      result[`${fieldName}_min`] = String(value.min)
-      result[`${fieldName}_max`] = String(value.max)
+      if ('min' in value) result[`${fieldName}_min`] = String(value.min)
+      if ('max' in value) result[`${fieldName}_max`] = String(value.max)
       return
     }
 
@@ -71,34 +70,25 @@ export function deserializeQueryableFiltersFromURL(params, queryables) {
     const minMatch = key.match(/^(.+)_min$/)
     const maxMatch = key.match(/^(.+)_max$/)
 
-    if (minMatch) {
-      const fieldName = minMatch[1]
+    if (minMatch || maxMatch) {
+      const fieldName = (minMatch || maxMatch)[1]
       if (processedRangeFields.has(fieldName)) continue
       processedRangeFields.add(fieldName)
 
       const minValue = params[`${fieldName}_min`]
       const maxValue = params[`${fieldName}_max`]
+      const schema = queryables.properties[fieldName]
 
-      if (minValue && maxValue) {
-        const schema = queryables.properties[fieldName]
-        if (schema && (schema.type === 'number' || schema.type === 'integer')) {
-          filters[fieldName] = {
-            min:
-              schema.type === 'integer'
-                ? parseInt(minValue)
-                : parseFloat(minValue),
-            max:
-              schema.type === 'integer'
-                ? parseInt(maxValue)
-                : parseFloat(maxValue)
-          }
+      if (schema && (schema.type === 'number' || schema.type === 'integer')) {
+        const parse =
+          schema.type === 'integer' ? (v) => parseInt(v, 10) : parseFloat
+        const rangeObj = {}
+        if (minValue) rangeObj.min = parse(minValue)
+        if (maxValue) rangeObj.max = parse(maxValue)
+        if (Object.keys(rangeObj).length > 0) {
+          filters[fieldName] = rangeObj
         }
       }
-      continue
-    }
-
-    if (maxMatch) {
-      // Already processed with _min
       continue
     }
 

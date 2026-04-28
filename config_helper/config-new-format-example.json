@@ -35,7 +35,6 @@
       },
       "queryableFilters": ["eo:cloud_cover"],
       "sceneMinZoom": 7,
-      "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"],
       "tileLayerParams": {
         "minZoom": 2,
         "minNativeZoom": 2,
@@ -80,12 +79,6 @@
         "color_formula": "Gamma+R+1.7+Sigmoidal+R+15+0.35"
       },
       "sceneMinZoom": 7,
-      "popupDisplayFields": [
-        "datetime",
-        "platform",
-        "instruments",
-        "eo:cloud_cover"
-      ],
       "tileLayerParams": {
         "minZoom": 2,
         "maxZoom": 26
@@ -100,8 +93,7 @@
         "assets": ["image"],
         "bidx": "1,2,3"
       },
-      "sceneMinZoom": 14,
-      "popupDisplayFields": ["datetime", "naip:state", "naip:year", "gsd"]
+      "sceneMinZoom": 14
     }
   },
 
@@ -125,9 +117,6 @@
       "medium": 4,
       "high": 7
     }
-  },
-  "_DEPRECATED_POPUP_DISPLAY_FIELDS": {
-    "sentinel-2-l2a": ["datetime", "platform", "eo:cloud_cover"]
   },
   "_DEPRECATED_TILE_LAYER_PARAMS": {
     "sentinel-2-l2a": {

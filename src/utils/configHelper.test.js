@@ -100,9 +100,9 @@ describe('ConfigHelper', () => {
   })
 
   describe('normalizeCollectionsConfig', () => {
-    it('should return config unchanged if COLLECTIONS_CONFIG already exists', () => {
+    it('should return modern config unchanged', () => {
       const newFormatConfig = {
-        COLLECTIONS: ['collection1', 'collection2'],
+        COLLECTIONS: { include: ['collection1', 'collection2'] },
         COLLECTIONS_CONFIG: {
           collection1: {
             visualizations: { default: { param1: 'value1' } },
@@ -120,157 +120,36 @@ describe('ConfigHelper', () => {
       expect(result.COLLECTIONS_CONFIG).toBeDefined()
     })
 
-    it('should migrate legacy SCENE_TILER_PARAMS to COLLECTIONS_CONFIG', () => {
+    it('should throw for legacy config keys', () => {
       const legacyConfig = {
-        COLLECTIONS: ['collection1', 'collection2'],
+        COLLECTIONS: { include: ['collection1', 'collection2'] },
         SCENE_TILER_PARAMS: {
           collection1: { param1: 'value1' },
           collection2: { param2: 'value2' }
         }
       }
 
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(
-        result.COLLECTIONS_CONFIG.collection1.visualizations.default
-      ).toEqual({
-        param1: 'value1'
-      })
-      expect(
-        result.COLLECTIONS_CONFIG.collection2.visualizations.default
-      ).toEqual({
-        param2: 'value2'
-      })
-      expect(result.SCENE_TILER_PARAMS).toBeDefined() // Still present for reference
+      expect(() => normalizeCollectionsConfig(legacyConfig)).toThrow(
+        'Legacy configuration format is not supported'
+      )
     })
 
-    it('should migrate legacy MOSAIC_TILER_PARAMS to COLLECTIONS_CONFIG', () => {
-      const legacyConfig = {
-        COLLECTIONS: ['collection1'],
-        MOSAIC_TILER_PARAMS: {
-          collection1: { mosaic: 'param' }
-        }
-      }
-
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(result.COLLECTIONS_CONFIG.collection1.mosaicTilerParams).toEqual({
-        mosaic: 'param'
-      })
-      expect(result.MOSAIC_TILER_PARAMS).toBeDefined()
-    })
-
-    it('should migrate legacy SEARCH_MIN_ZOOM_LEVELS to COLLECTIONS_CONFIG as sceneMinZoom', () => {
-      const legacyConfig = {
-        COLLECTIONS: ['collection1'],
-        SEARCH_MIN_ZOOM_LEVELS: {
-          collection1: { medium: 5, high: 7 }
-        }
-      }
-
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(result.COLLECTIONS_CONFIG.collection1.sceneMinZoom).toEqual(7)
-      expect(result.SEARCH_MIN_ZOOM_LEVELS).toBeDefined()
-    })
-
-    it('should migrate legacy POPUP_DISPLAY_FIELDS to COLLECTIONS_CONFIG', () => {
-      const legacyConfig = {
-        COLLECTIONS: ['collection1'],
-        POPUP_DISPLAY_FIELDS: {
-          collection1: ['field1', 'field2']
-        }
-      }
-
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(result.COLLECTIONS_CONFIG.collection1.popupDisplayFields).toEqual([
-        'field1',
-        'field2'
-      ])
-      expect(result.POPUP_DISPLAY_FIELDS).toBeDefined()
-    })
-
-    it('should migrate legacy TILE_LAYER_PARAMS to COLLECTIONS_CONFIG', () => {
-      const legacyConfig = {
-        COLLECTIONS: ['collection1'],
-        TILE_LAYER_PARAMS: {
-          collection1: { tileSize: 256 }
-        }
-      }
-
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(result.COLLECTIONS_CONFIG.collection1.tileLayerParams).toEqual({
-        tileSize: 256
-      })
-      expect(result.TILE_LAYER_PARAMS).toBeDefined()
-    })
-
-    it('should migrate legacy ENHANCED_DISPLAY_CONFIG to COLLECTIONS_CONFIG', () => {
-      const legacyConfig = {
-        COLLECTIONS: ['collection1'],
-        ENHANCED_DISPLAY_CONFIG: {
-          collection1: { groups: ['group1'] }
-        }
-      }
-
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(
-        result.COLLECTIONS_CONFIG.collection1.enhancedDisplayConfig
-      ).toEqual({ groups: ['group1'] })
-      expect(result.ENHANCED_DISPLAY_CONFIG).toBeDefined()
-    })
-
-    it('should migrate all legacy parameters together', () => {
-      const legacyConfig = {
-        COLLECTIONS: ['collection1', 'collection2'],
-        SCENE_TILER_PARAMS: {
-          collection1: { scene: 'param1' }
-        },
-        MOSAIC_TILER_PARAMS: {
-          collection1: { mosaic: 'param1' }
-        },
-        SEARCH_MIN_ZOOM_LEVELS: {
-          collection2: { medium: 5, high: 7 }
-        },
-        POPUP_DISPLAY_FIELDS: {
-          collection2: ['field1']
-        }
-      }
-
-      const result = normalizeCollectionsConfig(legacyConfig)
-
-      expect(
-        result.COLLECTIONS_CONFIG.collection1.visualizations.default
-      ).toEqual({
-        scene: 'param1'
-      })
-      expect(result.COLLECTIONS_CONFIG.collection1.mosaicTilerParams).toEqual({
-        mosaic: 'param1'
-      })
-      expect(result.COLLECTIONS_CONFIG.collection2.sceneMinZoom).toEqual(7)
-      expect(result.COLLECTIONS_CONFIG.collection2.popupDisplayFields).toEqual([
-        'field1'
-      ])
-      // Ensure backward compatibility
-      expect(result.SCENE_TILER_PARAMS).toBeDefined()
-      expect(result.MOSAIC_TILER_PARAMS).toBeDefined()
-      expect(result.SEARCH_MIN_ZOOM_LEVELS).toBeDefined()
-      expect(result.POPUP_DISPLAY_FIELDS).toBeDefined()
-    })
-
-    it('should handle config with no legacy parameters', () => {
-      const minimalConfig = {
+    it('should throw for legacy COLLECTIONS array format', () => {
+      const legacyCollectionsConfig = {
         COLLECTIONS: ['collection1']
       }
+      expect(() => normalizeCollectionsConfig(legacyCollectionsConfig)).toThrow(
+        'Legacy COLLECTIONS array format is not supported'
+      )
+    })
 
-      const result = normalizeCollectionsConfig(minimalConfig)
-
-      expect(result.COLLECTIONS_CONFIG).toBeDefined()
-      expect(result.COLLECTIONS_CONFIG.collection1).toBeDefined()
-      expect(Object.keys(result.COLLECTIONS_CONFIG.collection1)).toHaveLength(0)
+    it('should throw for invalid COLLECTIONS type', () => {
+      const invalidCollectionsConfig = {
+        COLLECTIONS: 'collection1'
+      }
+      expect(() =>
+        normalizeCollectionsConfig(invalidCollectionsConfig)
+      ).toThrow('Invalid COLLECTIONS format')
     })
   })
 

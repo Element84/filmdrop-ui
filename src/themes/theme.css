@@ -201,7 +201,12 @@
 
   /* Map Overlay - Action Button */
   --action-button-background: var(--brand-accent-primary);
-  --action-button-background-hover: var(--brand-accent-primary-dark);
+  --action-button-background-hover: color-mix(
+    in srgb,
+    var(--brand-accent-primary) 85%,
+    black
+  );
+  --action-button-divider: rgba(255, 255, 255, 0.3);
   --action-button-color: var(--white);
   --action-button-color-hover: var(--white);
   --action-button-color-disabled: var(--blue-gray-5);
@@ -424,7 +429,12 @@
 
   /* Map Overlay - Action Button */
   --action-button-background: var(--brand-accent-primary);
-  --action-button-background-hover: var(--brand-accent-primary-dark);
+  --action-button-background-hover: color-mix(
+    in srgb,
+    var(--brand-accent-primary) 85%,
+    black
+  );
+  --action-button-divider: rgba(255, 255, 255, 0.3);
   --action-button-color: var(--white);
   --action-button-color-hover: var(--white);
   --action-button-color-disabled: var(--blue-gray-5);

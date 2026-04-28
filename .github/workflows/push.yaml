@@ -33,6 +33,6 @@ jobs:
       - name: Copy config file
         run: mkdir -p ./public/config && cp config_helper/config.example.json ./public/config/config.json
       - name: Run unit tests
-        run: npm run test
+        run: npm run test-pre-commit
       - name: Run dev build
         run: npm run build

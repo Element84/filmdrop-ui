@@ -110,11 +110,12 @@ Create `public/config/config.json` (development) or `build/config/config.json` (
   },
   "COLLECTIONS_CONFIG": {
     "your-collection-id": {
-      "sceneTilerParams": {
-        "assets": ["red", "green", "blue"]
+      "visualizations": {
+        "default": {
+          "assets": ["red", "green", "blue"]
+        }
       },
-      "sceneMinZoom": 7,
-      "popupDisplayFields": ["datetime", "platform"]
+      "sceneMinZoom": 7
     }
   }
 }
@@ -144,9 +145,19 @@ Some FilmDrop features require specific STAC API extensions:
     visualization
   - Collections with the `renders` extension will have TiTiler parameters
     auto-configured
-  - Eliminates need to manually configure `sceneTilerParams` for each collection
+  - Eliminates need to manually configure `visualizations.default` for each collection
 
 See [CONFIGURATION.md](CONFIGURATION.md) for detailed feature configuration.
+
+### 📦 Config Format Evolution
+
+FilmDrop UI evolved its configuration format to reduce repetition and improve maintainability. Legacy config keys are not auto-migrated at runtime.
+Use the config tooling before startup:
+
+- `npm run config:lint -- public/config/config.json`
+- `npm run config:migrate -- --input public/config/config.json --output public/config/config.json.migrated`
+
+See the [Configuration Migration Guide](CONFIGURATION.md#migration-guide) for details.
 
 ## 🎯 Configuration Examples
 
@@ -184,9 +195,11 @@ based on the collection's STAC metadata if not specified:
   },
   "COLLECTIONS_CONFIG": {
     "sentinel-2-l2a": {
-      "sceneTilerParams": {
-        "assets": ["red", "green", "blue"],
-        "color_formula": "Gamma+RGB+3.2+Saturation+0.8"
+      "visualizations": {
+        "default": {
+          "assets": ["red", "green", "blue"],
+          "color_formula": "Gamma+RGB+3.2+Saturation+0.8"
+        }
       },
       "sceneMinZoom": 7
     }
@@ -200,14 +213,12 @@ based on the collection's STAC metadata if not specified:
 {
   "COLLECTIONS_CONFIG": {
     "sentinel-2-l2a": {
-      "sceneTilerParams": { "assets": ["red", "green", "blue"] },
-      "sceneMinZoom": 7,
-      "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"]
+      "visualizations": { "default": { "assets": ["red", "green", "blue"] } },
+      "sceneMinZoom": 7
     },
     "landsat-c2-l2": {
-      "sceneTilerParams": { "assets": ["red", "green", "blue"] },
-      "sceneMinZoom": 7,
-      "popupDisplayFields": ["datetime", "platform", "instruments"]
+      "visualizations": { "default": { "assets": ["red", "green", "blue"] } },
+      "sceneMinZoom": 7
     }
   }
 }

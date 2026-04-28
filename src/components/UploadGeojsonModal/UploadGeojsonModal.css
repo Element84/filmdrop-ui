@@ -15,6 +15,7 @@
   width: 600px;
   max-width: 80%;
   min-height: 280px;
+  max-height: min(90vh, 700px);
   background: var(--map-info-overlay-background);
   border: 1px solid var(--map-info-overlay-border);
   color: var(--map-info-overlay-color);
@@ -22,25 +23,38 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 12px;
   border-radius: var(--radius-sm);
+  overflow: hidden;
 }
 
 .uploadGeojsonModalTitle {
   font-size: 20px;
   font-weight: 700;
-  position: absolute;
-  top: 20px;
-  left: 20px;
+  margin-bottom: 6px;
+}
+
+.uploadGeojsonModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+
+.uploadGeojsonModalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: auto;
+  min-height: 44px;
 }
 
 .fileToUploadText {
-  position: absolute;
-  bottom: 25px;
-  left: 20px;
-  right: 140px;
-  width: calc(100% - 220px);
+  flex: 1;
+  min-width: 0;
   white-space: pre-wrap;
   white-space: -moz-pre-wrap;
   white-space: -pre-wrap;
@@ -49,11 +63,9 @@
 }
 
 .uploadGeojsonModalActionButtons {
-  position: absolute;
-  right: 20px;
   display: flex;
   flex-direction: row;
-  bottom: 10px;
+  flex-shrink: 0;
 }
 
 .uploadGeojsonModalActionButton {
@@ -119,4 +131,21 @@
 /* Keep this after Accept so Reject wins if both apply */
 .uploadGeojsonDropZoneReject {
   border-color: var(--validation-error-border);
+}
+
+.uploadGeojsonModalError {
+  margin: 10px 0;
+}
+
+.uploadGeojsonModalErrorSummary {
+  margin-bottom: 8px;
+}
+
+.uploadGeojsonModalErrorDetails {
+  max-height: 100px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-right: 4px;
 }

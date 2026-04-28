@@ -1,0 +1,79 @@
+/* Label above inputs */
+.numericRangeLabel {
+  font-size: 14px;
+  color: var(--side-panel-card-label-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+/* Flex row for the two inputs */
+.numericRangeContainer {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  gap: 16px;
+}
+
+.numericRangeInputWrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Input styling to match TextField and DateTimeRangeSelector */
+.numericRangeInput {
+  height: 36px;
+  box-sizing: border-box;
+  padding: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--side-panel-input-color);
+  background: var(--side-panel-input-background);
+  border: 1px solid var(--side-panel-input-border);
+  border-radius: var(--radius-sm);
+  width: 100%;
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.numericRangeInput::-webkit-outer-spin-button,
+.numericRangeInput::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.numericRangeInput::placeholder {
+  color: var(--side-panel-input-color);
+  opacity: 0.4;
+}
+
+.numericRangeInput:hover {
+  border-color: var(--side-panel-input-border-hover);
+}
+
+.numericRangeInput:focus {
+  outline: none;
+  border-color: var(--side-panel-input-border-focused);
+}
+
+/* Fixed/read-only bound - tinted background + muted text to distinguish from editable */
+.numericRangeInput--fixed {
+  background: color-mix(
+    in srgb,
+    var(--side-panel-input-border) 15%,
+    var(--side-panel-input-background)
+  );
+  color: var(--side-panel-input-helper-text-color);
+  cursor: default;
+}
+
+.numericRangeInput--fixed:hover {
+  border-color: var(--side-panel-input-border);
+}
+
+.numericRangeInput--fixed:focus {
+  border-color: var(--side-panel-input-border);
+}

@@ -15,6 +15,12 @@ import {
   DEFAULT_COLORMAP
 } from '../components/defaults'
 import { DEFAULT_REL_TYPE_EXCLUDE_LIST } from './defaultLinkGrouping.js'
+import {
+  ConfigValidationError,
+  detectConfigFormat,
+  getLegacyKeysPresent,
+  getMixedFormatLegacySignals
+} from './configFormat.mjs'
 import { store } from '../redux/store'
 import { DoesFaviconExistService } from '../services/get-config-service'
 import { setappName, setreferenceLayers } from '../redux/slices/mainSlice'
@@ -137,151 +143,45 @@ async function loadReferenceLayers() {
 }
 
 /**
- * Normalizes config to support both old (separate params) and new (COLLECTIONS_CONFIG) formats
+ * Validates config format and enforces modern config structure
  * @param {Object} config - The application config object
- * @returns {Object} - Normalized config with COLLECTIONS_CONFIG structure
+ * @returns {Object} - Validated modern config
  */
 export function normalizeCollectionsConfig(config) {
   if (!config) return config
 
-  // If COLLECTIONS_CONFIG already exists and is not empty, prioritize it
-  if (
-    config.COLLECTIONS_CONFIG &&
-    Object.keys(config.COLLECTIONS_CONFIG).length > 0
-  ) {
-    // Still check for legacy params and warn if both exist
-    const legacyParams = [
-      'SCENE_TILER_PARAMS',
-      'MOSAIC_TILER_PARAMS',
-      'SEARCH_MIN_ZOOM_LEVELS',
-      'POPUP_DISPLAY_FIELDS',
-      'TILE_LAYER_PARAMS',
-      'ENHANCED_DISPLAY_CONFIG'
-    ]
-    const hasLegacyParams = legacyParams.some((param) => config[param])
-    if (hasLegacyParams) {
-      console.warn(
-        'Both COLLECTIONS_CONFIG and legacy collection parameters detected. ' +
-          'COLLECTIONS_CONFIG takes precedence. Consider removing deprecated parameters: ' +
-          legacyParams.join(', ')
-      )
-    }
-    return config
-  }
-
-  // Build COLLECTIONS_CONFIG from legacy parameters
-  const collectionsConfig = {}
-
-  // Get all collection IDs from various sources
-  const collectionIds = new Set()
-
-  // Add collections from COLLECTIONS parameter
-  // Handle both legacy array format and new object format
-  if (config.COLLECTIONS) {
-    if (Array.isArray(config.COLLECTIONS)) {
-      // Legacy format: COLLECTIONS is an array of IDs
-      config.COLLECTIONS.forEach((id) => collectionIds.add(id))
-    } else if (
-      typeof config.COLLECTIONS === 'object' &&
-      config.COLLECTIONS.include &&
-      Array.isArray(config.COLLECTIONS.include)
-    ) {
-      // New format: COLLECTIONS.include is an array of IDs
-      config.COLLECTIONS.include.forEach((id) => collectionIds.add(id))
-    }
-  }
-
-  if (config.SCENE_TILER_PARAMS) {
-    Object.keys(config.SCENE_TILER_PARAMS).forEach((id) =>
-      collectionIds.add(id)
-    )
-  }
-  if (config.MOSAIC_TILER_PARAMS) {
-    Object.keys(config.MOSAIC_TILER_PARAMS).forEach((id) =>
-      collectionIds.add(id)
-    )
-  }
-  if (config.SEARCH_MIN_ZOOM_LEVELS) {
-    Object.keys(config.SEARCH_MIN_ZOOM_LEVELS).forEach((id) =>
-      collectionIds.add(id)
-    )
-  }
-  if (config.POPUP_DISPLAY_FIELDS) {
-    Object.keys(config.POPUP_DISPLAY_FIELDS).forEach((id) =>
-      collectionIds.add(id)
-    )
-  }
-  if (config.TILE_LAYER_PARAMS) {
-    Object.keys(config.TILE_LAYER_PARAMS).forEach((id) => collectionIds.add(id))
-  }
-  if (config.ENHANCED_DISPLAY_CONFIG) {
-    Object.keys(config.ENHANCED_DISPLAY_CONFIG).forEach((id) =>
-      collectionIds.add(id)
+  if (Array.isArray(config.COLLECTIONS)) {
+    throw new ConfigValidationError(
+      "Legacy COLLECTIONS array format is not supported. Use COLLECTIONS object format with 'include', 'exclude', and optional 'default'.",
+      'LEGACY_CONFIG_NOT_SUPPORTED'
     )
   }
 
-  // Build consolidated config for each collection
-  collectionIds.forEach((collectionId) => {
-    collectionsConfig[collectionId] = {}
-
-    if (config.SCENE_TILER_PARAMS?.[collectionId]) {
-      // Upgrade old sceneTilerParams to visualizations dictionary
-      collectionsConfig[collectionId].visualizations = {
-        default: config.SCENE_TILER_PARAMS[collectionId]
-      }
-    }
-    if (config.MOSAIC_TILER_PARAMS?.[collectionId]) {
-      collectionsConfig[collectionId].mosaicTilerParams =
-        config.MOSAIC_TILER_PARAMS[collectionId]
-    }
-    if (config.SEARCH_MIN_ZOOM_LEVELS?.[collectionId]) {
-      // Legacy: convert old searchMinZoomLevels.high to new sceneMinZoom
-      const legacyZoomLevels = config.SEARCH_MIN_ZOOM_LEVELS[collectionId]
-      collectionsConfig[collectionId].sceneMinZoom =
-        legacyZoomLevels?.high || legacyZoomLevels
-    }
-    if (config.POPUP_DISPLAY_FIELDS?.[collectionId]) {
-      collectionsConfig[collectionId].popupDisplayFields =
-        config.POPUP_DISPLAY_FIELDS[collectionId]
-    }
-    if (config.TILE_LAYER_PARAMS?.[collectionId]) {
-      collectionsConfig[collectionId].tileLayerParams =
-        config.TILE_LAYER_PARAMS[collectionId]
-    }
-    if (config.ENHANCED_DISPLAY_CONFIG?.[collectionId]) {
-      collectionsConfig[collectionId].enhancedDisplayConfig =
-        config.ENHANCED_DISPLAY_CONFIG[collectionId]
-    }
-  })
-
-  // Add COLLECTIONS_CONFIG to the config
-  if (Object.keys(collectionsConfig).length > 0) {
-    config.COLLECTIONS_CONFIG = collectionsConfig
-  }
-
-  // Convert legacy COLLECTIONS array format to new object format
-  // This ensures all downstream code works with the normalized object format
-  if (config.COLLECTIONS && Array.isArray(config.COLLECTIONS)) {
-    console.log(
-      'Normalizing legacy COLLECTIONS array to object format with include filter'
+  const format = detectConfigFormat(config)
+  const legacyKeys = getLegacyKeysPresent(config)
+  if (format === 'legacy') {
+    throw new ConfigValidationError(
+      `Legacy configuration format is not supported. Run: npm run config:migrate -- --input public/config/config.json --output public/config/config.json.migrated. Legacy keys found: ${legacyKeys.join(
+        ', '
+      )}`,
+      'LEGACY_CONFIG_NOT_SUPPORTED'
     )
-    config.COLLECTIONS = {
-      include: config.COLLECTIONS
-    }
+  }
+  if (format === 'mixed') {
+    const signals = getMixedFormatLegacySignals(config)
+    throw new ConfigValidationError(
+      `Mixed configuration format is not supported. Resolve the file to one format before migration: (1) use a legacy-only source file and run npm run config:migrate -- --input public/config/config.json --output public/config/config.json.migrated, or (2) manually reconcile COLLECTIONS_CONFIG and remove legacy keys. Conflicting legacy inputs: ${signals.join(
+        ', '
+      )}`,
+      'MIXED_CONFIG_NOT_SUPPORTED'
+    )
   }
 
-  // Also migrate DEFAULT_COLLECTION to COLLECTIONS.default
-  if (
-    config.DEFAULT_COLLECTION &&
-    typeof config.DEFAULT_COLLECTION === 'string'
-  ) {
-    if (!config.COLLECTIONS || typeof config.COLLECTIONS !== 'object') {
-      config.COLLECTIONS = {}
-    }
-    if (!config.COLLECTIONS.default) {
-      console.log('Migrating DEFAULT_COLLECTION to COLLECTIONS.default')
-      config.COLLECTIONS.default = config.DEFAULT_COLLECTION
-    }
+  if (config.COLLECTIONS && typeof config.COLLECTIONS !== 'object') {
+    throw new ConfigValidationError(
+      "Invalid COLLECTIONS format. Expected an object with optional 'include', 'exclude', and 'default'.",
+      'INVALID_CONFIG_FORMAT'
+    )
   }
 
   return config

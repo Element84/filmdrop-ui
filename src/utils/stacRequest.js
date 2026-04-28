@@ -1,6 +1,18 @@
 import Cookies from 'js-cookie'
 import { store } from '../redux/store'
 
+export function buildStacRequestHeaders() {
+  const requestHeaders = new Headers()
+  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
+  const isSTACTokenAuthEnabled =
+    store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
+  if (JWT && isSTACTokenAuthEnabled) {
+    requestHeaders.append('Authorization', `Bearer ${JWT}`)
+  }
+  appendStacHeaderCookies(requestHeaders)
+  return requestHeaders
+}
+
 // STAC_HEADER_COOKIES config can define cookies whose values we want to
 // include in STAC API request headers. if any exist, append them to the
 // request headers

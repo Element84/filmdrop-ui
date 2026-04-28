@@ -106,19 +106,19 @@
 }
 
 .field-grid {
-  gap: 0;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: minmax(0, 40%) 1fr;
 }
 
 .field-grid-item {
   display: grid;
   grid-template-columns: subgrid;
   grid-column: 1 / -1;
-  align-items: baseline;
+  align-items: stretch;
   gap: 0 6px;
   word-break: break-word;
   min-width: 0;
-  padding: 2px 0;
+  padding: 4px 0;
+  white-space: normal;
 }
 
 .field-label-inline {
@@ -126,6 +126,7 @@
   color: var(--side-panel-text-color-secondary);
   font-size: 14px;
   flex-shrink: 0;
+  white-space: normal;
 }
 
 .field-label-has-tooltip {

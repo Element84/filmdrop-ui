@@ -6,40 +6,40 @@ import { getCollectionConfig } from '../utils/configHelper'
  * Determine the render order for a queryable schema based on its component type.
  * Returns a numeric order for supported schemas, or null for unsupported schemas.
  *
- * Order: RangeSliderWithInputs (0), MultiSelect (1), TextField string (2), TextField numeric (3)
+ * Order: RangeSliderWithInputs (0), NumericRangeInputs (1), MultiSelect (2), TextField string (3)
  */
 function getQueryableRenderOrder(schema) {
   if (!schema || typeof schema !== 'object') {
     return null
   }
 
-  // RangeSliderWithInputs: numeric with both min and max
+  // RangeSliderWithInputs: numeric types with both min and max defined
   if (
     (schema.type === 'number' || schema.type === 'integer') &&
+    !schema.enum &&
     schema.minimum !== undefined &&
     schema.maximum !== undefined
   ) {
     return 0
   }
 
+  // NumericRangeInputs: numeric types without both bounds (min-only, max-only, unbounded)
+  if ((schema.type === 'number' || schema.type === 'integer') && !schema.enum) {
+    return 1
+  }
+
   // MultiSelect: enum values for string, number, or integer types
-  // Supports multi-value filtering via STAC API query "in" operator
   if (
     schema.enum &&
     (schema.type === 'string' ||
       schema.type === 'number' ||
       schema.type === 'integer')
   ) {
-    return 1
+    return 2
   }
 
   // TextField: string without enum (for string equivalence queries)
   if (schema.type === 'string') {
-    return 2
-  }
-
-  // TextField: numeric without both min/max (for numeric equivalence queries)
-  if (schema.type === 'number' || schema.type === 'integer') {
     return 3
   }
 

@@ -93,7 +93,7 @@
 }
 
 .Search__button-group .MuiButtonGroup-grouped:not(:last-of-type) {
-  border-right: 1px solid var(--action-button-background-hover);
+  border-right: 1px solid var(--action-button-divider);
 }
 
 .Search__button-group .MuiButton-root:hover {

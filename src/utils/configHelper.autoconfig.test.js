@@ -1,8 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import {
-  autoConfigureCollections,
-  normalizeCollectionsConfig
-} from './configHelper'
+import { autoConfigureCollections } from './configHelper'
 
 // Mock the stac-api module
 vi.mock('../services/stac-api', () => ({
@@ -126,39 +123,6 @@ describe('autoConfigureCollections', () => {
     expect(result._STAC_COLLECTIONS).toHaveLength(2)
   })
 
-  it('should convert legacy COLLECTIONS array format to new object format', async () => {
-    const mockResponse = {
-      collections: [
-        { id: 'collection-1', title: 'Collection 1' },
-        { id: 'collection-2', title: 'Collection 2' },
-        { id: 'collection-3', title: 'Collection 3' }
-      ]
-    }
-    mockGetCollections.mockResolvedValueOnce(mockResponse)
-
-    // Legacy format: COLLECTIONS is an array
-    const config = {
-      STAC_API_URL: 'https://example.com/stac',
-      COLLECTIONS: ['collection-1', 'collection-3'] // Array format (legacy)
-    }
-
-    // First normalize (this is what happens in get-config-service.js)
-    const normalizedConfig = normalizeCollectionsConfig(config)
-
-    // Then auto-configure
-    const result = await autoConfigureCollections(
-      normalizedConfig.STAC_API_URL,
-      normalizedConfig
-    )
-
-    // Should have converted to object format with include filter and added _ids
-    expect(result.COLLECTIONS).toEqual({
-      include: ['collection-1', 'collection-3'],
-      _ids: ['collection-1', 'collection-3']
-    })
-    expect(result._STAC_COLLECTIONS).toHaveLength(2)
-  })
-
   it('should filter COLLECTIONS_CONFIG to only include active collections', async () => {
     const mockResponse = {
       collections: [
@@ -191,7 +155,7 @@ describe('autoConfigureCollections', () => {
 
   it('should return original config if API URL is not provided', async () => {
     const config = {
-      COLLECTIONS: ['collection-1']
+      COLLECTIONS: { include: ['collection-1'] }
     }
 
     const result = await autoConfigureCollections(null, config)
@@ -205,7 +169,7 @@ describe('autoConfigureCollections', () => {
 
     const config = {
       STAC_API_URL: 'https://example.com/stac',
-      COLLECTIONS: ['collection-1']
+      COLLECTIONS: { include: ['collection-1'] }
     }
 
     const result = await autoConfigureCollections(config.STAC_API_URL, config)

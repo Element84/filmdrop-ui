@@ -24,7 +24,7 @@ export async function LoadConfigIntoStateService() {
       throw new Error()
     })
     .then(async (json) => {
-      // Normalize the config to support both old and new formats
+      // Validate config and enforce strict modern format requirements
       let normalizedConfig = normalizeCollectionsConfig(json)
 
       // Auto-configure collections from STAC API if STAC_API_URL is provided
@@ -43,7 +43,12 @@ export async function LoadConfigIntoStateService() {
       store.dispatch(setappConfig(configWithDefaults))
     })
     .catch((error) => {
-      const message = 'Error Fetching Config File'
+      const message =
+        error?.code === 'LEGACY_CONFIG_NOT_SUPPORTED' ||
+        error?.code === 'MIXED_CONFIG_NOT_SUPPORTED' ||
+        error?.code === 'INVALID_CONFIG_FORMAT'
+          ? error.message
+          : 'Error Fetching Config File'
       // log full error for diagnosing client side errors if needed
       console.error(message, error)
       showApplicationAlert('error', message, null)

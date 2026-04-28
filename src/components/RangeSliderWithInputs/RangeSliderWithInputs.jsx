@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Slider } from '@mui/material'
 import PropTypes from 'prop-types'
 import Card from '../Card/Card'
+import OverflowTooltip from '../EnhancedDetails/OverflowTooltip'
 import './RangeSliderWithInputs.css'
 
 const RangeSliderWithInputs = ({
@@ -10,12 +11,15 @@ const RangeSliderWithInputs = ({
   value,
   onChange,
   label,
-  step = 1
+  step = 1,
+  integerType = false
 }) => {
   const [minInput, setMinInput] = useState(value.min)
   const [maxInput, setMaxInput] = useState(value.max)
   const [isEditingMin, setIsEditingMin] = useState(false)
   const [isEditingMax, setIsEditingMax] = useState(false)
+
+  const roundIfInteger = (val) => (integerType ? Math.round(val) : val)
 
   const handleSliderChange = (event, newValue) => {
     if (onChange) {
@@ -41,6 +45,7 @@ const RangeSliderWithInputs = ({
     if (isNaN(newMin) || newMin < min) newMin = min
     if (newMin > max) newMin = max
     if (newMin > value.max) newMin = value.max
+    newMin = roundIfInteger(newMin)
 
     setMinInput(newMin)
     if (onChange && newMin !== value.min) {
@@ -56,6 +61,7 @@ const RangeSliderWithInputs = ({
     if (isNaN(newMax) || newMax < min) newMax = min
     if (newMax > max) newMax = max
     if (newMax < value.min) newMax = value.min
+    newMax = roundIfInteger(newMax)
 
     setMaxInput(newMax)
     if (onChange && newMax !== value.max) {
@@ -72,7 +78,9 @@ const RangeSliderWithInputs = ({
   return (
     <Card height="auto" className="rangeSliderWithInputs">
       <div className="rangeSliderHeader">
-        <label className="rangeSliderLabel">{label}</label>
+        <OverflowTooltip component="label" className="rangeSliderLabel">
+          {label}
+        </OverflowTooltip>
         <div className="rangeSliderValuePills">
           <input
             type="number"
@@ -87,7 +95,7 @@ const RangeSliderWithInputs = ({
             step={step}
             aria-label={`${label} minimum value`}
           />
-          <span className="rangeSliderValueSeparator">—</span>
+          <span className="rangeSliderValueSeparator">&mdash;</span>
           <input
             type="number"
             className="rangeSliderValuePill"
@@ -127,7 +135,8 @@ RangeSliderWithInputs.propTypes = {
   }).isRequired,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  step: PropTypes.number
+  step: PropTypes.number,
+  integerType: PropTypes.bool
 }
 
 export default RangeSliderWithInputs

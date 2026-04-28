@@ -124,28 +124,62 @@ describe('QueryableFilters', () => {
       expect(screen.getByText('Sun Azimuth')).toBeInTheDocument()
     })
 
-    it('should render TextField type="number" for number without min/max', () => {
+    it('should render unbounded range card for number without min/max', () => {
       mockHook({
         fields: [['view_angle', numericNoRangeSchema]],
         hasFields: true,
         error: null
       })
       setup()
-      expect(screen.getByRole('spinbutton')).toBeInTheDocument()
       expect(screen.getByText('View Angle')).toBeInTheDocument()
       expect(screen.queryAllByRole('slider')).toHaveLength(0)
+      const minPill = screen.getByLabelText('View Angle minimum value')
+      const maxPill = screen.getByLabelText('View Angle maximum value')
+      expect(minPill).not.toHaveAttribute('readOnly')
+      expect(minPill).toHaveAttribute('placeholder', 'Min')
+      expect(maxPill).not.toHaveAttribute('readOnly')
+      expect(maxPill).toHaveAttribute('placeholder', 'Max')
     })
 
-    it('should render TextField type="number" for integer with only minimum', () => {
+    it('should render partial range card for integer with only minimum', () => {
       mockHook({
         fields: [['gsd', integerOnlyMinSchema]],
         hasFields: true,
         error: null
       })
       setup()
-      expect(screen.getByRole('spinbutton')).toBeInTheDocument()
       expect(screen.getByText('GSD')).toBeInTheDocument()
+      // No slider track in partial range mode
       expect(screen.queryAllByRole('slider')).toHaveLength(0)
+      // Fixed min pill + editable max pill
+      const minPill = screen.getByLabelText('GSD minimum value')
+      const maxPill = screen.getByLabelText('GSD maximum value')
+      expect(minPill).toHaveAttribute('readOnly')
+      expect(minPill).toHaveValue('Min: 0')
+      expect(maxPill).not.toHaveAttribute('readOnly')
+      expect(maxPill).toHaveAttribute('placeholder', 'Max')
+    })
+
+    it('should render partial range card for number with only maximum', () => {
+      const maxOnlySchema = {
+        type: 'number',
+        maximum: 100,
+        title: 'Score'
+      }
+      mockHook({
+        fields: [['score', maxOnlySchema]],
+        hasFields: true,
+        error: null
+      })
+      setup()
+      expect(screen.getByText('Score')).toBeInTheDocument()
+      expect(screen.queryAllByRole('slider')).toHaveLength(0)
+      const minPill = screen.getByLabelText('Score minimum value')
+      const maxPill = screen.getByLabelText('Score maximum value')
+      expect(maxPill).toHaveAttribute('readOnly')
+      expect(maxPill).toHaveValue('Max: 100')
+      expect(minPill).not.toHaveAttribute('readOnly')
+      expect(minPill).toHaveAttribute('placeholder', 'Min')
     })
 
     it('should render MultiSelect for string with enum', () => {
@@ -223,9 +257,9 @@ describe('QueryableFilters', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument()
       // Plain string TextField renders a textbox
       expect(screen.getByRole('textbox')).toBeInTheDocument()
-      // Numeric TextField + RangeSlider min/max inputs all have spinbutton role
-      // RangeSlider has 2 + numeric TextField has 1 = 3 spinbuttons
-      expect(screen.getAllByRole('spinbutton')).toHaveLength(3)
+      // All numeric pill inputs have spinbutton role
+      // RangeSlider has 2 + unbounded numeric has 2 = 4 spinbuttons
+      expect(screen.getAllByRole('spinbutton')).toHaveLength(4)
       // Verify all labels present
       expect(screen.getByText('Cloud Cover')).toBeInTheDocument()
       expect(screen.getByText('Orbit Direction')).toBeInTheDocument()
@@ -344,29 +378,45 @@ describe('QueryableFilters', () => {
       })
     })
 
-    describe('TextField number', () => {
-      it('should update Redux when value changes', () => {
-        vi.useFakeTimers()
+    describe('Partial range (min-only mode)', () => {
+      it('should update Redux with partial range value when max input changes', () => {
         mockHook({
-          fields: [['view_angle', numericNoRangeSchema]],
+          fields: [['gsd', integerOnlyMinSchema]],
           hasFields: true,
           error: null
         })
         setup()
 
-        const input = screen.getByRole('spinbutton')
-        fireEvent.change(input, { target: { value: '42' } })
-        act(() => {
-          vi.advanceTimersByTime(300)
-        })
+        const maxInput = screen.getByLabelText('GSD maximum value')
+        fireEvent.change(maxInput, { target: { value: '50' } })
+        fireEvent.blur(maxInput)
 
-        expect(store.getState().mainSlice.queryableFilters.view_angle).toBe(42)
-        vi.useRealTimers()
+        expect(store.getState().mainSlice.queryableFilters['gsd']).toEqual({
+          max: 50
+        })
       })
 
-      it('should remove filter from Redux when cleared', () => {
-        vi.useFakeTimers()
-        store.dispatch(setQueryableFilters({ view_angle: 42 }))
+      it('should remove filter when partial range input is cleared', () => {
+        store.dispatch(setQueryableFilters({ gsd: { max: 50 } }))
+        mockHook({
+          fields: [['gsd', integerOnlyMinSchema]],
+          hasFields: true,
+          error: null
+        })
+        setup()
+
+        const maxInput = screen.getByLabelText('GSD maximum value')
+        fireEvent.change(maxInput, { target: { value: '' } })
+        fireEvent.blur(maxInput)
+
+        expect(
+          store.getState().mainSlice.queryableFilters['gsd']
+        ).toBeUndefined()
+      })
+    })
+
+    describe('Unbounded numeric', () => {
+      it('should update Redux with min value for unbounded numeric', () => {
         mockHook({
           fields: [['view_angle', numericNoRangeSchema]],
           hasFields: true,
@@ -374,16 +424,67 @@ describe('QueryableFilters', () => {
         })
         setup()
 
-        const input = screen.getByRole('spinbutton')
-        fireEvent.change(input, { target: { value: '' } })
-        act(() => {
-          vi.advanceTimersByTime(300)
+        const minInput = screen.getByLabelText('View Angle minimum value')
+        fireEvent.change(minInput, { target: { value: '10' } })
+        fireEvent.blur(minInput)
+
+        expect(store.getState().mainSlice.queryableFilters.view_angle).toEqual({
+          min: 10
         })
+      })
+
+      it('should update Redux with max value for unbounded numeric', () => {
+        mockHook({
+          fields: [['view_angle', numericNoRangeSchema]],
+          hasFields: true,
+          error: null
+        })
+        setup()
+
+        const maxInput = screen.getByLabelText('View Angle maximum value')
+        fireEvent.change(maxInput, { target: { value: '42' } })
+        fireEvent.blur(maxInput)
+
+        expect(store.getState().mainSlice.queryableFilters.view_angle).toEqual({
+          max: 42
+        })
+      })
+
+      it('should remove filter from Redux when both inputs cleared', () => {
+        store.dispatch(setQueryableFilters({ view_angle: { min: 10 } }))
+        mockHook({
+          fields: [['view_angle', numericNoRangeSchema]],
+          hasFields: true,
+          error: null
+        })
+        setup()
+
+        const minInput = screen.getByLabelText('View Angle minimum value')
+        fireEvent.change(minInput, { target: { value: '' } })
+        fireEvent.blur(minInput)
 
         expect(
           store.getState().mainSlice.queryableFilters.view_angle
         ).toBeUndefined()
-        vi.useRealTimers()
+      })
+    })
+
+    describe('Integer rounding', () => {
+      it('should round to integer on blur for integer type', () => {
+        mockHook({
+          fields: [['gsd', integerOnlyMinSchema]],
+          hasFields: true,
+          error: null
+        })
+        setup()
+
+        const maxInput = screen.getByLabelText('GSD maximum value')
+        fireEvent.change(maxInput, { target: { value: '10.7' } })
+        fireEvent.blur(maxInput)
+
+        expect(store.getState().mainSlice.queryableFilters['gsd']).toEqual({
+          max: 11
+        })
       })
     })
 

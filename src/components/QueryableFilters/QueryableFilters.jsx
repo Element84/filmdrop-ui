@@ -2,6 +2,7 @@ import React, { useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { Alert } from '@mui/material'
 import RangeSliderWithInputs from '../RangeSliderWithInputs/RangeSliderWithInputs'
+import NumericRangeInputs from '../NumericRangeInputs/NumericRangeInputs'
 import MultiSelect from '../MultiSelect/MultiSelect'
 import TextField from '../TextField/TextField'
 import { setQueryableFilters } from '../../redux/slices/mainSlice'
@@ -96,25 +97,77 @@ const QueryableFilters = () => {
     const currentValue = queryableFilters[fieldName]
     const defaultValue = schema.default
 
-    // Numeric field with min and max -> Range Slider
+    // Numeric fields without enum -> RangeSliderWithInputs or NumericRangeInputs
     if (
       (schema.type === 'number' || schema.type === 'integer') &&
-      schema.minimum !== undefined &&
-      schema.maximum !== undefined
+      !schema.enum
     ) {
-      const rangeValue = currentValue || {
-        min: schema.minimum,
-        max: schema.maximum
+      const isInteger = schema.type === 'integer'
+      const hasMin = schema.minimum !== undefined
+      const hasMax = schema.maximum !== undefined
+
+      if (hasMin && hasMax) {
+        // Both bounds -> full range slider
+        const rangeValue = currentValue || {
+          min: schema.minimum,
+          max: schema.maximum
+        }
+        return (
+          <div key={fieldName} className="queryableField">
+            <RangeSliderWithInputs
+              min={schema.minimum}
+              max={schema.maximum}
+              value={rangeValue}
+              onChange={(value) => handleFilterChange(fieldName, value)}
+              label={label}
+              step={calculateRangeStep(schema.minimum, schema.maximum)}
+              integerType={isInteger}
+            />
+          </div>
+        )
       }
+
+      if (hasMin && !hasMax) {
+        // Only minimum -> min fixed, max editable
+        return (
+          <div key={fieldName} className="queryableField">
+            <NumericRangeInputs
+              mode="min-only"
+              min={schema.minimum}
+              value={currentValue || {}}
+              onChange={(value) => handleFilterChange(fieldName, value)}
+              label={label}
+              integerType={isInteger}
+            />
+          </div>
+        )
+      }
+
+      if (!hasMin && hasMax) {
+        // Only maximum -> max fixed, min editable
+        return (
+          <div key={fieldName} className="queryableField">
+            <NumericRangeInputs
+              mode="max-only"
+              max={schema.maximum}
+              value={currentValue || {}}
+              onChange={(value) => handleFilterChange(fieldName, value)}
+              label={label}
+              integerType={isInteger}
+            />
+          </div>
+        )
+      }
+
+      // No bounds -> both editable
       return (
         <div key={fieldName} className="queryableField">
-          <RangeSliderWithInputs
-            min={schema.minimum}
-            max={schema.maximum}
-            value={rangeValue}
+          <NumericRangeInputs
+            mode="unbounded"
+            value={currentValue || {}}
             onChange={(value) => handleFilterChange(fieldName, value)}
             label={label}
-            step={calculateRangeStep(schema.minimum, schema.maximum)}
+            integerType={isInteger}
           />
         </div>
       )
@@ -139,23 +192,6 @@ const QueryableFilters = () => {
             value={currentValue ?? defaultValue ?? []}
             onChange={(newValue) => handleFilterChange(fieldName, newValue)}
             options={options}
-          />
-        </div>
-      )
-    }
-
-    // Numeric field without both min/max -> Text input
-    if (schema.type === 'number' || schema.type === 'integer') {
-      return (
-        <div key={fieldName} className="queryableField">
-          <TextField
-            label={label}
-            type="number"
-            value={currentValue ?? defaultValue ?? ''}
-            onChange={(val) => {
-              const numVal = val === '' ? null : Number(val)
-              handleFilterChange(fieldName, numVal)
-            }}
           />
         </div>
       )

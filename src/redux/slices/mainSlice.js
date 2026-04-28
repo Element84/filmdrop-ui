@@ -54,7 +54,12 @@ const initialState = {
   paginationHistory: [],
   queryableFilters: {},
   detailsResetKey: 0,
-  showSceneOverlay: true
+  showSceneOverlay: true,
+  mosaicCache: {
+    lastMosaicRequestSignature: null,
+    lastMosaicTopItemIds: null,
+    lastMosaicCompareCount: null
+  }
 }
 
 // next, for every key in the initialState
@@ -219,6 +224,12 @@ export const mainSlice = createSlice({
     setQueryableFilters: (state, action) => {
       state.queryableFilters = action.payload
     },
+    setMosaicCache: (state, action) => {
+      state.mosaicCache = {
+        ...state.mosaicCache,
+        ...action.payload
+      }
+    },
     incrementDetailsResetKey: (state) => {
       state.detailsResetKey += 1
     },
@@ -279,6 +290,7 @@ export const { setpaginationPrevLink } = mainSlice.actions
 export const { setcurrentPage } = mainSlice.actions
 export const { settotalPages } = mainSlice.actions
 export const { setpaginationHistory } = mainSlice.actions
+export const { setMosaicCache } = mainSlice.actions
 export const { addToPaginationHistory } = mainSlice.actions
 export const { setQueryableFilters } = mainSlice.actions
 export const { incrementDetailsResetKey } = mainSlice.actions

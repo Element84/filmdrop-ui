@@ -21,6 +21,17 @@ module.exports = {
       // 3) Now we enable eslint-plugin-testing-library rules or preset only for matching testing files!
       files: ['**/src/?(*.)+test.[jt]s?(x)'],
       extends: ['plugin:testing-library/react']
+    },
+    {
+      files: ['scripts/**/*.mjs', 'scripts/**/*.js'],
+      env: {
+        browser: false,
+        node: true,
+        es2021: true
+      },
+      rules: {
+        'no-console': 'off'
+      }
     }
   ],
   parserOptions: {

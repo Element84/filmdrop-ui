@@ -95,6 +95,15 @@ const PopupResults = (props) => {
     <div data-testid="testPopupResults" className="popupResultsContainer">
       {props.results.length > 0 ? (
         <div className="popupResults">
+          <PopupFooter
+            currentIndex={_selectedPopupResultIndex}
+            totalCount={props.results.length}
+            onPrevClick={onPrevClick}
+            onNextClick={onNextClick}
+            cartEnabled={_appConfig.CART_ENABLED}
+            isInCart={isSceneInCart(props.results[_selectedPopupResultIndex])}
+            onCartClick={onAddRemoveSceneToCartClicked}
+          />
           <div
             className="popupResultsContent"
             style={{ '--columns': _enhancedColumns }}
@@ -111,15 +120,6 @@ const PopupResults = (props) => {
               <EnhancedDetailsDisplay />
             </EnhancedDetailsProvider>
           </div>
-          <PopupFooter
-            currentIndex={_selectedPopupResultIndex}
-            totalCount={props.results.length}
-            onPrevClick={onPrevClick}
-            onNextClick={onNextClick}
-            cartEnabled={_appConfig.CART_ENABLED}
-            isInCart={isSceneInCart(props.results[_selectedPopupResultIndex])}
-            onCartClick={onAddRemoveSceneToCartClicked}
-          />
         </div>
       ) : (
         <div className="popupResultsEmpty">
