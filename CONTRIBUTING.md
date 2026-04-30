@@ -13,8 +13,7 @@ Run in this exact order:
 4. `npm run test -- --run` (or `npm run test-pre-commit`)
 
 `npm run test-nocov` is **forbidden** in this repository — the coverage
-pipeline is wired into `vitest --run` via `npm run coverage`. See
-`componentization_plan.md` Decision 0.10 for the full quality rubric.
+pipeline is wired into `vitest --run` via `npm run coverage`.
 
 ## Dependency & Effect Discipline
 
@@ -56,19 +55,78 @@ that touches a component or utility should honor the following audit:
 Run `grep -rn "document\.\(title\|body\|head\|documentElement\|activeElement\|execCommand\)" src/`
 to reproduce the audit; every match should land inside a gated helper.
 
-## Phase overview
+## Quick Start
 
-Development is staged by the `componentization_plan.md` phases:
+Three development flows are supported:
 
-| Phase | Scope                                                                  |
-| ----- | ---------------------------------------------------------------------- |
-| 0     | Locked decisions (router basepath, store factory, CSS scoping, etc.)   |
-| 1     | FilmDropRoot, store/router factories, active-ref contract — ✅ shipped |
-| 2     | Library build + package surface — this document lands with Phase 2     |
-| 3     | Host-integration hardening (basepath, branding gates, DOM scoping)     |
-| 4     | Shell app dogfooding the library                                       |
-| 5     | Multi-instance support (deferred)                                      |
-| 6     | Code-quality backlog                                                   |
+1. **Library tests / SPA dev** — at the repo root:
+
+   ```bash
+   npm install
+   npm run start          # dev server for the standalone SPA
+   npm run test -- --run
+   ```
+
+2. **Built-library starter** — exercises the published-style consumer
+   path. Use this for any change that touches the public API surface:
+
+   ```bash
+   npm run build:lib
+   npm run sync:starter-brand
+   npm run sync:starter-data
+   npm run dev:starter         # http://localhost:5180/app/
+   npm run verify:starter      # after `npm run build:starter`
+   ```
+
+3. **Source-HMR starter** — fast inner loop while iterating on library
+   internals. Aliases `filmdrop-ui` to `src/lib-entry.jsx`:
+
+   ```bash
+   npm run dev:starter:src     # FILMDROP_DEV_SRC=1
+   ```
+
+   Do not use this mode for bundle-size measurement or release
+   verification — `verify:starter` and `verify:consumer` will refuse
+   to run with `FILMDROP_DEV_SRC=1` set.
+
+## Releasing
+
+The release-time gate is `scripts/phase4-final-check.sh`. It runs the
+full pipeline (format, lint, typecheck, library tests, library build,
+library verify, starter sync, starter build, starter verify, consumer
+smoke, type smoke, starter tests, `npm pack --dry-run`) and exits
+non-zero on any failure. CI runs the same set in
+`.github/workflows/ci.yml`.
+
+A release is unblocked when all of the following are green on `main`:
+
+- `verify:lib`, `verify:consumer`, `verify:starter`, `verify:types`
+- Library + starter Vitest suites
+- `audit-prod` (no high/critical advisories on production deps)
+- A reviewer has signed off on `CHANGELOG.md` and `package.json`
+  version bump.
+
+## Supply chain security
+
+- `npm install` always uses the committed `package-lock.json`. Lockfile
+  drift is a CI failure.
+- The `audit-prod` script scans only production deps and is the gate;
+  `audit-all` (which includes devDependencies) is informational.
+- `verify:consumer` enforces the published-tarball allow-list
+  (`dist/`, `README.md`, `LICENSE`, `NOTICE`, `CHANGELOG.md`,
+  `CONFIGURATION.md`) and verifies that peer dependencies remain
+  external in the bundle. Any new top-level file requires an explicit
+  allow-list update.
+- The verifier also asserts there is no peer-dependency duplication in
+  the starter workspace. If `npm ls -w filmdrop-starter` shows two
+  copies of React, Redux, or any other peer, the embedded host will
+  silently misbehave; align ranges or add to `resolve.dedupe`.
+
+## Versioning
+
+FilmDrop UI follows Semantic Versioning. See the SemVer + deprecation
+section later in this file and the `Versioning` section of `README.md`
+for what counts as a breaking change.
 
 ## Asset management
 
@@ -103,12 +161,12 @@ examples/starter && npm install && npm run dev` to smoke-test any PR
 that touches the public surface.
 
 The `examples/` tree is excluded from the npm tarball (see the `files`
-whitelist in `package.json` — only `dist/`, `README.md`, `LICENSE`, and
-`CHANGELOG.md` ship). `scripts/verify-consumer-smoke.mjs` asserts this
-on every `build:lib` run.
+allow-list in `package.json` — only `dist/`, `README.md`, `LICENSE`,
+`NOTICE`, `CHANGELOG.md`, and `CONFIGURATION.md` ship).
+`scripts/verify-consumer-smoke.mjs` asserts this on every `build:lib`
+run.
 
 - Imperative, present-tense subject lines ("Add X", "Fix Y").
-- Reference the Phase/Step ID where relevant (e.g. `[p2-1]`).
 - Include a `Test Plan:` section when behavior changes.
 
 ## Dependency classification
@@ -139,11 +197,11 @@ publish.
 
 ## Single-instance scope (v1)
 
-Phases 1–4 assume **one `<FilmDropRoot>` per page**. Shared
-`localStorage` keys (`APP_AUTH_TOKEN`, `APP_THEME_PREFERENCE`), module-scope
-singletons, and last-writer-wins on active store/router refs all break
-under concurrent mounts. Multi-instance support is on the roadmap via
-context threading and key namespacing.
+The v1 public API assumes **one `<FilmDropRoot>` per page**. Shared
+`localStorage` keys (`APP_AUTH_TOKEN`, `APP_THEME_PREFERENCE`),
+module-scope singletons, and last-writer-wins on active store/router
+refs all break under concurrent mounts. Multi-instance support is on
+the roadmap via context threading and key namespacing.
 
 ## SemVer + deprecation
 

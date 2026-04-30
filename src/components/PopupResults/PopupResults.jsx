@@ -1,10 +1,6 @@
 import React, { useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResults.css'
-// TODO: PopupResults relies on styles defined in EnhancedDetails.css (e.g.
-// `.EnhancedDetails__section`). Extract the shared rules into a dedicated
-// file to remove this hidden cross-component coupling.
-import '../EnhancedDetails/EnhancedDetails.css'
 import { useDispatch, useSelector } from 'react-redux'
 import PopupResult from '../PopupResult/PopupResult'
 import {

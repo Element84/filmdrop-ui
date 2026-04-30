@@ -343,8 +343,7 @@ export default function App() {
   `localStorage` keys `APP_AUTH_TOKEN`, `APP_THEME_PREFERENCE`, and
   `sessionStorage` key `POST_AUTH_REDIRECT_URL` are shared across all
   apps on the same origin — be aware in multi-app deployments.
-  Multi-instance support is on the roadmap; see
-  [`componentization_plan.md`](componentization_plan.md).
+  Multi-instance support is on the roadmap.
 - **Next.js / SSR.** `lib-entry.jsx` declares `'use client'`, but Leaflet
   and MUI date pickers are client-only. Wrap `FilmDropRoot` in
   `next/dynamic` with `{ ssr: false }`.
@@ -427,6 +426,41 @@ FilmDrop UI is built with:
 - **Responsive design** - Works on desktop and mobile
 - **Extensible** - Easy to add new collections and visualizations
 - **Performance** - Optimized for large result sets
+
+## Versioning
+
+FilmDrop UI follows [Semantic Versioning](https://semver.org/). The
+public API surface is:
+
+- The `FilmDropRoot` component and its props (see "Embedded host
+  integration" above and `dist/index.d.ts`).
+- Named exports listed in `dist/index.d.ts` (e.g. `clearFieldCaches`).
+- The `config.json` schema documented in `CONFIGURATION.md`.
+- The reserved URL params `dt`, `view`, `viz`, `tab`, `z`, `c`.
+
+Breaking changes to any of the above are MAJOR. Config schema additions
+are MINOR; removals/renames are MAJOR with one MINOR of legacy coverage.
+Peer-dependency major bumps (e.g. React 19 → 20) are MAJOR for
+FilmDrop UI. Deprecations land at `@deprecated` JSDoc + a runtime
+`console.warn` one MINOR before removal.
+
+## Accessibility
+
+FilmDrop UI ships ESLint's `jsx-a11y` rules in lint-fix mode and runs
+`@testing-library/jest-dom` accessibility matchers in tests. Known
+accessibility gaps and ongoing work are tracked in the GitHub issue
+tracker under the `accessibility` label. If you spot a regression,
+please open an issue with reproduction steps and the affected component.
+
+## Brand assets and trademarks
+
+The `dist/` payload is the only thing shipped to npm consumers; the
+Element 84 / FilmDrop logos in `public/` and `examples/starter/public/`
+are not redistributed. Forks and external integrators must replace
+these assets with their own and update `config.json`'s `BRAND_LOGO`,
+`LOGIN_LOGO`, and `APP_FAVICON` paths. See [`NOTICE`](NOTICE) for the
+trademark boundary; the Apache 2.0 license covers the source code only,
+not Element 84's marks.
 
 ## 🤝 Contributing
 

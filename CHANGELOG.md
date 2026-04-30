@@ -22,9 +22,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
     fixing the same browser-undefined-`process` issue.
   - `vite.config.mts` define swap: `process.env.REACT_APP_VERSION` →
     `import.meta.env.VITE_APP_VERSION`. `vite.lib.config.mts` matches.
-- **Starter NOTICE.** `examples/starter/README.md` now states the
-  starter intentionally ships no brand assets and points
-  consumers at `config.json` brand props.
+- **`NOTICE` file.** Added a top-level `NOTICE` documenting the
+  Element 84 / FilmDrop trademark boundary, third-party component
+  attributions, and the brand-asset replacement requirement for forks.
+  `NOTICE` is included in the published npm tarball alongside `LICENSE`.
+- **Starter brand assets and workspace wiring.** The `examples/starter`
+  project is now an npm workspace and ships the canonical Element 84
+  logos and FilmDrop favicon under `examples/starter/public/config/`
+  so `npm run dev:starter` works after a fresh clone with no manual
+  copying. Brand-asset replacement guidance for external integrators
+  is documented in `examples/starter/README.md` and `NOTICE`. New
+  scripts: `dev:starter`, `dev:starter:src` (source-HMR mode),
+  `build:starter`, `preview:starter`, `verify:starter`,
+  `verify:types`, `sync:starter-brand`, `sync:starter-data`.
+- **Published-package surface.** The npm tarball now includes `NOTICE`
+  and `CONFIGURATION.md` in addition to `dist/`, `README.md`,
+  `LICENSE`, and `CHANGELOG.md`. Verified by `verify:consumer`.
 - **Test coverage.**
   - New `src/services/post-auth-service.test.js` — 10 cases covering
     success, sessionStorage `POST_AUTH_REDIRECT_URL` redirect with

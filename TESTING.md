@@ -6,7 +6,7 @@ is forbidden in this repo; see `CONTRIBUTING.md`).
 
 ## Canonical test harness — `renderFilmDrop`
 
-`src/testing/renderFilmDrop.jsx` (Phase 1 Step 1.18) wraps React Testing
+`src/testing/renderFilmDrop.jsx` wraps React Testing
 Library's `render` with:
 
 - A fresh store created via `createFilmDropStore()`.
@@ -28,7 +28,7 @@ per-test mock control, use `vi.mocked(...)` and `mockReset()` / `mockReturnValue
 
 ## StrictMode double-mount regression
 
-`src/FilmDropRoot.strictmode.test.jsx` (Step 1.19) asserts that:
+`src/FilmDropRoot.strictmode.test.jsx` asserts that:
 
 - `getActiveStore()` / `getActiveRouter()` return a live ref across
   mount → unmount → remount cycles.
@@ -50,14 +50,14 @@ Add a case to this file whenever you touch the active-ref contract.
 - Stub the active store via `mainSliceReset()` + direct `dispatch(setX(...))`
   instead of hand-crafting state objects.
 - Assert on normalized error shapes (`stacErrorHelper`) when the service
-  has been migrated; several services still throw raw errors (Phase 6).
+  has been migrated; several services still throw raw errors.
 
 ## Redux tests
 
 - Exercise reducers via the full store, not by importing the raw reducer.
 - Use `waitFor` to assert on async effects; never `setTimeout` in tests.
 
-## Avoid these pitfalls (learned from Phase 1)
+## Avoid these pitfalls
 
 - **Do not bind Redux store methods in a Proxy `get` trap.** `useSyncExternalStore`
   resubscribes when `subscribe` identity changes, which causes infinite

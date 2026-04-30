@@ -91,7 +91,7 @@ const baseState = {
   item: ''
 }
 
-describe('useUrlStateSync — Phase 2 ongoing sync', () => {
+describe('useUrlStateSync — ongoing sync', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockIsInitialized.current = true

@@ -1,0 +1,42 @@
+FilmDrop UI
+Copyright (c) Element 84, Inc.
+
+This product is licensed under the Apache License, Version 2.0 (see LICENSE).
+
+## Trademarks
+
+"Element 84" and the Element 84 logos, and "FilmDrop" and any related
+marks, are trademarks of Element 84, Inc. The Apache License, Version 2.0
+covers the source code in this repository; it does NOT grant any rights to
+use Element 84's trademarks or trade names.
+
+Brand assets included in this repository (Element 84 logos, FilmDrop
+favicon, FilmDrop wordmark) are provided so that contributors and
+internal evaluators can run the reference starter app with the full
+branded experience after `git clone`. They are NOT redistributed in the
+published npm package (see the `files` field in `package.json`).
+
+External integrators, forks, and downstream redistributions MUST replace
+these brand assets with their own and MUST NOT use Element 84 marks to
+imply endorsement or affiliation. Supply your own brand assets via the
+`BRAND_LOGO`, `LOGIN_LOGO`, and `APP_FAVICON` config keys (see
+`CONFIGURATION.md`) and your own paths under `public/config/`.
+
+For trademark licensing inquiries, contact Element 84:
+https://www.element84.com/
+
+## Third-Party Components
+
+FilmDrop UI bundles or depends on the following third-party software, each
+under its own license. The full license texts are available in the
+respective package distributions.
+
+- React, React DOM (MIT) — https://react.dev/
+- Redux Toolkit, React Redux (MIT) — https://redux-toolkit.js.org/
+- TanStack Router (MIT) — https://tanstack.com/router/
+- MUI (MIT) — https://mui.com/
+- Leaflet, leaflet-draw, react-leaflet (BSD-2-Clause / MIT) — https://leafletjs.com/
+- Emotion (MIT) — https://emotion.sh/
+- DOMPurify (Apache-2.0 / MPL-2.0) — https://github.com/cure53/DOMPurify
+- @radiantearth/stac-fields (Apache-2.0) — https://github.com/radiantearth/stac-fields
+- Other dependencies as declared in `package.json`.

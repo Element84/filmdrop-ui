@@ -3,40 +3,56 @@
 Minimal host-app showing how to embed `filmdrop-ui` as a library at a
 non-root basepath.
 
-## Prerequisites
+## Quick Start
 
-1. Build the library once from the repo root:
+The starter is wired as an npm workspace, so the quickest path from a
+fresh clone is:
+
+```bash
+# from the repo root
+npm install
+npm run build:lib
+npm run sync:starter-brand   # mirror brand assets into public/config
+npm run sync:starter-data    # mirror grid JSON into public/data (gitignored)
+npm run dev:starter          # http://localhost:5180/app/
+```
+
+`npm install` at the repo root installs the starter's deps (workspace),
+and the two `sync:starter-*` commands populate the public assets the
+starter needs at runtime.
+
+## Development Modes
+
+There are two ways to develop the starter:
+
+1. **Built-library mode** (default — what consumers will experience):
 
    ```bash
-   cd ../..
-   npm install
-   npm run build:lib
+   npm run build:lib       # rebuild after each library change
+   npm run dev:starter
    ```
 
-2. Install starter deps:
+   The starter resolves `filmdrop-ui` from the parent package's `dist/`
+   exactly as a published consumer would.
+
+2. **Source-HMR mode** (fast inner loop while iterating on the library):
 
    ```bash
-   cd examples/starter
-   npm install
+   npm run dev:starter:src
    ```
 
-3. **Copy the grid-data JSON files** from `../../public/data/` into
-   `./public/data/`. These files (`cdem.json`, `doqq.json`, `mgrs.json`,
-   `wrs2.json`) are not redistributed through the starter but FilmDrop
-   requires them at `${configUrl base}/data/*.json` whenever the
-   `grid-code` view is used.
+   Sets `FILMDROP_DEV_SRC=1`, which aliases `filmdrop-ui` to
+   `../../src/lib-entry.jsx` so saves in `src/` reload instantly without
+   `build:lib`. Use this for development only; never publish or measure
+   bundle size in this mode.
 
-   ```bash
-   mkdir -p public/data
-   cp ../../public/data/*.json public/data/
-   ```
-
-## Run
+## Run (inside `examples/starter/`)
 
 ```bash
 npm run dev     # http://localhost:5180/app/
 npm run build   # outputs ./dist/
 npm run preview # serve ./dist at /app/
+npm run test    # Vitest contract tests for App.jsx
 ```
 
 ## What this demonstrates
@@ -64,21 +80,41 @@ div. See the `Container-escape CSS contract` section of the root
 [`README.md`](../../README.md#container-escape-css-contract) for the full
 inventory of full-viewport overlays to expect.
 
-## Notice
+## Brand assets
 
-This starter intentionally ships **no brand assets**. Consumers must supply
-their own brand assets via `config.json` (`BRAND_LOGO`, `LOGIN_LOGO`,
-`APP_FAVICON`) and corresponding files placed alongside the config
-(e.g. under `public/config/`). FilmDrop renders with a
-neutral text wordmark when these are absent.
+The starter ships with the canonical Element 84 logos and the FilmDrop
+favicon committed under `public/config/` so a fresh clone plus
+`npm run dev:starter` produces a fully branded preview. These assets are
+mirrored from the repo-root `public/` by `npm run sync:starter-brand`
+(which is safe to re-run any time the source files change).
+
+External integrators forking this starter must replace these assets
+with their own and update `config.json`'s `BRAND_LOGO`, `LOGIN_LOGO`,
+and `APP_FAVICON` entries accordingly. The Element 84 / FilmDrop marks
+themselves are NOT covered by the Apache 2.0 license that covers the
+code; see the top-level [`NOTICE`](../../NOTICE) file for the trademark
+boundary. The brand assets are NOT shipped to the published npm tarball
+either — only `dist/`, `README.md`, `LICENSE`, `NOTICE`, `CHANGELOG.md`,
+and `CONFIGURATION.md` are published.
+
+## For Element 84 coworkers
+
+After `git clone` and `npm install` at the repo root, you should be able
+to run `npm run dev:starter` and see the full branded experience with
+zero additional configuration. If brand assets look stale, run
+`npm run sync:starter-brand`. If grid overlays 404, run
+`npm run sync:starter-data`.
 
 ## Troubleshooting
 
-- **Blank map, 404 for `data/mgrs.json`** — you forgot step 3 above.
+- **Blank map, 404 for `data/mgrs.json`** — run `npm run sync:starter-data`
+  from the repo root.
 - **Theme CSS not applying** — ensure the starter is serving from
   `/app/`; the scoped `.filmdrop-root[data-theme=…]` selectors need the
   wrapper div that `App.jsx` renders.
-- **`filmdrop-ui` resolution fails** — run `npm install` in the starter
-  AFTER running `npm run build:lib` in the repo root. The starter uses
-  `"filmdrop-ui": "file:../.."` which resolves the symlinked package
-  against the root's `dist/`.
+- **`filmdrop-ui` resolution fails** — run `npm install` at the repo
+  root (which sets up the workspace) AFTER running `npm run build:lib`.
+  The starter declares `"filmdrop-ui": "file:../.."` so the workspace
+  resolver points at the parent package's `dist/`.
+- **Library edits not appearing** — switch to `npm run dev:starter:src`
+  for source HMR, or rerun `npm run build:lib` between iterations.

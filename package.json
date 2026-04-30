@@ -20,7 +20,9 @@
     "dist",
     "README.md",
     "LICENSE",
-    "CHANGELOG.md"
+    "NOTICE",
+    "CHANGELOG.md",
+    "CONFIGURATION.md"
   ],
   "sideEffects": [
     "**/*.css",
@@ -125,6 +127,14 @@
     "build:types": "node scripts/copy-types.mjs",
     "verify:lib": "node scripts/verify-lib-bundle.mjs",
     "verify:consumer": "node scripts/verify-consumer-smoke.mjs",
+    "verify:starter": "node scripts/verify-starter-smoke.mjs",
+    "verify:types": "node scripts/verify-types.mjs",
+    "sync:starter-data": "node scripts/sync-starter-data.mjs",
+    "sync:starter-brand": "node scripts/sync-starter-brand.mjs",
+    "dev:starter": "npm run -w filmdrop-starter dev",
+    "dev:starter:src": "cross-env FILMDROP_DEV_SRC=1 npm run -w filmdrop-starter dev",
+    "build:starter": "npm run -w filmdrop-starter build",
+    "preview:starter": "npm run -w filmdrop-starter preview",
     "prepublishOnly": "npm run build:lib && npm run lint && npm run format && npm run typecheck && npm run test-pre-commit",
     "serve": "vite preview --outDir build",
     "test": "vitest",
@@ -143,6 +153,9 @@
     "config:migrate": "node scripts/migrate-config.mjs",
     "prepare": "husky"
   },
+  "workspaces": [
+    "examples/starter"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",

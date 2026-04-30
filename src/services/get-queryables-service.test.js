@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { resolveRefs } from './get-queryables-service'
 
 /**
- * Phase 3 Step 3.11 regression tests for the JSON-Schema $ref resolver.
+ * Regression tests for the JSON-Schema $ref resolver.
  * Covers cycle detection, depth guard, fetch caching, and fragment paths.
  */
 describe('resolveRefs', () => {

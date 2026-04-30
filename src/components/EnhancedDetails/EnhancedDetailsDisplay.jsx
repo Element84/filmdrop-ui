@@ -1,5 +1,6 @@
 import React, { useMemo, useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import './EnhancedDetails.css'
 import { useEnhancedDetails } from '../../contexts/EnhancedDetailsContext'
 import {
   groupFieldsSemantically,

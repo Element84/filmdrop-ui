@@ -94,25 +94,36 @@ try {
   fail(`npm pack --dry-run failed: ${err.message}`)
 }
 const pack = JSON.parse(packOutput)[0]
+const allowedTopLevel = new Set([
+  'package.json',
+  'README.md',
+  'LICENSE',
+  'NOTICE',
+  'CHANGELOG.md',
+  'CONFIGURATION.md'
+])
 const disallowed = pack.files
   .map((f) => f.path)
-  .filter(
-    (p) =>
-      p.startsWith('src/') ||
-      p.startsWith('build/') ||
-      p.startsWith('public/') ||
-      p.startsWith('examples/') ||
-      p.startsWith('scripts/') ||
-      p.startsWith('ADRs/') ||
-      p.startsWith('config_helper/') ||
-      p.startsWith('screenshots/')
-  )
+  .filter((p) => {
+    if (p.startsWith('dist/')) return false
+    if (allowedTopLevel.has(p)) return false
+    return true
+  })
 if (disallowed.length > 0) {
-  fail(`npm tarball includes non-dist paths: ${disallowed.join(', ')}`)
+  fail(`npm tarball includes non-allowed paths: ${disallowed.join(', ')}`)
 }
 pass(
   `npm tarball clean: ${pack.files.length} files, unpacked ${pack.unpackedSize}B`
 )
+
+// Guard against accidental publish from FILMDROP_DEV_SRC mode.
+if (process.env.FILMDROP_DEV_SRC === '1') {
+  fail(
+    'FILMDROP_DEV_SRC=1 is set; verify:consumer must run against a ' +
+      'pristine published-style build. Unset and rerun.'
+  )
+}
+pass('FILMDROP_DEV_SRC is not set.')
 
 // Verify `.filmdrop-root` container-scoped theme selectors ship in
 // style.css so embedded consumers get themed CSS variables without
@@ -150,6 +161,56 @@ if (existsSync(starterConfigPath)) {
   }
   pass(
     `examples/starter config.json valid (STAC_API_URL=${starterCfg.STAC_API_URL}).`
+  )
+}
+
+// Leaflet CSS is a peer responsibility — the library must not inline it.
+if (
+  /\.leaflet-container\b[^{]*\{/.test(styleCss) &&
+  /\.leaflet-tile\b[^{]*\{/.test(styleCss)
+) {
+  fail('dist/style.css appears to inline leaflet.css.')
+}
+pass('dist/style.css does not inline leaflet.css.')
+
+// Peer dedupe: every peer must resolve to a single physical version
+// across the starter workspace.
+try {
+  const lsOut = execSync(
+    'npm ls --workspace filmdrop-starter --all --json --silent',
+    { cwd: root, encoding: 'utf8' }
+  )
+  const tree = JSON.parse(lsOut)
+  const versions = new Map()
+  function walk(node) {
+    const deps = node.dependencies || {}
+    for (const [name, child] of Object.entries(deps)) {
+      if (peerNames.includes(name) && child.version) {
+        if (!versions.has(name)) versions.set(name, new Set())
+        versions.get(name).add(child.version)
+      }
+      walk(child)
+    }
+  }
+  walk(tree)
+  const dupes = [...versions.entries()].filter(([, s]) => s.size > 1)
+  if (dupes.length > 0) {
+    fail(
+      'Peer-dependency duplication detected in starter workspace:\n' +
+        dupes.map(([n, s]) => `  - ${n}: ${[...s].join(', ')}`).join('\n') +
+        '\nAdd the offender to `resolve.dedupe` in examples/starter/vite.config.mts ' +
+        'or align ranges in package.json.'
+    )
+  }
+  pass(
+    `Peer dedupe OK across starter workspace (${versions.size} peers checked).`
+  )
+} catch (err) {
+  // Workspace not installed — skip rather than fail.
+  console.log(
+    `· Skipping peer-dedupe check (npm ls -w filmdrop-starter unavailable: ${err.message
+      .split('\n')[0]
+      .slice(0, 120)}).`
   )
 }
 
