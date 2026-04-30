@@ -201,6 +201,30 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed repeated mosaic layer recreation on identical mosaic searches by reusing the existing mosaic image layer when the request parameters and top items have not changed.
 - Dismissing the GeoJSON upload modal no longer leaves a staged AOI driving later searches; in-flight fetches are aborted so late completions do not repopulate results after **Cancel**.
 - Non-upload flows do not inherit upload-specific error copy; mosaic prefetch uses a dedicated summary to avoid redundant generic search messaging.
+- **Login form accessibility.** Username and password inputs now have
+  associated `<label htmlFor>` bindings and `autoComplete` hints
+  (`username` / `current-password`) so screen readers and password
+  managers can fill the form correctly.
+- **Modal dialog accessibility.** The cart modal and GeoJSON upload
+  modal now expose `role="dialog"` with `aria-modal`, accept the
+  Escape key and backdrop clicks to close, move focus into the
+  dialog on open, and restore focus to the previously focused
+  element on close. Their close buttons have descriptive
+  `aria-label`s.
+- **Loading overlay layout.** The full-app loading overlay now sizes
+  to its container instead of the viewport, so it no longer escapes
+  embedded layouts or causes horizontal scrollbars when the host
+  page has scrollbars of its own.
+- **Removed verbose request logging.** The STAC search service no
+  longer prints request URLs and parameters to the browser console
+  in production builds.
+
+### Security
+
+- **Export download link hardened.** The CSV export anchor now sets
+  `rel="noopener noreferrer"` (previously `noopener` only),
+  preventing referrer leakage when the download is opened in a new
+  context.
 
 ## v7.1.0-pre - 2026-01-15
 

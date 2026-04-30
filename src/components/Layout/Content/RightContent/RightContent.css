@@ -236,13 +236,12 @@
   z-index: 498;
 }
 
-/* Semi-transparent overlay over the full viewport (grays out header/sidebar) */
+/* Semi-transparent overlay over the FilmDrop root (grays out header/sidebar) */
 .appLoadingContainer {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;

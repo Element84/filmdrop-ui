@@ -23,6 +23,8 @@ const UploadGeojsonModal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const submissionInFlightRef = useRef(false)
   const uploadAbortControllerRef = useRef(null)
+  const dialogRef = useRef(null)
+  const previouslyFocusedRef = useRef(null)
   const dispatch = useDispatch()
 
   // Abort any in-flight submission when the modal unmounts.
@@ -30,6 +32,18 @@ const UploadGeojsonModal = () => {
     return () => {
       uploadAbortControllerRef.current?.abort()
       uploadAbortControllerRef.current = null
+    }
+  }, [])
+
+  // Capture trigger focus on mount, focus the dialog, restore on unmount.
+  useEffect(() => {
+    previouslyFocusedRef.current = document.activeElement
+    dialogRef.current?.focus()
+    return () => {
+      const el = previouslyFocusedRef.current
+      if (el && typeof el.focus === 'function' && document.contains(el)) {
+        el.focus()
+      }
     }
   }, [])
 
@@ -171,10 +185,37 @@ const UploadGeojsonModal = () => {
   }
 
   return (
-    <div className="uploadGeojsonModal" data-testid="testUploadGeojsonModal">
+    <div
+      className="uploadGeojsonModal"
+      data-testid="testUploadGeojsonModal"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onUploadGeojsonCancelClicked()
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation()
+          onUploadGeojsonCancelClicked()
+        }
+      }}
+      role="presentation"
+    >
       <div className="uploadGeojsonModalContainerBackground"></div>
-      <div className="uploadGeojsonModalContainer">
-        <span className="uploadGeojsonModalTitle">Upload Geojson File</span>
+      <div
+        className="uploadGeojsonModalContainer"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filmdrop-upload-geojson-modal-title"
+        tabIndex={-1}
+        ref={dialogRef}
+      >
+        <span
+          id="filmdrop-upload-geojson-modal-title"
+          className="uploadGeojsonModalTitle"
+        >
+          Upload Geojson File
+        </span>
         <div className="uploadGeojsonModalContent">
           <div {...getRootProps({ className: dropzoneClass })} id="dropzone">
             <p>

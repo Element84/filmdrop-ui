@@ -66,16 +66,20 @@ const Login = () => {
       <div className="loginFormContainer">
         <h1>Login</h1>
         <form className="submitForm" onSubmit={submitLogin}>
-          <label htmlFor="loginForm">Username:</label>
+          <label htmlFor="filmdrop-login-username">Username:</label>
           <input
+            id="filmdrop-login-username"
             type="text"
+            autoComplete="username"
             value={username}
             onChange={handleUsernameChange}
             required={true}
           />
-          <label htmlFor="loginForm">Password:</label>
+          <label htmlFor="filmdrop-login-password">Password:</label>
           <input
+            id="filmdrop-login-password"
             type="password"
+            autoComplete="current-password"
             value={password}
             onChange={handlePasswordChange}
             required={true}

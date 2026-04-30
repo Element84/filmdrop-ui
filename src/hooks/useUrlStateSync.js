@@ -174,7 +174,10 @@ export function useUrlStateSync() {
     urlState,
     selectedCollectionData,
     collectionsData,
+    dispatch,
     fetchAndDisplayItem,
-    clearItemSelection
+    clearItemSelection,
+    isInitialized,
+    prevSearch
   ])
 }

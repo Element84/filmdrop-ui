@@ -31,7 +31,7 @@ const ExportButton = () => {
     const a = document.createElement('a')
     a.href = url
     a.download = uniqueFileName
-    a.rel = 'noopener'
+    a.rel = 'noopener noreferrer'
     try {
       a.click()
     } finally {

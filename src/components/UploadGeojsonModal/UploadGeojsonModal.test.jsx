@@ -462,4 +462,54 @@ describe('UploadGeojsonModal', () => {
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
     })
   })
+
+  describe('dialog semantics', () => {
+    it('exposes role=dialog with aria-modal and aria-labelledby pointing at title', () => {
+      store.dispatch(setshowUploadGeojsonModal(true))
+      setup()
+      const dialog = screen.getByRole('dialog')
+      expect(dialog).toHaveAttribute('aria-modal', 'true')
+      const labelId = dialog.getAttribute('aria-labelledby')
+      expect(labelId).toBeTruthy()
+      expect(document.getElementById(labelId)).toHaveTextContent(
+        'Upload Geojson File'
+      )
+    })
+
+    it('closes when Escape is pressed inside the dialog', () => {
+      store.dispatch(setshowUploadGeojsonModal(true))
+      setup()
+      fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
+    })
+
+    it('closes when the backdrop is clicked', () => {
+      store.dispatch(setshowUploadGeojsonModal(true))
+      setup()
+      const backdrop = screen.getByTestId('testUploadGeojsonModal')
+      fireEvent.click(backdrop)
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
+    })
+
+    it('does not close when the dialog content is clicked', () => {
+      store.dispatch(setshowUploadGeojsonModal(true))
+      setup()
+      fireEvent.click(screen.getByRole('dialog'))
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
+    })
+
+    it('returns focus to the previously focused element on unmount', () => {
+      store.dispatch(setshowUploadGeojsonModal(true))
+      const trigger = document.createElement('button')
+      trigger.textContent = 'open upload'
+      document.body.appendChild(trigger)
+      trigger.focus()
+      expect(document.activeElement).toBe(trigger)
+      const { unmount } = setup()
+      expect(document.activeElement).toBe(screen.getByRole('dialog'))
+      unmount()
+      expect(document.activeElement).toBe(trigger)
+      trigger.remove()
+    })
+  })
 })
