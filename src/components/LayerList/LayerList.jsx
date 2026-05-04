@@ -2,7 +2,7 @@ import React from 'react'
 import './LayerList.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { Checkbox } from '@mui/material'
-import { setreferenceLayers } from '../../redux/slices/mainSlice'
+import { setReferenceLayers } from '../../redux/slices/mainSlice'
 import { toggleReferenceLayerVisibility } from '../../utils/mapHelper'
 
 const LayerList = () => {
@@ -16,7 +16,7 @@ const LayerList = () => {
         ? { ...layer, visibility: !layer.visibility }
         : layer
     )
-    dispatch(setreferenceLayers(updatedLayers))
+    dispatch(setReferenceLayers(updatedLayers))
     toggleReferenceLayerVisibility(combinedLayerName)
   }
 

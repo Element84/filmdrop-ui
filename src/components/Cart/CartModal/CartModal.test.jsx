@@ -2,7 +2,7 @@ import React from 'react'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { store } from '../../../redux/store'
-import { setappConfig, setshowCartModal } from '../../../redux/slices/mainSlice'
+import { setAppConfig, setShowCartModal } from '../../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../../testing/shared-mocks'
 import CartModal from './CartModal'
 
@@ -15,12 +15,12 @@ describe('CartModal', () => {
     )
 
   beforeEach(() => {
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
   })
 
   describe('on close clicked', () => {
-    it('should set setshowCartModal to false in redux state', () => {
-      store.dispatch(setshowCartModal(true))
+    it('should set setShowCartModal to false in redux state', () => {
+      store.dispatch(setShowCartModal(true))
       setup()
       expect(store.getState().mainSlice.showCartModal).toBeTruthy()
       const closeButton = screen.getByRole('button', { name: /close cart/i })
@@ -31,7 +31,7 @@ describe('CartModal', () => {
 
   describe('dialog semantics', () => {
     it('exposes role=dialog with aria-modal and aria-labelledby pointing at title', () => {
-      store.dispatch(setshowCartModal(true))
+      store.dispatch(setShowCartModal(true))
       setup()
       const dialog = screen.getByRole('dialog')
       expect(dialog).toHaveAttribute('aria-modal', 'true')
@@ -41,14 +41,14 @@ describe('CartModal', () => {
     })
 
     it('closes when Escape is pressed inside the dialog', () => {
-      store.dispatch(setshowCartModal(true))
+      store.dispatch(setShowCartModal(true))
       setup()
       fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
       expect(store.getState().mainSlice.showCartModal).toBeFalsy()
     })
 
     it('closes when the backdrop is clicked', () => {
-      store.dispatch(setshowCartModal(true))
+      store.dispatch(setShowCartModal(true))
       setup()
       const backdrop = screen.getByTestId('testCartModal')
       fireEvent.click(backdrop)
@@ -56,14 +56,14 @@ describe('CartModal', () => {
     })
 
     it('does not close when the dialog content is clicked', () => {
-      store.dispatch(setshowCartModal(true))
+      store.dispatch(setShowCartModal(true))
       setup()
       fireEvent.click(screen.getByRole('dialog'))
       expect(store.getState().mainSlice.showCartModal).toBeTruthy()
     })
 
     it('returns focus to the previously focused element on unmount', () => {
-      store.dispatch(setshowCartModal(true))
+      store.dispatch(setShowCartModal(true))
       const trigger = document.createElement('button')
       trigger.textContent = 'open'
       document.body.appendChild(trigger)

@@ -19,7 +19,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCollection,
   setSelectedVisualization,
-  settabSelected,
+  setTabSelected,
   setSearchDateRangeValue,
   setViewMode,
   setQueryableFilters
@@ -40,7 +40,7 @@ import { useUrlInitialize } from './useUrlInitialize'
  * - requireTruthy: if true, skip dispatch when value is falsy
  */
 const SIMPLE_PARAM_HANDLERS = [
-  { param: 'tab', action: settabSelected, defaultValue: 'search' },
+  { param: 'tab', action: setTabSelected, defaultValue: 'search' },
   { param: 'viz', action: setSelectedVisualization, defaultValue: null },
   { param: 'view', action: setViewMode, defaultValue: 'scene' },
   { param: 'col', action: setSelectedCollection, requireTruthy: true },

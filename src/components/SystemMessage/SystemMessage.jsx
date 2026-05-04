@@ -3,7 +3,7 @@ import Alert from '@mui/material/Alert'
 import './SystemMessage.css'
 
 import { useSelector, useDispatch } from 'react-redux'
-import { setshowApplicationAlert } from '../../redux/slices/mainSlice'
+import { setShowApplicationAlert } from '../../redux/slices/mainSlice'
 import { logoutUser } from '../../utils/authHelper'
 
 const SystemMessage = () => {
@@ -22,7 +22,7 @@ const SystemMessage = () => {
     <div className="SystemMessage" data-testid="testSystemMessage">
       <Alert
         onClose={() => {
-          dispatch(setshowApplicationAlert(false))
+          dispatch(setShowApplicationAlert(false))
           if (_applicationAlertSeverity === 'error' && _isAuthErrorAlert) {
             logoutUser()
           }

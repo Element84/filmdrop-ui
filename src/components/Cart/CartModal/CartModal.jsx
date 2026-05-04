@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 import './CartModal.css'
 import { useDispatch } from 'react-redux'
-import { setshowCartModal } from '../../../redux/slices/mainSlice'
+import { setShowCartModal } from '../../../redux/slices/mainSlice'
 
 const CartModal = () => {
   const dispatch = useDispatch()
@@ -9,7 +9,7 @@ const CartModal = () => {
   const previouslyFocusedRef = useRef(null)
 
   function onCartModalCloseClick() {
-    dispatch(setshowCartModal(false))
+    dispatch(setShowCartModal(false))
   }
 
   useEffect(() => {

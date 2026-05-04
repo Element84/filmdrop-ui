@@ -4,11 +4,11 @@ import { screen, fireEvent, act } from '@testing-library/react'
 import ViewSelector from './ViewSelector'
 import { renderFilmDrop } from '../../testing/renderFilmDrop'
 import {
-  setappConfig,
+  setAppConfig,
   setSelectedCollectionData,
   setViewMode,
   setMap,
-  setautoCenterOnItemChanged
+  setAutoCenterOnItemChanged
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import * as mapHelper from '../../utils/mapHelper'
@@ -48,7 +48,7 @@ describe('ViewSelector', () => {
     // State is dispatched after render so selectors flow through re-renders.
     act(() => {
       currentStore.dispatch(
-        setappConfig({
+        setAppConfig({
           ...mockAppConfig,
           ...configOverrides
         })
@@ -218,10 +218,10 @@ describe('ViewSelector', () => {
       expect(screen.getByText('Item Auto-Zoom')).toBeInTheDocument()
     })
 
-    it('should dispatch setautoCenterOnItemChanged when checkbox is toggled', () => {
+    it('should dispatch setAutoCenterOnItemChanged when checkbox is toggled', () => {
       setup({ SHOW_ITEM_AUTO_ZOOM: true })
       act(() => {
-        currentStore.dispatch(setautoCenterOnItemChanged(false))
+        currentStore.dispatch(setAutoCenterOnItemChanged(false))
       })
 
       const checkbox = screen.getByRole('checkbox')

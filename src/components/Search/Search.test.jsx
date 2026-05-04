@@ -4,7 +4,7 @@ import { render, screen, fireEvent } from '@testing-library/react'
 import Search from './Search'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
-import { setappConfig } from '../../redux/slices/mainSlice'
+import { setAppConfig } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import { newSearch, clearSearch } from '../../utils/searchHelper'
 import * as useRenderableQueryablesModule from '../../hooks/useRenderableQueryables'
@@ -35,7 +35,7 @@ vi.mock('../../hooks/useUrlNavigate', () => ({
 describe('Search', () => {
   const setup = (configOverrides = {}) => {
     store.dispatch(
-      setappConfig({
+      setAppConfig({
         ...mockAppConfig,
         ...configOverrides
       })

@@ -23,7 +23,7 @@ import {
 } from './configFormat.mjs'
 import { store } from '../redux/store'
 import { DoesFaviconExistService } from '../services/get-config-service'
-import { setappName, setreferenceLayers } from '../redux/slices/mainSlice'
+import { setAppName, setReferenceLayers } from '../redux/slices/mainSlice'
 import { showApplicationAlert } from './alertHelper'
 import { shouldApplyDocumentBranding } from './themeHelper'
 import { resolveFaviconUrl, getCacheBusterSuffix } from './configBase'
@@ -36,7 +36,7 @@ function loadAppTitle() {
   if (shouldApplyDocumentBranding()) {
     document.title = effectiveName
   }
-  store.dispatch(setappName(effectiveName))
+  store.dispatch(setAppName(effectiveName))
 }
 
 async function loadAppFavicon() {
@@ -146,7 +146,7 @@ async function loadReferenceLayers() {
     return
   }
 
-  store.dispatch(setreferenceLayers(LayerListFromConfig))
+  store.dispatch(setReferenceLayers(LayerListFromConfig))
 }
 
 /**

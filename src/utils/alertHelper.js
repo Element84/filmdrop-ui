@@ -1,8 +1,8 @@
 import {
-  setapplicationAlertMessage,
-  setapplicationAlertSeverity,
-  setshowApplicationAlert,
-  setisAuthErrorAlert
+  setApplicationAlertMessage,
+  setApplicationAlertSeverity,
+  setShowApplicationAlert,
+  setIsAuthErrorAlert
 } from '../redux/slices/mainSlice'
 import { store } from '../redux/store'
 
@@ -24,12 +24,12 @@ export function showApplicationAlert(
   isAuthError = false
 ) {
   message
-    ? store.dispatch(setapplicationAlertMessage(message))
-    : store.dispatch(setapplicationAlertMessage('System Error'))
+    ? store.dispatch(setApplicationAlertMessage(message))
+    : store.dispatch(setApplicationAlertMessage('System Error'))
 
-  store.dispatch(setapplicationAlertSeverity(severity))
-  store.dispatch(setisAuthErrorAlert(isAuthError))
-  store.dispatch(setshowApplicationAlert(true))
+  store.dispatch(setApplicationAlertSeverity(severity))
+  store.dispatch(setIsAuthErrorAlert(isAuthError))
+  store.dispatch(setShowApplicationAlert(true))
 
   // Clear previous timeout before starting a new one so successive alerts
   // don't end up dismissing whatever alert is currently on-screen.
@@ -38,7 +38,7 @@ export function showApplicationAlert(
   if (duration) {
     pendingAlertTimeoutId = setTimeout(() => {
       pendingAlertTimeoutId = null
-      store.dispatch(setshowApplicationAlert(false))
+      store.dispatch(setShowApplicationAlert(false))
     }, duration)
     return pendingAlertTimeoutId
   }

@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { SearchService, fetchTopItemsForMosaic } from './get-search-service'
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 
 const DEFAULT_SEARCH_ERROR_SUMMARY = 'Error Fetching Search Results'
 const DEFAULT_MOSAIC_TOP_ITEMS_ERROR_SUMMARY =
@@ -14,7 +14,7 @@ const mockStacApiUrl = 'https://stac-api.example.com'
 beforeEach(() => {
   vi.clearAllMocks()
   store.dispatch(
-    setappConfig({
+    setAppConfig({
       STAC_API_URL: mockStacApiUrl,
       APP_TOKEN_AUTH_ENABLED: false,
       FETCH_CREDENTIALS: 'same-origin'

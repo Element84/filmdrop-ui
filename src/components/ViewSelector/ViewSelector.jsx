@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   setViewMode,
-  setautoCenterOnItemChanged
+  setAutoCenterOnItemChanged
 } from '../../redux/slices/mainSlice'
 import { Checkbox as MuiCheckbox } from '@mui/material'
 import './ViewSelector.css'
@@ -138,7 +138,7 @@ const ViewSelector = () => {
   }
 
   const handleAutoZoomChange = (e) => {
-    dispatch(setautoCenterOnItemChanged(e.target.checked))
+    dispatch(setAutoCenterOnItemChanged(e.target.checked))
   }
 
   // Build buttons array for ButtonGroup

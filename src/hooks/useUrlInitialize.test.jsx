@@ -4,7 +4,7 @@ import React from 'react'
 import { Provider } from 'react-redux'
 import { store } from '../redux/store'
 import {
-  setappConfig,
+  setAppConfig,
   setCollectionsData,
   setMap,
   setSearchResults
@@ -130,7 +130,7 @@ describe('useUrlInitialize', () => {
     })
 
     it('does not initialize when collectionsData is empty', () => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       store.dispatch(setCollectionsData([]))
       store.dispatch(setMap({ _leaflet_id: 1 }))
 
@@ -143,7 +143,7 @@ describe('useUrlInitialize', () => {
     })
 
     it('does not initialize when map is empty', () => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       store.dispatch(setCollectionsData([mockCollection]))
       store.dispatch(setMap({}))
 
@@ -158,7 +158,7 @@ describe('useUrlInitialize', () => {
 
   describe('initialization with all prerequisites', () => {
     beforeEach(() => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       store.dispatch(setCollectionsData([mockCollection]))
       store.dispatch(setMap({ _leaflet_id: 1 }))
     })
@@ -437,14 +437,14 @@ describe('useUrlInitialize', () => {
         result.current.clearItemSelection()
       })
 
-      // Should dispatch setClickResults, setCurrentPopupResult, setselectedPopupResultIndex
+      // Should dispatch setClickResults, setCurrentPopupResult, setSelectedPopupResultIndex
       expect(mockDispatch).toHaveBeenCalledTimes(3)
     })
   })
 
   describe('visualization restoration', () => {
     beforeEach(() => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       store.dispatch(setCollectionsData([mockCollection]))
       store.dispatch(setMap({ _leaflet_id: 1 }))
     })

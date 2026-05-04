@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import PopupResult from '../PopupResult/PopupResult'
 import {
   setCurrentPopupResult,
-  setcartItems,
-  setimageOverlayLoading,
-  setselectedPopupResultIndex
+  setCartItems,
+  setImageOverlayLoading,
+  setSelectedPopupResultIndex
 } from '../../redux/slices/mainSlice'
 import PopupFooter from '../PopupFooter/PopupFooter.jsx'
 import { isSceneInCart } from '../../utils/dataHelper'
@@ -43,7 +43,7 @@ const PopupResults = (props) => {
         !_currentPopupResult ||
         !props.results.includes(_currentPopupResult)
       ) {
-        dispatch(setselectedPopupResultIndex(0))
+        dispatch(setSelectedPopupResultIndex(0))
       }
       const currentItem = props.results[_selectedPopupResultIndex]
       debounceTitilerOverlay(currentItem)
@@ -53,7 +53,7 @@ const PopupResults = (props) => {
       }
     }
     return () => {
-      dispatch(setimageOverlayLoading(false))
+      dispatch(setImageOverlayLoading(false))
     }
   }, [
     props.results,
@@ -66,20 +66,20 @@ const PopupResults = (props) => {
 
   const onNextClick = useCallback(() => {
     if (_selectedPopupResultIndex < props.results.length - 1) {
-      dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex + 1))
+      dispatch(setSelectedPopupResultIndex(_selectedPopupResultIndex + 1))
     }
   }, [_selectedPopupResultIndex, props.results.length, dispatch])
 
   const onPrevClick = useCallback(() => {
     if (_selectedPopupResultIndex > 0) {
-      dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex - 1))
+      dispatch(setSelectedPopupResultIndex(_selectedPopupResultIndex - 1))
     }
   }, [_selectedPopupResultIndex, dispatch])
 
   function onAddRemoveSceneToCartClicked() {
     if (isSceneInCart(props.results[_selectedPopupResultIndex])) {
       dispatch(
-        setcartItems(
+        setCartItems(
           _cartItems.filter(
             (_cartItems) =>
               _cartItems.id !== props.results[_selectedPopupResultIndex].id
@@ -89,7 +89,7 @@ const PopupResults = (props) => {
       return
     }
     dispatch(
-      setcartItems([..._cartItems, props.results[_selectedPopupResultIndex]])
+      setCartItems([..._cartItems, props.results[_selectedPopupResultIndex]])
     )
   }
 

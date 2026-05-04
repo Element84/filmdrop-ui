@@ -3,8 +3,8 @@ import './LeafMap.css'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   setMap,
-  setmapDrawPolygonHandler,
-  setshowMapAttribution
+  setMapDrawPolygonHandler,
+  setShowMapAttribution
 } from '../../redux/slices/mainSlice'
 import * as L from 'leaflet'
 import 'leaflet-draw'
@@ -184,13 +184,13 @@ const LeafMap = () => {
         shapeOptions: { color: mapColors.aoiBoundary }
       })
 
-      dispatch(setmapDrawPolygonHandler(drawPolygonHandler))
+      dispatch(setMapDrawPolygonHandler(drawPolygonHandler))
 
       // set up map events
       const onZoomEnd = function () {
         if (!mapTouched) {
           setmapTouched(true)
-          dispatch(setshowMapAttribution(false))
+          dispatch(setShowMapAttribution(false))
         }
       }
       map.on('zoomend', onZoomEnd)
@@ -200,7 +200,7 @@ const LeafMap = () => {
       const onMouseDown = function () {
         if (!mapTouched) {
           setmapTouched(true)
-          dispatch(setshowMapAttribution(false))
+          dispatch(setShowMapAttribution(false))
         }
       }
       map.on('mousedown', onMouseDown)

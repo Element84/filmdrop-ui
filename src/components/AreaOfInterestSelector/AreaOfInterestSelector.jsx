@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import {
-  setisDrawingEnabled,
-  setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setIsDrawingEnabled,
+  setSearchGeojsonBoundary,
+  setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import ButtonGroup from '../ButtonGroup/ButtonGroup'
 import {
@@ -54,28 +54,28 @@ const AreaOfInterestSelector = () => {
   const handleDraw = () => {
     // Clear any existing boundary to allow redrawing
     if (searchGeojsonBoundary) {
-      dispatch(setsearchGeojsonBoundary(null))
+      dispatch(setSearchGeojsonBoundary(null))
       clearLayer('drawBoundsLayer')
     }
     setSelectedAOI('draw')
-    dispatch(setisDrawingEnabled(true))
+    dispatch(setIsDrawingEnabled(true))
     enableMapPolyDrawing()
   }
 
   const handleUpload = () => {
     // Clear any existing boundary to allow reuploading
     if (searchGeojsonBoundary) {
-      dispatch(setsearchGeojsonBoundary(null))
+      dispatch(setSearchGeojsonBoundary(null))
       clearLayer('drawBoundsLayer')
     }
     setSelectedAOI('upload')
-    dispatch(setshowUploadGeojsonModal(true))
+    dispatch(setShowUploadGeojsonModal(true))
   }
 
   const handleMapView = () => {
     setSelectedAOI('mapview')
     // Clear any drawn boundary when switching to map view
-    dispatch(setsearchGeojsonBoundary(null))
+    dispatch(setSearchGeojsonBoundary(null))
     clearLayer('drawBoundsLayer')
 
     // Optionally zoom to collection extents if available

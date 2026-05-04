@@ -1,5 +1,5 @@
 import { store } from '../redux/store'
-import { setauthTokenExists } from '../redux/slices/mainSlice'
+import { setAuthTokenExists } from '../redux/slices/mainSlice'
 
 /**
  * Storage key for the FilmDrop auth JWT. Centralized here so a future
@@ -33,5 +33,5 @@ export function clearAuthToken() {
 
 export function logoutUser() {
   clearAuthToken()
-  store.dispatch(setauthTokenExists(false))
+  store.dispatch(setAuthTokenExists(false))
 }

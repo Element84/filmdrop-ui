@@ -10,7 +10,7 @@ import { showApplicationAlert } from '../utils/alertHelper'
 import {
   setSelectedCollection,
   setSelectedVisualization,
-  settabSelected,
+  setTabSelected,
   setSearchDateRangeValue,
   setViewMode,
   setQueryableFilters
@@ -125,12 +125,12 @@ describe('useUrlStateSync — ongoing sync', () => {
   })
 
   describe('tab sync', () => {
-    it('dispatches settabSelected when tab changes', () => {
+    it('dispatches setTabSelected when tab changes', () => {
       mockSearch = { ...baseSearchParams, tab: 'details' }
 
       renderHook(() => useUrlStateSync())
 
-      expect(mockDispatch).toHaveBeenCalledWith(settabSelected('details'))
+      expect(mockDispatch).toHaveBeenCalledWith(setTabSelected('details'))
     })
 
     it('dispatches default "search" when tab is cleared', () => {
@@ -139,7 +139,7 @@ describe('useUrlStateSync — ongoing sync', () => {
 
       renderHook(() => useUrlStateSync())
 
-      expect(mockDispatch).toHaveBeenCalledWith(settabSelected('search'))
+      expect(mockDispatch).toHaveBeenCalledWith(setTabSelected('search'))
     })
   })
 

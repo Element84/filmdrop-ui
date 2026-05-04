@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { GetItemService } from './get-item-service'
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import * as authHelper from '../utils/authHelper'
 
 // Mock modules
@@ -30,7 +30,7 @@ const mockItemResponse = {
 beforeEach(() => {
   vi.clearAllMocks()
   store.dispatch(
-    setappConfig({
+    setAppConfig({
       STAC_API_URL: mockStacApiUrl,
       APP_TOKEN_AUTH_ENABLED: false,
       FETCH_CREDENTIALS: 'same-origin'
@@ -80,7 +80,7 @@ describe('GetItemService with collectionId', () => {
       const mockToken = 'mock-jwt-token'
       localStorage.setItem('APP_AUTH_TOKEN', mockToken)
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: true,
           FETCH_CREDENTIALS: 'same-origin'
@@ -109,7 +109,7 @@ describe('GetItemService with collectionId', () => {
     it('does not include Authorization header when auth is disabled', async () => {
       localStorage.setItem('APP_AUTH_TOKEN', 'mock-token')
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: false,
           FETCH_CREDENTIALS: 'same-origin'
@@ -130,7 +130,7 @@ describe('GetItemService with collectionId', () => {
 
     it('does not include Authorization header when token does not exist', async () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: true,
           FETCH_CREDENTIALS: 'same-origin'
@@ -153,7 +153,7 @@ describe('GetItemService with collectionId', () => {
   describe('credentials configuration', () => {
     it('uses FETCH_CREDENTIALS from config', async () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: false,
           FETCH_CREDENTIALS: 'include'
@@ -177,7 +177,7 @@ describe('GetItemService with collectionId', () => {
 
     it('defaults to same-origin when FETCH_CREDENTIALS not configured', async () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: false
         })

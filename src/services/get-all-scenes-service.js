@@ -1,5 +1,5 @@
 import { store } from '../redux/store'
-import { setmappedScenes } from '../redux/slices/mainSlice'
+import { setMappedScenes } from '../redux/slices/mainSlice'
 import {
   addDataToLayer,
   footprintLayerStyle,
@@ -28,7 +28,7 @@ async function fetchFeatures(url, abortSignal) {
   addDataToLayer(features, 'searchResultsLayer', options, false)
 
   store.dispatch(
-    setmappedScenes(store.getState().mainSlice.mappedScenes.concat(features))
+    setMappedScenes(store.getState().mainSlice.mappedScenes.concat(features))
   )
 
   const nextPageLink = data.links.find((link) => link.rel === 'next')

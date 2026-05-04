@@ -3,8 +3,8 @@ import Alert from '@mui/material/Alert'
 import './UploadGeojsonModal.css'
 import { useDispatch } from 'react-redux'
 import {
-  setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setSearchGeojsonBoundary,
+  setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import { useDropzone } from 'react-dropzone'
 import {
@@ -107,9 +107,9 @@ const UploadGeojsonModal = () => {
   function onUploadGeojsonCancelClicked() {
     uploadAbortControllerRef.current?.abort()
     uploadAbortControllerRef.current = null
-    dispatch(setsearchGeojsonBoundary(null))
+    dispatch(setSearchGeojsonBoundary(null))
     clearLayer('drawBoundsLayer')
-    dispatch(setshowUploadGeojsonModal(false))
+    dispatch(setShowUploadGeojsonModal(false))
   }
 
   async function onUploadGeojsonAddClicked() {
@@ -159,7 +159,7 @@ const UploadGeojsonModal = () => {
       if (signal.aborted) return
 
       if (result && result.error) {
-        dispatch(setsearchGeojsonBoundary(null))
+        dispatch(setSearchGeojsonBoundary(null))
         clearLayer('drawBoundsLayer')
         setServerErrorSummary(result.summary)
         setServerErrorCode(result.code || null)
@@ -167,7 +167,7 @@ const UploadGeojsonModal = () => {
         return
       }
 
-      dispatch(setshowUploadGeojsonModal(false))
+      dispatch(setShowUploadGeojsonModal(false))
     } catch (error) {
       if (error?.name === 'AbortError') {
         return

@@ -4,10 +4,10 @@ import App from './App'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import {
-  setshowUploadGeojsonModal,
-  setshowApplicationAlert,
-  setappConfig,
-  setshowCartModal
+  setShowUploadGeojsonModal,
+  setShowApplicationAlert,
+  setAppConfig,
+  setShowCartModal
 } from './redux/slices/mainSlice'
 import { vi } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
@@ -51,7 +51,7 @@ describe('App', () => {
 
   describe('on app render with config', () => {
     beforeEach(() => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       // Mock theme initialization to avoid CSS validation errors in tests
       vi.spyOn(ThemeHelper, 'initializeTheme').mockReturnValue({
         currentTheme: null,
@@ -96,7 +96,7 @@ describe('App', () => {
         expect(UploadGeojsonModalComponent).toBeNull()
       })
       it('should render UploadGeojsonModal if showUploadGeojsonModal in state is true', () => {
-        store.dispatch(setshowUploadGeojsonModal(true))
+        store.dispatch(setShowUploadGeojsonModal(true))
         setup()
         const UploadGeojsonModalComponent = screen.queryByTestId(
           'testUploadGeojsonModal'
@@ -111,7 +111,7 @@ describe('App', () => {
         expect(SystemMessageComponent).toBeNull()
       })
       it('should render SystemMessage if showApplicationAlert in state is true', () => {
-        store.dispatch(setshowApplicationAlert(true))
+        store.dispatch(setShowApplicationAlert(true))
         setup()
         const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
         expect(SystemMessageComponent).not.toBeNull()
@@ -124,7 +124,7 @@ describe('App', () => {
         expect(CartModalComponent).toBeNull()
       })
       it('should render CartModal if showCartModal in state is true', () => {
-        store.dispatch(setshowCartModal(true))
+        store.dispatch(setShowCartModal(true))
         setup()
         const CartModalComponent = screen.queryByTestId('testCartModal')
         expect(CartModalComponent).not.toBeNull()

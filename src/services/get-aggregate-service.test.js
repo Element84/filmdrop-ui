@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { AggregateSearchService } from './get-aggregate-service'
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import * as searchHelper from '../utils/searchHelper'
 import * as mapHelper from '../utils/mapHelper'
 
@@ -13,7 +13,7 @@ global.fetch = vi.fn()
 beforeEach(() => {
   vi.clearAllMocks()
   store.dispatch(
-    setappConfig({
+    setAppConfig({
       STAC_API_URL: 'https://stac-api.example.com',
       APP_TOKEN_AUTH_ENABLED: false,
       FETCH_CREDENTIALS: 'same-origin'

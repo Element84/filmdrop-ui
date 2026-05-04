@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event'
 import QueryableFilters from './QueryableFilters'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
-import { setappConfig, setQueryableFilters } from '../../redux/slices/mainSlice'
+import { setAppConfig, setQueryableFilters } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import * as useRenderableQueryablesModule from '../../hooks/useRenderableQueryables'
 
@@ -76,7 +76,7 @@ const mockHook = (returnValue) => {
 }
 
 const setup = () => {
-  store.dispatch(setappConfig(mockAppConfig))
+  store.dispatch(setAppConfig(mockAppConfig))
   return render(
     <Provider store={store}>
       <QueryableFilters />

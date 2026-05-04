@@ -108,7 +108,7 @@ const CollectionDropdown = () => {
       if (isChanging) {
         // Skip animation on initial selection so the zoom completes
         // before the loading overlay disappears (no visible shift).
-        const animate = !!selectedCollectionData
+        const animate = !!selectedCollectionData?.id
         zoomToCollectionExtent(collection, { animate })
       }
     }

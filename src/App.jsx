@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import CartModal from './components/Cart/CartModal/CartModal'
 import { InitializeAppFromConfig } from './utils/configHelper'
 import Login from './components/Login/Login'
-import { setauthTokenExists, setCurrentTheme } from './redux/slices/mainSlice'
+import { setAuthTokenExists, setCurrentTheme } from './redux/slices/mainSlice'
 import { initializeTheme, applyTheme } from './utils/themeHelper'
 import L from 'leaflet'
 import {
@@ -61,7 +61,7 @@ function App() {
   // Effect 1 — one-time init: auth token, config load, version log.
   useEffect(() => {
     if (getAuthToken()) {
-      dispatch(setauthTokenExists(true))
+      dispatch(setAuthTokenExists(true))
     }
     LoadConfigIntoStateService()
     const version = import.meta.env?.VITE_APP_VERSION

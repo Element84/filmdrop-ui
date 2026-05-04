@@ -9,9 +9,9 @@ import LoadingAnimation from '../../../LoadingAnimation/LoadingAnimation'
 import { useSelector, useDispatch } from 'react-redux'
 import {
   setShowZoomNotice,
-  setisDrawingEnabled,
-  setshowMapAttribution,
-  setshowLayerList
+  setIsDrawingEnabled,
+  setShowMapAttribution,
+  setShowLayerList
 } from '../../../../redux/slices/mainSlice'
 import {
   setMapZoomLevel,
@@ -99,7 +99,7 @@ const RightContent = () => {
   }
 
   function onCancelDrawGeomClicked() {
-    dispatch(setisDrawingEnabled(false))
+    dispatch(setIsDrawingEnabled(false))
     disableMapPolyDrawing()
   }
 
@@ -135,12 +135,12 @@ const RightContent = () => {
 
   const handleAttributionIconMouseEnter = () => {
     clearTimeout(attributionTimeout.current)
-    dispatch(setshowMapAttribution(true))
+    dispatch(setShowMapAttribution(true))
   }
 
   const handleAttributionIconMouseLeave = () => {
     attributionTimeout.current = setTimeout(() => {
-      dispatch(setshowMapAttribution(false))
+      dispatch(setShowMapAttribution(false))
     }, 500)
   }
 
@@ -149,11 +149,11 @@ const RightContent = () => {
   }
 
   const handleAttributionTooltipMouseLeave = () => {
-    dispatch(setshowMapAttribution(false))
+    dispatch(setShowMapAttribution(false))
   }
 
   function onLayerListButtonClick() {
-    dispatch(setshowLayerList(!_showLayerList))
+    dispatch(setShowLayerList(!_showLayerList))
   }
 
   // Keep the opaque map cover up after the loading overlay disappears,

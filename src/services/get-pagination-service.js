@@ -3,13 +3,13 @@ import { getAuthToken } from '../utils/authHelper'
 import {
   setSearchLoading,
   setSearchResults,
-  setmappedScenes,
-  setpaginationNextLink,
-  setpaginationPrevLink,
-  setcurrentPage,
-  settotalPages,
+  setMappedScenes,
+  setPaginationNextLink,
+  setPaginationPrevLink,
+  setCurrentPage,
+  setTotalPages,
   addToPaginationHistory,
-  setpaginationHistory
+  setPaginationHistory
 } from '../redux/slices/mainSlice'
 import {
   addDataToLayer,
@@ -67,14 +67,14 @@ export async function FetchPageService(pageUrl, pageNumber) {
       clearLayer('clickedSceneImageLayer')
 
       store.dispatch(setSearchResults(json))
-      store.dispatch(setmappedScenes(json.features || []))
+      store.dispatch(setMappedScenes(json.features || []))
 
       // Extract pagination metadata
       const nextLink = json.links?.find((link) => link.rel === 'next')
       const prevLink = json.links?.find((link) => link.rel === 'prev')
 
-      store.dispatch(setpaginationNextLink(nextLink?.href || null))
-      store.dispatch(setpaginationPrevLink(prevLink?.href || null))
+      store.dispatch(setPaginationNextLink(nextLink?.href || null))
+      store.dispatch(setPaginationPrevLink(prevLink?.href || null))
 
       // Only update page number if we have features or if it's valid within totalPages
       const currentTotalPages = store.getState().mainSlice.totalPages
@@ -83,7 +83,7 @@ export async function FetchPageService(pageUrl, pageNumber) {
         !currentTotalPages ||
         pageNumber <= currentTotalPages
       ) {
-        store.dispatch(setcurrentPage(pageNumber))
+        store.dispatch(setCurrentPage(pageNumber))
 
         // Update pagination history
         const history = store.getState().mainSlice.paginationHistory
@@ -99,7 +99,7 @@ export async function FetchPageService(pageUrl, pageNumber) {
         } else {
           // Trim history to this page (going back)
           store.dispatch(
-            setpaginationHistory(history.slice(0, existingPageIndex + 1))
+            setPaginationHistory(history.slice(0, existingPageIndex + 1))
           )
         }
       }
@@ -111,7 +111,7 @@ export async function FetchPageService(pageUrl, pageNumber) {
           store.getState().mainSlice.appConfig.API_MAX_ITEMS ||
           DEFAULT_API_MAX_ITEMS
         const totalPages = Math.ceil(totalItems / limit)
-        store.dispatch(settotalPages(totalPages))
+        store.dispatch(setTotalPages(totalPages))
       }
 
       const options = {

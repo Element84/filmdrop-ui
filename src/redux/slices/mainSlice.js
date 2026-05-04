@@ -124,28 +124,28 @@ export const mainSlice = createSlice({
     setLocalGridData: (state, action) => {
       state.localGridData = action.payload
     },
-    setisDrawingEnabled: (state, action) => {
+    setIsDrawingEnabled: (state, action) => {
       state.isDrawingEnabled = action.payload
     },
-    setmapDrawPolygonHandler: (state, action) => {
+    setMapDrawPolygonHandler: (state, action) => {
       state.mapDrawPolygonHandler = action.payload
     },
-    setsearchGeojsonBoundary: (state, action) => {
+    setSearchGeojsonBoundary: (state, action) => {
       state.searchGeojsonBoundary = action.payload
     },
-    setshowUploadGeojsonModal: (state, action) => {
+    setShowUploadGeojsonModal: (state, action) => {
       state.showUploadGeojsonModal = action.payload
     },
-    setshowApplicationAlert: (state, action) => {
+    setShowApplicationAlert: (state, action) => {
       state.showApplicationAlert = action.payload
     },
-    setapplicationAlertMessage: (state, action) => {
+    setApplicationAlertMessage: (state, action) => {
       state.applicationAlertMessage = action.payload
     },
-    setapplicationAlertSeverity: (state, action) => {
+    setApplicationAlertSeverity: (state, action) => {
       state.applicationAlertSeverity = action.payload
     },
-    setisAuthErrorAlert: (state, action) => {
+    setIsAuthErrorAlert: (state, action) => {
       state.isAuthErrorAlert = action.payload
     },
     clearApplicationAlert: (state) => {
@@ -154,61 +154,61 @@ export const mainSlice = createSlice({
       state.applicationAlertSeverity = 'error'
       state.isAuthErrorAlert = false
     },
-    setappConfig: (state, action) => {
+    setAppConfig: (state, action) => {
       state.appConfig = action.payload
     },
-    setcartItems: (state, action) => {
+    setCartItems: (state, action) => {
       state.cartItems = action.payload
     },
-    setshowCartModal: (state, action) => {
+    setShowCartModal: (state, action) => {
       state.showCartModal = action.payload
     },
-    setmappedScenes: (state, action) => {
+    setMappedScenes: (state, action) => {
       state.mappedScenes = action.payload
     },
-    setimageOverlayLoading: (state, action) => {
+    setImageOverlayLoading: (state, action) => {
       state.imageOverlayLoading = action.payload
     },
-    setshowMapAttribution: (state, action) => {
+    setShowMapAttribution: (state, action) => {
       state.showMapAttribution = action.payload
     },
-    setappName: (state, action) => {
+    setAppName: (state, action) => {
       state.appName = action.payload
     },
-    setshowLayerList: (state, action) => {
+    setShowLayerList: (state, action) => {
       state.showLayerList = action.payload
     },
-    setreferenceLayers: (state, action) => {
+    setReferenceLayers: (state, action) => {
       state.referenceLayers = action.payload
     },
-    settabSelected: (state, action) => {
+    setTabSelected: (state, action) => {
       state.tabSelected = action.payload
     },
-    setselectedPopupResultIndex: (state, action) => {
+    setSelectedPopupResultIndex: (state, action) => {
       state.selectedPopupResultIndex = action.payload
     },
-    setautoCenterOnItemChanged: (state, action) => {
+    setAutoCenterOnItemChanged: (state, action) => {
       state.autoCenterOnItemChanged = action.payload
     },
-    setauthTokenExists: (state, action) => {
+    setAuthTokenExists: (state, action) => {
       state.authTokenExists = action.payload
     },
     setCurrentTheme: (state, action) => {
       state.currentTheme = action.payload
     },
-    setpaginationNextLink: (state, action) => {
+    setPaginationNextLink: (state, action) => {
       state.paginationNextLink = action.payload
     },
-    setpaginationPrevLink: (state, action) => {
+    setPaginationPrevLink: (state, action) => {
       state.paginationPrevLink = action.payload
     },
-    setcurrentPage: (state, action) => {
+    setCurrentPage: (state, action) => {
       state.currentPage = action.payload
     },
-    settotalPages: (state, action) => {
+    setTotalPages: (state, action) => {
       state.totalPages = action.payload
     },
-    setpaginationHistory: (state, action) => {
+    setPaginationHistory: (state, action) => {
       state.paginationHistory = action.payload
     },
     addToPaginationHistory: (state, action) => {
@@ -252,34 +252,34 @@ export const { setCollectionsLoadError } = mainSlice.actions
 export const { setSelectedCollectionData } = mainSlice.actions
 export const { setSearchDateRangeValue } = mainSlice.actions
 export const { setLocalGridData } = mainSlice.actions
-export const { setisDrawingEnabled } = mainSlice.actions
-export const { setmapDrawPolygonHandler } = mainSlice.actions
-export const { setsearchGeojsonBoundary } = mainSlice.actions
-export const { setshowUploadGeojsonModal } = mainSlice.actions
-export const { setshowApplicationAlert } = mainSlice.actions
-export const { setapplicationAlertMessage } = mainSlice.actions
-export const { setapplicationAlertSeverity } = mainSlice.actions
-export const { setisAuthErrorAlert } = mainSlice.actions
+export const { setIsDrawingEnabled } = mainSlice.actions
+export const { setMapDrawPolygonHandler } = mainSlice.actions
+export const { setSearchGeojsonBoundary } = mainSlice.actions
+export const { setShowUploadGeojsonModal } = mainSlice.actions
+export const { setShowApplicationAlert } = mainSlice.actions
+export const { setApplicationAlertMessage } = mainSlice.actions
+export const { setApplicationAlertSeverity } = mainSlice.actions
+export const { setIsAuthErrorAlert } = mainSlice.actions
 export const { clearApplicationAlert } = mainSlice.actions
-export const { setappConfig } = mainSlice.actions
-export const { setcartItems } = mainSlice.actions
-export const { setshowCartModal } = mainSlice.actions
-export const { setmappedScenes } = mainSlice.actions
-export const { setimageOverlayLoading } = mainSlice.actions
-export const { setshowMapAttribution } = mainSlice.actions
-export const { setappName } = mainSlice.actions
-export const { setshowLayerList } = mainSlice.actions
-export const { setreferenceLayers } = mainSlice.actions
-export const { settabSelected } = mainSlice.actions
-export const { setselectedPopupResultIndex } = mainSlice.actions
-export const { setautoCenterOnItemChanged } = mainSlice.actions
-export const { setauthTokenExists } = mainSlice.actions
+export const { setAppConfig } = mainSlice.actions
+export const { setCartItems } = mainSlice.actions
+export const { setShowCartModal } = mainSlice.actions
+export const { setMappedScenes } = mainSlice.actions
+export const { setImageOverlayLoading } = mainSlice.actions
+export const { setShowMapAttribution } = mainSlice.actions
+export const { setAppName } = mainSlice.actions
+export const { setShowLayerList } = mainSlice.actions
+export const { setReferenceLayers } = mainSlice.actions
+export const { setTabSelected } = mainSlice.actions
+export const { setSelectedPopupResultIndex } = mainSlice.actions
+export const { setAutoCenterOnItemChanged } = mainSlice.actions
+export const { setAuthTokenExists } = mainSlice.actions
 export const { setCurrentTheme } = mainSlice.actions
-export const { setpaginationNextLink } = mainSlice.actions
-export const { setpaginationPrevLink } = mainSlice.actions
-export const { setcurrentPage } = mainSlice.actions
-export const { settotalPages } = mainSlice.actions
-export const { setpaginationHistory } = mainSlice.actions
+export const { setPaginationNextLink } = mainSlice.actions
+export const { setPaginationPrevLink } = mainSlice.actions
+export const { setCurrentPage } = mainSlice.actions
+export const { setTotalPages } = mainSlice.actions
+export const { setPaginationHistory } = mainSlice.actions
 export const { setMosaicCache } = mainSlice.actions
 export const { addToPaginationHistory } = mainSlice.actions
 export const { setQueryableFilters } = mainSlice.actions

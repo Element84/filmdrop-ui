@@ -5,7 +5,7 @@ import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import { LayoutProvider } from '../../contexts/LayoutContext'
 import { AccordionStateProvider } from '../../contexts/AccordionStateContext'
-import { setappConfig, setcartItems } from '../../redux/slices/mainSlice'
+import { setAppConfig, setCartItems } from '../../redux/slices/mainSlice'
 import { mockAppConfig, mockClickResults } from '../../testing/shared-mocks'
 import { describe, vi } from 'vitest'
 
@@ -31,7 +31,7 @@ describe('PopupResult', () => {
     )
 
   beforeEach(() => {
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
   })
 
   describe('on conditional render', () => {
@@ -41,7 +41,7 @@ describe('PopupResult', () => {
           ...mockAppConfig,
           CART_ENABLED: 'true'
         }
-        store.dispatch(setappConfig(mockAppConfigCartEnabled))
+        store.dispatch(setAppConfig(mockAppConfigCartEnabled))
         setup()
         expect(
           screen.queryByRole('button', {
@@ -50,7 +50,7 @@ describe('PopupResult', () => {
         ).toBeInTheDocument()
       })
       it('should not render cart button in footer if cart not enabled in config', () => {
-        store.dispatch(setappConfig(mockAppConfig))
+        store.dispatch(setAppConfig(mockAppConfig))
         setup()
         expect(
           screen.queryByRole('button', {
@@ -63,8 +63,8 @@ describe('PopupResult', () => {
           ...mockAppConfig,
           CART_ENABLED: 'true'
         }
-        store.dispatch(setappConfig(mockAppConfigCartEnabled))
-        store.dispatch(setcartItems([mockClickResults[0]]))
+        store.dispatch(setAppConfig(mockAppConfigCartEnabled))
+        store.dispatch(setCartItems([mockClickResults[0]]))
         setup()
         expect(
           screen.queryByRole('button', {
@@ -81,7 +81,7 @@ describe('PopupResult', () => {
           ...mockAppConfig,
           CART_ENABLED: 'true'
         }
-        store.dispatch(setappConfig(mockAppConfigCartEnabled))
+        store.dispatch(setAppConfig(mockAppConfigCartEnabled))
         setup()
         expect(store.getState().mainSlice.cartItems.length).toBe(0)
         fireEvent.click(screen.getByRole('button', { name: /add to cart/i }))
@@ -92,8 +92,8 @@ describe('PopupResult', () => {
           ...mockAppConfig,
           CART_ENABLED: 'true'
         }
-        store.dispatch(setappConfig(mockAppConfigCartEnabled))
-        store.dispatch(setcartItems([mockClickResults[0]]))
+        store.dispatch(setAppConfig(mockAppConfigCartEnabled))
+        store.dispatch(setCartItems([mockClickResults[0]]))
         setup()
         expect(store.getState().mainSlice.cartItems.length).toBe(1)
         fireEvent.click(
@@ -104,7 +104,7 @@ describe('PopupResult', () => {
     })
     describe('on prev & next scene buttons clicked', () => {
       it('should set scene result in redux to next and prev scene if not out of range', () => {
-        store.dispatch(setappConfig(mockAppConfig))
+        store.dispatch(setAppConfig(mockAppConfig))
         setup()
         expect(store.getState().mainSlice.currentPopupResult).toEqual(
           mockClickResults[0]
@@ -131,7 +131,7 @@ describe('PopupResult', () => {
 
   describe('effect consolidation', () => {
     it('rapid result changes dispatch setCurrentPopupResult once per change (no duplicates)', () => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
 
       const dispatchSpy = vi.spyOn(store, 'dispatch')
 

@@ -6,8 +6,8 @@ import UploadGeojsonModal from './UploadGeojsonModal'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import {
-  setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setSearchGeojsonBoundary,
+  setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import * as alertHelper from '../../utils/alertHelper'
 import * as mapHelper from '../../utils/mapHelper'
@@ -29,7 +29,7 @@ describe('UploadGeojsonModal', () => {
 
   describe('when cancel button is clicked', () => {
     it('should set showUploadGeojsonModal to be false in state', async () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const cancelButton = screen.getByRole('button', { name: /cancel/i })
       await user.click(cancelButton)
@@ -45,7 +45,7 @@ describe('UploadGeojsonModal', () => {
         alertHelper,
         'showApplicationAlert'
       )
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const json = '{ "invalid json"'
       const file = new File([json], 'test.geojson', {
@@ -75,7 +75,7 @@ describe('UploadGeojsonModal', () => {
       )
       mapHelper.parseGeomUpload.mockRejectedValueOnce(new Error('Parse error'))
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const geojson = JSON.stringify({
         type: 'Feature',
@@ -119,7 +119,7 @@ describe('UploadGeojsonModal', () => {
       )
       vi.spyOn(searchHelper, 'newSearch').mockResolvedValueOnce(undefined)
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const geojson = JSON.stringify({
         type: 'Feature',
@@ -162,7 +162,7 @@ describe('UploadGeojsonModal', () => {
       })
       mapHelper.addUploadedGeojsonToMap.mockImplementationOnce(() => {
         store.dispatch(
-          setsearchGeojsonBoundary({
+          setSearchGeojsonBoundary({
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [2, 2] },
             properties: {}
@@ -170,7 +170,7 @@ describe('UploadGeojsonModal', () => {
         )
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -212,7 +212,7 @@ describe('UploadGeojsonModal', () => {
         details: 'geo coordinates must be numbers'
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -260,7 +260,7 @@ describe('UploadGeojsonModal', () => {
         details: longDetails
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -305,7 +305,7 @@ describe('UploadGeojsonModal', () => {
         details: 'geo coordinates must be numbers'
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -361,7 +361,7 @@ describe('UploadGeojsonModal', () => {
       )
       vi.spyOn(searchHelper, 'newSearch').mockReturnValue(searchPromise)
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -409,7 +409,7 @@ describe('UploadGeojsonModal', () => {
       )
       vi.spyOn(searchHelper, 'newSearch').mockReturnValue(searchPromise)
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -445,13 +445,13 @@ describe('UploadGeojsonModal', () => {
     it('clears upload AOI state when cancel is clicked', async () => {
       const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
       store.dispatch(
-        setsearchGeojsonBoundary({
+        setSearchGeojsonBoundary({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {}
         })
       )
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i })
@@ -465,7 +465,7 @@ describe('UploadGeojsonModal', () => {
 
   describe('dialog semantics', () => {
     it('exposes role=dialog with aria-modal and aria-labelledby pointing at title', () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const dialog = screen.getByRole('dialog')
       expect(dialog).toHaveAttribute('aria-modal', 'true')
@@ -477,14 +477,14 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('closes when Escape is pressed inside the dialog', () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
     })
 
     it('closes when the backdrop is clicked', () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const backdrop = screen.getByTestId('testUploadGeojsonModal')
       fireEvent.click(backdrop)
@@ -492,14 +492,14 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('does not close when the dialog content is clicked', () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       fireEvent.click(screen.getByRole('dialog'))
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
     })
 
     it('returns focus to the previously focused element on unmount', () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       const trigger = document.createElement('button')
       trigger.textContent = 'open upload'
       document.body.appendChild(trigger)

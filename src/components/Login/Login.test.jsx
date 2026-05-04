@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { screen, fireEvent } from '@testing-library/react'
 import { renderFilmDrop } from '../../testing/renderFilmDrop'
 import { createFilmDropStore } from '../../redux/store'
-import { setappConfig } from '../../redux/slices/mainSlice'
+import { setAppConfig } from '../../redux/slices/mainSlice'
 import Login from './Login'
 
 import { AuthService } from '../../services/post-auth-service'
@@ -19,7 +19,7 @@ describe('Login', () => {
 
   function mount() {
     const store = createFilmDropStore()
-    store.dispatch(setappConfig({}))
+    store.dispatch(setAppConfig({}))
     return renderFilmDrop(<Login />, { store })
   }
 

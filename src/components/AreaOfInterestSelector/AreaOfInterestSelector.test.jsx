@@ -5,10 +5,10 @@ import AreaOfInterestSelector from './AreaOfInterestSelector'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import {
-  setappConfig,
-  setsearchGeojsonBoundary,
-  setisDrawingEnabled,
-  setshowUploadGeojsonModal
+  setAppConfig,
+  setSearchGeojsonBoundary,
+  setIsDrawingEnabled,
+  setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
@@ -25,10 +25,10 @@ describe('AreaOfInterestSelector', () => {
 
   beforeEach(() => {
     vi.mock('../../utils/mapHelper')
-    store.dispatch(setappConfig(mockAppConfig))
-    store.dispatch(setsearchGeojsonBoundary(null))
-    store.dispatch(setisDrawingEnabled(false))
-    store.dispatch(setshowUploadGeojsonModal(false))
+    store.dispatch(setAppConfig(mockAppConfig))
+    store.dispatch(setSearchGeojsonBoundary(null))
+    store.dispatch(setIsDrawingEnabled(false))
+    store.dispatch(setShowUploadGeojsonModal(false))
   })
 
   afterEach(() => {
@@ -68,7 +68,7 @@ describe('AreaOfInterestSelector', () => {
       )
       const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
       store.dispatch(
-        setsearchGeojsonBoundary({
+        setSearchGeojsonBoundary({
           type: 'Polygon',
           coordinates: [[]]
         })
@@ -93,7 +93,7 @@ describe('AreaOfInterestSelector', () => {
     it('should clear existing boundary and show upload modal when geom exists', async () => {
       const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
       store.dispatch(
-        setsearchGeojsonBoundary({
+        setSearchGeojsonBoundary({
           type: 'Polygon',
           coordinates: [[]]
         })
@@ -111,7 +111,7 @@ describe('AreaOfInterestSelector', () => {
     it('should clear boundary and reset state', async () => {
       const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
       store.dispatch(
-        setsearchGeojsonBoundary({
+        setSearchGeojsonBoundary({
           type: 'Polygon',
           coordinates: [[]]
         })

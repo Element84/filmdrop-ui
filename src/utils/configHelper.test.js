@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import { store } from '../redux/store'
 import { mockAppConfig } from '../testing/shared-mocks'
 import {
@@ -22,13 +22,13 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_NAME: 'Demo App'
       }
-      store.dispatch(setappConfig(mockAppConfigAppTitle))
+      store.dispatch(setAppConfig(mockAppConfigAppTitle))
       loadAppTitle()
       expect(global.window.document.title).toBe('Demo App')
       expect(store.getState().mainSlice.appName).toBe('Demo App')
     })
     it('sets document title and appName from default if App_Name not present in config', () => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       loadAppTitle()
       expect(global.window.document.title).toBe('FilmDrop UI')
       expect(store.getState().mainSlice.appName).toBe('FilmDrop UI')
@@ -47,7 +47,7 @@ describe('ConfigHelper', () => {
     })
 
     it('should do nothing when APP_FAVICON is not provided', async () => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       await loadAppFavicon()
       expect(DoesFaviconExistService).not.toHaveBeenCalled()
     })
@@ -57,7 +57,7 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_FAVICON: 'favicon.ico'
       }
-      store.dispatch(setappConfig(mockAppConfigFavicon))
+      store.dispatch(setAppConfig(mockAppConfigFavicon))
       await loadAppFavicon()
       expect(DoesFaviconExistService).toHaveBeenCalled()
     })
@@ -67,7 +67,7 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_FAVICON: 'favicon.ico'
       }
-      store.dispatch(setappConfig(mockAppConfigFavicon))
+      store.dispatch(setAppConfig(mockAppConfigFavicon))
       const mockLink = document.createElement('link')
       mockLink.rel = 'icon'
       mockLink.href = '/favicon.ico'
@@ -84,7 +84,7 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_FAVICON: 'favicon.ico'
       }
-      store.dispatch(setappConfig(mockAppConfigFavicon))
+      store.dispatch(setAppConfig(mockAppConfigFavicon))
       const mockLink = document.createElement('link')
       mockLink.rel = 'icon'
       mockLink.href = '/config/favicon.ico?_cb=123'
@@ -473,7 +473,7 @@ describe('ConfigHelper', () => {
     beforeEach(() => {
       // Reset store before each test
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['collection1', 'collection2'],
           COLLECTIONS_CONFIG: {
             collection1: {
@@ -505,7 +505,7 @@ describe('ConfigHelper', () => {
 
     it('should work with visualizations parameter', () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['collection1'],
           COLLECTIONS_CONFIG: {
             collection1: {
@@ -542,7 +542,7 @@ describe('ConfigHelper', () => {
 
     it('should handle all parameter types from COLLECTIONS_CONFIG', () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['col1'],
           COLLECTIONS_CONFIG: {
             col1: {
@@ -571,7 +571,7 @@ describe('ConfigHelper', () => {
 
     it('should retrieve visualizations from COLLECTIONS_CONFIG', () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['collection1'],
           COLLECTIONS_CONFIG: {
             collection1: {

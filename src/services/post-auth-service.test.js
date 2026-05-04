@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 
 import { AuthService, applyBasepathToRedirect } from './post-auth-service'
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 
 const { setAuthTokenMock, showApplicationAlertMock, getActiveRouterMock } =
   vi.hoisted(() => ({
@@ -40,7 +40,7 @@ describe('AuthService', () => {
   })
 
   beforeEach(() => {
-    store.dispatch(setappConfig({ AUTH_URL: 'https://auth.example/login' }))
+    store.dispatch(setAppConfig({ AUTH_URL: 'https://auth.example/login' }))
     fetchSpy = vi.fn()
     vi.stubGlobal('fetch', fetchSpy)
     dispatchSpy = vi.spyOn(store, 'dispatch')
@@ -80,7 +80,7 @@ describe('AuthService', () => {
 
     expect(setAuthTokenMock).toHaveBeenCalledWith('tok-123')
     const dispatched = dispatchSpy.mock.calls.map(([a]) => a.type)
-    expect(dispatched).toContain('mainSlice/setauthTokenExists')
+    expect(dispatched).toContain('mainSlice/setAuthTokenExists')
     expect(dispatched).toContain('mainSlice/clearApplicationAlert')
     expect(showApplicationAlertMock).not.toHaveBeenCalled()
   })
@@ -146,7 +146,7 @@ describe('AuthService', () => {
       5000
     )
     const dispatched = dispatchSpy.mock.calls.map(([a]) => a.type)
-    expect(dispatched).toContain('mainSlice/setauthTokenExists')
+    expect(dispatched).toContain('mainSlice/setAuthTokenExists')
   })
 
   it('treats non-OK response as auth failure', async () => {

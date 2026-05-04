@@ -13,15 +13,15 @@ import {
   setSelectedCollection,
   setSelectedCollectionData,
   setSelectedVisualization,
-  settabSelected,
+  setTabSelected,
   setSearchDateRangeValue,
   setViewMode,
   setQueryableFilters,
   setClickResults,
   setCurrentPopupResult,
-  setselectedPopupResultIndex,
+  setSelectedPopupResultIndex,
   setSearchResults,
-  setmappedScenes
+  setMappedScenes
 } from '../redux/slices/mainSlice'
 import { GetItemService } from '../services/get-item-service'
 import { syncSelectionWithFetchedItem } from '../utils/selectionSync'
@@ -80,7 +80,7 @@ export function useUrlInitialize(search, dispatch) {
           syncSelectionWithFetchedItem(existingClickResults, cachedItem)
 
         dispatch(setClickResults(clickResults))
-        dispatch(setselectedPopupResultIndex(selectedIndex))
+        dispatch(setSelectedPopupResultIndex(selectedIndex))
         dispatch(setCurrentPopupResult(currentResult))
         return cachedItem
       }
@@ -124,7 +124,7 @@ export function useUrlInitialize(search, dispatch) {
             searchType: 'direct-item'
           }
           dispatch(setSearchResults(searchResultsObject))
-          dispatch(setmappedScenes(searchResultsObject.features))
+          dispatch(setMappedScenes(searchResultsObject.features))
           addDataToLayer(
             searchResultsObject,
             'searchResultsLayer',
@@ -139,7 +139,7 @@ export function useUrlInitialize(search, dispatch) {
           syncSelectionWithFetchedItem(existingClickResults, result)
 
         dispatch(setClickResults(clickResults))
-        dispatch(setselectedPopupResultIndex(selectedIndex))
+        dispatch(setSelectedPopupResultIndex(selectedIndex))
         dispatch(setCurrentPopupResult(currentResult))
         return result
       } catch (error) {
@@ -160,7 +160,7 @@ export function useUrlInitialize(search, dispatch) {
     clearMapSelection()
     dispatch(setClickResults([]))
     dispatch(setCurrentPopupResult(null))
-    dispatch(setselectedPopupResultIndex(0))
+    dispatch(setSelectedPopupResultIndex(0))
   }, [dispatch])
 
   /**
@@ -198,7 +198,7 @@ export function useUrlInitialize(search, dispatch) {
       }
       // Default to details tab for item view, but respect URL tab if set
       if (!tab) {
-        dispatch(settabSelected('details'))
+        dispatch(setTabSelected('details'))
       }
     }
 
@@ -212,7 +212,7 @@ export function useUrlInitialize(search, dispatch) {
 
         // 2. Set tab from URL
         if (urlSearch.tab) {
-          dispatch(settabSelected(urlSearch.tab))
+          dispatch(setTabSelected(urlSearch.tab))
         }
 
         // 3. If URL has search params, restore search state and auto-search

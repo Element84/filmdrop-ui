@@ -1,5 +1,5 @@
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import { showApplicationAlert } from '../utils/alertHelper'
 import {
   normalizeCollectionsConfig,
@@ -42,7 +42,7 @@ export async function LoadConfigIntoStateService() {
 
       // Apply defaults for optional parameters
       const configWithDefaults = applyConfigDefaults(normalizedConfig)
-      store.dispatch(setappConfig(configWithDefaults))
+      store.dispatch(setAppConfig(configWithDefaults))
     })
     .catch((error) => {
       const message =

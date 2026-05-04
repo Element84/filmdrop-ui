@@ -1,6 +1,6 @@
 import { store } from '../redux/store'
 import {
-  setauthTokenExists,
+  setAuthTokenExists,
   clearApplicationAlert
 } from '../redux/slices/mainSlice'
 import { setAuthToken } from '../utils/authHelper'
@@ -77,7 +77,7 @@ export async function AuthService(username, password) {
         throw new Error('No Auth Token Found')
       }
       setAuthToken(json.access_token)
-      store.dispatch(setauthTokenExists(true))
+      store.dispatch(setAuthTokenExists(true))
       store.dispatch(clearApplicationAlert())
 
       // Check for post-auth redirect URL
@@ -95,7 +95,7 @@ export async function AuthService(username, password) {
       }
     })
     .catch((error) => {
-      store.dispatch(setauthTokenExists(false))
+      store.dispatch(setAuthTokenExists(false))
       const message = 'Authentication Error'
       showApplicationAlert('warning', 'Login Failed', 5000)
       // log full error for diagnosing client side errors if needed

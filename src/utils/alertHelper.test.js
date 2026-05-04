@@ -1,12 +1,12 @@
 import { vi } from 'vitest'
-import { setapplicationAlertMessage } from '../redux/slices/mainSlice'
+import { setApplicationAlertMessage } from '../redux/slices/mainSlice'
 import { store } from '../redux/store'
 import { showApplicationAlert } from './alertHelper'
 
 describe('AlertHelper', () => {
   describe('showApplicationAlert', () => {
     it('should set default Alert message if no message passed', () => {
-      store.dispatch(setapplicationAlertMessage('test error'))
+      store.dispatch(setApplicationAlertMessage('test error'))
       expect(store.getState().mainSlice.applicationAlertMessage).toBe(
         'test error'
       )

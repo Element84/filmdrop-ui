@@ -27,15 +27,15 @@ import {
   setSearchResults,
   setSearchDateRangeValue,
   setQueryableFilters,
-  setmappedScenes,
-  setselectedPopupResultIndex,
-  setsearchGeojsonBoundary,
-  setisDrawingEnabled,
-  setpaginationNextLink,
-  setpaginationPrevLink,
-  setcurrentPage,
-  settotalPages,
-  setpaginationHistory,
+  setMappedScenes,
+  setSelectedPopupResultIndex,
+  setSearchGeojsonBoundary,
+  setIsDrawingEnabled,
+  setPaginationNextLink,
+  setPaginationPrevLink,
+  setCurrentPage,
+  setTotalPages,
+  setPaginationHistory,
   setMosaicCache,
   incrementDetailsResetKey
 } from '../redux/slices/mainSlice'
@@ -130,11 +130,11 @@ export async function newSearch(options = {}) {
   }
 
   // Reset pagination state for new search
-  store.dispatch(setpaginationNextLink(null))
-  store.dispatch(setpaginationPrevLink(null))
-  store.dispatch(setcurrentPage(1))
-  store.dispatch(settotalPages(null))
-  store.dispatch(setpaginationHistory([]))
+  store.dispatch(setPaginationNextLink(null))
+  store.dispatch(setPaginationPrevLink(null))
+  store.dispatch(setCurrentPage(1))
+  store.dispatch(setTotalPages(null))
+  store.dispatch(setPaginationHistory([]))
 
   // Commit current search state to URL (replace — no history entry)
   const collectionId = _selectedCollection?.id || ''
@@ -291,23 +291,23 @@ export function clearSearch() {
   clearLayer('drawBoundsLayer')
 
   // Clear drawn AOI boundary
-  store.dispatch(setsearchGeojsonBoundary(null))
-  store.dispatch(setisDrawingEnabled(false))
+  store.dispatch(setSearchGeojsonBoundary(null))
+  store.dispatch(setIsDrawingEnabled(false))
 
   // Clear search results and related state
   store.dispatch(setSearchResults(null))
   store.dispatch(setSearchLoading(false))
   store.dispatch(setSearchType(null))
   store.dispatch(setShowZoomNotice(false))
-  store.dispatch(setmappedScenes([]))
-  store.dispatch(setselectedPopupResultIndex(0))
+  store.dispatch(setMappedScenes([]))
+  store.dispatch(setSelectedPopupResultIndex(0))
 
   // Reset pagination
-  store.dispatch(setpaginationNextLink(null))
-  store.dispatch(setpaginationPrevLink(null))
-  store.dispatch(setcurrentPage(1))
-  store.dispatch(settotalPages(null))
-  store.dispatch(setpaginationHistory([]))
+  store.dispatch(setPaginationNextLink(null))
+  store.dispatch(setPaginationPrevLink(null))
+  store.dispatch(setCurrentPage(1))
+  store.dispatch(setTotalPages(null))
+  store.dispatch(setPaginationHistory([]))
 
   // Reset filters to defaults
   store.dispatch(setSearchDateRangeValue(DEFAULT_DATE_RANGE))

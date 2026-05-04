@@ -5,7 +5,7 @@ import {
   setSearchDateRangeValue,
   setQueryableFilters,
   setMosaicCache,
-  setappConfig
+  setAppConfig
 } from '../redux/slices/mainSlice'
 import {
   DEFAULT_DATE_RANGE,
@@ -63,7 +63,7 @@ function mockMapBounds(bbox) {
 describe('searchHelper newSearch', () => {
   beforeEach(() => {
     store.dispatch(
-      setappConfig({
+      setAppConfig({
         STAC_API_URL: 'https://example.com/stac',
         MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
         FETCH_CREDENTIALS: 'same-origin',
@@ -431,7 +431,7 @@ describe('validateUploadedGeometry', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     store.dispatch(
-      setappConfig({
+      setAppConfig({
         STAC_API_URL: 'https://example.com/stac',
         FETCH_CREDENTIALS: 'same-origin',
         APP_TOKEN_AUTH_ENABLED: false

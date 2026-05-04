@@ -6,7 +6,7 @@ import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import {
   setCollectionsData,
-  setappConfig,
+  setAppConfig,
   setSelectedCollection
 } from '../../redux/slices/mainSlice'
 import { mockCollectionsData, mockAppConfig } from '../../testing/shared-mocks'
@@ -47,7 +47,7 @@ describe('CollectionDropdown', () => {
 
   beforeEach(() => {
     vi.mock('../../utils/mapHelper')
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
     store.dispatch(setCollectionsData(mockCollectionsData))
     store.dispatch(setSelectedCollection(null))
     mockNavigate.mockClear()

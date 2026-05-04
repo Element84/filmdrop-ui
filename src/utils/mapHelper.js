@@ -6,9 +6,9 @@ import { store } from '../redux/store'
 import { colorMap } from './colorMap'
 import {
   setClickResults,
-  setisDrawingEnabled,
-  setsearchGeojsonBoundary,
-  setimageOverlayLoading,
+  setIsDrawingEnabled,
+  setSearchGeojsonBoundary,
+  setImageOverlayLoading,
   setSearchLoading,
   setCurrentPopupResult
 } from '../redux/slices/mainSlice'
@@ -467,7 +467,7 @@ export const debounceTitilerOverlay = debounce(
 function addImageOverlay(item) {
   const showSceneOverlay = store.getState().mainSlice.showSceneOverlay
   if (!showSceneOverlay) {
-    store.dispatch(setimageOverlayLoading(false))
+    store.dispatch(setImageOverlayLoading(false))
     return
   }
   const sceneTilerURL =
@@ -481,7 +481,7 @@ function addImageOverlay(item) {
         `[TiTiler Scene] Cannot display scene imagery - no visualizations configured for collection '${item.collection}'`
       )
     }
-    store.dispatch(setimageOverlayLoading(false))
+    store.dispatch(setImageOverlayLoading(false))
     return
   }
   const _selectedCollectionData =
@@ -490,7 +490,7 @@ function addImageOverlay(item) {
     store.getState().mainSlice.selectedVisualization
   // TODO: consider changing how spinner loads, or not at all?
   // maybe load spinner in footprint extent? or different loading spinner?
-  store.dispatch(setimageOverlayLoading(true))
+  store.dispatch(setImageOverlayLoading(true))
 
   clearLayer('clickedSceneImageLayer')
 
@@ -537,10 +537,10 @@ function addImageOverlay(item) {
             tileLayerParams
           )
             .on('load', function () {
-              store.dispatch(setimageOverlayLoading(false))
+              store.dispatch(setImageOverlayLoading(false))
             })
             .on('tileerror', function () {
-              store.dispatch(setimageOverlayLoading(false))
+              store.dispatch(setImageOverlayLoading(false))
               debugLog('[TiTiler Scene] Tile error')
             })
 
@@ -551,7 +551,7 @@ function addImageOverlay(item) {
           })
         }
       } else {
-        store.dispatch(setimageOverlayLoading(false))
+        store.dispatch(setImageOverlayLoading(false))
       }
     })
 }
@@ -872,8 +872,8 @@ export function enableMapPolyDrawing() {
           drawLayer.options.interactive = false
           layer.addLayer(drawLayer)
           const data = layer.toGeoJSON()
-          store.dispatch(setsearchGeojsonBoundary(data.features[0]))
-          store.dispatch(setisDrawingEnabled(false))
+          store.dispatch(setSearchGeojsonBoundary(data.features[0]))
+          store.dispatch(setIsDrawingEnabled(false))
         }
       })
     })
@@ -905,7 +905,7 @@ export function addUploadedGeojsonToMap(geojson) {
         })
         geojsonLayer.options.interactive = false
         layer.addLayer(geojsonLayer)
-        store.dispatch(setsearchGeojsonBoundary(geojson))
+        store.dispatch(setSearchGeojsonBoundary(geojson))
       }
     })
   }
