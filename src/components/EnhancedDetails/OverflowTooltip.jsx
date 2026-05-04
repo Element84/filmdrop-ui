@@ -30,7 +30,12 @@ const OverflowTooltip = ({
     if (!el) return
 
     // Skip ResizeObserver wiring entirely when there is no content to measure.
-    if (children === null || children === undefined || children === '') return
+    // Reset isOverflowing so a stale `true` does not persist when content
+    // transitions from non-empty to empty mid-life.
+    if (children === null || children === undefined || children === '') {
+      if (isMountedRef.current) setIsOverflowing(false)
+      return
+    }
 
     const checkOverflow = () => {
       if (!isMountedRef.current || !ref.current) return
