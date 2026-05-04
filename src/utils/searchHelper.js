@@ -3,8 +3,7 @@ import {
   DEFAULT_SCENE_MIN_ZOOM,
   DEFAULT_API_MAX_ITEMS,
   DEFAULT_MOSAIC_MAX_ITEMS,
-  DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
-  DEFAULT_DATE_RANGE
+  DEFAULT_MOSAIC_TOP_COMPARE_ITEMS
 } from '../constants/defaults'
 import {
   getCurrentMapZoomLevel,
@@ -25,19 +24,13 @@ import {
   setShowZoomNotice,
   setZoomLevelNeeded,
   setSearchResults,
-  setSearchDateRangeValue,
-  setQueryableFilters,
-  setMappedScenes,
-  setSelectedPopupResultIndex,
-  setSearchGeojsonBoundary,
-  setIsDrawingEnabled,
   setPaginationNextLink,
   setPaginationPrevLink,
   setCurrentPage,
   setTotalPages,
   setPaginationHistory,
   setMosaicCache,
-  incrementDetailsResetKey
+  resetSearchState
 } from '../redux/slices/mainSlice'
 import * as h3 from 'h3-js'
 import debounce from './debounce'
@@ -290,31 +283,9 @@ export function clearSearch() {
   clearAllLayers()
   clearLayer('drawBoundsLayer')
 
-  // Clear drawn AOI boundary
-  store.dispatch(setSearchGeojsonBoundary(null))
-  store.dispatch(setIsDrawingEnabled(false))
-
-  // Clear search results and related state
-  store.dispatch(setSearchResults(null))
-  store.dispatch(setSearchLoading(false))
-  store.dispatch(setSearchType(null))
-  store.dispatch(setShowZoomNotice(false))
-  store.dispatch(setMappedScenes([]))
-  store.dispatch(setSelectedPopupResultIndex(0))
-
-  // Reset pagination
-  store.dispatch(setPaginationNextLink(null))
-  store.dispatch(setPaginationPrevLink(null))
-  store.dispatch(setCurrentPage(1))
-  store.dispatch(setTotalPages(null))
-  store.dispatch(setPaginationHistory([]))
-
-  // Reset filters to defaults
-  store.dispatch(setSearchDateRangeValue(DEFAULT_DATE_RANGE))
-  store.dispatch(setQueryableFilters({}))
-
-  // Reset item details accordion state
-  store.dispatch(incrementDetailsResetKey())
+  // Reset all search-derived Redux state in a single dispatch.
+  // See `resetSearchState` in mainSlice for the field list.
+  store.dispatch(resetSearchState())
 
   // Update URL: preserve collection path, view, viz, z, c; clear dt, item, queryable filters
   const currentPathParams = getPathParams()

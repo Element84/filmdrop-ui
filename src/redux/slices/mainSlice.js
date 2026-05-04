@@ -226,6 +226,29 @@ export const mainSlice = createSlice({
     incrementDetailsResetKey: (state) => {
       state.detailsResetKey += 1
     },
+    // Compound reset for clearSearch: zeroes all search-derived state in a
+    // single action so consumers don't pay for ~15 sequential dispatches.
+    // Does not touch persistent UI choices (selectedCollection,
+    // selectedVisualization, currentTheme, viewMode, etc.) or the URL —
+    // the caller still owns the navigation step.
+    resetSearchState: (state) => {
+      state.searchGeojsonBoundary = null
+      state.isDrawingEnabled = false
+      state.searchResults = null
+      state.searchLoading = false
+      state.searchType = null
+      state.showZoomNotice = false
+      state.mappedScenes = []
+      state.selectedPopupResultIndex = 0
+      state.paginationNextLink = null
+      state.paginationPrevLink = null
+      state.currentPage = 1
+      state.totalPages = null
+      state.paginationHistory = []
+      state.searchDateRangeValue = DEFAULT_DATE_RANGE
+      state.queryableFilters = {}
+      state.detailsResetKey += 1
+    },
     setShowSceneOverlay: (state, action) => {
       state.showSceneOverlay = action.payload
     }
@@ -284,6 +307,7 @@ export const { setMosaicCache } = mainSlice.actions
 export const { addToPaginationHistory } = mainSlice.actions
 export const { setQueryableFilters } = mainSlice.actions
 export const { incrementDetailsResetKey } = mainSlice.actions
+export const { resetSearchState } = mainSlice.actions
 export const { setShowSceneOverlay } = mainSlice.actions
 
 export default mainSlice.reducer
