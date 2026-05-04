@@ -5,7 +5,6 @@ import {
   setSelectedCollectionData,
   setShowZoomNotice,
   setSearchLoading,
-  sethasCollectionChanged,
   setQueryableFilters,
   setSelectedVisualization
 } from '../../redux/slices/mainSlice'
@@ -122,9 +121,6 @@ const CollectionDropdown = () => {
 
   const handleCollectionChange = (e) => {
     const newCollectionId = e.target.value
-
-    // Mark that collection has changed
-    dispatch(sethasCollectionChanged(true))
 
     // Clear map and filters
     clearMapSelection()

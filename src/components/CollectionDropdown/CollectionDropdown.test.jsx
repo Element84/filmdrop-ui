@@ -68,18 +68,6 @@ describe('CollectionDropdown', () => {
     })
   })
   describe('on collection changed', () => {
-    it('should set hasCollectionChanged to true in redux state', async () => {
-      setup()
-      expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
-      const select = screen.getByRole('combobox')
-      await userEvent.click(select)
-      // Click a different collection than the auto-selected first one
-      const option = screen.getByRole('option', {
-        name: /sentinel-2 level 2a/i
-      })
-      await userEvent.click(option)
-      expect(store.getState().mainSlice.hasCollectionChanged).toBeTruthy()
-    })
     it('should navigate to collection path and call functions to reset map', async () => {
       const spyZoomToCollectionExtent = vi.spyOn(
         mapHelper,
