@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react'
 import { useUrlNavigate } from './useUrlNavigate'
 
 const mockNavigate = vi.fn()
-const mockParams = { collectionId: 'sentinel-2' }
+let mockParams = { collectionId: 'sentinel-2' }
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => mockNavigate,
   useParams: () => mockParams
@@ -21,6 +21,7 @@ describe('useUrlNavigate', () => {
 
   beforeEach(() => {
     mockNavigate.mockClear()
+    mockParams = { collectionId: 'sentinel-2' }
   })
 
   /** Helper: call the navigate search function with prev */
@@ -71,5 +72,32 @@ describe('useUrlNavigate', () => {
     expect(call.to).toBe('/$collectionId')
     expect(call.params).toEqual({ collectionId: 'sentinel-2' })
     expect(call.replace).toBe(true)
+  })
+
+  it('returns referentially stable callbacks across renders with unchanged params', () => {
+    const { result, rerender } = renderHook(() => useUrlNavigate())
+    const first = result.current
+    rerender()
+    rerender()
+    const second = result.current
+
+    expect(second.setTab).toBe(first.setTab)
+    expect(second.setViz).toBe(first.setViz)
+    expect(second.setItem).toBe(first.setItem)
+    expect(second.clearItem).toBe(first.clearItem)
+  })
+
+  it('invalidates collectionId-dependent callbacks when collectionId changes; keeps the others stable', () => {
+    const { result, rerender } = renderHook(() => useUrlNavigate())
+    const first = result.current
+
+    mockParams = { collectionId: 'landsat-c2-l2' }
+    rerender()
+    const second = result.current
+
+    expect(second.setItem).not.toBe(first.setItem)
+    expect(second.clearItem).not.toBe(first.clearItem)
+    expect(second.setTab).toBe(first.setTab)
+    expect(second.setViz).toBe(first.setViz)
   })
 })
