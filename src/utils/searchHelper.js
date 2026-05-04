@@ -25,7 +25,6 @@ import {
   setShowZoomNotice,
   setZoomLevelNeeded,
   setSearchResults,
-  setShowPopupModal,
   setSearchDateRangeValue,
   setQueryableFilters,
   setmappedScenes,
@@ -301,7 +300,6 @@ export function clearSearch() {
   store.dispatch(setSearchType(null))
   store.dispatch(setShowZoomNotice(false))
   store.dispatch(setmappedScenes([]))
-  store.dispatch(setShowPopupModal(false))
   store.dispatch(setselectedPopupResultIndex(0))
 
   // Reset pagination

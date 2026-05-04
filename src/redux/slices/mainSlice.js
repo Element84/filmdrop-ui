@@ -13,7 +13,6 @@ const initialState = {
   clickResults: [],
   searchLoading: false,
   currentPopupResult: null,
-  showPopupModal: false,
   showZoomNotice: false,
   zoomLevelNeeded: null,
   viewMode: 'scene',
@@ -94,9 +93,6 @@ export const mainSlice = createSlice({
     },
     setCurrentPopupResult: (state, action) => {
       state.currentPopupResult = action.payload
-    },
-    setShowPopupModal: (state, action) => {
-      state.showPopupModal = action.payload
     },
     setShowZoomNotice: (state, action) => {
       state.showZoomNotice = action.payload
@@ -246,7 +242,6 @@ export const { setSearchResults } = mainSlice.actions
 export const { setClickResults } = mainSlice.actions
 export const { setSearchLoading } = mainSlice.actions
 export const { setCurrentPopupResult } = mainSlice.actions
-export const { setShowPopupModal } = mainSlice.actions
 export const { setShowZoomNotice } = mainSlice.actions
 export const { setZoomLevelNeeded } = mainSlice.actions
 export const { setViewMode } = mainSlice.actions
