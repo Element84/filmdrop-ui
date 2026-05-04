@@ -175,12 +175,16 @@ describe('PopupResult', () => {
         </Provider>
       )
 
-      // Pre-consolidation, two effects each dispatched setCurrentPopupResult,
-      // doubling the count per render. Now we expect at most one dispatch per
-      // results-identity change.
+      // Contract: exactly one setCurrentPopupResult dispatch per
+      // results-identity change. We perform two rerenders that each pass a
+      // fresh array spread (`[...mockClickResults]`), so the effect's
+      // `props.results` dep changes twice and dispatch fires twice — once
+      // per identity change, never twice per change. Pre-consolidation,
+      // two effects each dispatched setCurrentPopupResult, doubling the
+      // count per render (would be 4 here).
       const finalCount = countSetCurrent()
       const dispatchedThisTest = finalCount - initialCount
-      expect(dispatchedThisTest).toBeLessThanOrEqual(2)
+      expect(dispatchedThisTest).toBe(2)
 
       dispatchSpy.mockRestore()
     })

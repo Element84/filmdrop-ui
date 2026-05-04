@@ -35,6 +35,8 @@ const PopupResults = (props) => {
 
   // Single effect — splitting this races dispatches of setCurrentPopupResult
   // against each other for the same input change.
+  // _currentPopupResult is in deps despite being written here: the guard above
+  // bails when it is still in props.results, and Immer identity-bails on no-op writes.
   useEffect(() => {
     if (props.results.length > 0) {
       if (
