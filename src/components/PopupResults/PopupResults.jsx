@@ -33,6 +33,8 @@ const PopupResults = (props) => {
     (state) => state.mainSlice.selectedVisualization
   )
 
+  // Single effect — splitting this races dispatches of setCurrentPopupResult
+  // against each other for the same input change.
   useEffect(() => {
     if (props.results.length > 0) {
       if (
@@ -41,37 +43,36 @@ const PopupResults = (props) => {
       ) {
         dispatch(setselectedPopupResultIndex(0))
       }
-      debounceTitilerOverlay(props.results[_selectedPopupResultIndex])
-      dispatch(setCurrentPopupResult(props.results[_selectedPopupResultIndex]))
-    }
-    return () => {
-      dispatch(setimageOverlayLoading(false))
-    }
-  }, [props.results, _selectedPopupResultIndex, _selectedVisualization])
-
-  useEffect(() => {
-    if (props.results.length > 0) {
-      dispatch(setCurrentPopupResult(props.results[_selectedPopupResultIndex]))
-
-      // Update URL when navigating between items
       const currentItem = props.results[_selectedPopupResultIndex]
+      debounceTitilerOverlay(currentItem)
+      dispatch(setCurrentPopupResult(currentItem))
       if (currentItem && currentItem.id) {
         setItem(currentItem.id)
       }
     }
-  }, [_selectedPopupResultIndex, props.results])
+    return () => {
+      dispatch(setimageOverlayLoading(false))
+    }
+  }, [
+    props.results,
+    _selectedPopupResultIndex,
+    _selectedVisualization,
+    _currentPopupResult,
+    dispatch,
+    setItem
+  ])
 
   const onNextClick = useCallback(() => {
     if (_selectedPopupResultIndex < props.results.length - 1) {
       dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex + 1))
     }
-  }, [_selectedPopupResultIndex, props.results.length])
+  }, [_selectedPopupResultIndex, props.results.length, dispatch])
 
   const onPrevClick = useCallback(() => {
     if (_selectedPopupResultIndex > 0) {
       dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex - 1))
     }
-  }, [_selectedPopupResultIndex])
+  }, [_selectedPopupResultIndex, dispatch])
 
   function onAddRemoveSceneToCartClicked() {
     if (isSceneInCart(props.results[_selectedPopupResultIndex])) {

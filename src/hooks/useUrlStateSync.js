@@ -89,19 +89,23 @@ export function useUrlStateSync() {
     (state) => state.mainSlice.collectionsData
   )
 
-  const { isInitialized, prevSearch, fetchAndDisplayItem, clearItemSelection } =
-    useUrlInitialize(urlState, dispatch)
+  const {
+    isInitializedRef,
+    prevSearchRef,
+    fetchAndDisplayItem,
+    clearItemSelection
+  } = useUrlInitialize(urlState, dispatch)
 
   /**
    * Ongoing URL → Redux sync.
    * Runs whenever URL params change after initialization.
    */
   useEffect(() => {
-    if (!isInitialized.current) return
-    if (prevSearch.current === null) return
+    if (!isInitializedRef.current) return
+    if (prevSearchRef.current === null) return
 
-    const prev = prevSearch.current
-    prevSearch.current = urlState
+    const prev = prevSearchRef.current
+    prevSearchRef.current = urlState
 
     // Validate collection change before processing other params
     if (urlState.col !== prev.col && urlState.col) {
@@ -177,7 +181,7 @@ export function useUrlStateSync() {
     dispatch,
     fetchAndDisplayItem,
     clearItemSelection,
-    isInitialized,
-    prevSearch
+    isInitializedRef,
+    prevSearchRef
   ])
 }

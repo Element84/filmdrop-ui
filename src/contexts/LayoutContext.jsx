@@ -1,4 +1,10 @@
-import { createContext, useContext, useState, useCallback } from 'react'
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useMemo
+} from 'react'
 import PropTypes from 'prop-types'
 
 const LayoutContext = createContext(null)
@@ -28,14 +34,24 @@ export const LayoutProvider = ({ children }) => {
     setEnhancedColumns(columns)
   }, [])
 
-  const value = {
-    leftPanelWidth,
-    isLeftPanelVisible,
-    enhancedColumns,
-    toggleLeftPanel,
-    updateLeftPanelWidth,
-    updateEnhancedColumns
-  }
+  const value = useMemo(
+    () => ({
+      leftPanelWidth,
+      isLeftPanelVisible,
+      enhancedColumns,
+      toggleLeftPanel,
+      updateLeftPanelWidth,
+      updateEnhancedColumns
+    }),
+    [
+      leftPanelWidth,
+      isLeftPanelVisible,
+      enhancedColumns,
+      toggleLeftPanel,
+      updateLeftPanelWidth,
+      updateEnhancedColumns
+    ]
+  )
 
   return (
     <LayoutContext.Provider value={value}>{children}</LayoutContext.Provider>

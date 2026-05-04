@@ -23,17 +23,17 @@ const NumericRangeInputs = ({
   const [isEditingMin, setIsEditingMin] = useState(false)
   const [isEditingMax, setIsEditingMax] = useState(false)
 
+  // Sync external `value` into the local input state, but only when the user
+  // is not actively editing that side. Consolidated into a single effect to
+  // avoid two separate hooks reacting to overlapping deps.
   useEffect(() => {
     if (!isEditingMin && !isMinFixed) {
       setMinInput(value.min ?? '')
     }
-  }, [value.min, isEditingMin, isMinFixed])
-
-  useEffect(() => {
     if (!isEditingMax && !isMaxFixed) {
       setMaxInput(value.max ?? '')
     }
-  }, [value.max, isEditingMax, isMaxFixed])
+  }, [value.min, value.max, isEditingMin, isEditingMax, isMinFixed, isMaxFixed])
 
   const roundIfInteger = (val) => (integerType ? Math.round(val) : val)
 

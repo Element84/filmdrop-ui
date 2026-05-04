@@ -226,6 +226,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   preventing referrer leakage when the download is opened in a new
   context.
 
+### Changed
+
+- **Internal performance and stability cleanup** for hooks and
+  effects. No user-visible behavior change is intended:
+  - Layout and Enhanced-Details React contexts now memoize their
+    provider value, so unrelated state changes no longer re-render
+    every consumer subscribed via context.
+  - The numeric range filter no longer clobbers an in-progress edit
+    when the parent's value updates mid-typing.
+  - The text-field search input simplifies its sync-from-prop effect
+    and is now covered by a focused unit test.
+  - The popup-result effect that drives the active item, map
+    overlay, and `:itemId` URL is consolidated into a single hook
+    so a results change cannot double-dispatch the active item.
+  - Mount-guards added to the link "copied!" timeout, the popup
+    thumbnail preload, and the overflow-tooltip resize observer
+    so they no longer attempt to update state after unmount.
+  - The resizable left panel tracks the right-sidebar configuration
+    via a ref, so toggling the sidebar no longer re-registers the
+    global mouse listeners or the panel's `ResizeObserver`.
+
 ## v7.1.0-pre - 2026-01-15
 
 ### Added

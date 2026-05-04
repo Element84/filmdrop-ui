@@ -48,9 +48,9 @@ function hasSearchParams(search) {
 }
 
 export function useUrlInitialize(search, dispatch) {
-  const isInitialized = useRef(false)
+  const isInitializedRef = useRef(false)
   const isInitializing = useRef(false)
-  const prevSearch = useRef(null)
+  const prevSearchRef = useRef(null)
   const latestItemRequest = useRef(null)
 
   // Redux state we need to watch for initialization readiness
@@ -168,7 +168,7 @@ export function useUrlInitialize(search, dispatch) {
    * Runs once when appConfig, collectionsData, and map are all ready.
    */
   useEffect(() => {
-    if (isInitialized.current || isInitializing.current) return
+    if (isInitializedRef.current || isInitializing.current) return
     if (!appConfig || !collectionsData || collectionsData.length === 0) return
     if (!map || Object.keys(map).length === 0) return
 
@@ -319,12 +319,12 @@ export function useUrlInitialize(search, dispatch) {
           }
         }
 
-        prevSearch.current = urlSearch
-        isInitialized.current = true
+        prevSearchRef.current = urlSearch
+        isInitializedRef.current = true
       } catch (error) {
         console.error('URL state initialization error:', error)
-        prevSearch.current = search
-        isInitialized.current = true
+        prevSearchRef.current = search
+        isInitializedRef.current = true
       } finally {
         isInitializing.current = false
       }
@@ -341,5 +341,10 @@ export function useUrlInitialize(search, dispatch) {
     clearItemSelection
   ])
 
-  return { isInitialized, prevSearch, fetchAndDisplayItem, clearItemSelection }
+  return {
+    isInitializedRef,
+    prevSearchRef,
+    fetchAndDisplayItem,
+    clearItemSelection
+  }
 }

@@ -16,13 +16,24 @@ const OverflowTooltip = ({
 }) => {
   const ref = useRef(null)
   const [isOverflowing, setIsOverflowing] = useState(false)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     const el = ref.current
     if (!el) return
 
+    // Skip ResizeObserver wiring entirely when there is no content to measure.
+    if (children === null || children === undefined || children === '') return
+
     const checkOverflow = () => {
-      if (!ref.current) return
+      if (!isMountedRef.current || !ref.current) return
       // Skip when not visible (e.g., inside display:none tab)
       if (ref.current.clientWidth === 0) return
       setIsOverflowing(ref.current.scrollWidth > ref.current.clientWidth)

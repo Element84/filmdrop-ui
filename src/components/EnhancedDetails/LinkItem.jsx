@@ -29,10 +29,13 @@ function getDomain(url) {
 const LinkItem = React.memo(({ link }) => {
   const [copiedUrl, setCopiedUrl] = useState(null)
   const timeoutRef = useRef(null)
+  const isMountedRef = useRef(true)
 
   // Cleanup timeout on unmount
   useEffect(() => {
+    isMountedRef.current = true
     return () => {
+      isMountedRef.current = false
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
@@ -51,7 +54,10 @@ const LinkItem = React.memo(({ link }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-      timeoutRef.current = setTimeout(() => setCopiedUrl(null), 2000)
+      timeoutRef.current = setTimeout(() => {
+        if (!isMountedRef.current) return
+        setCopiedUrl(null)
+      }, 2000)
     }
   }
 

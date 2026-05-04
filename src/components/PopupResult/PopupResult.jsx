@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResult.css'
 import { useSelector } from 'react-redux'
@@ -13,6 +13,14 @@ const PopupResult = (props) => {
   )
   const [thumbnailInfo, setThumbnailInfo] = useState(null)
   const [thumbnailFailed, setThumbnailFailed] = useState(false)
+  const isMountedRef = useRef(true)
+
+  useEffect(() => {
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
+    }
+  }, [])
 
   useEffect(() => {
     // Reset failure state whenever the item changes.
@@ -34,6 +42,7 @@ const PopupResult = (props) => {
       // Preload the new image, keeping the previous one visible until ready
       const image = new Image()
       image.onload = function () {
+        if (!isMountedRef.current) return
         if (this.width > 0) {
           setThumbnailInfo({
             url: thumbnailURLForSelection,
@@ -44,7 +53,9 @@ const PopupResult = (props) => {
       }
       image.src = thumbnailURLForSelection
     }
-    // eslint-disable-next-line
+    // We intentionally do not list `_autoCenterOnItemChanged` so that toggling
+    // auto-center mid-view does not re-zoom or re-trigger the thumbnail load.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.result])
 
   return (

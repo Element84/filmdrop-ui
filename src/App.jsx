@@ -68,7 +68,7 @@ function App() {
     if (version) {
       console.log('Version: ' + version)
     }
-  }, [])
+  }, [dispatch])
 
   // Effect 2 — config-reaction: runs once per config change. Handles
   // collections load + theme initialization. Only applies branding/theme if
@@ -99,7 +99,7 @@ function App() {
       }
       applyTheme(currentTheme)
     }
-  }, [_appConfig, _authTokenExists, _collectionsData, _collectionsLoadError])
+  }, [_appConfig, showLogin, _collectionsData, _collectionsLoadError, dispatch])
 
   // Effect 3 — item display side-effects (genuine DOM/leaflet side effect).
   useEffect(() => {

@@ -19,12 +19,16 @@ export const useResizablePanel = (panelRef) => {
   const isRightSidebarEnabled = useSelector(
     (state) => state.mainSlice.appConfig?.RIGHT_SIDEBAR_ENABLED ?? false
   )
+  // Ref so handleMouseMove stays stable across sidebar-config toggles
+  // (otherwise global listeners + ResizeObserver re-register on every toggle).
+  const isRightSidebarEnabledRef = useRef(isRightSidebarEnabled)
+  useEffect(() => {
+    isRightSidebarEnabledRef.current = isRightSidebarEnabled
+  }, [isRightSidebarEnabled])
   const isDraggingRef = useRef(false)
   const startXRef = useRef(0)
   const startWidthRef = useRef(0)
-  // Snapshot the host's body-style values so we restore them on drag
-  // end instead of clobbering with empty strings. Matters when the host
-  // page sets its own cursor / userSelect defaults.
+  // Snapshot host body styles so we restore (not clobber) them on drag end.
   const prevBodyCursorRef = useRef('')
   const prevBodyUserSelectRef = useRef('')
 
@@ -71,7 +75,7 @@ export const useResizablePanel = (panelRef) => {
       if (!isDraggingRef.current) return
 
       const deltaX = e.clientX - startXRef.current
-      const signedDeltaX = isRightSidebarEnabled ? -deltaX : deltaX
+      const signedDeltaX = isRightSidebarEnabledRef.current ? -deltaX : deltaX
       const newWidth = Math.min(
         MAX_PANEL_WIDTH,
         Math.max(MIN_PANEL_WIDTH, startWidthRef.current + signedDeltaX)
@@ -80,7 +84,7 @@ export const useResizablePanel = (panelRef) => {
       updateLeftPanelWidth(newWidth)
       updateColumns(newWidth)
     },
-    [isRightSidebarEnabled, updateLeftPanelWidth, updateColumns]
+    [updateLeftPanelWidth, updateColumns]
   )
 
   // Mouse up handler

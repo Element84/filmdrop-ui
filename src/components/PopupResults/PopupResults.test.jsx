@@ -1,16 +1,11 @@
 import React from 'react'
-import { render, screen, fireEvent, within } from '@testing-library/react'
+import { render, screen, fireEvent } from '@testing-library/react'
 import PopupResults from './PopupResults'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import { LayoutProvider } from '../../contexts/LayoutContext'
 import { AccordionStateProvider } from '../../contexts/AccordionStateContext'
-import {
-  setShowPopupModal,
-  setappConfig,
-  setcartItems,
-  setimageOverlayLoading
-} from '../../redux/slices/mainSlice'
+import { setappConfig, setcartItems } from '../../redux/slices/mainSlice'
 import { mockAppConfig, mockClickResults } from '../../testing/shared-mocks'
 import { describe, vi } from 'vitest'
 
@@ -131,6 +126,63 @@ describe('PopupResult', () => {
           mockClickResults[0]
         )
       })
+    })
+  })
+
+  describe('effect consolidation', () => {
+    it('rapid result changes dispatch setCurrentPopupResult once per change (no duplicates)', () => {
+      store.dispatch(setappConfig(mockAppConfig))
+
+      const dispatchSpy = vi.spyOn(store, 'dispatch')
+
+      const { rerender } = render(
+        <Provider store={store}>
+          <LayoutProvider>
+            <AccordionStateProvider>
+              <PopupResults results={mockClickResults} />
+            </AccordionStateProvider>
+          </LayoutProvider>
+        </Provider>
+      )
+
+      const countSetCurrent = () =>
+        dispatchSpy.mock.calls.filter(
+          ([action]) =>
+            action &&
+            typeof action === 'object' &&
+            action.type === 'mainSlice/setCurrentPopupResult'
+        ).length
+
+      const initialCount = countSetCurrent()
+
+      // Rerender with the same results several times in succession.
+      rerender(
+        <Provider store={store}>
+          <LayoutProvider>
+            <AccordionStateProvider>
+              <PopupResults results={[...mockClickResults]} />
+            </AccordionStateProvider>
+          </LayoutProvider>
+        </Provider>
+      )
+      rerender(
+        <Provider store={store}>
+          <LayoutProvider>
+            <AccordionStateProvider>
+              <PopupResults results={[...mockClickResults]} />
+            </AccordionStateProvider>
+          </LayoutProvider>
+        </Provider>
+      )
+
+      // Pre-consolidation, two effects each dispatched setCurrentPopupResult,
+      // doubling the count per render. Now we expect at most one dispatch per
+      // results-identity change.
+      const finalCount = countSetCurrent()
+      const dispatchedThisTest = finalCount - initialCount
+      expect(dispatchedThisTest).toBeLessThanOrEqual(2)
+
+      dispatchSpy.mockRestore()
     })
   })
 })

@@ -61,8 +61,8 @@ const mockClearItemSelection = vi.fn()
 
 vi.mock('./useUrlInitialize', () => ({
   useUrlInitialize: () => ({
-    isInitialized: mockIsInitialized,
-    prevSearch: mockPrevSearch,
+    isInitializedRef: mockIsInitialized,
+    prevSearchRef: mockPrevSearch,
     fetchAndDisplayItem: mockFetchAndDisplayItem,
     clearItemSelection: mockClearItemSelection
   })

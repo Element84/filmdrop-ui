@@ -98,8 +98,8 @@ describe('useUrlInitialize', () => {
         { wrapper }
       )
 
-      expect(result.current.isInitialized).toHaveProperty('current')
-      expect(result.current.prevSearch).toHaveProperty('current')
+      expect(result.current.isInitializedRef).toHaveProperty('current')
+      expect(result.current.prevSearchRef).toHaveProperty('current')
       expect(typeof result.current.fetchAndDisplayItem).toBe('function')
       expect(typeof result.current.clearItemSelection).toBe('function')
     })
@@ -110,8 +110,8 @@ describe('useUrlInitialize', () => {
         { wrapper }
       )
 
-      expect(result.current.isInitialized.current).toBe(false)
-      expect(result.current.prevSearch.current).toBeNull()
+      expect(result.current.isInitializedRef.current).toBe(false)
+      expect(result.current.prevSearchRef.current).toBeNull()
     })
   })
 
@@ -126,7 +126,7 @@ describe('useUrlInitialize', () => {
         { wrapper }
       )
 
-      expect(result.current.isInitialized.current).toBe(false)
+      expect(result.current.isInitializedRef.current).toBe(false)
     })
 
     it('does not initialize when collectionsData is empty', () => {
@@ -139,7 +139,7 @@ describe('useUrlInitialize', () => {
         { wrapper }
       )
 
-      expect(result.current.isInitialized.current).toBe(false)
+      expect(result.current.isInitializedRef.current).toBe(false)
     })
 
     it('does not initialize when map is empty', () => {
@@ -152,7 +152,7 @@ describe('useUrlInitialize', () => {
         { wrapper }
       )
 
-      expect(result.current.isInitialized.current).toBe(false)
+      expect(result.current.isInitializedRef.current).toBe(false)
     })
   })
 
@@ -170,9 +170,9 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
-      expect(result.current.prevSearch.current).toBe(mockSearch)
+      expect(result.current.prevSearchRef.current).toBe(mockSearch)
     })
 
     it('sets tab from URL when present', async () => {
@@ -184,7 +184,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
       expect(mockDispatch).toHaveBeenCalledWith(
         expect.objectContaining({ payload: 'details' })
@@ -205,7 +205,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
 
       // Should have called newSearch
@@ -228,7 +228,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
       expect(showApplicationAlert).toHaveBeenCalledWith(
         'warning',
@@ -248,7 +248,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
       expect(showApplicationAlert).toHaveBeenCalledWith(
         'warning',
@@ -269,7 +269,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
 
       const callCount = mockDispatch.mock.calls.length
@@ -468,7 +468,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
 
       // Should have dispatched setSelectedVisualization
@@ -496,7 +496,7 @@ describe('useUrlInitialize', () => {
       )
 
       await waitFor(() => {
-        expect(result.current.isInitialized.current).toBe(true)
+        expect(result.current.isInitializedRef.current).toBe(true)
       })
 
       // Should NOT have dispatched setSelectedVisualization with 'nonexistent-viz'

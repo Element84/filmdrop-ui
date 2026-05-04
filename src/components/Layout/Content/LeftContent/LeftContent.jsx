@@ -41,6 +41,11 @@ const LeftContent = () => {
   const { setTab } = useUrlNavigate()
 
   useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.ctrlKey && event.key === ' ') {
+        debounceNewSearch()
+      }
+    }
     document.addEventListener('keydown', handleKeyPress)
     return () => {
       document.removeEventListener('keydown', handleKeyPress)
@@ -53,12 +58,6 @@ const LeftContent = () => {
       debounceTitilerOverlay(_currentPopupResult)
     }
   }, [_selectedVisualization, _currentPopupResult])
-
-  const handleKeyPress = (event) => {
-    if (event.ctrlKey && event.key === ' ') {
-      debounceNewSearch()
-    }
-  }
 
   const setSearchTab = useCallback(() => {
     setTab('search')

@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect } from 'react'
+import React, { useMemo, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
 import './EnhancedDetails.css'
 import { useEnhancedDetails } from '../../contexts/EnhancedDetailsContext'
@@ -75,8 +75,14 @@ const EnhancedDetailsDisplay = () => {
       ? {}
       : []
 
+  // Dedupe alerts: one per (item id + context) error transition.
+  const lastErrorKeyRef = useRef(null)
   useEffect(() => {
     if (!groupedFieldsResult.ok) {
+      const itemId = currentPopupResult?.id ?? 'unknown'
+      const errorKey = `${itemId}::${groupedFieldsResult.context}`
+      if (lastErrorKeyRef.current === errorKey) return
+      lastErrorKeyRef.current = errorKey
       console.error(
         `Enhanced Details ${groupedFieldsResult.context} error:`,
         groupedFieldsResult.error
@@ -85,8 +91,10 @@ const EnhancedDetailsDisplay = () => {
         'error',
         `Failed to process ${groupedFieldsResult.context}. Please try again.`
       )
+    } else {
+      lastErrorKeyRef.current = null
     }
-  }, [groupedFieldsResult])
+  }, [groupedFieldsResult, currentPopupResult])
 
   const sortFields = useMemo(() => {
     if (!currentPopupResult) return () => []
