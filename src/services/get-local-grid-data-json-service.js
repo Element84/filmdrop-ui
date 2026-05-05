@@ -1,17 +1,22 @@
 import { store } from '../redux/store'
 import { setLocalGridData } from '../redux/slices/mainSlice'
 import { resolveDataUrl, getCacheBusterSuffix } from '../utils/configBase'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
 export async function LoadLocalGridDataService(fileName) {
   const configUrl = `${resolveDataUrl(fileName)}${getCacheBusterSuffix()}`
+  const contextLabel = 'Error Fetching Local Grid Data'
   await fetch(configUrl, {
     cache: 'no-store'
   })
-    .then((response) => {
+    .then(async (response) => {
       if (response.ok) {
         return response.json()
       }
-      throw new Error()
+      throw await normalizeStacErrorResponse(response, contextLabel)
     })
     .then((json) => {
       const getLocalGridData = store.getState().mainSlice.localGridData
@@ -21,8 +26,11 @@ export async function LoadLocalGridDataService(fileName) {
       }
     })
     .catch((error) => {
-      const message = 'Error Fetching Local Grid Data'
+      const normalizedError =
+        error?.error === true
+          ? error
+          : normalizeStacNetworkError(error, contextLabel)
       // log full error for diagnosing client side errors if needed
-      console.error(message, error)
+      console.error(contextLabel, normalizedError)
     })
 }

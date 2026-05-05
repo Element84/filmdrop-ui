@@ -12,18 +12,23 @@ import {
   resolveFaviconUrl,
   getCacheBusterSuffix
 } from '../utils/configBase'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
 export async function LoadConfigIntoStateService() {
   const configUrl = `${resolveConfigUrl()}${getCacheBusterSuffix()}`
+  const contextLabel = 'Error Fetching Config File'
 
   await fetch(configUrl, {
     cache: 'no-store'
   })
-    .then((response) => {
+    .then(async (response) => {
       if (response.ok) {
         return response.json()
       }
-      throw new Error()
+      throw await normalizeStacErrorResponse(response, contextLabel)
     })
     .then(async (json) => {
       // Validate config and enforce strict modern format requirements
@@ -45,14 +50,18 @@ export async function LoadConfigIntoStateService() {
       store.dispatch(setAppConfig(configWithDefaults))
     })
     .catch((error) => {
+      const normalizedError =
+        error?.error === true
+          ? error
+          : normalizeStacNetworkError(error, contextLabel)
       const message =
-        error?.code === 'LEGACY_CONFIG_NOT_SUPPORTED' ||
-        error?.code === 'MIXED_CONFIG_NOT_SUPPORTED' ||
-        error?.code === 'INVALID_CONFIG_FORMAT'
-          ? error.message
-          : 'Error Fetching Config File'
+        normalizedError?.code === 'LEGACY_CONFIG_NOT_SUPPORTED' ||
+        normalizedError?.code === 'MIXED_CONFIG_NOT_SUPPORTED' ||
+        normalizedError?.code === 'INVALID_CONFIG_FORMAT'
+          ? normalizedError.message
+          : contextLabel
       // log full error for diagnosing client side errors if needed
-      console.error(message, error)
+      console.error(message, normalizedError)
       showApplicationAlert('error', message, null)
     })
 }

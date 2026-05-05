@@ -6,6 +6,10 @@ import {
 import { setAuthToken } from '../utils/authHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 import { getActiveRouter } from '../router'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
 /**
  * Prefix a stored redirect URL with the active router's basepath so
@@ -50,6 +54,7 @@ export function applyBasepathToRedirect(url, basepath) {
 
 export async function AuthService(username, password) {
   const AuthServiceURL = store.getState().mainSlice.appConfig.AUTH_URL
+  const contextLabel = 'Authentication Error'
 
   const myHeaders = new Headers()
   myHeaders.append('Content-Type', 'application/x-www-form-urlencoded')
@@ -66,11 +71,11 @@ export async function AuthService(username, password) {
   }
 
   await fetch(`${AuthServiceURL}`, reqParams)
-    .then((response) => {
+    .then(async (response) => {
       if (response.ok) {
         return response.json()
       }
-      throw new Error()
+      throw await normalizeStacErrorResponse(response, contextLabel)
     })
     .then((json) => {
       if (!json.access_token) {
@@ -96,9 +101,12 @@ export async function AuthService(username, password) {
     })
     .catch((error) => {
       store.dispatch(setAuthTokenExists(false))
-      const message = 'Authentication Error'
+      const normalizedError =
+        error?.error === true
+          ? error
+          : normalizeStacNetworkError(error, contextLabel)
       showApplicationAlert('warning', 'Login Failed', 5000)
       // log full error for diagnosing client side errors if needed
-      console.error(message, error)
+      console.error(contextLabel, normalizedError)
     })
 }
