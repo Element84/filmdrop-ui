@@ -1,5 +1,4 @@
 import { store } from '../redux/store'
-import { getAuthToken } from '../utils/authHelper'
 import {
   setSearchLoading,
   setSearchResults,
@@ -17,7 +16,7 @@ import {
   clearLayer,
   clearMapSelection
 } from '../utils/mapHelper'
-import { appendStacHeaderCookies } from '../utils/stacRequest'
+import { buildStacRequestHeaders } from '../utils/stacRequest'
 import { DEFAULT_API_MAX_ITEMS } from '../constants/defaults'
 import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
 
@@ -27,14 +26,7 @@ import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
  * @param {number} pageNumber - The page number being fetched
  */
 export async function FetchPageService(pageUrl, pageNumber) {
-  const requestHeaders = new Headers()
-  const JWT = getAuthToken()
-  const isSTACTokenAuthEnabled =
-    store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
-  if (JWT && isSTACTokenAuthEnabled) {
-    requestHeaders.append('Authorization', `Bearer ${JWT}`)
-  }
-  appendStacHeaderCookies(requestHeaders)
+  const requestHeaders = buildStacRequestHeaders()
 
   // If currently viewing an item, navigate back to collection path
   const pathParams = getPathParams()
