@@ -1,5 +1,4 @@
 import { store } from '../redux/store'
-import { getAuthToken } from '../utils/authHelper'
 import {
   setCollectionsData,
   setCollectionsLoadError,
@@ -10,19 +9,11 @@ import {
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 import { getCollections } from './stac-api'
-import { appendStacHeaderCookies } from '../utils/stacRequest'
+import { buildStacRequestHeaders } from '../utils/stacRequest'
 
 export async function GetCollectionsService(searchParams) {
   const appConfig = store.getState().mainSlice.appConfig
-  const JWT = getAuthToken()
-  const isSTACTokenAuthEnabled = appConfig.APP_TOKEN_AUTH_ENABLED ?? false
-
-  // Build custom headers for authentication
-  const requestHeaders = new Headers()
-  if (JWT && isSTACTokenAuthEnabled) {
-    requestHeaders.append('Authorization', `Bearer ${JWT}`)
-  }
-  appendStacHeaderCookies(requestHeaders)
+  const requestHeaders = buildStacRequestHeaders()
 
   try {
     // Use stac-api client to fetch collections
