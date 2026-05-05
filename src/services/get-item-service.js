@@ -1,6 +1,6 @@
 import { store } from '../redux/store'
-import { logoutUser, getAuthToken } from '../utils/authHelper'
-import { appendStacHeaderCookies } from '../utils/stacRequest'
+import { logoutUser } from '../utils/authHelper'
+import { buildStacRequestHeaders } from '../utils/stacRequest'
 
 /**
  * Fetches a single STAC item from the API.
@@ -24,12 +24,7 @@ import { appendStacHeaderCookies } from '../utils/stacRequest'
 export async function GetItemService(itemId, collectionId) {
   const appConfig = store.getState().mainSlice.appConfig
 
-  const requestHeaders = new Headers()
-  const JWT = getAuthToken()
-  if (JWT && (appConfig.APP_TOKEN_AUTH_ENABLED ?? false)) {
-    requestHeaders.append('Authorization', `Bearer ${JWT}`)
-  }
-  appendStacHeaderCookies(requestHeaders)
+  const requestHeaders = buildStacRequestHeaders()
 
   const url = collectionId
     ? `${appConfig.STAC_API_URL}/collections/${collectionId}/items/${itemId}`
