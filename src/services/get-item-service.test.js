@@ -222,7 +222,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: 404 })
+      expect(result).toMatchObject({ error: true, status: 404 })
     })
 
     it('calls logoutUser on 403 response', async () => {
@@ -234,7 +234,7 @@ describe('GetItemService with collectionId', () => {
       const result = await GetItemService(mockItemId, mockCollectionId)
 
       expect(authHelper.logoutUser).toHaveBeenCalledOnce()
-      expect(result).toEqual({ error: true, status: 403 })
+      expect(result).toMatchObject({ error: true, status: 403 })
     })
 
     it('returns error object with status on 500', async () => {
@@ -245,7 +245,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: 500 })
+      expect(result).toMatchObject({ error: true, status: 500 })
       expect(authHelper.logoutUser).not.toHaveBeenCalled()
     })
 
@@ -254,7 +254,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: null })
+      expect(result).toMatchObject({ error: true, status: null })
     })
 
     it('returns error object with null status on JSON parse failure', async () => {
@@ -267,7 +267,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: null })
+      expect(result).toMatchObject({ error: true, status: null })
     })
   })
 })
@@ -314,7 +314,7 @@ describe('GetItemService without collectionId', () => {
 
     const result = await GetItemService(mockItemId)
 
-    expect(result).toEqual({ error: true, status: 404 })
+    expect(result).toMatchObject({ error: true, status: 404 })
   })
 
   it('returns 404 error when multiple matches found (ambiguous)', async () => {
@@ -332,7 +332,7 @@ describe('GetItemService without collectionId', () => {
 
     const result = await GetItemService(mockItemId)
 
-    expect(result).toEqual({ error: true, status: 404 })
+    expect(result).toMatchObject({ error: true, status: 404 })
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining('Ambiguous item ID')
     )
@@ -348,7 +348,7 @@ describe('GetItemService without collectionId', () => {
     const result = await GetItemService(mockItemId)
 
     expect(authHelper.logoutUser).toHaveBeenCalledOnce()
-    expect(result).toEqual({ error: true, status: 403 })
+    expect(result).toMatchObject({ error: true, status: 403 })
   })
 
   it('returns error object with null status on network failure', async () => {
@@ -356,6 +356,6 @@ describe('GetItemService without collectionId', () => {
 
     const result = await GetItemService(mockItemId)
 
-    expect(result).toEqual({ error: true, status: null })
+    expect(result).toMatchObject({ error: true, status: null })
   })
 })

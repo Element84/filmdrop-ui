@@ -1,6 +1,10 @@
 import { store } from '../redux/store'
 import { logoutUser } from '../utils/authHelper'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
 /**
  * Fetches a single STAC item from the API.
@@ -23,6 +27,7 @@ import { buildStacRequestHeaders } from '../utils/stacRequest'
  */
 export async function GetItemService(itemId, collectionId) {
   const appConfig = store.getState().mainSlice.appConfig
+  const contextLabel = 'Error fetching STAC item'
 
   const requestHeaders = buildStacRequestHeaders()
 
@@ -40,7 +45,11 @@ export async function GetItemService(itemId, collectionId) {
       if (response.status === 403) {
         logoutUser()
       }
-      return { error: true, status: response.status }
+      const normalizedError = await normalizeStacErrorResponse(
+        response,
+        contextLabel
+      )
+      return normalizedError
     }
 
     const json = await response.json()
@@ -63,9 +72,15 @@ export async function GetItemService(itemId, collectionId) {
       )
     }
 
-    return { error: true, status: 404 }
+    return {
+      error: true,
+      status: 404,
+      code: null,
+      summary: contextLabel,
+      details: 'Item not found'
+    }
   } catch (error) {
-    console.error('Error fetching STAC item:', error)
-    return { error: true, status: null }
+    console.error(contextLabel + ':', error)
+    return normalizeStacNetworkError(error, contextLabel)
   }
 }
