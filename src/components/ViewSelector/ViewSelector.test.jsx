@@ -113,6 +113,14 @@ describe('ViewSelector', () => {
         setup({}, { aggregations: [{ name: 'grid_geohex_frequency' }] })
         expect(getButton('Hex')).not.toBeDisabled()
       })
+
+      it('should be enabled when collection supports centroid hex aggregation', () => {
+        setup(
+          {},
+          { aggregations: [{ name: 'centroid_geohex_grid_frequency' }] }
+        )
+        expect(getButton('Hex')).not.toBeDisabled()
+      })
     })
 
     describe('Grid button', () => {

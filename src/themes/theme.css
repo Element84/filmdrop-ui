@@ -17,6 +17,7 @@
    (SPA mode) or on an enclosing .filmdrop-root container (embedded mode).
    Keep both branches in sync. */
 :root[data-theme='filmdrop-dark'],
+:root[data-filmdrop-theme='filmdrop-dark'],
 .filmdrop-root[data-theme='filmdrop-dark'] {
   /* Dark Color Palette
      Inverted blue-gray scale: 1 = darkest (backgrounds), 8 = lightest (text)
@@ -249,7 +250,11 @@
 }
 
 /* ------------------- LIGHT THEME ------------------- */
+:root[data-theme='filmdrop'],
+:root[data-filmdrop-theme='filmdrop'],
+.filmdrop-root[data-theme='filmdrop'],
 :root[data-theme='filmdrop-light'],
+:root[data-filmdrop-theme='filmdrop-light'],
 .filmdrop-root[data-theme='filmdrop-light'] {
   /* Light Color Palette */
   --brand-accent-primary: #6cc24a;
@@ -473,17 +478,26 @@
 }
 
 /* Invert logo colors for light theme */
+:root[data-theme='filmdrop'] .headerLogoImage,
+:root[data-filmdrop-theme='filmdrop'] .headerLogoImage,
+.filmdrop-root[data-theme='filmdrop'] .headerLogoImage,
 :root[data-theme='filmdrop-light'] .headerLogoImage,
 .filmdrop-root[data-theme='filmdrop-light'] .headerLogoImage {
   filter: invert(1);
 }
 
+:root[data-theme='filmdrop'] .loginLogoImage,
+:root[data-filmdrop-theme='filmdrop'] .loginLogoImage,
+.filmdrop-root[data-theme='filmdrop'] .loginLogoImage,
 :root[data-theme='filmdrop-light'] .loginLogoImage,
 .filmdrop-root[data-theme='filmdrop-light'] .loginLogoImage {
   filter: invert(1);
 }
 
 /* No map tile styling for light theme */
+:root[data-theme='filmdrop'] .map-tiles,
+:root[data-filmdrop-theme='filmdrop'] .map-tiles,
+.filmdrop-root[data-theme='filmdrop'] .map-tiles,
 :root[data-theme='filmdrop-light'] .map-tiles,
 .filmdrop-root[data-theme='filmdrop-light'] .map-tiles {
   filter: none;

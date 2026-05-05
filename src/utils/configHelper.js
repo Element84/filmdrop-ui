@@ -229,6 +229,66 @@ export function getCollectionVisualizations(collectionId, config = null) {
 }
 
 /**
+ * Gets effective mosaic tiler params for a collection.
+ * Priority: explicit mosaicTilerParams > selected visualization > first visualization.
+ * @param {string} collectionId - The collection ID
+ * @param {string|null} selectedVisualizationKey - Optional selected visualization key
+ * @param {Object} config - Optional config object for testing (uses store if not provided)
+ * @returns {Object|undefined} Effective mosaic tiler params
+ */
+export function getEffectiveMosaicTilerParams(
+  collectionId,
+  selectedVisualizationKey = null,
+  config = null
+) {
+  const explicitMosaicTilerParams = getCollectionConfig(
+    collectionId,
+    'mosaicTilerParams',
+    config
+  )
+  if (explicitMosaicTilerParams) {
+    return explicitMosaicTilerParams
+  }
+
+  const { visualizations, visualizationKeys } = getCollectionVisualizations(
+    collectionId,
+    config
+  )
+  if (!visualizations || visualizationKeys.length === 0) {
+    return undefined
+  }
+
+  const visualizationKey =
+    selectedVisualizationKey && visualizations[selectedVisualizationKey]
+      ? selectedVisualizationKey
+      : visualizationKeys[0]
+
+  return visualizations[visualizationKey]
+}
+
+/**
+ * Gets effective mosaic asset value for a collection.
+ * @param {string} collectionId - The collection ID
+ * @param {string|null} selectedVisualizationKey - Optional selected visualization key
+ * @param {Object} config - Optional config object for testing (uses store if not provided)
+ * @returns {string|null} Effective asset name for mosaic creation
+ */
+export function getEffectiveMosaicAsset(
+  collectionId,
+  selectedVisualizationKey = null,
+  config = null
+) {
+  const tilerParams = getEffectiveMosaicTilerParams(
+    collectionId,
+    selectedVisualizationKey,
+    config
+  )
+  const assets = tilerParams?.assets
+  if (!assets) return null
+  return Array.isArray(assets) ? assets[assets.length - 1] : assets
+}
+
+/**
  * Auto-configures collections from the STAC API
  * @param {string} apiUrl - The STAC API URL
  * @param {Object} config - The configuration object

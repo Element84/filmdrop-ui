@@ -77,6 +77,17 @@ describe('App', () => {
       setup()
       expect(spy).toHaveBeenCalledTimes(1)
     })
+    it('should initialize theme even when document branding is disabled', () => {
+      window.__filmdropApplyBranding = false
+      const initSpy = vi.spyOn(ThemeHelper, 'initializeTheme')
+      const applySpy = vi.spyOn(ThemeHelper, 'applyTheme')
+
+      setup()
+
+      expect(initSpy).toHaveBeenCalledTimes(1)
+      expect(applySpy).toHaveBeenCalledTimes(1)
+      delete window.__filmdropApplyBranding
+    })
     it('should render the PageHeader component', () => {
       setup()
       const PageHeaderComponent = screen.queryByTestId('testPageHeader')

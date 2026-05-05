@@ -1,14 +1,21 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { setConfigCacheBuster, getCacheBusterSuffix } from './configBase'
+import {
+  setConfigCacheBuster,
+  getCacheBusterSuffix,
+  setConfigBaseUrl,
+  resolveLogoUrl
+} from './configBase'
 
 describe('configCacheBuster', () => {
   beforeEach(() => {
     // Reset to default before each test
     setConfigCacheBuster('timestamp')
+    setConfigBaseUrl('/app/')
   })
 
   afterEach(() => {
     setConfigCacheBuster('timestamp')
+    setConfigBaseUrl(null)
     vi.restoreAllMocks()
   })
 
@@ -55,5 +62,27 @@ describe('configCacheBuster', () => {
     setConfigCacheBuster('fixed')
     setConfigCacheBuster(undefined)
     expect(getCacheBusterSuffix().startsWith('?_cb=')).toBe(true)
+  })
+
+  it('resolves relative logo paths under config base', () => {
+    expect(resolveLogoUrl('logo.png')).toBe('/app/logo.png')
+    expect(resolveLogoUrl('./brand/logo.svg')).toBe('/app/brand/logo.svg')
+  })
+
+  it('keeps absolute and root-relative logo paths unchanged', () => {
+    expect(resolveLogoUrl('https://example.com/logo.svg')).toBe(
+      'https://example.com/logo.svg'
+    )
+    expect(resolveLogoUrl('/logo.svg')).toBe('/logo.svg')
+  })
+
+  it('keeps blob logo URLs unchanged', () => {
+    expect(resolveLogoUrl('blob:https://example.com/abc-123')).toBe(
+      'blob:https://example.com/abc-123'
+    )
+  })
+
+  it('keeps config-prefixed relative paths under base', () => {
+    expect(resolveLogoUrl('config/logo.svg')).toBe('/app/config/logo.svg')
   })
 })

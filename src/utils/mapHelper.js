@@ -22,7 +22,10 @@ import {
   getPathParams,
   ROUTE_COLLECTION_ITEM
 } from '../router'
-import { getCollectionConfig } from './configHelper'
+import {
+  getCollectionConfig,
+  getEffectiveMosaicTilerParams
+} from './configHelper'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 import { getMapGeometryColors } from './themeHelper'
 
@@ -729,8 +732,18 @@ const parameters = {
   rescale: (tilerParams) => {
     const value = tilerParams?.rescale
     if (!value) return null
-    // Handle array of rescale values (one per band) - TiTiler expects separate rescale params
+    // Handle array of rescale values. A numeric [min,max] pair is one range,
+    // while multiple entries are emitted as repeated rescale params.
     if (Array.isArray(value)) {
+      if (
+        value.length === 2 &&
+        value.every(
+          (v) =>
+            typeof v === 'number' || (typeof v === 'string' && !v.includes(','))
+        )
+      ) {
+        return `rescale=${value.join(',')}`
+      }
       return value.map((v) => `rescale=${v}`).join('&')
     }
     return `rescale=${value}`
@@ -765,7 +778,12 @@ const parameters = {
 }
 
 export const constructMosaicTilerParams = (collection) => {
-  const tilerParams = getCollectionConfig(collection, 'mosaicTilerParams')
+  const selectedVisualization =
+    store.getState().mainSlice.selectedVisualization || null
+  const tilerParams = getEffectiveMosaicTilerParams(
+    collection,
+    selectedVisualization
+  )
   if (!tilerParams) return ''
 
   const params = []

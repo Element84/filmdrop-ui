@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { store } from '../redux/store'
 import {
   setSelectedCollectionData,
+  setSelectedVisualization,
   setSearchDateRangeValue,
   setQueryableFilters,
   setMosaicCache,
@@ -67,7 +68,14 @@ describe('searchHelper newSearch', () => {
         STAC_API_URL: 'https://example.com/stac',
         MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
         FETCH_CREDENTIALS: 'same-origin',
-        APP_TOKEN_AUTH_ENABLED: false
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            mosaicTilerParams: {
+              assets: ['test-asset']
+            }
+          }
+        }
       })
     )
     store.dispatch(
@@ -234,6 +242,37 @@ describe('searchHelper newSearch', () => {
 
     const [, cacheMetadata] = AddMosaicService.mock.calls[0]
     expect(cacheMetadata.compareCount).toBe(DEFAULT_MOSAIC_TOP_COMPARE_ITEMS)
+  })
+
+  it('derives mosaic asset_name from selected visualization when mosaicTilerParams are missing', async () => {
+    store.dispatch(
+      setAppConfig({
+        STAC_API_URL: 'https://example.com/stac',
+        MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
+        FETCH_CREDENTIALS: 'same-origin',
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            visualizations: {
+              'true-color': { assets: ['visual'] },
+              vegetation: { assets: ['nir', 'red', 'green'] }
+            }
+          }
+        }
+      })
+    )
+    store.dispatch(setSelectedVisualization('vegetation'))
+
+    vi.spyOn(getSearchService, 'fetchTopItemsForMosaic').mockResolvedValue({
+      itemIds: null,
+      effectiveLimit: 0
+    })
+
+    await newSearch({ viewMode: 'mosaic' })
+
+    const [requestOptions] = AddMosaicService.mock.calls[0]
+    const body = JSON.parse(requestOptions.body)
+    expect(body.asset_name).toBe('green')
   })
 
   it('returns inline error when fetchTopItemsForMosaic rejects', async () => {

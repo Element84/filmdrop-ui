@@ -4,8 +4,13 @@ import {
   roundCoord,
   bboxFromMapBounds,
   clampAndRoundBbox,
-  zoomToCollectionExtent
+  zoomToCollectionExtent,
+  constructMosaicTilerParams
 } from './mapHelper'
+import {
+  setAppConfig,
+  setSelectedVisualization
+} from '../redux/slices/mainSlice'
 
 describe('mapHelper bbox precision', () => {
   describe('roundCoord', () => {
@@ -84,6 +89,60 @@ describe('mapHelper bbox precision', () => {
         }
       }
       expect(() => zoomToCollectionExtent(collection, {})).not.toThrow()
+    })
+  })
+
+  describe('constructMosaicTilerParams', () => {
+    it('uses explicit mosaicTilerParams when present', () => {
+      store.dispatch(
+        setAppConfig({
+          COLLECTIONS_CONFIG: {
+            col1: {
+              mosaicTilerParams: {
+                assets: ['visual'],
+                rescale: ['0,3000']
+              },
+              visualizations: {
+                vegetation: {
+                  assets: ['nir', 'red', 'green'],
+                  rescale: [0, 5000]
+                }
+              }
+            }
+          }
+        })
+      )
+      store.dispatch(setSelectedVisualization('vegetation'))
+
+      const params = constructMosaicTilerParams('col1')
+      expect(params).toContain('rescale=0,3000')
+      expect(params).not.toContain('rescale=0,5000')
+    })
+
+    it('falls back to selected visualization when mosaicTilerParams are missing', () => {
+      store.dispatch(
+        setAppConfig({
+          COLLECTIONS_CONFIG: {
+            col2: {
+              visualizations: {
+                'true-color': {
+                  assets: ['visual'],
+                  rescale: ['0,3000']
+                },
+                vegetation: {
+                  assets: ['nir', 'red', 'green'],
+                  rescale: ['0,5000']
+                }
+              }
+            }
+          }
+        })
+      )
+      store.dispatch(setSelectedVisualization('vegetation'))
+
+      const params = constructMosaicTilerParams('col2')
+      expect(params).toContain('rescale=0,5000')
+      expect(params).not.toContain('rescale=0&rescale=5000')
     })
   })
 })

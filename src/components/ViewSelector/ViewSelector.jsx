@@ -48,7 +48,9 @@ const ViewSelector = () => {
   const supportsHex = useMemo(
     () =>
       selectedCollectionData?.aggregations?.some(
-        (el) => el.name === 'grid_geohex_frequency'
+        (el) =>
+          el.name === 'centroid_geohex_grid_frequency' ||
+          el.name === 'grid_geohex_frequency'
       ) || false,
     [selectedCollectionData]
   )
@@ -73,7 +75,7 @@ const ViewSelector = () => {
 
   // Reset to default view when collection changes
   useEffect(() => {
-    if (!selectedCollectionData) return
+    if (!selectedCollectionData?.id) return
 
     // On initial load from a shared URL with an explicit view param,
     // skip the default-view reset so the URL's view mode is preserved.
@@ -90,7 +92,7 @@ const ViewSelector = () => {
         : 'scene'
     dispatch(setViewMode(defaultView))
     setIsManualSelection(false)
-  }, [selectedCollectionData?.id, supportsHex, supportsGrid])
+  }, [selectedCollectionData?.id, dispatch, supportsHex, supportsGrid])
 
   // Update current zoom when map changes
   useEffect(() => {
@@ -129,7 +131,8 @@ const ViewSelector = () => {
     appConfig?.SCENE_TILER_URL,
     supportsHex,
     viewMode,
-    isManualSelection
+    isManualSelection,
+    dispatch
   ])
 
   const handleViewChange = (view) => {

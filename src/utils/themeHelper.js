@@ -1,4 +1,5 @@
 import { DEFAULT_BASEMAP } from '../constants/defaults'
+import { resolveLogoUrl } from './configBase'
 
 const THEME_STORAGE_KEY = 'APP_THEME_PREFERENCE'
 
@@ -35,6 +36,10 @@ export function getSystemTheme() {
 export function applyTheme(theme) {
   if (typeof document === 'undefined') return
   const themeValue = theme === 'filmdrop' ? 'filmdrop' : `filmdrop-${theme}`
+  // Always expose a FilmDrop-specific theme attribute on <html> so
+  // portal-rendered components (MUI menus, pickers) can resolve CSS
+  // variables even when document branding is disabled in embedded mode.
+  document.documentElement.setAttribute('data-filmdrop-theme', themeValue)
   // Mirror onto any mounted .filmdrop-root container so the scoped
   // selectors (`.filmdrop-root[data-theme='filmdrop-*']`) match in
   // embedded mode.
@@ -84,10 +89,11 @@ export function getBrandLogoConfig(appConfig, currentTheme) {
   const config = appConfig.BRAND_LOGO
   let logoImage = config.image
 
-  if (appConfig.THEME_SWITCHING_ENABLED === true && currentTheme) {
-    if (currentTheme === 'light' && config.image_light) {
+  if (appConfig.THEME_SWITCHING_ENABLED === true) {
+    const effectiveTheme = currentTheme || getSystemTheme()
+    if (effectiveTheme === 'light' && config.image_light) {
       logoImage = config.image_light
-    } else if (currentTheme === 'dark' && config.image_dark) {
+    } else if (effectiveTheme === 'dark' && config.image_dark) {
       logoImage = config.image_dark
     }
   }
@@ -100,8 +106,16 @@ export function getBrandLogoConfig(appConfig, currentTheme) {
     url: config.url,
     title: config.title,
     alt: config.alt,
-    image: logoImage
+    image: resolveLogoUrl(logoImage)
   }
+}
+
+function normalizeStoredTheme(theme) {
+  if (!theme) return null
+  if (theme === 'dark' || theme === 'light') return theme
+  if (theme === 'filmdrop-dark') return 'dark'
+  if (theme === 'filmdrop-light') return 'light'
+  return null
 }
 
 function validateThemeCSS(switchingEnabled) {
@@ -192,7 +206,10 @@ export function initializeTheme(appConfig) {
     }
   }
 
-  let currentTheme = getThemeFromStorage()
+  let currentTheme = null
+  if (shouldPersistThemePreference()) {
+    currentTheme = normalizeStoredTheme(getThemeFromStorage())
+  }
 
   if (!currentTheme) {
     try {

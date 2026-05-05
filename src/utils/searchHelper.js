@@ -14,7 +14,7 @@ import {
   clearMapSelection,
   hasMosaicImageLayer
 } from './mapHelper'
-import { getCollectionConfig } from './configHelper'
+import { getCollectionConfig, getEffectiveMosaicAsset } from './configHelper'
 import { convertDateForURL, convertDate } from './datetime'
 import * as getSearchService from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
@@ -779,15 +779,12 @@ async function newMosaicSearch(signal) {
 }
 
 const constructMosaicAssetVal = (collection) => {
-  const mosaicTilerParams = getCollectionConfig(collection, 'mosaicTilerParams')
-  const assets = mosaicTilerParams?.assets
-  if (!assets) {
+  const selectedVisualization =
+    store.getState().mainSlice.selectedVisualization || null
+  const asset = getEffectiveMosaicAsset(collection, selectedVisualization)
+  if (!asset) {
     console.log(`Assets not defined for ${collection}`)
     return null
   }
-  // Handle both string and array formats without mutation
-  if (Array.isArray(assets)) {
-    return assets[assets.length - 1]
-  }
-  return assets
+  return asset
 }

@@ -71,8 +71,7 @@ function App() {
   }, [dispatch])
 
   // Effect 2 — config-reaction: runs once per config change. Handles
-  // collections load + theme initialization. Only applies branding/theme if
-  // FilmDropRoot has not opted out via applyDocumentBranding=false.
+  // collections load + theme initialization.
   useEffect(() => {
     if (!_appConfig) return
 
@@ -89,16 +88,12 @@ function App() {
       GetCollectionsService()
     }
 
-    const shouldApplyBranding =
-      typeof window === 'undefined' || window.__filmdropApplyBranding !== false
-
-    if (shouldApplyBranding) {
-      const { currentTheme, switchingEnabled } = initializeTheme(_appConfig)
-      if (switchingEnabled) {
-        dispatch(setCurrentTheme(currentTheme))
-      }
-      applyTheme(currentTheme)
+    const { currentTheme, switchingEnabled } = initializeTheme(_appConfig)
+    if (switchingEnabled) {
+      dispatch(setCurrentTheme(currentTheme))
     }
+    // applyTheme itself gates document branding writes via shouldApplyDocumentBranding.
+    applyTheme(currentTheme)
   }, [_appConfig, showLogin, _collectionsData, _collectionsLoadError, dispatch])
 
   // Effect 3 — item display side-effects (genuine DOM/leaflet side effect).

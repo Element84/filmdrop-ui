@@ -1,5 +1,5 @@
 import React from 'react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 
 import { render } from '@testing-library/react'
 import { FilmDropRoot } from 'filmdrop-ui'
@@ -12,6 +12,11 @@ vi.mock('filmdrop-ui', () => ({
 vi.mock('filmdrop-ui/style.css', () => ({}))
 vi.mock('leaflet/dist/leaflet.css', () => ({}))
 vi.mock('leaflet-draw/dist/leaflet.draw.css', () => ({}))
+
+beforeEach(() => {
+  FilmDropRoot.mockClear()
+  window.history.pushState({}, '', '/app/')
+})
 
 describe('starter App.jsx contract', () => {
   it('mounts FilmDropRoot exactly once', () => {
@@ -28,7 +33,7 @@ describe('starter App.jsx contract', () => {
     expect(props.configCacheBuster).toBe('none')
   })
 
-  it('points configUrl at the /app config file', () => {
+  it('points configUrl at the lean /app config file by default', () => {
     render(<App />)
     const props = FilmDropRoot.mock.calls[0][0]
     expect(props.configUrl).toBe('/app/config/config.json')

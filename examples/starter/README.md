@@ -55,6 +55,27 @@ npm run preview # serve ./dist at /app/
 npm run test    # Vitest contract tests for App.jsx
 ```
 
+## Starter Config Modes
+
+The starter ships two runtime config files under `public/config/`:
+
+- `config.json` (default) - lean starter config with core branding + a compact
+  collection setup
+- `config.demo.json` - richer demo config with more dataset and UI options
+
+By default, the host loads `config.json`:
+
+- <http://localhost:5180/app/>
+
+To test the demo config, swap it in manually (for example, copy
+`config.demo.json` over `config.json`, or temporarily rename the files before
+starting the starter):
+
+- `cp examples/starter/public/config/config.demo.json examples/starter/public/config/config.json`
+
+This keeps the out-of-box starter minimal for new adopters while still
+providing a richer reference config for manual evaluation.
+
 ## What this demonstrates
 
 - **Basepath mount** — Vite's `base: '/app/'` matches
@@ -118,3 +139,7 @@ zero additional configuration. If brand assets look stale, run
   resolver points at the parent package's `dist/`.
 - **Library edits not appearing** — switch to `npm run dev:starter:src`
   for source HMR, or rerun `npm run build:lib` between iterations.
+- **`[BABEL] ... deoptimised the styling ... dist/filmdrop-ui.js`** —
+  expected for the large built-library bundle in linked workspace mode;
+  this warning is non-blocking and does not indicate runtime failure by
+  itself.
