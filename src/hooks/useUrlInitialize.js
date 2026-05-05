@@ -27,11 +27,11 @@ import { GetItemService } from '../services/get-item-service'
 import { syncSelectionWithFetchedItem } from '../utils/selectionSync'
 import {
   addDataToLayer,
-  footprintLayerStyle,
   clearMapSelection,
   zoomToCollectionExtent,
   zoomToItemExtent
-} from '../utils/mapHelper'
+} from '../utils/mapLayers'
+import { footprintLayerStyle } from '../utils/mapStyles'
 import { getCollectionVisualizations } from '../utils/configHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 import { newSearch } from '../utils/searchHelper'

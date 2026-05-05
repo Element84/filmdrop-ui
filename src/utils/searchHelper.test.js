@@ -19,7 +19,7 @@ import {
   buildSearchScenesParams,
   buildSearchAggregateParams
 } from './searchHelper'
-import * as mapHelper from './mapHelper'
+import * as mapLayers from './mapLayers'
 import { AddMosaicService } from '../services/post-mosaic-service'
 import * as getSearchService from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
@@ -37,8 +37,8 @@ vi.mock('../services/get-aggregate-service', () => ({
   AggregateSearchService: vi.fn()
 }))
 
-vi.mock('./mapHelper', async () => {
-  const actual = await vi.importActual('./mapHelper')
+vi.mock('./mapLayers', async () => {
+  const actual = await vi.importActual('./mapLayers')
   return {
     ...actual,
     hasMosaicImageLayer: vi.fn(() => true)
@@ -95,8 +95,8 @@ describe('searchHelper newSearch', () => {
     AddMosaicService.mockReset()
     AggregateSearchService.mockReset()
     vi.spyOn(getSearchService, 'fetchTopItemsForMosaic').mockReset()
-    mapHelper.hasMosaicImageLayer.mockReset()
-    mapHelper.hasMosaicImageLayer.mockReturnValue(true)
+    mapLayers.hasMosaicImageLayer.mockReset()
+    mapLayers.hasMosaicImageLayer.mockReturnValue(true)
   })
 
   it('creates a mosaic when there is no cache (mosaic view)', async () => {
@@ -167,7 +167,7 @@ describe('searchHelper newSearch', () => {
     AddMosaicService.mockClear()
     // Layer still present; first gate will miss (compareCount 100 ≠ cached 3),
     // second gate must carry the load.
-    mapHelper.hasMosaicImageLayer.mockReturnValue(true)
+    mapLayers.hasMosaicImageLayer.mockReturnValue(true)
 
     await newSearch({ viewMode: 'mosaic' })
 
@@ -194,7 +194,7 @@ describe('searchHelper newSearch', () => {
     )
 
     AddMosaicService.mockClear()
-    mapHelper.hasMosaicImageLayer.mockReturnValue(false)
+    mapLayers.hasMosaicImageLayer.mockReturnValue(false)
 
     await newSearch({ viewMode: 'mosaic' })
 

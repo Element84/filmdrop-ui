@@ -6,11 +6,8 @@ import {
   setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import ButtonGroup from '../ButtonGroup/ButtonGroup'
-import {
-  enableMapPolyDrawing,
-  clearLayer,
-  zoomToCollectionExtent
-} from '../../utils/mapHelper'
+import { enableMapPolyDrawing } from '../../utils/mapInteraction'
+import { clearLayer, zoomToCollectionExtent } from '../../utils/mapLayers'
 
 const AreaOfInterestSelector = () => {
   const dispatch = useDispatch()

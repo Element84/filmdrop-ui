@@ -5,7 +5,7 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
-export function GetMosaicBoundsService(mosaicURL) {
+export function GetMosaicBoundsService(mosaicURL, signal) {
   const contextLabel = 'Error Fetching Mosaicjson Tile Results'
   return new Promise(function (resolve, reject) {
     const requestHeaders = new Headers()
@@ -13,7 +13,8 @@ export function GetMosaicBoundsService(mosaicURL) {
     fetch(mosaicURL, {
       headers: requestHeaders,
       credentials:
-        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
+      signal
     })
       .then(async (response) => {
         if (response.ok) {

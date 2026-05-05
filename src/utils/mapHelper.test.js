@@ -6,7 +6,7 @@ import {
   clampAndRoundBbox,
   zoomToCollectionExtent,
   constructMosaicTilerParams
-} from './mapHelper'
+} from './mapLayers'
 import {
   setAppConfig,
   setSelectedVisualization

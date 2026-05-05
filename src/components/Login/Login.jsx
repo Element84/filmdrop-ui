@@ -4,6 +4,7 @@ import { AuthService } from '../../services/post-auth-service'
 import { useSelector } from 'react-redux'
 import { shouldApplyDocumentBranding } from '../../utils/themeHelper'
 import { resolveLogoUrl } from '../../utils/configBase'
+import { showApplicationAlert } from '../../utils/alertHelper'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -27,7 +28,10 @@ const Login = () => {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      await AuthService(username, password)
+      const result = await AuthService(username, password)
+      if (result?.error === true) {
+        showApplicationAlert('warning', 'Login Failed', 5000)
+      }
     } catch (error) {
       console.error('Login failed', error)
     } finally {

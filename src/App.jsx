@@ -13,12 +13,10 @@ import { InitializeAppFromConfig } from './utils/configHelper'
 import Login from './components/Login/Login'
 import { setAuthTokenExists, setCurrentTheme } from './redux/slices/mainSlice'
 import { initializeTheme, applyTheme } from './utils/themeHelper'
+import { showApplicationAlert } from './utils/alertHelper'
 import L from 'leaflet'
-import {
-  clickedFootprintLayerStyle,
-  clearLayer,
-  zoomToItemExtent
-} from './utils/mapHelper'
+import { clickedFootprintLayerStyle } from './utils/mapStyles'
+import { clearLayer, zoomToItemExtent } from './utils/mapLayers'
 import { LayoutProvider } from './contexts/LayoutContext'
 import { useUrlStateSync } from './hooks/useUrlStateSync'
 import { Outlet } from '@tanstack/react-router'
@@ -58,12 +56,27 @@ function App() {
   // token and does not need to live in Redux or local state.
   const showLogin = !!(_appConfig?.APP_TOKEN_AUTH_ENABLED && !_authTokenExists)
 
+  const getConfigLoadMessage = (normalizedError) => {
+    if (
+      normalizedError?.code === 'LEGACY_CONFIG_NOT_SUPPORTED' ||
+      normalizedError?.code === 'MIXED_CONFIG_NOT_SUPPORTED' ||
+      normalizedError?.code === 'INVALID_CONFIG_FORMAT'
+    ) {
+      return normalizedError?.details || 'Error Fetching Config File'
+    }
+    return 'Error Fetching Config File'
+  }
+
   // Effect 1 — one-time init: auth token, config load, version log.
   useEffect(() => {
     if (getAuthToken()) {
       dispatch(setAuthTokenExists(true))
     }
-    LoadConfigIntoStateService()
+    Promise.resolve(LoadConfigIntoStateService()).then((result) => {
+      if (result?.error === true) {
+        showApplicationAlert('error', getConfigLoadMessage(result), null)
+      }
+    })
     const version = import.meta.env?.VITE_APP_VERSION
     if (version) {
       console.log('Version: ' + version)
@@ -85,7 +98,25 @@ function App() {
       !_collectionsLoadError &&
       (!_collectionsData || _collectionsData.length === 0)
     ) {
-      GetCollectionsService()
+      Promise.resolve(GetCollectionsService()).then((result) => {
+        if (result?.error === true) {
+          if (result.status === 403) {
+            showApplicationAlert(
+              'error',
+              'STAC API returned 403. Bad Token OR needs STAC Auth Enabled in config.',
+              null,
+              true
+            )
+            return
+          }
+          showApplicationAlert('error', 'Error Fetching Collections')
+          return
+        }
+
+        if (result?.collectionsCount === 0) {
+          showApplicationAlert('error', 'Error: No Collections Found')
+        }
+      })
     }
 
     const { currentTheme, switchingEnabled } = initializeTheme(_appConfig)

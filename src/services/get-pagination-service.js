@@ -12,10 +12,11 @@ import {
 } from '../redux/slices/mainSlice'
 import {
   addDataToLayer,
-  footprintLayerStyle,
   clearLayer,
-  clearMapSelection
-} from '../utils/mapHelper'
+  clearMapSelection,
+  CLICKED_SCENE_IMAGE_LAYER
+} from '../utils/mapLayers'
+import { footprintLayerStyle } from '../utils/mapStyles'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
 import {
   normalizeStacErrorResponse,
@@ -29,7 +30,7 @@ import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
  * @param {string} pageUrl - The URL to fetch (next or prev link from STAC API)
  * @param {number} pageNumber - The page number being fetched
  */
-export async function FetchPageService(pageUrl, pageNumber) {
+export async function FetchPageService(pageUrl, pageNumber, signal) {
   const requestHeaders = buildStacRequestHeaders()
 
   // If currently viewing an item, navigate back to collection path
@@ -49,7 +50,8 @@ export async function FetchPageService(pageUrl, pageNumber) {
     const response = await fetch(pageUrl, {
       credentials:
         store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
-      headers: requestHeaders
+      headers: requestHeaders,
+      signal
     })
 
     if (!response.ok) {
@@ -64,7 +66,7 @@ export async function FetchPageService(pageUrl, pageNumber) {
     // Clear previous results and selection from map
     clearMapSelection()
     clearLayer('searchResultsLayer')
-    clearLayer('clickedSceneImageLayer')
+    clearLayer(CLICKED_SCENE_IMAGE_LAYER)
 
     store.dispatch(setSearchResults(json))
     store.dispatch(setMappedScenes(json.features || []))
@@ -86,16 +88,17 @@ export async function FetchPageService(pageUrl, pageNumber) {
       store.dispatch(setCurrentPage(pageNumber))
 
       // Update pagination history
-      const history = store.getState().mainSlice.paginationHistory
-      const existingPageIndex = history.findIndex((h) => h.page === pageNumber)
+      const history = store.getState().mainSlice.paginationHistory || []
+      const existingPageIndex = history.findIndex(
+        (entry) => entry.page === pageNumber
+      )
 
       if (existingPageIndex === -1) {
         // Add new page to history
         store.dispatch(
           addToPaginationHistory({ page: pageNumber, url: pageUrl })
         )
-      } else {
-        // Trim history to this page (going back)
+      } else if (existingPageIndex < history.length - 1) {
         store.dispatch(
           setPaginationHistory(history.slice(0, existingPageIndex + 1))
         )

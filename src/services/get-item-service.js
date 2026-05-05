@@ -25,7 +25,7 @@ import {
  * // Unknown collection — discovers it via search
  * const item = await GetItemService('S2A_17SNB_20230617_0_L2A')
  */
-export async function GetItemService(itemId, collectionId) {
+export async function GetItemService(itemId, collectionId, signal) {
   const appConfig = store.getState().mainSlice.appConfig
   const contextLabel = 'Error fetching STAC item'
 
@@ -38,7 +38,8 @@ export async function GetItemService(itemId, collectionId) {
   try {
     const response = await fetch(url, {
       credentials: appConfig.FETCH_CREDENTIALS || 'same-origin',
-      headers: requestHeaders
+      headers: requestHeaders,
+      signal
     })
 
     if (!response.ok) {

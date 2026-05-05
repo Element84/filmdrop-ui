@@ -7,7 +7,7 @@ import {
 import { Checkbox as MuiCheckbox } from '@mui/material'
 import './ViewSelector.css'
 import ButtonGroup from '../ButtonGroup/ButtonGroup'
-import { getCurrentMapZoomLevel } from '../../utils/mapHelper'
+import { getCurrentMapZoomLevel } from '../../utils/mapLayers'
 import { getCollectionConfig } from '../../utils/configHelper'
 import { DEFAULT_SCENE_MIN_ZOOM } from '../../constants/defaults'
 import { getActiveRouterOrNull } from '../../router-test-hooks'

@@ -2,9 +2,10 @@ import { store } from '../redux/store'
 import { setMappedScenes } from '../redux/slices/mainSlice'
 import {
   addDataToLayer,
-  footprintLayerStyle,
-  clearLayer
-} from '../utils/mapHelper'
+  clearLayer,
+  CLICKED_SCENE_IMAGE_LAYER
+} from '../utils/mapLayers'
+import { footprintLayerStyle } from '../utils/mapStyles'
 import { DEFAULT_MAX_SCENES_RENDERED } from '../constants/defaults'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 import {
@@ -29,7 +30,7 @@ async function fetchFeatures(url, abortSignal) {
     }
 
     const data = await response.json()
-    clearLayer('clickedSceneImageLayer')
+    clearLayer(CLICKED_SCENE_IMAGE_LAYER)
 
     const features = data.features || []
 

@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResult.css'
 import { useSelector } from 'react-redux'
-import { zoomToItemExtent } from '../../utils/mapHelper'
+import { zoomToItemExtent } from '../../utils/mapLayers'
 import ItemHeader from '../EnhancedDetails/ItemHeader.jsx'
 import VisualizationDropdown from '../VisualizationDropdown/VisualizationDropdown'
 

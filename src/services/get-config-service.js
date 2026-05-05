@@ -1,6 +1,5 @@
 import { store } from '../redux/store'
 import { setAppConfig } from '../redux/slices/mainSlice'
-import { showApplicationAlert } from '../utils/alertHelper'
 import {
   normalizeCollectionsConfig,
   applyConfigDefaults,
@@ -17,12 +16,13 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
-export async function LoadConfigIntoStateService() {
+export async function LoadConfigIntoStateService(signal) {
   const configUrl = `${resolveConfigUrl()}${getCacheBusterSuffix()}`
   const contextLabel = 'Error Fetching Config File'
 
-  await fetch(configUrl, {
-    cache: 'no-store'
+  return await fetch(configUrl, {
+    cache: 'no-store',
+    signal
   })
     .then(async (response) => {
       if (response.ok) {
@@ -48,25 +48,19 @@ export async function LoadConfigIntoStateService() {
       // Apply defaults for optional parameters
       const configWithDefaults = applyConfigDefaults(normalizedConfig)
       store.dispatch(setAppConfig(configWithDefaults))
+      return configWithDefaults
     })
     .catch((error) => {
       const normalizedError =
         error?.error === true
           ? error
           : normalizeStacNetworkError(error, contextLabel)
-      const message =
-        normalizedError?.code === 'LEGACY_CONFIG_NOT_SUPPORTED' ||
-        normalizedError?.code === 'MIXED_CONFIG_NOT_SUPPORTED' ||
-        normalizedError?.code === 'INVALID_CONFIG_FORMAT'
-          ? normalizedError.message
-          : contextLabel
-      // log full error for diagnosing client side errors if needed
-      console.error(message, normalizedError)
-      showApplicationAlert('error', message, null)
+      console.error(contextLabel, normalizedError)
+      return normalizedError
     })
 }
 
-export async function DoesFaviconExistService() {
+export async function DoesFaviconExistService(signal) {
   try {
     const response = await fetch(
       `${resolveFaviconUrl(
@@ -74,7 +68,8 @@ export async function DoesFaviconExistService() {
       )}${getCacheBusterSuffix()}`,
       {
         method: 'HEAD',
-        cache: 'no-store'
+        cache: 'no-store',
+        signal
       }
     )
 

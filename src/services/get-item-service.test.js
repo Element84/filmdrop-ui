@@ -197,6 +197,23 @@ describe('GetItemService with collectionId', () => {
         })
       )
     })
+
+    it('forwards AbortController signal when provided', async () => {
+      const controller = new AbortController()
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockItemResponse
+      })
+
+      await GetItemService(mockItemId, mockCollectionId, controller.signal)
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          signal: controller.signal
+        })
+      )
+    })
   })
 
   describe('success responses', () => {

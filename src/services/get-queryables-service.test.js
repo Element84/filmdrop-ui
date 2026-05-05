@@ -1,5 +1,10 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { resolveRefs } from './get-queryables-service'
+import {
+  resolveRefs,
+  GetCollectionQueryablesService
+} from './get-queryables-service'
+import { store } from '../redux/store'
+import { setAppConfig } from '../redux/slices/mainSlice'
 
 /**
  * Regression tests for the JSON-Schema $ref resolver.
@@ -147,5 +152,46 @@ describe('resolveRefs', () => {
     expect(await resolveRefs('plain')).toBe('plain')
     expect(await resolveRefs(42)).toBe(42)
     expect(fetchSpy).not.toHaveBeenCalled()
+  })
+})
+
+describe('GetCollectionQueryablesService signal forwarding', () => {
+  beforeEach(() => {
+    vi.clearAllMocks()
+    store.dispatch(
+      setAppConfig({
+        FETCH_CREDENTIALS: 'same-origin'
+      })
+    )
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ properties: {} })
+    })
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
+  it('forwards AbortController signal to queryables fetch', async () => {
+    const controller = new AbortController()
+    const collection = {
+      id: 'demo',
+      links: [
+        {
+          rel: 'http://www.opengis.net/def/rel/ogc/1.0/queryables',
+          href: 'https://stac-api.example.com/collections/demo/queryables'
+        }
+      ]
+    }
+
+    await GetCollectionQueryablesService(collection, controller.signal)
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://stac-api.example.com/collections/demo/queryables',
+      expect.objectContaining({
+        signal: controller.signal
+      })
+    )
   })
 })

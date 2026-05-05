@@ -13,7 +13,7 @@ import {
   clampAndRoundBbox,
   clearMapSelection,
   hasMosaicImageLayer
-} from './mapHelper'
+} from './mapLayers'
 import { getCollectionConfig, getEffectiveMosaicAsset } from './configHelper'
 import { convertDateForURL, convertDate } from './datetime'
 import * as getSearchService from '../services/get-search-service'

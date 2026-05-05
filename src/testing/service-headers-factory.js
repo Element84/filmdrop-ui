@@ -17,7 +17,8 @@ export function createHeaderValidationTest(
   serviceName,
   serviceFunction,
   mockResponse,
-  callArgs
+  callArgs,
+  options = {}
 ) {
   describe(`${serviceName} header validation`, () => {
     beforeEach(() => {
@@ -51,6 +52,10 @@ export function createHeaderValidationTest(
       const fetchOptions = callWithOptions[1]
       expect(fetchOptions.headers).toBeInstanceOf(Headers)
       expect(fetchOptions.credentials).toBe('same-origin')
+
+      if (options.expectedSignal) {
+        expect(fetchOptions.signal).toBe(options.expectedSignal)
+      }
     })
   })
 }

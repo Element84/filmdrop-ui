@@ -5,7 +5,7 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
-export async function GetCollectionAggregationsService(collectionId) {
+export async function GetCollectionAggregationsService(collectionId, signal) {
   const requestHeaders = buildStacRequestHeaders()
   const contextLabel = `Error Fetching Aggregations for: ${collectionId}`
 
@@ -18,7 +18,8 @@ export async function GetCollectionAggregationsService(collectionId) {
         credentials:
           store.getState().mainSlice.appConfig.FETCH_CREDENTIALS ||
           'same-origin',
-        headers: requestHeaders
+        headers: requestHeaders,
+        signal
       }
     )
 

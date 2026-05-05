@@ -12,7 +12,17 @@ import {
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapInteraction from '../../utils/mapInteraction'
+import * as mapLayers from '../../utils/mapLayers'
+
+vi.mock('../../utils/mapInteraction', () => ({
+  enableMapPolyDrawing: vi.fn()
+}))
+
+vi.mock('../../utils/mapLayers', () => ({
+  clearLayer: vi.fn(),
+  zoomToCollectionExtent: vi.fn()
+}))
 
 describe('AreaOfInterestSelector', () => {
   const user = userEvent.setup()
@@ -24,7 +34,6 @@ describe('AreaOfInterestSelector', () => {
     )
 
   beforeEach(() => {
-    vi.mock('../../utils/mapHelper')
     store.dispatch(setAppConfig(mockAppConfig))
     store.dispatch(setSearchGeojsonBoundary(null))
     store.dispatch(setIsDrawingEnabled(false))
@@ -51,7 +60,7 @@ describe('AreaOfInterestSelector', () => {
   describe('when Draw button clicked', () => {
     it('should enable drawing mode', async () => {
       const spyEnableMapPolyDrawing = vi.spyOn(
-        mapHelper,
+        mapInteraction,
         'enableMapPolyDrawing'
       )
       setup()
@@ -63,10 +72,10 @@ describe('AreaOfInterestSelector', () => {
 
     it('should clear existing boundary and enable drawing when geom exists', async () => {
       const spyEnableMapPolyDrawing = vi.spyOn(
-        mapHelper,
+        mapInteraction,
         'enableMapPolyDrawing'
       )
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
       store.dispatch(
         setSearchGeojsonBoundary({
           type: 'Polygon',
@@ -91,7 +100,7 @@ describe('AreaOfInterestSelector', () => {
     })
 
     it('should clear existing boundary and show upload modal when geom exists', async () => {
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
       store.dispatch(
         setSearchGeojsonBoundary({
           type: 'Polygon',
@@ -109,7 +118,7 @@ describe('AreaOfInterestSelector', () => {
 
   describe('when Map View button clicked', () => {
     it('should clear boundary and reset state', async () => {
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
       store.dispatch(
         setSearchGeojsonBoundary({
           type: 'Polygon',

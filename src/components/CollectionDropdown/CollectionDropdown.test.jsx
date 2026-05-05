@@ -10,8 +10,14 @@ import {
   setSelectedCollection
 } from '../../redux/slices/mainSlice'
 import { mockCollectionsData, mockAppConfig } from '../../testing/shared-mocks'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapLayers from '../../utils/mapLayers'
 import userEvent from '@testing-library/user-event'
+
+vi.mock('../../utils/mapLayers', () => ({
+  zoomToCollectionExtent: vi.fn(),
+  clearMapSelection: vi.fn(),
+  clearAllLayers: vi.fn()
+}))
 
 // Mock useNavigate so it simulates URL→Redux sync for selectedCollection
 const mockNavigate = vi.fn()
@@ -46,7 +52,6 @@ describe('CollectionDropdown', () => {
     )
 
   beforeEach(() => {
-    vi.mock('../../utils/mapHelper')
     store.dispatch(setAppConfig(mockAppConfig))
     store.dispatch(setCollectionsData(mockCollectionsData))
     store.dispatch(setSelectedCollection(null))
@@ -70,11 +75,11 @@ describe('CollectionDropdown', () => {
   describe('on collection changed', () => {
     it('should navigate to collection path and call functions to reset map', async () => {
       const spyZoomToCollectionExtent = vi.spyOn(
-        mapHelper,
+        mapLayers,
         'zoomToCollectionExtent'
       )
-      const spyClearMapSelection = vi.spyOn(mapHelper, 'clearMapSelection')
-      const spyClearAllLayers = vi.spyOn(mapHelper, 'clearAllLayers')
+      const spyClearMapSelection = vi.spyOn(mapLayers, 'clearMapSelection')
+      const spyClearAllLayers = vi.spyOn(mapLayers, 'clearAllLayers')
       setup()
       const select = screen.getByRole('combobox')
       await userEvent.click(select)

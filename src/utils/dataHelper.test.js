@@ -8,7 +8,7 @@ import {
   setScenesForCartLayer
 } from './dataHelper'
 import * as getLocalGridDataService from '../services/get-local-grid-data-json-service'
-import * as MapHelper from './mapHelper'
+import * as mapLayers from './mapLayers'
 
 describe('dataHelper', () => {
   describe('loadLocalGridData', () => {
@@ -94,7 +94,7 @@ describe('dataHelper', () => {
           cartItems: mockEmptyCart
         }
       })
-      const spyClearLayer = vi.spyOn(MapHelper, 'clearLayer')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
       setScenesForCartLayer()
       expect(spyClearLayer).toHaveBeenCalledWith('cartFootprintsLayer')
     })
@@ -105,7 +105,7 @@ describe('dataHelper', () => {
           cartItems: mockCartItems
         }
       })
-      const spyAddDataToLayer = vi.spyOn(MapHelper, 'addDataToLayer')
+      const spyAddDataToLayer = vi.spyOn(mapLayers, 'addDataToLayer')
       setScenesForCartLayer()
       expect(spyAddDataToLayer).toHaveBeenCalledWith(
         expect.objectContaining({

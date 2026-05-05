@@ -10,11 +10,18 @@ import {
   setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import * as alertHelper from '../../utils/alertHelper'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapInteraction from '../../utils/mapInteraction'
+import * as mapLayers from '../../utils/mapLayers'
 import * as searchHelper from '../../utils/searchHelper'
 
 vi.mock('../../utils/alertHelper')
-vi.mock('../../utils/mapHelper')
+vi.mock('../../utils/mapInteraction', () => ({
+  addUploadedGeojsonToMap: vi.fn(),
+  parseGeomUpload: vi.fn()
+}))
+vi.mock('../../utils/mapLayers', () => ({
+  clearLayer: vi.fn()
+}))
 vi.mock('../../utils/searchHelper')
 
 describe('UploadGeojsonModal', () => {
@@ -70,10 +77,12 @@ describe('UploadGeojsonModal', () => {
         'showApplicationAlert'
       )
       const spyaddUploadedGeojsonToMap = vi.spyOn(
-        mapHelper,
+        mapInteraction,
         'addUploadedGeojsonToMap'
       )
-      mapHelper.parseGeomUpload.mockRejectedValueOnce(new Error('Parse error'))
+      mapInteraction.parseGeomUpload.mockRejectedValueOnce(
+        new Error('Parse error')
+      )
 
       store.dispatch(setShowUploadGeojsonModal(true))
       setup()
@@ -110,10 +119,10 @@ describe('UploadGeojsonModal', () => {
         'showApplicationAlert'
       )
       const spyaddUploadedGeojsonToMap = vi.spyOn(
-        mapHelper,
+        mapInteraction,
         'addUploadedGeojsonToMap'
       )
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
@@ -149,8 +158,8 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('clears AOI and draw layer when newSearch returns structured error', async () => {
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
@@ -160,7 +169,7 @@ describe('UploadGeojsonModal', () => {
         code: 'BadRequest',
         details: 'fail'
       })
-      mapHelper.addUploadedGeojsonToMap.mockImplementationOnce(() => {
+      mapInteraction.addUploadedGeojsonToMap.mockImplementationOnce(() => {
         store.dispatch(
           setSearchGeojsonBoundary({
             type: 'Feature',
@@ -204,7 +213,7 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('should show inline STAC error and keep modal open when upload validation returns error object', async () => {
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce({
         error: true,
         code: 'BadRequest',
@@ -246,12 +255,12 @@ describe('UploadGeojsonModal', () => {
       expect(screen.getByTestId('testUploadGeojsonErrorDetails')).toHaveClass(
         'uploadGeojsonModalErrorDetails'
       )
-      expect(mapHelper.addUploadedGeojsonToMap).not.toHaveBeenCalled()
+      expect(mapInteraction.addUploadedGeojsonToMap).not.toHaveBeenCalled()
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
     })
 
     it('keeps error summary visible and renders long details in dedicated container', async () => {
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       const longDetails = `very long server message ${'x'.repeat(500)}`
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce({
         error: true,
@@ -297,7 +306,7 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('clears inline STAC errors when a new (still-accepted) file drop fails validation', async () => {
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce({
         error: true,
         code: 'BadRequest',
@@ -355,7 +364,7 @@ describe('UploadGeojsonModal', () => {
         resolveSearch = resolve
       })
 
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
@@ -403,7 +412,7 @@ describe('UploadGeojsonModal', () => {
         resolveSearch = resolve
       })
 
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
@@ -443,7 +452,7 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('clears upload AOI state when cancel is clicked', async () => {
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
       store.dispatch(
         setSearchGeojsonBoundary({
           type: 'Feature',

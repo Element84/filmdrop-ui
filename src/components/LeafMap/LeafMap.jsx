@@ -15,7 +15,11 @@ import { SearchControl, OpenStreetMapProvider } from 'leaflet-geosearch'
 import 'leaflet-geosearch/dist/geosearch.css'
 import markerIconUrl from '../../assets/marker-icon.png'
 import markerShadowUrl from '../../assets/marker-shadow.png'
-import { mapClickHandler, addReferenceLayersToMap } from '../../utils/mapHelper'
+import {
+  mapClickHandler,
+  addReferenceLayersToMap
+} from '../../utils/mapInteraction'
+import { CLICKED_SCENE_IMAGE_LAYER } from '../../utils/mapLayers'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
 import debounce from '../../utils/debounce'
 import {
@@ -214,7 +218,7 @@ const LeafMap = () => {
       map,
       clickedFootprintImageLayerRef,
       () => new L.FeatureGroup(),
-      'clickedSceneImageLayer'
+      CLICKED_SCENE_IMAGE_LAYER
     )
     ensureLayer(
       map,

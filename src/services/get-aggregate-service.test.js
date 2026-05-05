@@ -3,7 +3,7 @@ import { AggregateSearchService } from './get-aggregate-service'
 import { store } from '../redux/store'
 import { setAppConfig } from '../redux/slices/mainSlice'
 import * as searchHelper from '../utils/searchHelper'
-import * as mapHelper from '../utils/mapHelper'
+import * as mapLayers from '../utils/mapLayers'
 
 const DEFAULT_AGGREGATE_ERROR_SUMMARY =
   'Error Fetching Aggregate Search Results'
@@ -38,11 +38,11 @@ describe('AggregateSearchService error handling', () => {
     const layerOptions = { style: {} }
 
     vi.spyOn(searchHelper, 'mapHexGridFromJson').mockReturnValue(mappedGrid)
-    vi.spyOn(mapHelper, 'buildHexGridLayerOptions').mockReturnValue(
+    vi.spyOn(mapLayers, 'buildHexGridLayerOptions').mockReturnValue(
       layerOptions
     )
     const addDataSpy = vi
-      .spyOn(mapHelper, 'addDataToLayer')
+      .spyOn(mapLayers, 'addDataToLayer')
       .mockImplementation(() => {})
 
     global.fetch.mockResolvedValueOnce({

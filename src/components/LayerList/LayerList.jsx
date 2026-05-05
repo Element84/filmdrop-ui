@@ -3,7 +3,7 @@ import './LayerList.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { Checkbox } from '@mui/material'
 import { setReferenceLayers } from '../../redux/slices/mainSlice'
-import { toggleReferenceLayerVisibility } from '../../utils/mapHelper'
+import { toggleReferenceLayerVisibility } from '../../utils/mapInteraction'
 
 const LayerList = () => {
   const dispatch = useDispatch()

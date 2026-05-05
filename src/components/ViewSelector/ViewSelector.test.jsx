@@ -11,9 +11,9 @@ import {
   setAutoCenterOnItemChanged
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapLayers from '../../utils/mapLayers'
 
-vi.mock('../../utils/mapHelper', () => ({
+vi.mock('../../utils/mapLayers', () => ({
   getCurrentMapZoomLevel: vi.fn(() => 10)
 }))
 
@@ -34,7 +34,7 @@ describe('ViewSelector', () => {
     currentStore = result.store
 
     if (!skipMap) {
-      mapHelper.getCurrentMapZoomLevel.mockReturnValue(zoomLevel)
+      mapLayers.getCurrentMapZoomLevel.mockReturnValue(zoomLevel)
       mockMap = {
         on: vi.fn((event, callback) => {
           if (event === 'zoomend') {

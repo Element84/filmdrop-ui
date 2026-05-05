@@ -11,7 +11,8 @@ import {
   setTotalPages,
   setPaginationHistory
 } from '../redux/slices/mainSlice'
-import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
+import { addDataToLayer } from '../utils/mapLayers'
+import { footprintLayerStyle } from '../utils/mapStyles'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
 import { DEFAULT_API_MAX_ITEMS } from '../constants/defaults'
 import {

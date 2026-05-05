@@ -1,15 +1,20 @@
 import React from 'react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { screen, fireEvent } from '@testing-library/react'
+import { screen, fireEvent, waitFor } from '@testing-library/react'
 import { renderFilmDrop } from '../../testing/renderFilmDrop'
 import { createFilmDropStore } from '../../redux/store'
 import { setAppConfig } from '../../redux/slices/mainSlice'
 import Login from './Login'
 
 import { AuthService } from '../../services/post-auth-service'
+import { showApplicationAlert } from '../../utils/alertHelper'
 
 vi.mock('../../services/post-auth-service', () => ({
   AuthService: vi.fn().mockResolvedValue(undefined)
+}))
+
+vi.mock('../../utils/alertHelper', () => ({
+  showApplicationAlert: vi.fn()
 }))
 
 describe('Login', () => {
@@ -51,5 +56,30 @@ describe('Login', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: /login/i }))
     expect(AuthService).toHaveBeenCalledWith('alice', 'secret')
+  })
+
+  it('shows alert when AuthService returns normalized error', async () => {
+    AuthService.mockResolvedValueOnce({
+      error: true,
+      summary: 'Authentication Error',
+      details: 'Bad credentials'
+    })
+
+    mount()
+    fireEvent.change(screen.getByLabelText('Username:'), {
+      target: { value: 'alice' }
+    })
+    fireEvent.change(screen.getByLabelText('Password:'), {
+      target: { value: 'wrong' }
+    })
+    fireEvent.click(screen.getByRole('button', { name: /login/i }))
+
+    await waitFor(() => {
+      expect(showApplicationAlert).toHaveBeenCalledWith(
+        'warning',
+        'Login Failed',
+        5000
+      )
+    })
   })
 })

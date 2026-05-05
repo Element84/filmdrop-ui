@@ -11,7 +11,7 @@ import {
 } from '../../redux/slices/mainSlice'
 import PopupFooter from '../PopupFooter/PopupFooter.jsx'
 import { isSceneInCart } from '../../utils/dataHelper'
-import { debounceTitilerOverlay } from '../../utils/mapHelper'
+import { debounceTitilerOverlay } from '../../utils/mapLayers'
 import { useLayout } from '../../contexts/LayoutContext'
 import { EnhancedDetailsProvider } from '../../contexts/EnhancedDetailsContext'
 import EnhancedDetailsDisplay from '../EnhancedDetails/EnhancedDetailsDisplay.jsx'

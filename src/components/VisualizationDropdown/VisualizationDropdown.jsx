@@ -1,11 +1,19 @@
 import React, { useEffect, useMemo } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
-import { Select, MenuItem, OutlinedInput } from '@mui/material'
-import { Checkbox as MuiCheckbox } from '@mui/material'
+import {
+  Select,
+  MenuItem,
+  OutlinedInput,
+  Checkbox as MuiCheckbox
+} from '@mui/material'
 import { getCollectionVisualizations } from '../../utils/configHelper'
 import { useUrlNavigate } from '../../hooks/useUrlNavigate'
 import { setShowSceneOverlay } from '../../redux/slices/mainSlice'
-import { clearLayer, debounceTitilerOverlay } from '../../utils/mapHelper'
+import {
+  clearLayer,
+  debounceTitilerOverlay,
+  CLICKED_SCENE_IMAGE_LAYER
+} from '../../utils/mapLayers'
 import './VisualizationDropdown.css'
 
 const VisualizationDropdown = () => {
@@ -49,9 +57,10 @@ const VisualizationDropdown = () => {
       setViz(visualizationKeys[0])
     }
   }, [
-    selectedCollection,
     hasVisualizations,
+    selectedCollection,
     selectedVisualization,
+    setViz,
     visualizationKeys
   ])
 
@@ -67,7 +76,7 @@ const VisualizationDropdown = () => {
         debounceTitilerOverlay(currentPopupResult)
       }
     } else {
-      clearLayer('clickedSceneImageLayer')
+      clearLayer(CLICKED_SCENE_IMAGE_LAYER)
     }
   }
 
@@ -92,8 +101,12 @@ const VisualizationDropdown = () => {
             </MenuItem>
           ))}
         </Select>
-        <label className="VisualizationDropdown__checkbox">
+        <label
+          className="VisualizationDropdown__checkbox"
+          htmlFor="scene-overlay-checkbox"
+        >
           <MuiCheckbox
+            id="scene-overlay-checkbox"
             checked={showSceneOverlay}
             onChange={handleShowOnMapChange}
             size="small"

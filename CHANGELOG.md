@@ -83,6 +83,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Map utility internals were split into focused modules:
+  `src/utils/mapStyles.js`, `src/utils/mapLayers.js`, and
+  `src/utils/mapInteraction.js`, with `src/utils/mapHelper.js` kept as
+  a re-export barrel for existing imports.
+- Replaced remaining `clickedSceneImageLayer` literals with the shared
+  `CLICKED_SCENE_IMAGE_LAYER` constant to reduce layer-name drift.
 - `useUrlStateSync` — removed `dispatch` from the URL→Redux sync
   effect's dep array.
   Memoized callbacks (`fetchAndDisplayItem`, `clearItemSelection`)

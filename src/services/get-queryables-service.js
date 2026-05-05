@@ -50,7 +50,8 @@ export async function resolveRefs(schema, ctx) {
       } else {
         const response = await fetch(refUrl, {
           headers: ctx?.requestHeaders,
-          credentials: ctx?.fetchCredentials
+          credentials: ctx?.fetchCredentials,
+          signal: ctx?.fetchSignal
         })
         if (!response.ok) {
           throw new Error(`Failed to fetch ${refUrl}`)
@@ -83,7 +84,10 @@ export async function resolveRefs(schema, ctx) {
       return await resolveRefs(target, {
         visited: nextVisited,
         fetchCache,
-        depth: depth + 1
+        depth: depth + 1,
+        requestHeaders: ctx?.requestHeaders,
+        fetchCredentials: ctx?.fetchCredentials,
+        fetchSignal: ctx?.fetchSignal
       })
     } catch (error) {
       console.warn(`Failed to resolve $ref ${refUrl}:`, error)
@@ -106,7 +110,10 @@ export async function resolveRefs(schema, ctx) {
       await resolveRefs(value, {
         visited,
         fetchCache,
-        depth: depth + 1
+        depth: depth + 1,
+        requestHeaders: ctx?.requestHeaders,
+        fetchCredentials: ctx?.fetchCredentials,
+        fetchSignal: ctx?.fetchSignal
       })
     ])
   )
@@ -118,7 +125,7 @@ export async function resolveRefs(schema, ctx) {
  * @param {Object} collection - Collection object with id and links array
  * @returns {Promise<Object>} Queryables properties object or error object (fully dereferenced)
  */
-export function GetCollectionQueryablesService(collection) {
+export function GetCollectionQueryablesService(collection, signal) {
   const collectionId = collection.id
   const requestHeaders = buildStacRequestHeaders()
   const contextLabel = `Error fetching queryables for: ${collectionId}`
@@ -136,7 +143,8 @@ export function GetCollectionQueryablesService(collection) {
   return fetch(queryablesLink.href, {
     credentials:
       store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
-    headers: requestHeaders
+    headers: requestHeaders,
+    signal
   })
     .then(async (response) => {
       if (!response.ok) {
@@ -158,7 +166,8 @@ export function GetCollectionQueryablesService(collection) {
           'same-origin'
         const dereferenced = await resolveRefs(properties, {
           requestHeaders,
-          fetchCredentials: credentials
+          fetchCredentials: credentials,
+          fetchSignal: signal
         })
         return dereferenced
       } catch (refError) {

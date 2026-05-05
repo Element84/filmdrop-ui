@@ -2,17 +2,14 @@ import { store } from '../redux/store'
 import {
   setCollectionsData,
   setCollectionsLoadError,
-  setShowAppLoading,
-  setApplicationAlertMessage,
-  setShowApplicationAlert
+  setShowAppLoading
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
-import { showApplicationAlert } from '../utils/alertHelper'
 import { getCollections } from './stac-api'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
 import { normalizeStacNetworkError } from '../utils/stacErrorHelper'
 
-export async function GetCollectionsService(searchParams) {
+export async function GetCollectionsService(searchParams, signal) {
   const appConfig = store.getState().mainSlice.appConfig
   const requestHeaders = buildStacRequestHeaders()
 
@@ -20,7 +17,8 @@ export async function GetCollectionsService(searchParams) {
     // Use stac-api client to fetch collections
     const json = await getCollections(appConfig.STAC_API_URL, {
       headers: requestHeaders,
-      credentials: appConfig.FETCH_CREDENTIALS || 'same-origin'
+      credentials: appConfig.FETCH_CREDENTIALS || 'same-origin',
+      signal
     })
 
     const collections = appConfig.COLLECTIONS
@@ -33,16 +31,17 @@ export async function GetCollectionsService(searchParams) {
     }
 
     const formattedData = await buildCollectionsData(json)
-
-    if (Object.values(formattedData).length === 0) {
-      store.dispatch(setApplicationAlertMessage('Error: No Collections Found'))
-      store.dispatch(setShowApplicationAlert(true))
-    }
+    const collectionsCount = Object.values(formattedData).length
 
     store.dispatch(setCollectionsData(formattedData))
     store.dispatch(setCollectionsLoadError(false))
     store.dispatch(setShowAppLoading(false))
     loadLocalGridData()
+
+    return {
+      error: false,
+      collectionsCount
+    }
   } catch (error) {
     const normalizedError =
       error?.error === true
@@ -54,18 +53,9 @@ export async function GetCollectionsService(searchParams) {
     store.dispatch(setCollectionsLoadError(true))
     store.dispatch(setShowAppLoading(false))
 
-    if (normalizedError.status === 403) {
-      showApplicationAlert(
-        'error',
-        'STAC API returned 403. Bad Token OR needs STAC Auth Enabled in config.',
-        null,
-        true
-      )
-    } else {
-      showApplicationAlert('error', 'Error Fetching Collections')
-    }
     const message = 'Error Fetching Collections'
     // log full error for diagnosing client side errors if needed
     console.error(message, normalizedError)
+    return normalizedError
   }
 }

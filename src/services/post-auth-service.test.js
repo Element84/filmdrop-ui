@@ -4,20 +4,14 @@ import { AuthService, applyBasepathToRedirect } from './post-auth-service'
 import { store } from '../redux/store'
 import { setAppConfig } from '../redux/slices/mainSlice'
 
-const { setAuthTokenMock, showApplicationAlertMock, getActiveRouterMock } =
-  vi.hoisted(() => ({
-    setAuthTokenMock: vi.fn(),
-    showApplicationAlertMock: vi.fn(),
-    getActiveRouterMock: vi.fn()
-  }))
+const { setAuthTokenMock, getActiveRouterMock } = vi.hoisted(() => ({
+  setAuthTokenMock: vi.fn(),
+  getActiveRouterMock: vi.fn()
+}))
 
 vi.mock('../utils/authHelper', async (importOriginal) => {
   const actual = await importOriginal()
   return { ...actual, setAuthToken: setAuthTokenMock }
-})
-vi.mock('../utils/alertHelper', async (importOriginal) => {
-  const actual = await importOriginal()
-  return { ...actual, showApplicationAlert: showApplicationAlertMock }
 })
 vi.mock('../router', () => ({
   getActiveRouter: getActiveRouterMock
@@ -68,7 +62,6 @@ describe('AuthService', () => {
     window.location = originalLocation
     sessionStorage.clear()
     setAuthTokenMock.mockReset()
-    showApplicationAlertMock.mockReset()
   })
 
   it('stores token and dispatches success actions on 200', async () => {
@@ -82,7 +75,6 @@ describe('AuthService', () => {
     const dispatched = dispatchSpy.mock.calls.map(([a]) => a.type)
     expect(dispatched).toContain('mainSlice/setAuthTokenExists')
     expect(dispatched).toContain('mainSlice/clearApplicationAlert')
-    expect(showApplicationAlertMock).not.toHaveBeenCalled()
   })
 
   it('applies basepath to stored POST_AUTH_REDIRECT_URL and clears it', async () => {
@@ -134,17 +126,32 @@ describe('AuthService', () => {
     expect(locationHrefSetter).not.toHaveBeenCalled()
   })
 
+  it('forwards AbortController signal when provided', async () => {
+    const controller = new AbortController()
+    fetchSpy.mockResolvedValueOnce(
+      buildResponse({ body: { access_token: 'tok-123' } })
+    )
+
+    await AuthService('user', 'pass', controller.signal)
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://auth.example/login',
+      expect.objectContaining({
+        signal: controller.signal
+      })
+    )
+  })
+
   it('surfaces failure alert on network error', async () => {
     fetchSpy.mockRejectedValueOnce(new Error('network down'))
 
-    await AuthService('u', 'p')
+    const result = await AuthService('u', 'p')
 
     expect(setAuthTokenMock).not.toHaveBeenCalled()
-    expect(showApplicationAlertMock).toHaveBeenCalledWith(
-      'warning',
-      'Login Failed',
-      5000
-    )
+    expect(result).toMatchObject({
+      error: true,
+      summary: 'Authentication Error'
+    })
     const dispatched = dispatchSpy.mock.calls.map(([a]) => a.type)
     expect(dispatched).toContain('mainSlice/setAuthTokenExists')
   })
@@ -152,19 +159,23 @@ describe('AuthService', () => {
   it('treats non-OK response as auth failure', async () => {
     fetchSpy.mockResolvedValueOnce(buildResponse({ ok: false, body: {} }))
 
-    await AuthService('u', 'p')
+    const result = await AuthService('u', 'p')
 
     expect(setAuthTokenMock).not.toHaveBeenCalled()
-    expect(showApplicationAlertMock).toHaveBeenCalled()
+    expect(result?.error).toBe(true)
+    expect(result?.summary).toContain('Authentication Error')
   })
 
   it('treats missing access_token as auth failure', async () => {
     fetchSpy.mockResolvedValueOnce(buildResponse({ body: {} }))
 
-    await AuthService('u', 'p')
+    const result = await AuthService('u', 'p')
 
     expect(setAuthTokenMock).not.toHaveBeenCalled()
-    expect(showApplicationAlertMock).toHaveBeenCalled()
+    expect(result).toMatchObject({
+      error: true,
+      summary: 'Authentication Error'
+    })
   })
 })
 

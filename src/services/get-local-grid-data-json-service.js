@@ -6,11 +6,12 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
-export async function LoadLocalGridDataService(fileName) {
+export async function LoadLocalGridDataService(fileName, signal) {
   const configUrl = `${resolveDataUrl(fileName)}${getCacheBusterSuffix()}`
   const contextLabel = 'Error Fetching Local Grid Data'
   await fetch(configUrl, {
-    cache: 'no-store'
+    cache: 'no-store',
+    signal
   })
     .then(async (response) => {
       if (response.ok) {

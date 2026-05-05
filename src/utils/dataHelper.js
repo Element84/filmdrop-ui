@@ -2,11 +2,8 @@ import { GetCollectionQueryablesService } from '../services/get-queryables-servi
 import { GetCollectionAggregationsService } from '../services/get-aggregations-service'
 import { LoadLocalGridDataService } from '../services/get-local-grid-data-json-service'
 import { store } from '../redux/store'
-import {
-  cartFootprintLayerStyle,
-  addDataToLayer,
-  clearLayer
-} from './mapHelper'
+import { cartFootprintLayerStyle } from './mapStyles'
+import { addDataToLayer, clearLayer } from './mapLayers'
 
 export async function buildCollectionsData(collections) {
   for (const collection of collections.collections) {

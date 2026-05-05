@@ -13,10 +13,8 @@ import {
   setShowMapAttribution,
   setShowLayerList
 } from '../../../../redux/slices/mainSlice'
-import {
-  setMapZoomLevel,
-  disableMapPolyDrawing
-} from '../../../../utils/mapHelper'
+import { setMapZoomLevel } from '../../../../utils/mapLayers'
+import { disableMapPolyDrawing } from '../../../../utils/mapInteraction'
 import { getCollectionConfig } from '../../../../utils/configHelper'
 import LayerLegend from '../../../Legend/LayerLegend/LayerLegend'
 import { getBasemapConfig } from '../../../../utils/themeHelper'

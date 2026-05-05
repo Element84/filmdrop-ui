@@ -4,7 +4,6 @@ import {
   clearApplicationAlert
 } from '../redux/slices/mainSlice'
 import { setAuthToken } from '../utils/authHelper'
-import { showApplicationAlert } from '../utils/alertHelper'
 import { getActiveRouter } from '../router'
 import {
   normalizeStacErrorResponse,
@@ -52,7 +51,7 @@ export function applyBasepathToRedirect(url, basepath) {
   return normalizedBase + '/' + trimmed
 }
 
-export async function AuthService(username, password) {
+export async function AuthService(username, password, signal) {
   const AuthServiceURL = store.getState().mainSlice.appConfig.AUTH_URL
   const contextLabel = 'Authentication Error'
 
@@ -67,10 +66,11 @@ export async function AuthService(username, password) {
   const reqParams = {
     method: 'POST',
     headers: myHeaders,
-    body: urlencoded
+    body: urlencoded,
+    signal
   }
 
-  await fetch(`${AuthServiceURL}`, reqParams)
+  return await fetch(`${AuthServiceURL}`, reqParams)
     .then(async (response) => {
       if (response.ok) {
         return response.json()
@@ -105,8 +105,8 @@ export async function AuthService(username, password) {
         error?.error === true
           ? error
           : normalizeStacNetworkError(error, contextLabel)
-      showApplicationAlert('warning', 'Login Failed', 5000)
       // log full error for diagnosing client side errors if needed
       console.error(contextLabel, normalizedError)
+      return normalizedError
     })
 }

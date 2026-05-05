@@ -27,7 +27,8 @@ import {
   mockAppConfig
 } from '../../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
-import * as mapHelper from '../../../../utils/mapHelper'
+import * as mapLayers from '../../../../utils/mapLayers'
+import * as mapInteraction from '../../../../utils/mapInteraction'
 
 vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal()
@@ -232,7 +233,7 @@ describe('RightContent', () => {
     describe('on draw message close clicked', () => {
       it('should setIsDrawingEnabled to false in redux state and call disableMapPolyDrawing', async () => {
         const spyDisableMapPolyDrawing = vi.spyOn(
-          mapHelper,
+          mapInteraction,
           'disableMapPolyDrawing'
         )
         setup()
@@ -303,7 +304,7 @@ describe('RightContent', () => {
       it('should zoom in to match the redux zoom level if view mode is not mosaic', async () => {
         currentStore.dispatch(setShowZoomNotice(true))
         currentStore.dispatch(setZoomLevelNeeded(7))
-        const zoomSpy = vi.spyOn(mapHelper, 'setMapZoomLevel')
+        const zoomSpy = vi.spyOn(mapLayers, 'setMapZoomLevel')
         setup()
         const zoomButton = screen.getByText(/zoom in/i)
         await user.click(zoomButton)
@@ -313,7 +314,7 @@ describe('RightContent', () => {
         currentStore.dispatch(setShowZoomNotice(true))
         currentStore.dispatch(setZoomLevelNeeded(7))
         currentStore.dispatch(setViewMode('mosaic'))
-        const zoomSpy = vi.spyOn(mapHelper, 'setMapZoomLevel')
+        const zoomSpy = vi.spyOn(mapLayers, 'setMapZoomLevel')
         currentStore.dispatch(setAppConfig(mockAppConfig))
         setup()
         const zoomButton = screen.getByText(/zoom in/i)
@@ -325,7 +326,7 @@ describe('RightContent', () => {
     describe('on Cancel Draw Geom clicked', () => {
       it('should set isDrawingEnabled to false in redux and call disableMapPolyDrawing', async () => {
         const disableMapPloyDrawingSpy = vi.spyOn(
-          mapHelper,
+          mapInteraction,
           'disableMapPolyDrawing'
         )
         currentStore.dispatch(setAppConfig(mockAppConfig))

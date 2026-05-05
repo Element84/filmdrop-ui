@@ -2,6 +2,7 @@ import React from 'react'
 import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { act } from '@testing-library/react'
 import LeafMap from './LeafMap'
+import { CLICKED_SCENE_IMAGE_LAYER } from '../../utils/mapLayers'
 import { renderFilmDrop } from '../../testing/renderFilmDrop'
 import { createFilmDropStore } from '../../redux/store'
 import { setAppConfig } from '../../redux/slices/mainSlice'
@@ -100,7 +101,7 @@ vi.mock('leaflet-geosearch', () => ({
   OpenStreetMapProvider: class OpenStreetMapProvider {}
 }))
 
-vi.mock('../../utils/mapHelper', () => ({
+vi.mock('../../utils/mapInteraction', () => ({
   mapClickHandler: vi.fn(),
   addReferenceLayersToMap: vi.fn()
 }))
@@ -203,7 +204,7 @@ describe('LeafMap', () => {
       'searchResultsLayer',
       'cartFootprintsLayer',
       'clickedSceneHighlightLayer',
-      'clickedSceneImageLayer',
+      CLICKED_SCENE_IMAGE_LAYER,
       'mosaicImageLayer'
     ]
     dataLayerNames.forEach((name) => {

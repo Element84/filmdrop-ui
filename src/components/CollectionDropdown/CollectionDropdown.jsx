@@ -12,7 +12,7 @@ import {
   zoomToCollectionExtent,
   clearAllLayers,
   clearMapSelection
-} from '../../utils/mapHelper'
+} from '../../utils/mapLayers'
 import Dropdown from '../Dropdown/Dropdown'
 
 const CollectionDropdown = () => {

@@ -9,9 +9,9 @@ import {
 import { useDropzone } from 'react-dropzone'
 import {
   addUploadedGeojsonToMap,
-  clearLayer,
   parseGeomUpload
-} from '../../utils/mapHelper'
+} from '../../utils/mapInteraction'
+import { clearLayer } from '../../utils/mapLayers'
 import { newSearch, validateUploadedGeometry } from '../../utils/searchHelper'
 import { showApplicationAlert } from '../../utils/alertHelper'
 
