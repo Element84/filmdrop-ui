@@ -23,6 +23,8 @@ vi.mock('./hooks/useUrlStateSync', () => ({
 vi.mock('@tanstack/react-router', () => ({
   Outlet: () => null,
   useNavigate: () => vi.fn(),
+  useSearch: () => ({}),
+  useRouter: () => ({ state: { location: { search: {} } } }),
   useParams: () => ({}),
   createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
   createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),

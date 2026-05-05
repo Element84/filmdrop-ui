@@ -9,8 +9,8 @@ import './ViewSelector.css'
 import ButtonGroup from '../ButtonGroup/ButtonGroup'
 import { getCurrentMapZoomLevel } from '../../utils/mapHelper'
 import { getCollectionConfig } from '../../utils/configHelper'
-import { getActiveRouter } from '../../router'
 import { DEFAULT_SCENE_MIN_ZOOM } from '../../constants/defaults'
+import { getActiveRouterOrNull } from '../../router-test-hooks'
 
 const ViewSelector = () => {
   const dispatch = useDispatch()
@@ -27,18 +27,17 @@ const ViewSelector = () => {
   // Read the initial `view` search param from the active router once at
   // mount. urlHasView controls a one-time "skip default-view reset on
   // initial load" behavior below.
-  const initialUrlView = (() => {
-    const r = getActiveRouter()
-    return !!r?.state?.location?.search?.view
-  })()
+  const [initialUrlView] = useState(
+    () => !!getActiveRouterOrNull()?.state?.location?.search?.view
+  )
 
   const [currentZoom, setCurrentZoom] = useState(0)
   // Track whether user has manually selected a view mode.
   // Once true, auto-switching based on zoom level is disabled until
   // the collection changes. This preserves the user's explicit choice
   // while still resetting on collection change.
-  // Treat URL-provided view mode as a manual selection so auto-switch
-  // doesn't override it on initial load.
+  // URL-provided view is treated as a manual selection, so auto-zoom
+  // doesn't override it on page load.
   const urlHasView = useRef(initialUrlView)
   const [isManualSelection, setIsManualSelection] = useState(
     () => initialUrlView

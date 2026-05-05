@@ -1,4 +1,4 @@
-import { React, useEffect, useState, useRef, useMemo } from 'react'
+import { React, useCallback, useEffect, useRef, useMemo, useState } from 'react'
 import './LeafMap.css'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -7,6 +7,7 @@ import {
   setShowMapAttribution
 } from '../../redux/slices/mainSlice'
 import * as L from 'leaflet'
+import { useNavigate } from '@tanstack/react-router'
 import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
@@ -17,47 +18,58 @@ import markerShadowUrl from '../../assets/marker-shadow.png'
 import { mapClickHandler, addReferenceLayersToMap } from '../../utils/mapHelper'
 import { setScenesForCartLayer } from '../../utils/dataHelper'
 import debounce from '../../utils/debounce'
-import { getActiveRouter } from '../../router'
 import {
   DEFAULT_MAP_CENTER,
   DEFAULT_MAP_ZOOM,
   DEFAULT_MAP_ZOOM_MAX
 } from '../../constants/defaults'
 import { getBasemapConfig, getMapGeometryColors } from '../../utils/themeHelper'
+import { getActiveRouterOrNull } from '../../router-test-hooks'
 
 const LeafMap = () => {
   const dispatch = useDispatch()
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
-  // set map ref to itself with useRef
-  const mapRef = useRef()
+  const navigate = useNavigate()
 
-  const [map, setLocalMap] = useState({})
-  const [mapTouched, setmapTouched] = useState(false)
+  // set map ref to itself with useRef
+  const mapRef = useRef(null)
+  const [mapInstance, setMapInstance] = useState(null)
+  const mapInstanceRef = useRef(null)
+  const mapTouchedRef = useRef(false)
   const hasInitializedViewport = useRef(false)
+  const zoomControlRef = useRef(null)
+  const searchControlRef = useRef(null)
+  const referenceLayerGroupRef = useRef(null)
+  const resultFootprintsRef = useRef(null)
+  const cartFootprintsRef = useRef(null)
+  const clickedFootprintsHighlightRef = useRef(null)
+  const clickedFootprintImageLayerRef = useRef(null)
+  const mosaicImageLayerRef = useRef(null)
+  const drawBoundsRef = useRef(null)
 
   // Mount-only snapshot: MapContainer reads center/zoom once on mount,
-  // so adding deps here would be silently ineffective. Runtime URL ↔ map
-  // sync happens via the `moveend` handler below (replace: true).
-  const initialPosition = useMemo(() => {
-    const search = getActiveRouter().state.location.search
+  // so this value should not be reactive. Runtime URL ↔ map sync happens
+  // via the `moveend` handler below (replace: true).
+  const [initialPosition] = useState(() => {
+    const initialSearch = getActiveRouterOrNull()?.state?.location?.search || {}
     let center = _appConfig.MAP_CENTER || DEFAULT_MAP_CENTER
     // Ensure the initial zoom fills the viewport vertically so tiles
     // are pre-loaded behind the loading cover (no blank bands on reveal).
     const minZoom = Math.ceil(Math.log2(window.innerHeight / 256))
     let zoom = Math.max(_appConfig.MAP_ZOOM || DEFAULT_MAP_ZOOM, minZoom)
-    if (search.z != null) {
-      zoom = Math.max(Number(search.z), minZoom)
+    if (initialSearch.z != null) {
+      zoom = Math.max(Number(initialSearch.z), minZoom)
     }
-    if (search.c) {
-      const parts = String(search.c).split(',').map(Number)
+    if (initialSearch.c) {
+      const parts = String(initialSearch.c).split(',').map(Number)
       if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
         center = parts
       }
     }
     return { center, zoom }
-  }, [])
+  })
 
   const mapMarkerIcon = useMemo(
     () =>
@@ -84,179 +96,241 @@ const LeafMap = () => {
     [mapMarkerIcon]
   )
 
-  useEffect(() => {
-    if (mapRef) {
-      setLocalMap(mapRef.current)
-    }
-  }, [mapRef.current])
+  const handleMapRef = useCallback((map) => {
+    mapRef.current = map
+    setMapInstance(map || null)
+  }, [])
 
   useEffect(() => {
     setScenesForCartLayer()
   }, [_cartItems])
 
+  const ensureLayer = (map, ref, createLayer, layerName) => {
+    if (!ref.current) {
+      ref.current = createLayer()
+      ref.current.layer_name = layerName
+    }
+    ref.current.addTo(map)
+    return ref.current
+  }
+
+  const removeLayer = (map, ref, { clear = false } = {}) => {
+    if (!ref.current) return
+    if (clear && typeof ref.current.clearLayers === 'function') {
+      ref.current.clearLayers()
+    }
+    try {
+      map.removeLayer(ref.current)
+    } catch {
+      // map already destroyed (e.g. during test cleanup)
+    }
+  }
+
   useEffect(() => {
-    if (map && Object.keys(map).length) {
-      // override position of zoom controls (tracked below for cleanup)
-      const zoomControl = L.control.zoom({
+    const map = mapInstance
+    if (!map || mapInstanceRef.current === map) return
+    mapInstanceRef.current = map
+
+    // override position of zoom controls (tracked below for cleanup)
+    if (!zoomControlRef.current) {
+      zoomControlRef.current = L.control.zoom({
         position: 'topleft'
       })
-      zoomControl.addTo(map)
-      // add geosearch/geocoder to map
-      map.addControl(searchControl)
+    }
+    zoomControlRef.current.addTo(map)
 
-      // setup custom panes for results — guard each against duplicate
-      // creation when the effect re-fires.
-      const ensurePane = (name, zIndex, pointerEvents) => {
-        if (!map.getPane(name)) {
-          map.createPane(name)
-        }
-        const pane = map.getPane(name)
-        pane.style.zIndex = zIndex
-        if (pointerEvents !== undefined) {
-          pane.style.pointerEvents = pointerEvents
-        }
+    if (!searchControlRef.current) {
+      searchControlRef.current = searchControl
+    }
+    // add geosearch/geocoder to map
+    map.addControl(searchControlRef.current)
+
+    // setup custom panes for results — guard each against duplicate
+    // creation when the effect re-fires.
+    const ensurePane = (name, zIndex, pointerEvents) => {
+      if (!map.getPane(name)) {
+        map.createPane(name)
       }
-      ensurePane('searchResults', 600)
-      ensurePane('imagery', 650, 'none')
-      ensurePane('drawPane', 700)
-
-      // override existing panes for draw controls
-      map.getPane('overlayPane').style.zIndex = 700
-      map.getPane('markerPane').style.zIndex = 700
-
-      // setup max map bounds
-      const southWest = L.latLng(-90, -180)
-      const northEast = L.latLng(90, 180)
-      const bounds = L.latLngBounds(southWest, northEast)
-      map.setMaxBounds(bounds)
-
-      const onDrag = function () {
-        map.panInsideBounds(bounds, { animate: false })
-      }
-      map.on('drag', onDrag)
-
-      // set up map layers
-      const referenceLayerGroup = L.layerGroup().addTo(map)
-      referenceLayerGroup.layer_name = 'referenceLayerGroup'
-
-      const resultFootprintsInit = new L.FeatureGroup()
-      resultFootprintsInit.addTo(map)
-      resultFootprintsInit.layer_name = 'searchResultsLayer'
-
-      const cartFootprintsInit = new L.FeatureGroup()
-      cartFootprintsInit.addTo(map)
-      cartFootprintsInit.layer_name = 'cartFootprintsLayer'
-      cartFootprintsInit.eachLayer(function (layer) {
-        layer.on('mouseover', function (e) {
-          map.getContainer().style.cursor = 'default'
-        })
-        layer.on('mouseout', function (e) {
-          map.getContainer().style.cursor = ''
-        })
-      })
-
-      const clickedFootprintsHighlightInit = new L.FeatureGroup()
-      clickedFootprintsHighlightInit.addTo(map)
-      clickedFootprintsHighlightInit.layer_name = 'clickedSceneHighlightLayer'
-
-      const clickedFootprintImageLayerInit = new L.FeatureGroup()
-      clickedFootprintImageLayerInit.addTo(map)
-      clickedFootprintImageLayerInit.layer_name = 'clickedSceneImageLayer'
-
-      const mosaicImageLayerInit = new L.FeatureGroup()
-      mosaicImageLayerInit.addTo(map)
-      mosaicImageLayerInit.layer_name = 'mosaicImageLayer'
-
-      const drawBounds = new L.FeatureGroup()
-      drawBounds.pane = 'drawPane'
-      drawBounds.addTo(map)
-      drawBounds.layer_name = 'drawBoundsLayer'
-
-      // eslint-disable-next-line no-new
-      new L.Control.Draw({
-        edit: {
-          featureGroup: drawBounds
-        }
-      })
-
-      const mapColors = getMapGeometryColors()
-      const drawPolygonHandler = new L.Draw.Polygon(map, {
-        shapeOptions: { color: mapColors.aoiBoundary }
-      })
-
-      dispatch(setMapDrawPolygonHandler(drawPolygonHandler))
-
-      // set up map events
-      const onZoomEnd = function () {
-        if (!mapTouched) {
-          setmapTouched(true)
-          dispatch(setShowMapAttribution(false))
-        }
-      }
-      map.on('zoomend', onZoomEnd)
-
-      map.on('click', mapClickHandler)
-
-      const onMouseDown = function () {
-        if (!mapTouched) {
-          setmapTouched(true)
-          dispatch(setShowMapAttribution(false))
-        }
-      }
-      map.on('mousedown', onMouseDown)
-
-      // Sync map viewport to URL (debounced)
-      const syncViewportToUrl = debounce(() => {
-        // Skip syncing the initial viewport to avoid interfering with URL-based item zoom
-        if (!hasInitializedViewport.current) {
-          hasInitializedViewport.current = true
-          return
-        }
-        try {
-          const center = map.getCenter()
-          const zoom = map.getZoom()
-          getActiveRouter().navigate({
-            search: (prev) => ({
-              ...prev,
-              z: Math.round(zoom),
-              c: `${center.lat.toFixed(4)},${center.lng.toFixed(4)}`
-            }),
-            replace: true
-          })
-        } catch {
-          // Map may have been destroyed (e.g. during test cleanup)
-        }
-      }, 300)
-      map.on('moveend', syncViewportToUrl)
-
-      // push map into redux state
-      dispatch(setMap(map))
-
-      addReferenceLayersToMap()
-
-      return () => {
-        syncViewportToUrl.cancel()
-        map.off('moveend', syncViewportToUrl)
-        map.off('drag', onDrag)
-        map.off('zoomend', onZoomEnd)
-        map.off('click', mapClickHandler)
-        map.off('mousedown', onMouseDown)
-        try {
-          map.removeControl(zoomControl)
-          map.removeControl(searchControl)
-        } catch {
-          // map already destroyed (e.g. during test cleanup)
-        }
+      const pane = map.getPane(name)
+      pane.style.zIndex = zIndex
+      if (pointerEvents !== undefined) {
+        pane.style.pointerEvents = pointerEvents
       }
     }
-  }, [map])
+    ensurePane('searchResults', 600)
+    ensurePane('imagery', 650, 'none')
+    ensurePane('drawPane', 700)
+
+    // override existing panes for draw controls
+    map.getPane('overlayPane').style.zIndex = 700
+    map.getPane('markerPane').style.zIndex = 700
+
+    // setup max map bounds
+    const southWest = L.latLng(-90, -180)
+    const northEast = L.latLng(90, 180)
+    const bounds = L.latLngBounds(southWest, northEast)
+    map.setMaxBounds(bounds)
+
+    const onDrag = function () {
+      map.panInsideBounds(bounds, { animate: false })
+    }
+    map.on('drag', onDrag)
+
+    // set up map layers
+    ensureLayer(
+      map,
+      referenceLayerGroupRef,
+      () => L.layerGroup(),
+      'referenceLayerGroup'
+    )
+    ensureLayer(
+      map,
+      resultFootprintsRef,
+      () => new L.FeatureGroup(),
+      'searchResultsLayer'
+    )
+    ensureLayer(
+      map,
+      cartFootprintsRef,
+      () => new L.FeatureGroup(),
+      'cartFootprintsLayer'
+    )
+    cartFootprintsRef.current.eachLayer(function (layer) {
+      layer.on('mouseover', function () {
+        map.getContainer().style.cursor = 'default'
+      })
+      layer.on('mouseout', function () {
+        map.getContainer().style.cursor = ''
+      })
+    })
+
+    ensureLayer(
+      map,
+      clickedFootprintsHighlightRef,
+      () => new L.FeatureGroup(),
+      'clickedSceneHighlightLayer'
+    )
+    ensureLayer(
+      map,
+      clickedFootprintImageLayerRef,
+      () => new L.FeatureGroup(),
+      'clickedSceneImageLayer'
+    )
+    ensureLayer(
+      map,
+      mosaicImageLayerRef,
+      () => new L.FeatureGroup(),
+      'mosaicImageLayer'
+    )
+    ensureLayer(
+      map,
+      drawBoundsRef,
+      () => new L.FeatureGroup(),
+      'drawBoundsLayer'
+    )
+    drawBoundsRef.current.pane = 'drawPane'
+
+    // eslint-disable-next-line no-new
+    new L.Control.Draw({
+      edit: {
+        featureGroup: drawBoundsRef.current
+      }
+    })
+
+    const mapColors = getMapGeometryColors()
+    const drawPolygonHandler = new L.Draw.Polygon(map, {
+      shapeOptions: { color: mapColors.aoiBoundary }
+    })
+
+    dispatch(setMapDrawPolygonHandler(drawPolygonHandler))
+
+    // set up map events
+    const onZoomEnd = function () {
+      if (!mapTouchedRef.current) {
+        mapTouchedRef.current = true
+        dispatch(setShowMapAttribution(false))
+      }
+    }
+    map.on('zoomend', onZoomEnd)
+
+    map.on('click', mapClickHandler)
+
+    const onMouseDown = function () {
+      if (!mapTouchedRef.current) {
+        mapTouchedRef.current = true
+        dispatch(setShowMapAttribution(false))
+      }
+    }
+    map.on('mousedown', onMouseDown)
+
+    // Sync map viewport to URL (debounced)
+    const syncViewportToUrl = debounce(() => {
+      // Skip syncing the initial viewport to avoid interfering with URL-based item zoom
+      if (!hasInitializedViewport.current) {
+        hasInitializedViewport.current = true
+        return
+      }
+      try {
+        const center = map.getCenter()
+        const zoom = map.getZoom()
+        navigate({
+          search: (prev) => ({
+            ...prev,
+            z: Math.round(zoom),
+            c: `${center.lat.toFixed(4)},${center.lng.toFixed(4)}`
+          }),
+          replace: true
+        })
+      } catch {
+        // Map may have been destroyed (e.g. during test cleanup)
+      }
+    }, 300)
+    map.on('moveend', syncViewportToUrl)
+
+    // push map into redux state
+    dispatch(setMap(map))
+
+    addReferenceLayersToMap()
+
+    return () => {
+      syncViewportToUrl.cancel()
+      map.off('moveend', syncViewportToUrl)
+      map.off('drag', onDrag)
+      map.off('zoomend', onZoomEnd)
+      map.off('click', mapClickHandler)
+      map.off('mousedown', onMouseDown)
+
+      removeLayer(map, drawBoundsRef, { clear: true })
+      removeLayer(map, mosaicImageLayerRef)
+      removeLayer(map, clickedFootprintImageLayerRef)
+      removeLayer(map, clickedFootprintsHighlightRef)
+      removeLayer(map, cartFootprintsRef)
+      removeLayer(map, resultFootprintsRef)
+      removeLayer(map, referenceLayerGroupRef, { clear: true })
+
+      try {
+        if (zoomControlRef.current) {
+          map.removeControl(zoomControlRef.current)
+        }
+        if (searchControlRef.current) {
+          map.removeControl(searchControlRef.current)
+        }
+      } catch {
+        // map already destroyed (e.g. during test cleanup)
+      }
+
+      mapInstanceRef.current = null
+      mapTouchedRef.current = false
+      hasInitializedViewport.current = false
+    }
+  }, [dispatch, mapInstance, navigate, searchControl])
 
   return (
     <div className="LeafMap" data-testid="LeafMap">
       {/* this sets up the base of the map component and a few default params */}
       <MapContainer
         className="mainMap"
-        ref={mapRef}
+        ref={handleMapRef}
         center={initialPosition.center}
         zoom={initialPosition.zoom}
         scrollWheelZoom={true}

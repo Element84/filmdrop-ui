@@ -1,10 +1,10 @@
 import { describe, vi } from 'vitest'
 import React from 'react'
-import { render, screen } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 import RightContent from './RightContent'
-import { Provider } from 'react-redux'
-import { store } from '../../../../redux/store'
+import { createFilmDropStore } from '../../../../redux/store'
 import { LayoutProvider } from '../../../../contexts/LayoutContext'
+import { renderFilmDrop } from '../../../../testing/renderFilmDrop'
 import {
   setSearchResults,
   setIsDrawingEnabled,
@@ -29,20 +29,33 @@ import {
 import userEvent from '@testing-library/user-event'
 import * as mapHelper from '../../../../utils/mapHelper'
 
+vi.mock('@tanstack/react-router', async (importOriginal) => {
+  const actual = await importOriginal()
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+    useSearch: () => ({})
+  }
+})
+
 describe('RightContent', () => {
   const user = userEvent.setup()
-  const setup = () =>
-    render(
-      <Provider store={store}>
-        <LayoutProvider>
-          <RightContent />
-        </LayoutProvider>
-      </Provider>
+  let currentStore
+
+  const setup = () => {
+    return renderFilmDrop(
+      <LayoutProvider>
+        <RightContent />
+      </LayoutProvider>,
+      {
+        store: currentStore
+      }
     )
+  }
 
   beforeEach(() => {
-    store.dispatch(setAppConfig(mockAppConfig))
-    vi.mock('../../../../utils/mapHelper')
+    currentStore = createFilmDropStore()
+    currentStore.dispatch(setAppConfig(mockAppConfig))
   })
   afterEach(() => {
     vi.resetAllMocks()
@@ -50,7 +63,7 @@ describe('RightContent', () => {
 
   describe('on render', () => {
     it('should position using left offset when RIGHT_SIDEBAR_ENABLED is false', () => {
-      store.dispatch(
+      currentStore.dispatch(
         setAppConfig({
           ...mockAppConfig,
           RIGHT_SIDEBAR_ENABLED: false
@@ -63,7 +76,7 @@ describe('RightContent', () => {
     })
 
     it('should position using right offset when RIGHT_SIDEBAR_ENABLED is true', () => {
-      store.dispatch(
+      currentStore.dispatch(
         setAppConfig({
           ...mockAppConfig,
           RIGHT_SIDEBAR_ENABLED: true
@@ -84,7 +97,7 @@ describe('RightContent', () => {
     })
     it('should not render action button if ACTION_BUTTON not set in config', () => {
       const { ACTION_BUTTON, ...mockAppConfigNoAction } = mockAppConfig
-      store.dispatch(setAppConfig(mockAppConfigNoAction))
+      currentStore.dispatch(setAppConfig(mockAppConfigNoAction))
       setup()
       expect(
         screen.queryByRole('button', {
@@ -93,20 +106,22 @@ describe('RightContent', () => {
       ).not.toBeInTheDocument()
     })
     it('should render Legend if geojsonBoundary set in redux', () => {
-      store.dispatch(
+      currentStore.dispatch(
         setSearchGeojsonBoundary({ type: 'Point', coordinates: [0, 0] })
       )
       setup()
       expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
     })
     it('should render Legend if searchType and searchResults set in redux', () => {
-      store.dispatch(setSearchType('hex'))
-      store.dispatch(setSearchResults({ type: 'Point', coordinates: [0, 0] }))
+      currentStore.dispatch(setSearchType('hex'))
+      currentStore.dispatch(
+        setSearchResults({ type: 'Point', coordinates: [0, 0] })
+      )
       setup()
       expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
     })
     it('should render Legend if cartItems has items set in redux', () => {
-      store.dispatch(setCartItems([mockSceneSearchResult]))
+      currentStore.dispatch(setCartItems([mockSceneSearchResult]))
       setup()
       expect(screen.queryByTestId('testLayerLegend')).toBeInTheDocument()
     })
@@ -115,66 +130,68 @@ describe('RightContent', () => {
       expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
     })
     it('should not render Legend if searchType not set in redux', () => {
-      store.dispatch(setSearchResults({ type: 'Point', coordinates: [0, 0] }))
+      currentStore.dispatch(
+        setSearchResults({ type: 'Point', coordinates: [0, 0] })
+      )
       setup()
       expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
     })
     it('should not render Legend if searchResults not set in redux', () => {
-      store.dispatch(setSearchType('hex'))
+      currentStore.dispatch(setSearchType('hex'))
       setup()
       expect(screen.queryByTestId('testLayerLegend')).not.toBeInTheDocument()
     })
     it('should render loading animation when searchLoading is true', async () => {
-      store.dispatch(setSearchLoading(true))
-      store.dispatch(setAppConfig(mockAppConfig))
+      currentStore.dispatch(setSearchLoading(true))
+      currentStore.dispatch(setAppConfig(mockAppConfig))
       setup()
       expect(
         screen.queryByTestId('testsearchLoadingAnimation')
       ).toBeInTheDocument()
     })
     it('should not render loading animation when searchLoading is false', async () => {
-      store.dispatch(setSearchLoading(false))
-      store.dispatch(setAppConfig(mockAppConfig))
+      currentStore.dispatch(setSearchLoading(false))
+      currentStore.dispatch(setAppConfig(mockAppConfig))
       setup()
       expect(
         screen.queryByTestId('testsearchLoadingAnimation')
       ).not.toBeInTheDocument()
     })
     it('should render loading animation when imageOverlay loading is true', async () => {
-      store.dispatch(setImageOverlayLoading(true))
-      store.dispatch(setAppConfig(mockAppConfig))
+      currentStore.dispatch(setImageOverlayLoading(true))
+      currentStore.dispatch(setAppConfig(mockAppConfig))
       setup()
       expect(
         screen.queryByTestId('test_loadingImageryOverlay')
       ).toBeInTheDocument()
     })
     it('should not render loading animation when imageOverlay loading is false', async () => {
-      store.dispatch(setImageOverlayLoading(false))
-      store.dispatch(setAppConfig(mockAppConfig))
+      currentStore.dispatch(setImageOverlayLoading(false))
+      currentStore.dispatch(setAppConfig(mockAppConfig))
       setup()
       expect(
         screen.queryByTestId('test_loadingImageryOverlay')
       ).not.toBeInTheDocument()
     })
     it('should render application loading animation when showAppLoading loading is true', async () => {
-      store.dispatch(setShowAppLoading(true))
-      store.dispatch(setAppName('Test App'))
+      currentStore.dispatch(setShowAppLoading(true))
+      currentStore.dispatch(setAppName('Test App'))
       setup()
       const container = screen.queryByTestId('test_applicationLoadingAnimation')
       expect(container).toBeInTheDocument()
       expect(container).toHaveTextContent(/loading test app/i)
     })
     it('should not render application loading animation when showAppLoading loading is false', async () => {
-      store.dispatch(setAppConfig(mockAppConfig))
-      store.dispatch(setShowAppLoading(false))
-      store.dispatch(setAppName('Test App'))
+      currentStore.dispatch(setAppConfig(mockAppConfig))
+      currentStore.dispatch(setShowAppLoading(false))
+      currentStore.dispatch(setAppName('Test App'))
       setup()
       expect(
         screen.queryByTestId('test_applicationLoadingAnimation')
       ).not.toBeInTheDocument()
     })
     it('should render zoom notice if showZoomNotice set to true in redux', () => {
-      store.dispatch(setShowZoomNotice(true))
+      currentStore.dispatch(setShowZoomNotice(true))
       setup()
       expect(
         screen.queryByText(/images are not visible at this zoom level\./i)
@@ -189,24 +206,24 @@ describe('RightContent', () => {
   })
   describe('when isDrawingEnabled is true', () => {
     beforeEach(() => {
-      store.dispatch(setIsDrawingEnabled(true))
+      currentStore.dispatch(setIsDrawingEnabled(true))
     })
     it('should not show scene message when drawing message is showing', () => {
-      store.dispatch(setSearchResults(mockSceneSearchResult))
+      currentStore.dispatch(setSearchResults(mockSceneSearchResult))
       setup()
       expect(
         screen.queryByTestId('testShowingScenesMessage')
       ).not.toBeInTheDocument()
     })
     it('should not show grid aggregate messages when drawing message is showing', () => {
-      store.dispatch(setSearchResults(mockGridAggregateSearchResult))
+      currentStore.dispatch(setSearchResults(mockGridAggregateSearchResult))
       setup()
       expect(
         screen.queryByTestId('testShowingAggregatedMessage')
       ).not.toBeInTheDocument()
     })
     it('should not show hex aggregate messages when drawing message is showing', () => {
-      store.dispatch(setSearchResults(mockHexAggregateSearchResult))
+      currentStore.dispatch(setSearchResults(mockHexAggregateSearchResult))
       setup()
       expect(
         screen.queryByTestId('testShowingAggregatedMessage')
@@ -219,37 +236,37 @@ describe('RightContent', () => {
           'disableMapPolyDrawing'
         )
         setup()
-        expect(store.getState().mainSlice.isDrawingEnabled).toBeTruthy()
+        expect(currentStore.getState().mainSlice.isDrawingEnabled).toBeTruthy()
         await user.click(
           screen.getByRole('button', {
             name: /cancel/i
           })
         )
-        expect(store.getState().mainSlice.isDrawingEnabled).toBeFalsy()
+        expect(currentStore.getState().mainSlice.isDrawingEnabled).toBeFalsy()
         expect(spyDisableMapPolyDrawing).toHaveBeenCalledOnce()
       })
     })
   })
   describe('when isDrawingEnabled is false', () => {
     it('should show scene messages when not drawing', () => {
-      store.dispatch(setIsDrawingEnabled(false))
-      store.dispatch(setSearchResults(mockSceneSearchResult))
+      currentStore.dispatch(setIsDrawingEnabled(false))
+      currentStore.dispatch(setSearchResults(mockSceneSearchResult))
       setup()
       expect(
         screen.queryByTestId('testShowingScenesMessage')
       ).toBeInTheDocument()
     })
     it('should show grid aggregate messages when not drawing', () => {
-      store.dispatch(setIsDrawingEnabled(false))
-      store.dispatch(setSearchResults(mockGridAggregateSearchResult))
+      currentStore.dispatch(setIsDrawingEnabled(false))
+      currentStore.dispatch(setSearchResults(mockGridAggregateSearchResult))
       setup()
       expect(
         screen.queryByTestId('testShowingAggregatedMessage')
       ).toBeInTheDocument()
     })
     it('should show hex aggregate messages when not drawing', () => {
-      store.dispatch(setIsDrawingEnabled(false))
-      store.dispatch(setSearchResults(mockHexAggregateSearchResult))
+      currentStore.dispatch(setIsDrawingEnabled(false))
+      currentStore.dispatch(setSearchResults(mockHexAggregateSearchResult))
       setup()
       expect(
         screen.queryByTestId('testShowingAggregatedMessage')
@@ -269,7 +286,7 @@ describe('RightContent', () => {
             url: mockActionBtnUrl
           }
         }
-        store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
+        currentStore.dispatch(setAppConfig(mockAppConfigSearchEnabled))
         setup()
         const actionButton = screen.getByRole('button', {
           name: /launch your own/i
@@ -284,8 +301,8 @@ describe('RightContent', () => {
     })
     describe('on zoom Clicked', () => {
       it('should zoom in to match the redux zoom level if view mode is not mosaic', async () => {
-        store.dispatch(setShowZoomNotice(true))
-        store.dispatch(setZoomLevelNeeded(7))
+        currentStore.dispatch(setShowZoomNotice(true))
+        currentStore.dispatch(setZoomLevelNeeded(7))
         const zoomSpy = vi.spyOn(mapHelper, 'setMapZoomLevel')
         setup()
         const zoomButton = screen.getByText(/zoom in/i)
@@ -293,16 +310,16 @@ describe('RightContent', () => {
         expect(zoomSpy).toHaveBeenCalledWith(7)
       })
       it('should zoom in to match the config zoom level if view mode is mosaic', async () => {
-        store.dispatch(setShowZoomNotice(true))
-        store.dispatch(setZoomLevelNeeded(7))
-        store.dispatch(setViewMode('mosaic'))
+        currentStore.dispatch(setShowZoomNotice(true))
+        currentStore.dispatch(setZoomLevelNeeded(7))
+        currentStore.dispatch(setViewMode('mosaic'))
         const zoomSpy = vi.spyOn(mapHelper, 'setMapZoomLevel')
-        store.dispatch(setAppConfig(mockAppConfig))
+        currentStore.dispatch(setAppConfig(mockAppConfig))
         setup()
         const zoomButton = screen.getByText(/zoom in/i)
         await user.click(zoomButton)
         expect(zoomSpy).toHaveBeenCalledWith(7)
-        expect(store.getState().mainSlice.showZoomNotice).toBeFalsy()
+        expect(currentStore.getState().mainSlice.showZoomNotice).toBeFalsy()
       })
     })
     describe('on Cancel Draw Geom clicked', () => {
@@ -311,14 +328,14 @@ describe('RightContent', () => {
           mapHelper,
           'disableMapPolyDrawing'
         )
-        store.dispatch(setAppConfig(mockAppConfig))
-        store.dispatch(setIsDrawingEnabled(true))
+        currentStore.dispatch(setAppConfig(mockAppConfig))
+        currentStore.dispatch(setIsDrawingEnabled(true))
         setup()
         const cancelButton = screen.getByRole('button', {
           name: /cancel/i
         })
         await user.click(cancelButton)
-        expect(store.getState().mainSlice.isDrawingEnabled).toBeFalsy()
+        expect(currentStore.getState().mainSlice.isDrawingEnabled).toBeFalsy()
         expect(disableMapPloyDrawingSpy).toHaveBeenCalledOnce()
       })
     })

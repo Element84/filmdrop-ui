@@ -15,6 +15,7 @@ import userEvent from '@testing-library/user-event'
 
 vi.mock('@tanstack/react-router', () => ({
   useNavigate: () => vi.fn(),
+  useSearch: () => ({}),
   useParams: () => ({}),
   createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
   createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
