@@ -1,6 +1,5 @@
 import { store } from '../redux/store'
-import { getAuthToken } from '../utils/authHelper'
-import { appendStacHeaderCookies } from '../utils/stacRequest'
+import { buildStacRequestHeaders } from '../utils/stacRequest'
 
 /**
  * Maximum nested $ref depth. Beyond this, treat the schema as hostile
@@ -114,14 +113,7 @@ export async function resolveRefs(schema, ctx) {
  */
 export function GetCollectionQueryablesService(collection) {
   const collectionId = collection.id
-  const requestHeaders = new Headers()
-  const JWT = getAuthToken()
-  const isSTACTokenAuthEnabled =
-    store.getState().mainSlice.appConfig.APP_TOKEN_AUTH_ENABLED ?? false
-  if (JWT && isSTACTokenAuthEnabled) {
-    requestHeaders.append('Authorization', `Bearer ${JWT}`)
-  }
-  appendStacHeaderCookies(requestHeaders)
+  const requestHeaders = buildStacRequestHeaders()
 
   // Check if collection has queryables link in its links array
   const queryablesLink = collection?.links?.find(
