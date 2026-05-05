@@ -48,7 +48,10 @@ export async function resolveRefs(schema, ctx) {
       if (fetchCache.has(refUrl)) {
         refSchema = fetchCache.get(refUrl)
       } else {
-        const response = await fetch(refUrl)
+        const response = await fetch(refUrl, {
+          headers: ctx?.requestHeaders,
+          credentials: ctx?.fetchCredentials
+        })
         if (!response.ok) {
           throw new Error(`Failed to fetch ${refUrl}`)
         }
@@ -150,7 +153,13 @@ export function GetCollectionQueryablesService(collection) {
       // Dereference all $ref URLs in the queryables properties
       try {
         const properties = json.properties || {}
-        const dereferenced = await resolveRefs(properties)
+        const credentials =
+          store.getState().mainSlice.appConfig.FETCH_CREDENTIALS ||
+          'same-origin'
+        const dereferenced = await resolveRefs(properties, {
+          requestHeaders,
+          fetchCredentials: credentials
+        })
         return dereferenced
       } catch (refError) {
         console.warn(
