@@ -1,5 +1,9 @@
 import { store } from '../redux/store'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
 /**
  * Maximum nested $ref depth. Beyond this, treat the schema as hostile
@@ -114,6 +118,7 @@ export async function resolveRefs(schema, ctx) {
 export function GetCollectionQueryablesService(collection) {
   const collectionId = collection.id
   const requestHeaders = buildStacRequestHeaders()
+  const contextLabel = `Error fetching queryables for: ${collectionId}`
 
   // Check if collection has queryables link in its links array
   const queryablesLink = collection?.links?.find(
@@ -130,13 +135,18 @@ export function GetCollectionQueryablesService(collection) {
       store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
     headers: requestHeaders
   })
-    .then((response) => {
-      if (response.ok) {
-        return response.json()
+    .then(async (response) => {
+      if (!response.ok) {
+        const normalizedError = await normalizeStacErrorResponse(
+          response,
+          contextLabel
+        )
+        console.error(contextLabel, normalizedError)
+        return normalizedError
       }
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`)
-    })
-    .then(async (json) => {
+
+      const json = await response.json()
+
       // Dereference all $ref URLs in the queryables properties
       try {
         const properties = json.properties || {}
@@ -153,11 +163,11 @@ export function GetCollectionQueryablesService(collection) {
       }
     })
     .catch((error) => {
-      const message = `Error fetching queryables for: ${collectionId}`
-      console.error(message, error)
-      return {
-        error: true,
-        message: error.message || 'Failed to load queryables'
+      if (error?.name === 'AbortError') {
+        return undefined
       }
+      const normalizedError = normalizeStacNetworkError(error, contextLabel)
+      console.error(contextLabel, normalizedError)
+      return normalizedError
     })
 }
