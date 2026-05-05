@@ -10,6 +10,7 @@ import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 import { getCollections } from './stac-api'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
+import { normalizeStacNetworkError } from '../utils/stacErrorHelper'
 
 export async function GetCollectionsService(searchParams) {
   const appConfig = store.getState().mainSlice.appConfig
@@ -43,12 +44,17 @@ export async function GetCollectionsService(searchParams) {
     store.dispatch(setShowAppLoading(false))
     loadLocalGridData()
   } catch (error) {
+    const normalizedError =
+      error?.error === true
+        ? error
+        : normalizeStacNetworkError(error, 'Error Fetching Collections')
+
     // Set empty collections data to prevent UI errors
     store.dispatch(setCollectionsData([]))
     store.dispatch(setCollectionsLoadError(true))
     store.dispatch(setShowAppLoading(false))
 
-    if (error.status === 403) {
+    if (normalizedError.status === 403) {
       showApplicationAlert(
         'error',
         'STAC API returned 403. Bad Token OR needs STAC Auth Enabled in config.',
@@ -60,6 +66,6 @@ export async function GetCollectionsService(searchParams) {
     }
     const message = 'Error Fetching Collections'
     // log full error for diagnosing client side errors if needed
-    console.error(message, error)
+    console.error(message, normalizedError)
   }
 }
