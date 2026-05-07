@@ -7,8 +7,7 @@ module.exports = {
   },
   env: {
     browser: true,
-    es2021: true,
-    jest: true
+    es2021: true
   },
   extends: [
     'plugin:react/recommended',
@@ -18,6 +17,20 @@ module.exports = {
     'prettier'
   ],
   overrides: [
+    {
+      files: ['**/*.test.[jt]s?(x)'],
+      globals: {
+        describe: 'readonly',
+        it: 'readonly',
+        test: 'readonly',
+        expect: 'readonly',
+        vi: 'readonly',
+        beforeEach: 'readonly',
+        afterEach: 'readonly',
+        beforeAll: 'readonly',
+        afterAll: 'readonly'
+      }
+    },
     {
       // TS / d.ts files: use the TypeScript parser + recommended rules.
       files: ['src/**/*.{ts,d.ts}', 'examples/**/*.{ts,d.ts}'],

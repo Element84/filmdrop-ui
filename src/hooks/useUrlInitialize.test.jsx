@@ -17,12 +17,13 @@ import { showApplicationAlert } from '../utils/alertHelper'
 import { newSearch } from '../utils/searchHelper'
 
 // Mock external dependencies
-vi.mock('@tanstack/react-router', () => ({
-  useSearch: vi.fn(),
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({}))
-}))
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('../testing/shared-mocks')
+  return mockTanstackRouter({
+    useSearch: vi.fn(),
+    createRouter: vi.fn(() => ({}))
+  })()
+})
 
 vi.mock('../services/get-item-service', () => ({
   GetItemService: vi.fn()

@@ -9,7 +9,7 @@ import {
   setAppConfig,
   setShowCartModal
 } from './redux/slices/mainSlice'
-import { vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
 import * as LoadConfigService from './services/get-config-service'
 import { mockAppConfig } from './testing/shared-mocks'
@@ -20,20 +20,10 @@ vi.mock('./hooks/useUrlStateSync', () => ({
   useUrlStateSync: vi.fn()
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Outlet: () => null,
-  useNavigate: () => vi.fn(),
-  useSearch: () => ({}),
-  useRouter: () => ({ state: { location: { search: {} } } }),
-  useParams: () => ({}),
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({
-    state: { location: { search: {} }, matches: [] }
-  })),
-  defaultStringifySearch: vi.fn()
-}))
-
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('./testing/shared-mocks')
+  return mockTanstackRouter()()
+})
 vi.mock('./hooks/useUrlNavigate', () => ({
   useUrlNavigate: () => ({
     setTab: vi.fn(),

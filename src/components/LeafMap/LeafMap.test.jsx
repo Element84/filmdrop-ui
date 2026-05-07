@@ -1,5 +1,5 @@
 import React from 'react'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { act } from '@testing-library/react'
 import LeafMap from './LeafMap'
 import { CLICKED_SCENE_IMAGE_LAYER } from '../../utils/mapLayers'
@@ -9,13 +9,14 @@ import { setAppConfig } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
 
 const mapInstances = []
+const navigateMock = vi.fn()
 
 function createMockMap() {
   const panes = {
     overlayPane: { style: {} },
     markerPane: { style: {} }
   }
-  const handlers = {}
+  const handlers = new Map()
 
   const map = {
     controlsAdded: [],
@@ -23,11 +24,12 @@ function createMockMap() {
     createdPanes: [],
     layersAdded: [],
     layersRemoved: [],
+    getHandler: vi.fn((event) => handlers.get(event)),
     on: vi.fn((event, cb) => {
-      handlers[event] = cb
+      handlers.set(event, cb)
     }),
     off: vi.fn((event) => {
-      delete handlers[event]
+      handlers.delete(event)
     }),
     addControl: vi.fn((control) => {
       map.controlsAdded.push(control)
@@ -63,7 +65,7 @@ vi.mock('@tanstack/react-router', async (importOriginal) => {
   const actual = await importOriginal()
   return {
     ...actual,
-    useNavigate: () => vi.fn()
+    useNavigate: () => navigateMock
   }
 })
 
@@ -164,6 +166,12 @@ vi.mock('leaflet', () => {
 describe('LeafMap', () => {
   beforeEach(() => {
     mapInstances.length = 0
+    navigateMock.mockReset()
+    vi.useFakeTimers()
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   const renderSubject = () => {
@@ -248,5 +256,50 @@ describe('LeafMap', () => {
     await act(async () => {
       second.unmount()
     })
+  })
+
+  it('skips the first viewport sync and navigates on the next moveend', async () => {
+    const { unmount } = renderSubject()
+
+    await act(async () => {})
+
+    const map = mapInstances[0]
+    expect(map).toBeTruthy()
+
+    await act(async () => {
+      map.getHandler('moveend')()
+      vi.advanceTimersByTime(300)
+    })
+
+    expect(navigateMock).not.toHaveBeenCalled()
+
+    map.getCenter.mockReturnValue({ lat: 38.8897, lng: -77.0089 })
+    map.getZoom.mockReturnValue(9.6)
+
+    await act(async () => {
+      map.getHandler('moveend')()
+      vi.advanceTimersByTime(300)
+    })
+
+    expect(navigateMock).toHaveBeenCalledTimes(1)
+    expect(navigateMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        replace: true,
+        search: expect.any(Function)
+      })
+    )
+
+    const [{ search }] = navigateMock.mock.calls[0]
+    expect(search({ item: 'scene-1' })).toEqual({
+      item: 'scene-1',
+      z: 10,
+      c: '38.8897,-77.0089'
+    })
+
+    await act(async () => {
+      unmount()
+    })
+
+    expect(map.off.mock.calls.some((call) => call[0] === 'moveend')).toBe(true)
   })
 })

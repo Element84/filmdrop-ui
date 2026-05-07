@@ -39,6 +39,12 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text'],
+      thresholds: {
+        statements: 69,
+        branches: 58,
+        functions: 73,
+        lines: 70
+      },
       exclude: [...(configDefaults.coverage.exclude ?? []), 'src/redux/*'] // ignore the redux boilerplate for coverage report
     }
   }

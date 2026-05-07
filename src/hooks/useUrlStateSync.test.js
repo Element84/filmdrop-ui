@@ -19,13 +19,14 @@ import {
 // Mock TanStack Router — search params no longer include col/item
 let mockSearch = {}
 let mockParams = {}
-vi.mock('@tanstack/react-router', () => ({
-  useSearch: () => mockSearch,
-  useParams: () => mockParams,
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({}))
-}))
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('../testing/shared-mocks')
+  return mockTanstackRouter({
+    useSearch: () => mockSearch,
+    useParams: () => mockParams,
+    createRouter: vi.fn(() => ({}))
+  })()
+})
 
 vi.mock('../utils/alertHelper', () => ({
   showApplicationAlert: vi.fn()

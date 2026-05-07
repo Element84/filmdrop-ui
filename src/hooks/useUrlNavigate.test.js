@@ -4,10 +4,13 @@ import { useUrlNavigate } from './useUrlNavigate'
 
 const mockNavigate = vi.fn()
 let mockParams = { collectionId: 'sentinel-2' }
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mockNavigate,
-  useParams: () => mockParams
-}))
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('../testing/shared-mocks')
+  return mockTanstackRouter({
+    useNavigate: () => mockNavigate,
+    useParams: () => mockParams
+  })()
+})
 
 describe('useUrlNavigate', () => {
   const prev = {

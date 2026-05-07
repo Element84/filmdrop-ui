@@ -57,7 +57,7 @@ Check out
 
 ### Prerequisites
 
-- Node.js 18+ and npm
+- Node.js 20+ and npm 10+
 - A STAC API endpoint
 - (Optional) TiTiler instance for imagery visualization
 

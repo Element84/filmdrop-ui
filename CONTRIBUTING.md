@@ -112,6 +112,13 @@ A release is unblocked when all of the following are green on `main`:
   drift is a CI failure.
 - The `audit-prod` script scans only production deps and is the gate;
   `audit-all` (which includes devDependencies) is informational.
+- Vulnerability exceptions are tracked in `.nsprc` (a JSON array of advisory
+  IDs) at the repo root. `better-npm-audit` reads it automatically when running
+  `npm run audit-prod`. Document the reason for each exception in the PR
+  description and update CHANGELOG.md with a removal criterion (e.g., "remove
+  when dependency X reaches version Y").
+- It is normal for `.nsprc` to be an empty array (`[]`) when there are no
+  active temporary exceptions.
 - `verify:consumer` enforces the published-tarball allow-list
   (`dist/`, `README.md`, `LICENSE`, `NOTICE`, `CHANGELOG.md`,
   `CONFIGURATION.md`) and verifies that peer dependencies remain

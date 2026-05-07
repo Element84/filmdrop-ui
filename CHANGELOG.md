@@ -83,6 +83,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- Build and quality infrastructure hardening:
+  - TypeScript now enforces `noImplicitAny` (`tsconfig.json`).
+  - Runtime engines now target Node.js 20+ and npm 10+; prerequisites in README updated to match.
+  - ESLint test globals are scoped to test files instead of relying on a root-level `jest` env.
+  - Vitest coverage thresholds now enforce a floor based on current baseline (`statements: 69`, `branches: 58`, `functions: 73`, `lines: 70`).
+  - TanStack Router test mocking is centralized via `mockTanstackRouter` in `src/testing/shared-mocks.js` for core URL/router tests.
+  - Audit exception policy is documented in CONTRIBUTING and enforced via `.nsprc` at the repo root (which may remain an empty array until a temporary exception is required).
+
 - Map utility internals were split into focused modules:
   `src/utils/mapStyles.js`, `src/utils/mapLayers.js`, and
   `src/utils/mapInteraction.js`, with `src/utils/mapHelper.js` kept as

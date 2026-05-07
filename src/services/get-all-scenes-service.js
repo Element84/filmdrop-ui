@@ -51,12 +51,14 @@ async function fetchFeatures(url, abortSignal) {
           DEFAULT_MAX_SCENES_RENDERED
         ) {
           // change this number to increase max number of scenes returned, set to 1000 currently
-          return
+          return features
         }
         const nextFeatures = await fetchFeatures(nextPageLink.href, abortSignal)
         return features.concat(nextFeatures)
       }
     }
+
+    return features
   } catch (error) {
     const normalizedError =
       error?.error === true

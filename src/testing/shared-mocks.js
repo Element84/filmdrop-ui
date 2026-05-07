@@ -1,3 +1,22 @@
+import { vi } from 'vitest'
+
+export const mockTanstackRouter = (overrides = {}) => {
+  return () => ({
+    Outlet: () => null,
+    useNavigate: () => vi.fn(),
+    useSearch: () => ({}),
+    useRouter: () => ({ state: { location: { search: {} } } }),
+    useParams: () => ({}),
+    createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
+    createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
+    createRouter: vi.fn(() => ({
+      state: { location: { search: {} }, matches: [] }
+    })),
+    defaultStringifySearch: vi.fn(),
+    ...overrides
+  })
+}
+
 export const mockCollectionsData = [
   {
     id: 'cop-dem-glo-30',

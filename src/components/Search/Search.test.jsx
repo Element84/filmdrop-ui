@@ -9,17 +9,10 @@ import { mockAppConfig } from '../../testing/shared-mocks'
 import { newSearch, clearSearch } from '../../utils/searchHelper'
 import * as useRenderableQueryablesModule from '../../hooks/useRenderableQueryables'
 
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => vi.fn(),
-  useSearch: () => ({}),
-  useParams: () => ({}),
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({
-    state: { location: { search: {} }, matches: [] }
-  })),
-  defaultStringifySearch: vi.fn()
-}))
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('../../testing/shared-mocks')
+  return mockTanstackRouter()()
+})
 
 vi.mock('../../utils/mapHelper')
 vi.mock('../../utils/searchHelper')
