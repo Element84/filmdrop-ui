@@ -153,6 +153,22 @@ describe('resolveRefs', () => {
     expect(await resolveRefs(42)).toBe(42)
     expect(fetchSpy).not.toHaveBeenCalled()
   })
+
+  it.each([
+    'javascript:alert(1)',
+    'data:application/json,%7B%7D',
+    'file:///tmp/schema.json',
+    'blob:https://example.com/id-1',
+    'vbscript:msgbox(1)'
+  ])('rejects unsafe $ref scheme: %s', async (refUrl) => {
+    const original = { $ref: refUrl }
+    const result = await resolveRefs(original)
+    expect(result).toBe(original)
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/Rejected unsafe \$ref scheme/)
+    )
+  })
 })
 
 describe('GetCollectionQueryablesService signal forwarding', () => {

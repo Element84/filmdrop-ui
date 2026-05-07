@@ -10,7 +10,7 @@ Run in this exact order:
 1. `npm run format-fix && npm run lint-fix`
 2. `npm run lint && npm run format`
 3. `npm run typecheck`
-4. `npm run test -- --run` (or `npm run test-pre-commit`)
+4. `npm run test-pre-commit`
 
 `npm run test-nocov` is **forbidden** in this repository — the coverage
 pipeline is wired into `vitest --run` via `npm run coverage`.
@@ -64,7 +64,7 @@ Three development flows are supported:
    ```bash
    npm install
    npm run start          # dev server for the standalone SPA
-   npm run test -- --run
+   npm run test-pre-commit
    ```
 
 2. **Built-library starter** — exercises the published-style consumer

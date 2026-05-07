@@ -9,6 +9,12 @@ import { getCollections } from './stac-api'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
 import { normalizeStacNetworkError } from '../utils/stacErrorHelper'
 
+/**
+ * Load, filter, and normalize collections into Redux state.
+ * @param {Object} [searchParams] - Reserved argument for compatibility with existing call sites.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<{error:false,collectionsCount:number}|Object>} Success payload or normalized error object.
+ */
 export async function GetCollectionsService(searchParams, signal) {
   const appConfig = store.getState().mainSlice.appConfig
   const requestHeaders = buildStacRequestHeaders()
@@ -30,7 +36,7 @@ export async function GetCollectionsService(searchParams, signal) {
       )
     }
 
-    const formattedData = await buildCollectionsData(json)
+    const formattedData = await buildCollectionsData(json, appConfig)
     const collectionsCount = Object.values(formattedData).length
 
     store.dispatch(setCollectionsData(formattedData))

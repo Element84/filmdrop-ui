@@ -177,7 +177,7 @@ export function useUrlInitialize(search, dispatch) {
     function restoreVisualization(col, viz) {
       if (!viz) return
       const { visualizationKeys, hasVisualizations } =
-        getCollectionVisualizations(col)
+        getCollectionVisualizations(col, appConfig)
       if (hasVisualizations && visualizationKeys.includes(viz)) {
         dispatch(setSelectedVisualization(viz))
       } else if (viz) {

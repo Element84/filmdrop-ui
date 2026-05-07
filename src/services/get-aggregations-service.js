@@ -5,6 +5,12 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
+/**
+ * Fetch aggregation definitions for a collection.
+ * @param {string} collectionId - STAC collection id.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<Array|Object|undefined>} Aggregation array, normalized error object, or undefined on abort.
+ */
 export async function GetCollectionAggregationsService(collectionId, signal) {
   const requestHeaders = buildStacRequestHeaders()
   const contextLabel = `Error Fetching Aggregations for: ${collectionId}`

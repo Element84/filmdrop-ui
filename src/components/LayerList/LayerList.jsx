@@ -28,8 +28,12 @@ const LayerList = () => {
       <div className="LayerListLayers">
         {_referenceLayers.map((layer) => (
           <div className="LayerListLayer" key={layer.combinedLayerName}>
-            <label className="LayerListLayerContainer">
+            <label
+              className="LayerListLayerContainer"
+              htmlFor={`layer-list-${layer.combinedLayerName}`}
+            >
               <Checkbox
+                id={`layer-list-${layer.combinedLayerName}`}
                 checked={layer.visibility}
                 onChange={() => onLayerClicked(layer.combinedLayerName)}
                 size="small"

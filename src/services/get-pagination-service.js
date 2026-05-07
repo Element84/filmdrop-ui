@@ -29,6 +29,8 @@ import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
  * Fetch a specific page of search results using pagination links
  * @param {string} pageUrl - The URL to fetch (next or prev link from STAC API)
  * @param {number} pageNumber - The page number being fetched
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<void>} Resolves after state/layer updates complete.
  */
 export async function FetchPageService(pageUrl, pageNumber, signal) {
   const requestHeaders = buildStacRequestHeaders()

@@ -5,34 +5,38 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
-export function GetMosaicBoundsService(mosaicURL, signal) {
+/**
+ * Fetch bounds from a mosaicjson endpoint.
+ * @param {string} mosaicURL - Mosaicjson URL.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<number[]>} Bounding box array [west, south, east, north].
+ * @throws {Object} Normalized error object when request fails.
+ */
+export async function GetMosaicBoundsService(mosaicURL, signal) {
   const contextLabel = 'Error Fetching Mosaicjson Tile Results'
-  return new Promise(function (resolve, reject) {
+  try {
     const requestHeaders = new Headers()
     appendStacHeaderCookies(requestHeaders)
-    fetch(mosaicURL, {
+    const response = await fetch(mosaicURL, {
       headers: requestHeaders,
       credentials:
         store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
       signal
     })
-      .then(async (response) => {
-        if (response.ok) {
-          return response.json()
-        }
-        throw await normalizeStacErrorResponse(response, contextLabel)
-      })
-      .then((json) => {
-        resolve(json.bounds)
-      })
-      .catch((error) => {
-        const normalizedError =
-          error?.error === true
-            ? error
-            : normalizeStacNetworkError(error, contextLabel)
-        // log full error for diagnosing client side errors if needed
-        console.error(contextLabel, normalizedError)
-        reject(normalizedError)
-      })
-  })
+
+    if (!response.ok) {
+      throw await normalizeStacErrorResponse(response, contextLabel)
+    }
+
+    const json = await response.json()
+    return json.bounds
+  } catch (error) {
+    const normalizedError =
+      error?.error === true
+        ? error
+        : normalizeStacNetworkError(error, contextLabel)
+    // log full error for diagnosing client side errors if needed
+    console.error(contextLabel, normalizedError)
+    throw normalizedError
+  }
 }

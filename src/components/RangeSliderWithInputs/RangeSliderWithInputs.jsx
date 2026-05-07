@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useId } from 'react'
 import { Slider } from '@mui/material'
 import PropTypes from 'prop-types'
 import Card from '../Card/Card'
@@ -18,6 +18,7 @@ const RangeSliderWithInputs = ({
   const [maxInput, setMaxInput] = useState(value.max)
   const [isEditingMin, setIsEditingMin] = useState(false)
   const [isEditingMax, setIsEditingMax] = useState(false)
+  const labelId = useId()
 
   // Sync local state when the parent `value` prop changes (e.g. URL-driven
   // filter reset or external update). Skip while the user is actively
@@ -87,7 +88,7 @@ const RangeSliderWithInputs = ({
     <Card height="auto" className="rangeSliderWithInputs">
       <div className="rangeSliderHeader">
         <OverflowTooltip component="label" className="rangeSliderLabel">
-          {label}
+          <span id={labelId}>{label}</span>
         </OverflowTooltip>
         <div className="rangeSliderValuePills">
           <input
@@ -119,7 +120,11 @@ const RangeSliderWithInputs = ({
           />
         </div>
       </div>
-      <div className="rangeSliderTrackContainer">
+      <div
+        className="rangeSliderTrackContainer"
+        role="group"
+        aria-labelledby={labelId}
+      >
         <Slider
           value={[value.min, value.max]}
           onChange={handleSliderChange}

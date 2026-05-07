@@ -165,8 +165,11 @@ export async function newSearch(options = {}) {
       return
     }
     const sceneMinZoom =
-      getCollectionConfig(_selectedCollection.id, 'sceneMinZoom') ||
-      DEFAULT_SCENE_MIN_ZOOM
+      getCollectionConfig(
+        _selectedCollection.id,
+        'sceneMinZoom',
+        _state.appConfig
+      ) || DEFAULT_SCENE_MIN_ZOOM
     const currentMapZoomLevel = getCurrentMapZoomLevel()
     if (currentMapZoomLevel < sceneMinZoom) {
       store.dispatch(setZoomLevelNeeded(sceneMinZoom))
@@ -179,8 +182,11 @@ export async function newSearch(options = {}) {
 
   // Get minimum zoom level for scene/mosaic views
   const sceneMinZoom =
-    getCollectionConfig(_selectedCollection.id, 'sceneMinZoom') ||
-    DEFAULT_SCENE_MIN_ZOOM
+    getCollectionConfig(
+      _selectedCollection.id,
+      'sceneMinZoom',
+      _state.appConfig
+    ) || DEFAULT_SCENE_MIN_ZOOM
 
   const currentMapZoomLevel = getCurrentMapZoomLevel()
 
@@ -781,7 +787,12 @@ async function newMosaicSearch(signal) {
 const constructMosaicAssetVal = (collection) => {
   const selectedVisualization =
     store.getState().mainSlice.selectedVisualization || null
-  const asset = getEffectiveMosaicAsset(collection, selectedVisualization)
+  const appConfig = store.getState().mainSlice.appConfig
+  const asset = getEffectiveMosaicAsset(
+    collection,
+    selectedVisualization,
+    appConfig
+  )
   if (!asset) {
     console.log(`Assets not defined for ${collection}`)
     return null

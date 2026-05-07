@@ -36,7 +36,7 @@ export function groupFieldsSemantically(properties, filterPredicate = null) {
 /**
  * Creates field predicate for enhanced display configuration
  * @param {string} collectionId - Collection ID
- * @param {object} appConfig - Optional application configuration for testing (uses store if not provided)
+ * @param {object} appConfig - Application configuration
  * @returns {Function} Field filter predicate
  */
 export function createEnhancedDisplayFieldPredicate(

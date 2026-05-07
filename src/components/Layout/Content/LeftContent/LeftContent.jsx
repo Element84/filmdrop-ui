@@ -106,6 +106,7 @@ const LeftContent = () => {
           <div
             className="LeftContentTabPanel"
             style={{ display: _tabSelected === 'search' ? undefined : 'none' }}
+            aria-hidden={_tabSelected !== 'search'}
           >
             <Search></Search>
           </div>
@@ -113,6 +114,7 @@ const LeftContent = () => {
             className="LeftContentTabPanel"
             key={`${_selectedCollection}-${_detailsResetKey}`}
             style={{ display: _tabSelected === 'details' ? undefined : 'none' }}
+            aria-hidden={_tabSelected !== 'details'}
           >
             <AccordionStateProvider>
               <PopupResults results={_clickResults}></PopupResults>

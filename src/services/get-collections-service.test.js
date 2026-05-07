@@ -55,9 +55,12 @@ describe('GetCollectionsService signal forwarding', () => {
 
     const result = await GetCollectionsService()
 
-    expect(buildCollectionsData).toHaveBeenCalledWith({
-      collections: [{ id: 'demo' }]
-    })
+    expect(buildCollectionsData).toHaveBeenCalledWith(
+      {
+        collections: [{ id: 'demo' }]
+      },
+      expect.objectContaining({ STAC_API_URL: 'https://stac-api.example.com' })
+    )
     expect(loadLocalGridData).toHaveBeenCalled()
     expect(result).toEqual({ error: false, collectionsCount: 1 })
     expect(store.getState().mainSlice.collectionsData).toEqual({
@@ -87,9 +90,16 @@ describe('GetCollectionsService signal forwarding', () => {
 
     await GetCollectionsService()
 
-    expect(buildCollectionsData).toHaveBeenCalledWith({
-      collections: [{ id: 'demo' }]
-    })
+    expect(buildCollectionsData).toHaveBeenCalledWith(
+      {
+        collections: [{ id: 'demo' }]
+      },
+      expect.objectContaining({
+        COLLECTIONS: {
+          _ids: ['demo']
+        }
+      })
+    )
   })
 
   it('returns a normalized error and sets failure state when fetching collections fails', async () => {

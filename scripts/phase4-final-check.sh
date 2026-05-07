@@ -21,7 +21,7 @@ echo "==> typecheck"
 npm run typecheck
 
 echo "==> test (library)"
-npm run test -- --run
+npm run test-pre-commit
 
 echo "==> build:lib"
 npm run build:lib

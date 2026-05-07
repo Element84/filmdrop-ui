@@ -91,6 +91,16 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - TanStack Router test mocking is centralized via `mockTanstackRouter` in `src/testing/shared-mocks.js` for core URL/router tests.
   - Audit exception policy is documented in CONTRIBUTING and enforced via `.nsprc` at the repo root (which may remain an empty array until a temporary exception is required).
 
+- Style/docs polish:
+  - Accessibility residuals were completed across key controls:
+    select labeling, loading status semantics, range-group labeling,
+    cart count labeling, checkbox label association, and hidden
+    tab-panel semantics.
+  - Utility dependency direction cleanup was completed by removing internal `store.getState()` reads from `colorMap`, `dataHelper`, and `configHelper` and moving callers to explicit inputs.
+  - Queryables `$ref` resolution now rejects unsafe URL schemes (`javascript:`, `data:`, `file:`, `blob:`, `vbscript:`) before fetch.
+  - Service contract documentation and style consistency were improved with expanded JSDoc coverage and async/await alignment in remaining promise-chain services.
+  - CI/test command usage is now standardized on `npm run test-pre-commit` across CI workflows and local gate scripts.
+
 - Map utility internals were split into focused modules:
   `src/utils/mapStyles.js`, `src/utils/mapLayers.js`, and
   `src/utils/mapInteraction.js`, with `src/utils/mapHelper.js` kept as

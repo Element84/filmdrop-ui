@@ -106,7 +106,7 @@ const LeafMap = () => {
   }, [])
 
   useEffect(() => {
-    setScenesForCartLayer()
+    setScenesForCartLayer(_cartItems)
   }, [_cartItems])
 
   const ensureLayer = (map, ref, createLayer, layerName) => {

@@ -21,26 +21,25 @@ import {
   getLegacyKeysPresent,
   getMixedFormatLegacySignals
 } from './configFormat.mjs'
-import { store } from '../redux/store'
 import { DoesFaviconExistService } from '../services/get-config-service'
 import { setAppName, setReferenceLayers } from '../redux/slices/mainSlice'
 import { showApplicationAlert } from './alertHelper'
 import { shouldApplyDocumentBranding } from './themeHelper'
 import { resolveFaviconUrl, getCacheBusterSuffix } from './configBase'
 
-function loadAppTitle() {
-  const configuredName = store.getState().mainSlice.appConfig.APP_NAME
+function loadAppTitle(appConfig, dispatch) {
+  const configuredName = appConfig?.APP_NAME
   const effectiveName = configuredName || DEFAULT_APP_NAME
   // Skip document.title when embedded (applyDocumentBranding=false);
   // the Redux dispatch still runs so internal UI labels are correct.
   if (shouldApplyDocumentBranding()) {
     document.title = effectiveName
   }
-  store.dispatch(setAppName(effectiveName))
+  dispatch(setAppName(effectiveName))
 }
 
-async function loadAppFavicon() {
-  if (!store.getState().mainSlice.appConfig.APP_FAVICON) {
+async function loadAppFavicon(appConfig) {
+  if (!appConfig?.APP_FAVICON) {
     return
   }
   if (!shouldApplyDocumentBranding()) {
@@ -51,18 +50,11 @@ async function loadAppFavicon() {
     return
   }
   if (
-    store
-      .getState()
-      .mainSlice.appConfig.APP_FAVICON.toLowerCase()
-      .endsWith('.png') ||
-    store
-      .getState()
-      .mainSlice.appConfig.APP_FAVICON.toLowerCase()
-      .endsWith('.ico')
+    appConfig.APP_FAVICON.toLowerCase().endsWith('.png') ||
+    appConfig.APP_FAVICON.toLowerCase().endsWith('.ico')
   ) {
     const faviconFromConfig =
-      resolveFaviconUrl(store.getState().mainSlice.appConfig.APP_FAVICON) +
-      getCacheBusterSuffix()
+      resolveFaviconUrl(appConfig.APP_FAVICON) + getCacheBusterSuffix()
     const newFaviconLink = document.querySelector("link[rel~='icon']")
     if (newFaviconLink) {
       newFaviconLink.href = faviconFromConfig
@@ -70,63 +62,58 @@ async function loadAppFavicon() {
   }
 }
 
-async function parseLayerListConfig(config) {
+async function parseLayerListConfig(appConfig) {
   try {
-    if (
-      !store.getState().mainSlice.appConfig ||
-      !store.getState().mainSlice.appConfig.LAYER_LIST_SERVICES
-    ) {
+    if (!appConfig || !appConfig.LAYER_LIST_SERVICES) {
       throw new Error(
         'Invalid configuration format: LAYER_LIST_SERVICES is missing.'
       )
     }
-    return store
-      .getState()
-      .mainSlice.appConfig.LAYER_LIST_SERVICES.flatMap((service) => {
-        if (!service.layers || !Array.isArray(service.layers)) {
-          throw new Error(
-            `Invalid configuration format for service '${service.name}': 'layers' is missing or not an array.`
-          )
-        }
+    return appConfig.LAYER_LIST_SERVICES.flatMap((service) => {
+      if (!service.layers || !Array.isArray(service.layers)) {
+        throw new Error(
+          `Invalid configuration format for service '${service.name}': 'layers' is missing or not an array.`
+        )
+      }
 
-        return service.layers
-          .map((layer) => {
-            if (!layer.name) {
-              throw new Error(
-                `Invalid configuration format for layer in service '${service.name}': 'name' is missing.`
-              )
-            }
-
-            const validCRS = ['EPSG:4326', 'EPSG:3857']
-            const shouldAddLayer = !layer.crs || validCRS.includes(layer.crs)
-
-            if (shouldAddLayer) {
-              return {
-                combinedLayerName: `${service.name.replace(
-                  / /g,
-                  '_'
-                )}_${layer.name.replace(/ /g, '_')}`,
-                layerName: layer.name,
-                layerAlias: layer.alias || layer.name,
-                visibility: layer.default_visibility || false,
-                crs: layer.crs || 'EPSG:3857',
-                url: service.url,
-                type: service.type
-              }
-            }
-
-            console.error(
-              'Error adding layer: ' +
-                `${service.name.replace(/ /g, '_')}_${layer.name.replace(
-                  / /g,
-                  '_'
-                )}` +
-                ': unsupported crs'
+      return service.layers
+        .map((layer) => {
+          if (!layer.name) {
+            throw new Error(
+              `Invalid configuration format for layer in service '${service.name}': 'name' is missing.`
             )
-            return null // Skip adding the layer if error
-          })
-          .filter((layer) => layer !== null) // Filter out null layers
-      })
+          }
+
+          const validCRS = ['EPSG:4326', 'EPSG:3857']
+          const shouldAddLayer = !layer.crs || validCRS.includes(layer.crs)
+
+          if (shouldAddLayer) {
+            return {
+              combinedLayerName: `${service.name.replace(
+                / /g,
+                '_'
+              )}_${layer.name.replace(/ /g, '_')}`,
+              layerName: layer.name,
+              layerAlias: layer.alias || layer.name,
+              visibility: layer.default_visibility || false,
+              crs: layer.crs || 'EPSG:3857',
+              url: service.url,
+              type: service.type
+            }
+          }
+
+          console.error(
+            'Error adding layer: ' +
+              `${service.name.replace(/ /g, '_')}_${layer.name.replace(
+                / /g,
+                '_'
+              )}` +
+              ': unsupported crs'
+          )
+          return null // Skip adding the layer if error
+        })
+        .filter((layer) => layer !== null) // Filter out null layers
+    })
   } catch (error) {
     console.error('Error loading reference layers', error.message)
     showApplicationAlert('warning', 'Error loading reference layers', 5000)
@@ -134,19 +121,19 @@ async function parseLayerListConfig(config) {
   }
 }
 
-async function loadReferenceLayers() {
+async function loadReferenceLayers(appConfig, dispatch) {
   if (
-    !store.getState().mainSlice.appConfig.LAYER_LIST_SERVICES ||
-    store.getState().mainSlice.appConfig.LAYER_LIST_SERVICES.length === 0
+    !appConfig?.LAYER_LIST_SERVICES ||
+    appConfig.LAYER_LIST_SERVICES.length === 0
   ) {
     return
   }
-  const LayerListFromConfig = await parseLayerListConfig()
+  const LayerListFromConfig = await parseLayerListConfig(appConfig)
   if (LayerListFromConfig.length === 0) {
     return
   }
 
-  store.dispatch(setReferenceLayers(LayerListFromConfig))
+  dispatch(setReferenceLayers(LayerListFromConfig))
 }
 
 /**
@@ -198,11 +185,10 @@ export function normalizeCollectionsConfig(config) {
  * Gets collection-specific config parameter from COLLECTIONS_CONFIG
  * @param {string} collectionId - The collection ID
  * @param {string} paramName - Parameter name ('visualizations', 'mosaicTilerParams', etc.)
- * @param {Object} config - Optional config object for testing (uses store if not provided)
+ * @param {Object} appConfig - Application config object
  * @returns {*} - The parameter value or undefined
  */
-export function getCollectionConfig(collectionId, paramName, config = null) {
-  const appConfig = config || store.getState().mainSlice.appConfig
+export function getCollectionConfig(collectionId, paramName, appConfig) {
   if (!appConfig) return undefined
 
   return appConfig.COLLECTIONS_CONFIG?.[collectionId]?.[paramName]
@@ -211,14 +197,14 @@ export function getCollectionConfig(collectionId, paramName, config = null) {
 /**
  * Gets visualization keys for a collection and checks if it has visualizations
  * @param {string} collectionId - The collection ID
- * @param {Object} config - Optional config object for testing (uses store if not provided)
+ * @param {Object} appConfig - Application config object
  * @returns {{visualizations: Object|null|undefined, visualizationKeys: string[], hasVisualizations: boolean}}
  */
-export function getCollectionVisualizations(collectionId, config = null) {
+export function getCollectionVisualizations(collectionId, appConfig) {
   const visualizations = getCollectionConfig(
     collectionId,
     'visualizations',
-    config
+    appConfig
   )
   const visualizationKeys = visualizations ? Object.keys(visualizations) : []
   return {
@@ -233,18 +219,18 @@ export function getCollectionVisualizations(collectionId, config = null) {
  * Priority: explicit mosaicTilerParams > selected visualization > first visualization.
  * @param {string} collectionId - The collection ID
  * @param {string|null} selectedVisualizationKey - Optional selected visualization key
- * @param {Object} config - Optional config object for testing (uses store if not provided)
+ * @param {Object} appConfig - Application config object
  * @returns {Object|undefined} Effective mosaic tiler params
  */
 export function getEffectiveMosaicTilerParams(
   collectionId,
   selectedVisualizationKey = null,
-  config = null
+  appConfig
 ) {
   const explicitMosaicTilerParams = getCollectionConfig(
     collectionId,
     'mosaicTilerParams',
-    config
+    appConfig
   )
   if (explicitMosaicTilerParams) {
     return explicitMosaicTilerParams
@@ -252,7 +238,7 @@ export function getEffectiveMosaicTilerParams(
 
   const { visualizations, visualizationKeys } = getCollectionVisualizations(
     collectionId,
-    config
+    appConfig
   )
   if (!visualizations || visualizationKeys.length === 0) {
     return undefined
@@ -270,18 +256,18 @@ export function getEffectiveMosaicTilerParams(
  * Gets effective mosaic asset value for a collection.
  * @param {string} collectionId - The collection ID
  * @param {string|null} selectedVisualizationKey - Optional selected visualization key
- * @param {Object} config - Optional config object for testing (uses store if not provided)
+ * @param {Object} appConfig - Application config object
  * @returns {string|null} Effective asset name for mosaic creation
  */
 export function getEffectiveMosaicAsset(
   collectionId,
   selectedVisualizationKey = null,
-  config = null
+  appConfig
 ) {
   const tilerParams = getEffectiveMosaicTilerParams(
     collectionId,
     selectedVisualizationKey,
-    config
+    appConfig
   )
   const assets = tilerParams?.assets
   if (!assets) return null
@@ -589,10 +575,11 @@ export function applyConfigDefaults(config) {
   }
 }
 
-export function InitializeAppFromConfig() {
-  loadAppTitle()
-  loadAppFavicon()
-  loadReferenceLayers()
+export function InitializeAppFromConfig(appConfig, dispatch) {
+  if (!appConfig || !dispatch) return
+  loadAppTitle(appConfig, dispatch)
+  loadAppFavicon(appConfig)
+  loadReferenceLayers(appConfig, dispatch)
 }
 
 // exports for testing purposes

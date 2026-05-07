@@ -17,11 +17,15 @@ const CartButton = () => {
   return (
     <div className="CartButton">
       <Stack
+        component="button"
+        type="button"
         className={
           _cartItems.length > 0 ? 'cartButton cartButtonEnabled' : 'cartButton'
         }
+        disabled={_cartItems.length === 0}
         data-testid="testCartButton"
         onClick={onCartButtonClick}
+        aria-label={`Cart, ${_cartItems.length} item${_cartItems.length === 1 ? '' : 's'}`}
       >
         <span>Cart</span>
         <div

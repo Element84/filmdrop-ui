@@ -69,6 +69,12 @@ async function fetchFeatures(url, abortSignal) {
   }
 }
 
+/**
+ * Fetch all paginated scene features from a STAC items endpoint.
+ * @param {string} url - Initial STAC items URL.
+ * @param {AbortSignal} abortSignal - Abort signal used for recursive page fetches.
+ * @returns {Promise<Array>} Concatenated feature list.
+ */
 export async function fetchAllFeatures(url, abortSignal) {
   return await fetchFeatures(url, abortSignal)
 }

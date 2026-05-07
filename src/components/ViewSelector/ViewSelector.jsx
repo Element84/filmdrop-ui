@@ -65,10 +65,13 @@ const ViewSelector = () => {
   // Get minimum zoom level for scene/mosaic views
   const sceneMinZoom = useMemo(() => {
     return selectedCollectionData
-      ? getCollectionConfig(selectedCollectionData.id, 'sceneMinZoom') ||
-          DEFAULT_SCENE_MIN_ZOOM
+      ? getCollectionConfig(
+          selectedCollectionData.id,
+          'sceneMinZoom',
+          appConfig
+        ) || DEFAULT_SCENE_MIN_ZOOM
       : DEFAULT_SCENE_MIN_ZOOM
-  }, [selectedCollectionData])
+  }, [selectedCollectionData, appConfig])
 
   const canUseScene = currentZoom >= sceneMinZoom
 

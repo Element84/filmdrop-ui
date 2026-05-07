@@ -90,7 +90,7 @@ function App() {
 
     if (showLogin) return
 
-    InitializeAppFromConfig()
+    InitializeAppFromConfig(_appConfig, dispatch)
 
     // Only load collections if not already loaded (router may have loaded them).
     // Don't retry if there was a previous load error to prevent infinite loops.

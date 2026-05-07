@@ -6,6 +6,7 @@ import './MultiSelect.css'
 
 const MultiSelect = ({ label, value, onChange, options, className = '' }) => {
   const selectRef = useRef(null)
+  const selectAriaLabel = label || 'Multi select'
 
   const handleChange = (event) => {
     const newValue = event.target.value
@@ -30,6 +31,7 @@ const MultiSelect = ({ label, value, onChange, options, className = '' }) => {
         multiple
         value={value}
         onChange={handleChange}
+        aria-label={selectAriaLabel}
         input={<OutlinedInput />}
         MenuProps={{
           classes: { paper: 'MultiSelect__menu' }

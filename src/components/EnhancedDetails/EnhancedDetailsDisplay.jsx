@@ -28,8 +28,8 @@ const EnhancedDetailsDisplay = () => {
   const enhancedDisplayConfig = useMemo(() => {
     if (!currentPopupResult) return null
     const { collection } = currentPopupResult
-    return getCollectionConfig(collection, 'enhancedDisplayConfig')
-  }, [currentPopupResult])
+    return getCollectionConfig(collection, 'enhancedDisplayConfig', _appConfig)
+  }, [currentPopupResult, _appConfig])
 
   const hasEnhancedConfig = useMemo(() => {
     return !!enhancedDisplayConfig
@@ -57,7 +57,10 @@ const EnhancedDetailsDisplay = () => {
           })
           return { ok: true, value: orderedGroups }
         }
-        const shouldShowField = createEnhancedDisplayFieldPredicate(collection)
+        const shouldShowField = createEnhancedDisplayFieldPredicate(
+          collection,
+          _appConfig
+        )
         return {
           ok: true,
           value: groupFieldsSemantically(properties, shouldShowField)
@@ -67,7 +70,7 @@ const EnhancedDetailsDisplay = () => {
     } catch (error) {
       return { ok: false, error, context: 'field grouping' }
     }
-  }, [currentPopupResult, hasEnhancedConfig, enhancedDisplayConfig])
+  }, [currentPopupResult, hasEnhancedConfig, enhancedDisplayConfig, _appConfig])
 
   const groupedFields = groupedFieldsResult.ok
     ? groupedFieldsResult.value

@@ -178,7 +178,8 @@ export function getCurrentMapZoomLevel() {
 }
 
 export function buildHexGridLayerOptions(largestRatio) {
-  const colors = colorMap(largestRatio)
+  const appConfig = store.getState().mainSlice.appConfig
+  const colors = colorMap(largestRatio, appConfig)
   function styleHexGridLayers(feature, layer) {
     const colorIndex =
       Math.round(feature.properties.colorRatio) ===
@@ -229,9 +230,14 @@ function addImageOverlay(item) {
 
   const sceneTilerURL =
     store.getState().mainSlice.appConfig.SCENE_TILER_URL || ''
+  const appConfig = store.getState().mainSlice.appConfig
   const sceneTilerBaseUrl = sceneTilerURL.replace(/\/+$/, '')
   const tileMatrixSetId = 'WebMercatorQuad'
-  const visualizations = getCollectionConfig(item?.collection, 'visualizations')
+  const visualizations = getCollectionConfig(
+    item?.collection,
+    'visualizations',
+    appConfig
+  )
   if (!item || !sceneTilerBaseUrl || !visualizations) {
     store.dispatch(setImageOverlayLoading(false))
     return
@@ -318,7 +324,8 @@ function setupBounds(bbox) {
 const getTileLayerParams = (collection) => {
   const collectionTileLayerParams = getCollectionConfig(
     collection,
-    'tileLayerParams'
+    'tileLayerParams',
+    store.getState().mainSlice.appConfig
   )
   return collectionTileLayerParams || {}
 }
@@ -327,7 +334,11 @@ const constructSceneTilerParams = (
   collection,
   selectedVisualizationKey = null
 ) => {
-  const visualizations = getCollectionConfig(collection, 'visualizations')
+  const visualizations = getCollectionConfig(
+    collection,
+    'visualizations',
+    store.getState().mainSlice.appConfig
+  )
   if (!visualizations || typeof visualizations !== 'object') {
     return ''
   }
@@ -463,9 +474,11 @@ const parameters = {
 export const constructMosaicTilerParams = (collection) => {
   const selectedVisualization =
     store.getState().mainSlice.selectedVisualization || null
+  const appConfig = store.getState().mainSlice.appConfig
   const tilerParams = getEffectiveMosaicTilerParams(
     collection,
-    selectedVisualization
+    selectedVisualization,
+    appConfig
   )
   if (!tilerParams) return ''
 

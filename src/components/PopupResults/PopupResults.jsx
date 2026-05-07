@@ -77,7 +77,7 @@ const PopupResults = (props) => {
   }, [_selectedPopupResultIndex, dispatch])
 
   function onAddRemoveSceneToCartClicked() {
-    if (isSceneInCart(props.results[_selectedPopupResultIndex])) {
+    if (isSceneInCart(props.results[_selectedPopupResultIndex], _cartItems)) {
       dispatch(
         setCartItems(
           _cartItems.filter(
@@ -103,7 +103,10 @@ const PopupResults = (props) => {
             onPrevClick={onPrevClick}
             onNextClick={onNextClick}
             cartEnabled={_appConfig.CART_ENABLED}
-            isInCart={isSceneInCart(props.results[_selectedPopupResultIndex])}
+            isInCart={isSceneInCart(
+              props.results[_selectedPopupResultIndex],
+              _cartItems
+            )}
             onCartClick={onAddRemoveSceneToCartClicked}
           />
           <div

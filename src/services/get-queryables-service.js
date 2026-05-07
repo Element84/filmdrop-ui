@@ -10,6 +10,23 @@ import {
  * (cycle or DoS) and bail.
  */
 const MAX_REF_DEPTH = 10
+const DISALLOWED_REF_SCHEMES = new Set([
+  'javascript',
+  'data',
+  'file',
+  'blob',
+  'vbscript'
+])
+
+function hasDisallowedRefScheme(refUrl) {
+  const schemeMatch = refUrl.match(/^\s*([a-zA-Z][a-zA-Z\d+.-]*):/)
+  if (!schemeMatch) {
+    return false
+  }
+
+  const scheme = schemeMatch[1].toLowerCase()
+  return DISALLOWED_REF_SCHEMES.has(scheme)
+}
 
 /**
  * Recursive $ref resolver for JSON Schema. Exported for tests.
@@ -37,6 +54,13 @@ export async function resolveRefs(schema, ctx) {
 
   if (schema.$ref && typeof schema.$ref === 'string') {
     const refUrl = schema.$ref
+    if (hasDisallowedRefScheme(refUrl)) {
+      console.warn(
+        `Rejected unsafe $ref scheme in queryables resolver: ${refUrl}`
+      )
+      return schema
+    }
+
     if (visited.has(refUrl)) {
       console.warn(
         `Queryables $ref cycle detected at ${refUrl}; leaving unresolved`
@@ -123,9 +147,10 @@ export async function resolveRefs(schema, ctx) {
 /**
  * Get queryables for a STAC collection
  * @param {Object} collection - Collection object with id and links array
- * @returns {Promise<Object>} Queryables properties object or error object (fully dereferenced)
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<Object|undefined>} Queryables properties, normalized error object, or undefined on abort.
  */
-export function GetCollectionQueryablesService(collection, signal) {
+export async function GetCollectionQueryablesService(collection, signal) {
   const collectionId = collection.id
   const requestHeaders = buildStacRequestHeaders()
   const contextLabel = `Error fetching queryables for: ${collectionId}`
@@ -137,55 +162,51 @@ export function GetCollectionQueryablesService(collection, signal) {
 
   // Collection doesn't expose queryables — nothing to load.
   if (!queryablesLink) {
-    return Promise.resolve({})
+    return {}
   }
 
-  return fetch(queryablesLink.href, {
-    credentials:
-      store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
-    headers: requestHeaders,
-    signal
-  })
-    .then(async (response) => {
-      if (!response.ok) {
-        const normalizedError = await normalizeStacErrorResponse(
-          response,
-          contextLabel
-        )
-        console.error(contextLabel, normalizedError)
-        return normalizedError
-      }
-
-      const json = await response.json()
-
-      // Dereference all $ref URLs in the queryables properties
-      try {
-        const properties = json.properties || {}
-        const credentials =
-          store.getState().mainSlice.appConfig.FETCH_CREDENTIALS ||
-          'same-origin'
-        const dereferenced = await resolveRefs(properties, {
-          requestHeaders,
-          fetchCredentials: credentials,
-          fetchSignal: signal
-        })
-        return dereferenced
-      } catch (refError) {
-        console.warn(
-          `Failed to dereference $refs for ${collectionId}:`,
-          refError
-        )
-        console.warn('Falling back to unresolved properties')
-        // Fall back to returning properties as-is if dereferencing fails
-        return json.properties || {}
-      }
+  try {
+    const response = await fetch(queryablesLink.href, {
+      credentials:
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin',
+      headers: requestHeaders,
+      signal
     })
-    .catch((error) => {
-      if (error?.name === 'AbortError') {
-        return undefined
-      }
-      const normalizedError = normalizeStacNetworkError(error, contextLabel)
+
+    if (!response.ok) {
+      const normalizedError = await normalizeStacErrorResponse(
+        response,
+        contextLabel
+      )
       console.error(contextLabel, normalizedError)
       return normalizedError
-    })
+    }
+
+    const json = await response.json()
+
+    // Dereference all $ref URLs in the queryables properties
+    try {
+      const properties = json.properties || {}
+      const credentials =
+        store.getState().mainSlice.appConfig.FETCH_CREDENTIALS || 'same-origin'
+      const dereferenced = await resolveRefs(properties, {
+        requestHeaders,
+        fetchCredentials: credentials,
+        fetchSignal: signal
+      })
+      return dereferenced
+    } catch (refError) {
+      console.warn(`Failed to dereference $refs for ${collectionId}:`, refError)
+      console.warn('Falling back to unresolved properties')
+      // Fall back to returning properties as-is if dereferencing fails
+      return json.properties || {}
+    }
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      return undefined
+    }
+    const normalizedError = normalizeStacNetworkError(error, contextLabel)
+    console.error(contextLabel, normalizedError)
+    return normalizedError
+  }
 }

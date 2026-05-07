@@ -51,6 +51,13 @@ export function applyBasepathToRedirect(url, basepath) {
   return normalizedBase + '/' + trimmed
 }
 
+/**
+ * Authenticate user credentials and persist the access token.
+ * @param {string} username - Username/email used for auth.
+ * @param {string} password - Password used for auth.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<void|Object>} Void on success, or normalized error object on failure.
+ */
 export async function AuthService(username, password, signal) {
   const AuthServiceURL = store.getState().mainSlice.appConfig.AUTH_URL
   const contextLabel = 'Authentication Error'
@@ -70,43 +77,42 @@ export async function AuthService(username, password, signal) {
     signal
   }
 
-  return await fetch(`${AuthServiceURL}`, reqParams)
-    .then(async (response) => {
-      if (response.ok) {
-        return response.json()
-      }
+  try {
+    const response = await fetch(`${AuthServiceURL}`, reqParams)
+    if (!response.ok) {
       throw await normalizeStacErrorResponse(response, contextLabel)
-    })
-    .then((json) => {
-      if (!json.access_token) {
-        throw new Error('No Auth Token Found')
-      }
-      setAuthToken(json.access_token)
-      store.dispatch(setAuthTokenExists(true))
-      store.dispatch(clearApplicationAlert())
+    }
 
-      // Check for post-auth redirect URL
-      const redirectUrl = sessionStorage.getItem('POST_AUTH_REDIRECT_URL')
-      if (redirectUrl) {
-        sessionStorage.removeItem('POST_AUTH_REDIRECT_URL')
-        let target = redirectUrl
-        try {
-          const basepath = getActiveRouter()?.options?.basepath
-          target = applyBasepathToRedirect(redirectUrl, basepath)
-        } catch (_err) {
-          // Router not mounted (e.g. pre-mount auth flow) — fall back.
-        }
-        window.location.href = target
+    const json = await response.json()
+    if (!json.access_token) {
+      throw new Error('No Auth Token Found')
+    }
+
+    setAuthToken(json.access_token)
+    store.dispatch(setAuthTokenExists(true))
+    store.dispatch(clearApplicationAlert())
+
+    // Check for post-auth redirect URL
+    const redirectUrl = sessionStorage.getItem('POST_AUTH_REDIRECT_URL')
+    if (redirectUrl) {
+      sessionStorage.removeItem('POST_AUTH_REDIRECT_URL')
+      let target = redirectUrl
+      try {
+        const basepath = getActiveRouter()?.options?.basepath
+        target = applyBasepathToRedirect(redirectUrl, basepath)
+      } catch (_err) {
+        // Router not mounted (e.g. pre-mount auth flow) — fall back.
       }
-    })
-    .catch((error) => {
-      store.dispatch(setAuthTokenExists(false))
-      const normalizedError =
-        error?.error === true
-          ? error
-          : normalizeStacNetworkError(error, contextLabel)
-      // log full error for diagnosing client side errors if needed
-      console.error(contextLabel, normalizedError)
-      return normalizedError
-    })
+      window.location.href = target
+    }
+  } catch (error) {
+    store.dispatch(setAuthTokenExists(false))
+    const normalizedError =
+      error?.error === true
+        ? error
+        : normalizeStacNetworkError(error, contextLabel)
+    // log full error for diagnosing client side errors if needed
+    console.error(contextLabel, normalizedError)
+    return normalizedError
+  }
 }

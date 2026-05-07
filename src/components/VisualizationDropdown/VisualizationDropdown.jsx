@@ -22,6 +22,7 @@ const VisualizationDropdown = () => {
   const selectedCollection = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
+  const appConfig = useSelector((state) => state.mainSlice.appConfig)
   const selectedVisualization = useSelector(
     (state) => state.mainSlice.selectedVisualization
   )
@@ -35,13 +36,13 @@ const VisualizationDropdown = () => {
   const { visualizations, visualizationKeys, hasVisualizations } =
     useMemo(() => {
       return selectedCollection
-        ? getCollectionVisualizations(selectedCollection)
+        ? getCollectionVisualizations(selectedCollection, appConfig)
         : {
             visualizations: null,
             visualizationKeys: [],
             hasVisualizations: false
           }
-    }, [selectedCollection])
+    }, [selectedCollection, appConfig])
 
   // Build dropdown options from visualizations
   const options = useMemo(() => {
@@ -90,6 +91,7 @@ const VisualizationDropdown = () => {
           className="Dropdown__select"
           value={selectedVisualization || visualizationKeys[0] || ''}
           onChange={handleVisualizationChange}
+          aria-label="Visualization"
           input={<OutlinedInput />}
           MenuProps={{
             classes: { paper: 'Dropdown__menu' }
