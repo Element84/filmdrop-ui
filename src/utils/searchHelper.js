@@ -101,20 +101,51 @@ function formatStacErrorMessage(result) {
   return detailsText ? `${result.summary}: ${detailsText}` : result.summary
 }
 
-export async function newSearch(options = {}) {
-  const { viewMode: overrideViewMode, preserveItem = false, signal } = options
+/**
+ * Build search context from current Redux state and options.
+ * Consolidates all state reads into one place for clarity and consistency.
+ * @param {Object} options - Options for search (viewMode override, preserveItem, signal)
+ * @returns {Object} Search context with state, config, and computed values
+ */
+function buildSearchContext(options = {}) {
+  const { viewMode: overrideViewMode, preserveItem = false } = options
+  const state = store.getState().mainSlice
 
-  // Snapshot all needed Redux state upfront, before any dispatches or URL writes.
-  const _state = store.getState().mainSlice
-  const _selectedCollection = _state.selectedCollectionData
-  const viewMode = overrideViewMode || _state.viewMode
-  const dateRange = _state.searchDateRangeValue
+  const selectedCollection = state.selectedCollectionData
+  const viewMode = overrideViewMode || state.viewMode
+  const dateRange = state.searchDateRangeValue
   const dt =
     dateRange && dateRange[0] && dateRange[1]
       ? `${dateRange[0]}/${dateRange[1]}`
       : ''
 
+  const currentPathParams = getPathParams()
+  const currentItemId = preserveItem ? currentPathParams.itemId || '' : ''
+  const collectionId = selectedCollection?.id || ''
+
+  return {
+    state,
+    selectedCollection,
+    viewMode,
+    dateRange,
+    dt,
+    collectionId,
+    currentItemId,
+    currentPathParams,
+    appConfig: state.appConfig,
+    selectedVisualization: state.selectedVisualization,
+    queryableFilters: state.queryableFilters
+  }
+}
+
+/**
+ * Reset map and pagination state for a new search.
+ * Clears layers and resets pagination metadata.
+ * @param {string} viewMode - Current view mode (scene, hex, grid-code, mosaic)
+ */
+function resetMapAndPaginationState(viewMode) {
   clearMapSelection()
+
   if (viewMode !== 'mosaic') {
     clearAllLayers()
     store.dispatch(setSearchResults(null))
@@ -128,11 +159,15 @@ export async function newSearch(options = {}) {
   store.dispatch(setCurrentPage(1))
   store.dispatch(setTotalPages(null))
   store.dispatch(setPaginationHistory([]))
+}
 
-  // Commit current search state to URL (replace — no history entry)
-  const collectionId = _selectedCollection?.id || ''
-  const currentPathParams = getPathParams()
-  const currentItemId = preserveItem ? currentPathParams.itemId || '' : ''
+/**
+ * Sync current search parameters to URL for bookmarking/sharing.
+ * Determines route based on collection and item selection.
+ * @param {Object} context - Search context from buildSearchContext()
+ */
+function syncSearchToUrl(context) {
+  const { collectionId, currentItemId, viewMode, dt } = context
 
   getActiveRouter().navigate({
     to: currentItemId
@@ -153,22 +188,35 @@ export async function newSearch(options = {}) {
       c: prev.c,
       dt,
       view: viewMode || 'scene',
-      viz: _state.selectedVisualization || '',
-      ...serializeQueryableFiltersForUrl(_state.queryableFilters)
+      viz: context.selectedVisualization || '',
+      ...serializeQueryableFiltersForUrl(context.queryableFilters)
     }),
     replace: true
   })
+}
+
+export async function newSearch(options = {}) {
+  const { signal } = options
+
+  // Build context from state (consolidates all state reads)
+  const context = buildSearchContext(options)
+
+  // Reset map and pagination for new search
+  resetMapAndPaginationState(context.viewMode)
+
+  // Sync current search parameters to URL
+  syncSearchToUrl(context)
 
   // Handle mosaic mode
-  if (viewMode === 'mosaic') {
-    if (!_selectedCollection) {
+  if (context.viewMode === 'mosaic') {
+    if (!context.selectedCollection) {
       return
     }
     const sceneMinZoom =
       getCollectionConfig(
-        _selectedCollection.id,
+        context.selectedCollection.id,
         'sceneMinZoom',
-        _state.appConfig
+        context.appConfig
       ) || DEFAULT_SCENE_MIN_ZOOM
     const currentMapZoomLevel = getCurrentMapZoomLevel()
     if (currentMapZoomLevel < sceneMinZoom) {
@@ -183,25 +231,25 @@ export async function newSearch(options = {}) {
   // Get minimum zoom level for scene/mosaic views
   const sceneMinZoom =
     getCollectionConfig(
-      _selectedCollection.id,
+      context.selectedCollection.id,
       'sceneMinZoom',
-      _state.appConfig
+      context.appConfig
     ) || DEFAULT_SCENE_MIN_ZOOM
 
   const currentMapZoomLevel = getCurrentMapZoomLevel()
 
   // Check for both new (stac-server >= 3.6.0) and old (deprecated) aggregation names
-  const includesGeoHex = _selectedCollection.aggregations?.some(
+  const includesGeoHex = context.selectedCollection.aggregations?.some(
     (el) =>
       el.name === 'centroid_geohex_grid_frequency' ||
       el.name === 'grid_geohex_frequency'
   )
-  const includesGridCode = _selectedCollection.aggregations?.some(
+  const includesGridCode = context.selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_code_frequency'
   )
 
   // Handle user-selected view mode
-  if (viewMode === 'scene') {
+  if (context.viewMode === 'scene') {
     // User wants scene view - check zoom level
     if (currentMapZoomLevel < sceneMinZoom) {
       store.dispatch(setZoomLevelNeeded(sceneMinZoom))
@@ -220,7 +268,7 @@ export async function newSearch(options = {}) {
     const normalizedError = getStacErrorResult(searchResult)
     if (normalizedError) return normalizedError
     return
-  } else if (viewMode === 'hex' && includesGeoHex) {
+  } else if (context.viewMode === 'hex' && includesGeoHex) {
     // User wants hex view - no zoom restriction
     const searchAggregateParams = buildSearchAggregateParams('hex')
     store.dispatch(setSearchLoading(true))
@@ -234,7 +282,7 @@ export async function newSearch(options = {}) {
     const normalizedError = getStacErrorResult(result)
     if (normalizedError) return normalizedError
     return
-  } else if (viewMode === 'grid-code' && includesGridCode) {
+  } else if (context.viewMode === 'grid-code' && includesGridCode) {
     // User wants grid-code view - no zoom restriction
     const searchAggregateParams = buildSearchAggregateParams('grid-code')
     store.dispatch(setSearchType('grid-code'))

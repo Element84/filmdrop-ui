@@ -201,14 +201,14 @@ const RightContent = () => {
           <div className="layerListButton" title="Layer List">
             <LayersIcon
               className="layerListButtonIcon"
-              onClick={() => onLayerListButtonClick()}
+              onClick={onLayerListButtonClick}
             ></LayersIcon>
           </div>
         )}
       {_showLayerList && <LayerList></LayerList>}
       <div className="actionButtons">
         {_appConfig.ACTION_BUTTON && (
-          <button className="actionButton" onClick={() => onActionClick()}>
+          <button className="actionButton" onClick={onActionClick}>
             {_appConfig.ACTION_BUTTON.text}
           </button>
         )}

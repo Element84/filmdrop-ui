@@ -1,4 +1,4 @@
-import { React, useEffect, useCallback, useRef } from 'react'
+import React, { useEffect, useCallback, useRef } from 'react'
 import './LeftContent.css'
 import Search from '../../../Search/Search'
 import PopupResults from '../../../PopupResults/PopupResults'

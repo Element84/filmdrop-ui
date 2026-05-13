@@ -1,4 +1,4 @@
-import { React } from 'react'
+import React from 'react'
 import './ExportButton.css'
 import { useSelector } from 'react-redux'
 import DownloadIcon from '@mui/icons-material/Download'
@@ -50,7 +50,7 @@ const ExportButton = () => {
           }
         }}
       >
-        <button className="downloadButton" onClick={() => onExportClick()}>
+        <button className="downloadButton" onClick={onExportClick}>
           <DownloadIcon fontSize="small"></DownloadIcon>
         </button>
       </Tooltip>
