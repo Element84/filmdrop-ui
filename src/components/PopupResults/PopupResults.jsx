@@ -33,10 +33,8 @@ const PopupResults = (props) => {
     (state) => state.mainSlice.selectedVisualization
   )
 
-  // Single effect — splitting this races dispatches of setCurrentPopupResult
-  // against each other for the same input change.
-  // _currentPopupResult is in deps despite being written here: the guard above
-  // bails when it is still in props.results, and Immer identity-bails on no-op writes.
+  // Effect A: Sync popup result when results/index changes
+  // Handles: index validation, item selection, URL sync
   useEffect(() => {
     if (props.results.length > 0) {
       if (
@@ -46,23 +44,29 @@ const PopupResults = (props) => {
         dispatch(setSelectedPopupResultIndex(0))
       }
       const currentItem = props.results[_selectedPopupResultIndex]
-      debounceTitilerOverlay(currentItem)
       dispatch(setCurrentPopupResult(currentItem))
       if (currentItem && currentItem.id) {
         setItem(currentItem.id)
       }
     }
-    return () => {
-      dispatch(setImageOverlayLoading(false))
-    }
   }, [
     props.results,
     _selectedPopupResultIndex,
-    _selectedVisualization,
     _currentPopupResult,
     dispatch,
     setItem
   ])
+
+  // Effect B: Update overlay when popup result or visualization changes
+  // Handles: Tiler overlay updates based on result and visualization selection
+  useEffect(() => {
+    if (_currentPopupResult) {
+      debounceTitilerOverlay(_currentPopupResult)
+    }
+    return () => {
+      dispatch(setImageOverlayLoading(false))
+    }
+  }, [_currentPopupResult, _selectedVisualization, dispatch])
 
   const onNextClick = useCallback(() => {
     if (_selectedPopupResultIndex < props.results.length - 1) {

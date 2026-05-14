@@ -16,14 +16,6 @@ const OverflowTooltip = ({
 }) => {
   const ref = useRef(null)
   const [isOverflowing, setIsOverflowing] = useState(false)
-  const isMountedRef = useRef(true)
-
-  useEffect(() => {
-    isMountedRef.current = true
-    return () => {
-      isMountedRef.current = false
-    }
-  }, [])
 
   useEffect(() => {
     const el = ref.current
@@ -33,12 +25,12 @@ const OverflowTooltip = ({
     // Reset isOverflowing so a stale `true` does not persist when content
     // transitions from non-empty to empty mid-life.
     if (children === null || children === undefined || children === '') {
-      if (isMountedRef.current) setIsOverflowing(false)
+      setIsOverflowing(false)
       return
     }
 
     const checkOverflow = () => {
-      if (!isMountedRef.current || !ref.current) return
+      if (!ref.current) return
       // Skip when not visible (e.g., inside display:none tab)
       if (ref.current.clientWidth === 0) return
       setIsOverflowing(ref.current.scrollWidth > ref.current.clientWidth)
