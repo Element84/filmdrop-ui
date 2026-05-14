@@ -13,6 +13,11 @@ import {
   setShowMapAttribution,
   setShowLayerList
 } from '../../../../redux/slices/mainSlice'
+import {
+  selectMapUiState,
+  selectSearchState,
+  selectRightContentLayerState
+} from '../../../../redux/selectors/mainSelectors'
 import { setMapZoomLevel } from '../../../../utils/mapLayers'
 import { disableMapPolyDrawing } from '../../../../utils/mapInteraction'
 import { getCollectionConfig } from '../../../../utils/configHelper'
@@ -33,37 +38,30 @@ import { useMapResizeHandler } from '../../../../hooks/useMapResizeHandler'
 
 const RightContent = () => {
   const [mapAttribution, setmapAttribution] = useState('')
-  const _showMapAttribution = useSelector(
-    (state) => state.mainSlice.showMapAttribution
+  const {
+    showMapAttribution: _showMapAttribution,
+    showAppLoading: _showAppLoading,
+    showZoomNotice: _showZoomNotice,
+    zoomLevelNeeded: _zoomLevelNeeded,
+    isDrawingEnabled: _isDrawingEnabled,
+    imageOverlayLoading: _imageOverlayLoading,
+    showLayerList: _showLayerList,
+    currentTheme: _currentTheme,
+    map: _map,
+    appName: _appName
+  } = useSelector(selectMapUiState)
+  const {
+    searchResults: _searchResults,
+    searchLoading: _searchLoading,
+    searchType: _searchType,
+    viewMode: _viewMode,
+    searchGeojsonBoundary: _searchGeojsonBoundary,
+    mappedScenes: _mappedScenes,
+    selectedCollectionData: _selectedCollectionData
+  } = useSelector(selectSearchState)
+  const { appConfig: _appConfig, cartItems: _cartItems } = useSelector(
+    selectRightContentLayerState
   )
-  const _showAppLoading = useSelector((state) => state.mainSlice.showAppLoading)
-  const _searchResults = useSelector((state) => state.mainSlice.searchResults)
-  const _searchLoading = useSelector((state) => state.mainSlice.searchLoading)
-  const _showZoomNotice = useSelector((state) => state.mainSlice.showZoomNotice)
-  const _zoomLevelNeeded = useSelector(
-    (state) => state.mainSlice.zoomLevelNeeded
-  )
-  const _searchType = useSelector((state) => state.mainSlice.searchType)
-  const _viewMode = useSelector((state) => state.mainSlice.viewMode)
-  const _isDrawingEnabled = useSelector(
-    (state) => state.mainSlice.isDrawingEnabled
-  )
-  const _appConfig = useSelector((state) => state.mainSlice.appConfig)
-  const _searchGeojsonBoundary = useSelector(
-    (state) => state.mainSlice.searchGeojsonBoundary
-  )
-  const _cartItems = useSelector((state) => state.mainSlice.cartItems)
-  const _mappedScenes = useSelector((state) => state.mainSlice.mappedScenes)
-  const _imageOverlayLoading = useSelector(
-    (state) => state.mainSlice.imageOverlayLoading
-  )
-  const _appName = useSelector((state) => state.mainSlice.appName)
-  const _showLayerList = useSelector((state) => state.mainSlice.showLayerList)
-  const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
-  const _selectedCollectionData = useSelector(
-    (state) => state.mainSlice.selectedCollectionData
-  )
-  const _map = useSelector((state) => state.mainSlice.map)
   const {
     leftPanelWidth: _leftPanelWidth,
     isLeftPanelVisible: _isLeftPanelVisible
