@@ -18,7 +18,7 @@ import {
  *
  * @param {string} itemId - The unique identifier for the item
  * @param {string} [collectionId] - The collection ID (optional)
- * @returns {Promise<Object>} The STAC item GeoJSON feature or error object {error: true, status: number}
+ * @returns {Promise<Object | undefined>} The STAC item GeoJSON feature, normalized error object, or undefined when aborted
  * @example
  * // Known collection
  * const item = await GetItemService('S2A_17SNB_20230617_0_L2A', 'sentinel-2-l2a')
@@ -81,6 +81,10 @@ export async function GetItemService(itemId, collectionId, signal) {
       details: 'Item not found'
     }
   } catch (error) {
+    if (error?.name === 'AbortError') {
+      return undefined
+    }
+
     console.error(contextLabel + ':', error)
     return normalizeStacNetworkError(error, contextLabel)
   }

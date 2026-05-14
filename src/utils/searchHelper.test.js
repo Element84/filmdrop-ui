@@ -364,6 +364,43 @@ describe('searchHelper newSearch', () => {
     expect(AddMosaicService).toHaveBeenCalledTimes(0)
     expect(result).toBe(normalizedError)
   })
+
+  it('returns early when no collection is selected', async () => {
+    store.dispatch(setSelectedCollectionData(null))
+    const searchServiceSpy = vi.spyOn(getSearchService, 'SearchService')
+
+    const result = await newSearch({ viewMode: 'scene' })
+
+    expect(result).toBeUndefined()
+    expect(searchServiceSpy).not.toHaveBeenCalled()
+    expect(AggregateSearchService).not.toHaveBeenCalled()
+    expect(AddMosaicService).not.toHaveBeenCalled()
+  })
+
+  it('falls back to scene search when selected view mode is unsupported by collection aggregations', async () => {
+    store.dispatch(
+      setSelectedCollectionData({
+        ...mockCollection,
+        aggregations: []
+      })
+    )
+
+    const searchServiceSpy = vi
+      .spyOn(getSearchService, 'SearchService')
+      .mockResolvedValueOnce(undefined)
+
+    const result = await newSearch({ viewMode: 'hex' })
+
+    expect(result).toBeUndefined()
+    expect(AggregateSearchService).not.toHaveBeenCalled()
+    expect(searchServiceSpy).toHaveBeenCalledTimes(1)
+    expect(searchServiceSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      'scene',
+      undefined,
+      undefined
+    )
+  })
 })
 
 describe('searchHelper bbox precision', () => {

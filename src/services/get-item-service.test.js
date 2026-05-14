@@ -274,6 +274,22 @@ describe('GetItemService with collectionId', () => {
       expect(result).toMatchObject({ error: true, status: null })
     })
 
+    it('returns undefined and does not log on abort errors', async () => {
+      const abortError = Object.assign(new Error('aborted'), {
+        name: 'AbortError'
+      })
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+
+      global.fetch.mockRejectedValueOnce(abortError)
+
+      const result = await GetItemService(mockItemId, mockCollectionId)
+
+      expect(result).toBeUndefined()
+      expect(consoleErrorSpy).not.toHaveBeenCalled()
+    })
+
     it('returns error object with null status on JSON parse failure', async () => {
       global.fetch.mockResolvedValueOnce({
         ok: true,
@@ -374,5 +390,21 @@ describe('GetItemService without collectionId', () => {
     const result = await GetItemService(mockItemId)
 
     expect(result).toMatchObject({ error: true, status: null })
+  })
+
+  it('returns undefined and does not log on abort errors', async () => {
+    const abortError = Object.assign(new Error('aborted'), {
+      name: 'AbortError'
+    })
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+
+    global.fetch.mockRejectedValueOnce(abortError)
+
+    const result = await GetItemService(mockItemId)
+
+    expect(result).toBeUndefined()
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
 })

@@ -195,6 +195,80 @@ function syncSearchToUrl(context) {
   })
 }
 
+function normalizeSearchResult(result) {
+  const normalizedError = getStacErrorResult(result)
+  if (normalizedError) {
+    return normalizedError
+  }
+  return undefined
+}
+
+function getSceneMinZoom(context) {
+  return (
+    getCollectionConfig(
+      context.selectedCollection.id,
+      'sceneMinZoom',
+      context.appConfig
+    ) || DEFAULT_SCENE_MIN_ZOOM
+  )
+}
+
+async function runSceneSearch(sceneMinZoom, currentMapZoomLevel, signal) {
+  if (currentMapZoomLevel < sceneMinZoom) {
+    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
+    store.dispatch(setShowZoomNotice(true))
+    return undefined
+  }
+
+  const searchScenesParams = buildSearchScenesParams()
+  store.dispatch(setSearchType('scene'))
+  store.dispatch(setSearchLoading(true))
+  const searchResult = await getSearchService.SearchService(
+    searchScenesParams,
+    'scene',
+    undefined,
+    signal
+  )
+  return normalizeSearchResult(searchResult)
+}
+
+async function runHexSearch(signal) {
+  const searchAggregateParams = buildSearchAggregateParams('hex')
+  store.dispatch(setSearchLoading(true))
+  store.dispatch(setSearchType('hex'))
+  const result = await AggregateSearchService(
+    searchAggregateParams,
+    'hex',
+    undefined,
+    signal
+  )
+  return normalizeSearchResult(result)
+}
+
+async function runGridCodeSearch(signal) {
+  const searchAggregateParams = buildSearchAggregateParams('grid-code')
+  store.dispatch(setSearchType('grid-code'))
+  store.dispatch(setSearchLoading(true))
+  const result = await AggregateSearchService(
+    searchAggregateParams,
+    'grid-code',
+    undefined,
+    signal
+  )
+  return normalizeSearchResult(result)
+}
+
+async function runMosaicSearch(sceneMinZoom, currentMapZoomLevel, signal) {
+  if (currentMapZoomLevel < sceneMinZoom) {
+    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
+    store.dispatch(setShowZoomNotice(true))
+    return undefined
+  }
+
+  store.dispatch(setSearchLoading(true))
+  return newMosaicSearch(signal)
+}
+
 export async function newSearch(options = {}) {
   const { signal } = options
 
@@ -207,36 +281,17 @@ export async function newSearch(options = {}) {
   // Sync current search parameters to URL
   syncSearchToUrl(context)
 
-  // Handle mosaic mode
-  if (context.viewMode === 'mosaic') {
-    if (!context.selectedCollection) {
-      return
-    }
-    const sceneMinZoom =
-      getCollectionConfig(
-        context.selectedCollection.id,
-        'sceneMinZoom',
-        context.appConfig
-      ) || DEFAULT_SCENE_MIN_ZOOM
-    const currentMapZoomLevel = getCurrentMapZoomLevel()
-    if (currentMapZoomLevel < sceneMinZoom) {
-      store.dispatch(setZoomLevelNeeded(sceneMinZoom))
-      store.dispatch(setShowZoomNotice(true))
-      return
-    }
-    store.dispatch(setSearchLoading(true))
-    return newMosaicSearch(signal)
+  if (!context.selectedCollection) {
+    return undefined
   }
 
-  // Get minimum zoom level for scene/mosaic views
-  const sceneMinZoom =
-    getCollectionConfig(
-      context.selectedCollection.id,
-      'sceneMinZoom',
-      context.appConfig
-    ) || DEFAULT_SCENE_MIN_ZOOM
-
+  const sceneMinZoom = getSceneMinZoom(context)
   const currentMapZoomLevel = getCurrentMapZoomLevel()
+
+  // Handle mosaic mode
+  if (context.viewMode === 'mosaic') {
+    return runMosaicSearch(sceneMinZoom, currentMapZoomLevel, signal)
+  }
 
   // Check for both new (stac-server >= 3.6.0) and old (deprecated) aggregation names
   const includesGeoHex = context.selectedCollection.aggregations?.some(
@@ -250,71 +305,15 @@ export async function newSearch(options = {}) {
 
   // Handle user-selected view mode
   if (context.viewMode === 'scene') {
-    // User wants scene view - check zoom level
-    if (currentMapZoomLevel < sceneMinZoom) {
-      store.dispatch(setZoomLevelNeeded(sceneMinZoom))
-      store.dispatch(setShowZoomNotice(true))
-      return
-    }
-    const searchScenesParams = buildSearchScenesParams()
-    store.dispatch(setSearchType('scene'))
-    store.dispatch(setSearchLoading(true))
-    const searchResult = await getSearchService.SearchService(
-      searchScenesParams,
-      'scene',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(searchResult)
-    if (normalizedError) return normalizedError
-    return
+    return runSceneSearch(sceneMinZoom, currentMapZoomLevel, signal)
   } else if (context.viewMode === 'hex' && includesGeoHex) {
-    // User wants hex view - no zoom restriction
-    const searchAggregateParams = buildSearchAggregateParams('hex')
-    store.dispatch(setSearchLoading(true))
-    store.dispatch(setSearchType('hex'))
-    const result = await AggregateSearchService(
-      searchAggregateParams,
-      'hex',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(result)
-    if (normalizedError) return normalizedError
-    return
+    return runHexSearch(signal)
   } else if (context.viewMode === 'grid-code' && includesGridCode) {
-    // User wants grid-code view - no zoom restriction
-    const searchAggregateParams = buildSearchAggregateParams('grid-code')
-    store.dispatch(setSearchType('grid-code'))
-    store.dispatch(setSearchLoading(true))
-    const result = await AggregateSearchService(
-      searchAggregateParams,
-      'grid-code',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(result)
-    if (normalizedError) return normalizedError
-    return
+    return runGridCodeSearch(signal)
   }
 
   // Fallback: if no valid selection, default to scene view if zoom allows
-  if (currentMapZoomLevel >= sceneMinZoom) {
-    const searchScenesParams = buildSearchScenesParams()
-    store.dispatch(setSearchType('scene'))
-    store.dispatch(setSearchLoading(true))
-    const searchResult = await getSearchService.SearchService(
-      searchScenesParams,
-      'scene',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(searchResult)
-    if (normalizedError) return normalizedError
-  } else {
-    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
-    store.dispatch(setShowZoomNotice(true))
-  }
+  return runSceneSearch(sceneMinZoom, currentMapZoomLevel, signal)
 }
 
 export async function validateUploadedGeometry(uploadedFeature, signal) {

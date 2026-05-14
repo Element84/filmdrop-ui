@@ -118,4 +118,26 @@ describe('FetchPageService behavior', () => {
     )
     expect(addDataToLayerMock).not.toHaveBeenCalled()
   })
+
+  it('returns undefined and avoids logging on abort errors', async () => {
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+    const controller = new AbortController()
+    const abortError = Object.assign(new Error('aborted'), {
+      name: 'AbortError'
+    })
+
+    global.fetch = vi.fn().mockRejectedValue(abortError)
+
+    const result = await FetchPageService(
+      'https://example.com/page/2',
+      2,
+      controller.signal
+    )
+
+    expect(result).toBeUndefined()
+    expect(store.getState().mainSlice.searchLoading).toBe(false)
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+  })
 })

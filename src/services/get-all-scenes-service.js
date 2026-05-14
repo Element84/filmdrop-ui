@@ -54,12 +54,20 @@ async function fetchFeatures(url, abortSignal) {
           return features
         }
         const nextFeatures = await fetchFeatures(nextPageLink.href, abortSignal)
+        if (nextFeatures === undefined) {
+          return undefined
+        }
         return features.concat(nextFeatures)
       }
+      return undefined
     }
 
     return features
   } catch (error) {
+    if (error?.name === 'AbortError') {
+      return undefined
+    }
+
     const normalizedError =
       error?.error === true
         ? error
@@ -73,7 +81,7 @@ async function fetchFeatures(url, abortSignal) {
  * Fetch all paginated scene features from a STAC items endpoint.
  * @param {string} url - Initial STAC items URL.
  * @param {AbortSignal} abortSignal - Abort signal used for recursive page fetches.
- * @returns {Promise<Array>} Concatenated feature list.
+ * @returns {Promise<Array | undefined>} Concatenated feature list, or undefined when aborted.
  */
 export async function fetchAllFeatures(url, abortSignal) {
   return await fetchFeatures(url, abortSignal)

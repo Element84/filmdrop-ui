@@ -30,7 +30,7 @@ import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
  * @param {string} pageUrl - The URL to fetch (next or prev link from STAC API)
  * @param {number} pageNumber - The page number being fetched
  * @param {AbortSignal} [signal] - Optional abort signal.
- * @returns {Promise<void>} Resolves after state/layer updates complete.
+ * @returns {Promise<void | Object | undefined>} Resolves after state/layer updates complete, returns normalized error object on failure, or undefined when aborted.
  */
 export async function FetchPageService(pageUrl, pageNumber, signal) {
   const requestHeaders = buildStacRequestHeaders()
@@ -124,9 +124,15 @@ export async function FetchPageService(pageUrl, pageNumber, signal) {
     addDataToLayer(json, 'searchResultsLayer', options, true)
   } catch (error) {
     store.dispatch(setSearchLoading(false))
+
+    if (error?.name === 'AbortError') {
+      return undefined
+    }
+
     const message = 'Error Fetching Paginated Results'
     const normalizedError =
       error?.error === true ? error : normalizeStacNetworkError(error, message)
     console.error(message, normalizedError)
+    return normalizedError
   }
 }

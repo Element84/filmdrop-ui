@@ -161,4 +161,48 @@ describe('fetchAllFeatures', () => {
     )
     expect(consoleErrorSpy).toHaveBeenCalled()
   })
+
+  it('returns undefined and does not log on initial abort', async () => {
+    const signal = new AbortController().signal
+    const abortError = Object.assign(new Error('aborted'), {
+      name: 'AbortError'
+    })
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+
+    global.fetch = vi.fn().mockRejectedValue(abortError)
+
+    const result = await fetchAllFeatures('https://example.com/search', signal)
+
+    expect(result).toBeUndefined()
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+  })
+
+  it('returns undefined when abort happens on a later recursive page', async () => {
+    const signal = new AbortController().signal
+    const abortError = Object.assign(new Error('aborted'), {
+      name: 'AbortError'
+    })
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+
+    global.fetch = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          features: [{ id: 'scene-1' }],
+          links: [{ rel: 'next', href: 'https://example.com/search?page=2' }]
+        })
+      })
+      .mockRejectedValueOnce(abortError)
+
+    const result = await fetchAllFeatures('https://example.com/search', signal)
+
+    expect(result).toBeUndefined()
+    expect(global.fetch).toHaveBeenCalledTimes(2)
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
+  })
 })
