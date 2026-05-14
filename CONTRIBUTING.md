@@ -24,6 +24,32 @@ pipeline is wired into `vitest --run` via `npm run coverage`.
   `useEffect`. Do not add effect chains (A sets state that triggers B).
 - Reuse existing helpers (`addTimeoutToMap`, `buildStacRequestHeaders`,
   `useDebouncedCallback`) instead of inventing new ones.
+- Keep effects single-purpose. If one effect synchronizes state/URL and also
+  performs UI side effects, split it into separate effects with focused
+  dependency arrays.
+
+## Service error/abort contract
+
+Migrated services must preserve the three-way contract:
+
+1. Abort (`AbortError`): return `undefined`, do not log `console.error`.
+2. Network/runtime failure: normalize as network error and log once.
+3. HTTP/API failure (`!response.ok`): normalize as response error and log once.
+
+`searchLoading` (and equivalent loading flags) must always reset on every
+exit path, including abort.
+
+Use `src/testing/abort-test-helper.js` in tests for consistent abort setup.
+
+## Selector conventions for containers
+
+- Prefer grouped memoized selectors from
+  `src/redux/selectors/mainSelectors.js` in heavy containers.
+- Avoid many independent `useSelector` calls in the same component when data
+  belongs to one domain slice.
+- Keep selector outputs domain-scoped (`map`, `search`, `pagination`,
+  `layer list`) to reduce rerender pressure without over-coupling unrelated
+  state.
 
 ## Host DOM contract
 

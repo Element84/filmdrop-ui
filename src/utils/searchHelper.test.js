@@ -401,6 +401,70 @@ describe('searchHelper newSearch', () => {
       undefined
     )
   })
+
+  it('shows zoom notice and skips scene search when below sceneMinZoom', async () => {
+    store.dispatch(
+      setAppConfig({
+        STAC_API_URL: 'https://example.com/stac',
+        MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
+        FETCH_CREDENTIALS: 'same-origin',
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            sceneMinZoom: 9,
+            mosaicTilerParams: {
+              assets: ['test-asset']
+            }
+          }
+        }
+      })
+    )
+
+    vi.spyOn(mapLayers, 'getCurrentMapZoomLevel').mockReturnValue(3)
+    const searchServiceSpy = vi.spyOn(getSearchService, 'SearchService')
+
+    const result = await newSearch({ viewMode: 'scene' })
+
+    expect(result).toBeUndefined()
+    expect(searchServiceSpy).not.toHaveBeenCalled()
+    expect(store.getState().mainSlice.showZoomNotice).toBe(true)
+    expect(store.getState().mainSlice.zoomLevelNeeded).toBe(9)
+  })
+
+  it('runs scene search when at or above sceneMinZoom', async () => {
+    store.dispatch(
+      setAppConfig({
+        STAC_API_URL: 'https://example.com/stac',
+        MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
+        FETCH_CREDENTIALS: 'same-origin',
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            sceneMinZoom: 9,
+            mosaicTilerParams: {
+              assets: ['test-asset']
+            }
+          }
+        }
+      })
+    )
+
+    vi.spyOn(mapLayers, 'getCurrentMapZoomLevel').mockReturnValue(10)
+    const searchServiceSpy = vi
+      .spyOn(getSearchService, 'SearchService')
+      .mockResolvedValueOnce(undefined)
+
+    const result = await newSearch({ viewMode: 'scene' })
+
+    expect(result).toBeUndefined()
+    expect(searchServiceSpy).toHaveBeenCalledTimes(1)
+    expect(searchServiceSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      'scene',
+      undefined,
+      undefined
+    )
+  })
 })
 
 describe('searchHelper bbox precision', () => {

@@ -2,6 +2,7 @@ import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
 import { store } from '../redux/store'
 import { setAppConfig, mainSliceReset } from '../redux/slices/mainSlice'
 import { FetchPageService } from './get-pagination-service'
+import { createAbortableRequest } from '../testing/abort-test-helper'
 
 const {
   addDataToLayerMock,
@@ -94,6 +95,32 @@ describe('FetchPageService behavior', () => {
     )
   })
 
+  it('sets loading true while request is in-flight and false after completion', async () => {
+    let resolveFetch
+    global.fetch = vi.fn(
+      () =>
+        new Promise((resolve) => {
+          resolveFetch = resolve
+        })
+    )
+
+    const pending = FetchPageService('https://example.com/page/2', 2)
+
+    expect(store.getState().mainSlice.searchLoading).toBe(true)
+
+    resolveFetch({
+      ok: true,
+      json: async () => ({
+        features: [],
+        links: []
+      })
+    })
+
+    await pending
+
+    expect(store.getState().mainSlice.searchLoading).toBe(false)
+  })
+
   it('handles non-OK fetch responses by clearing loading and logging normalized error', async () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
@@ -123,17 +150,14 @@ describe('FetchPageService behavior', () => {
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {})
-    const controller = new AbortController()
-    const abortError = Object.assign(new Error('aborted'), {
-      name: 'AbortError'
-    })
+    const { signal, abortError } = createAbortableRequest()
 
     global.fetch = vi.fn().mockRejectedValue(abortError)
 
     const result = await FetchPageService(
       'https://example.com/page/2',
       2,
-      controller.signal
+      signal
     )
 
     expect(result).toBeUndefined()

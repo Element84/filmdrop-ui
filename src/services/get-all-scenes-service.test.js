@@ -7,6 +7,7 @@ import {
   setMappedScenes
 } from '../redux/slices/mainSlice'
 import { DEFAULT_MAX_SCENES_RENDERED } from '../constants/defaults'
+import { createAbortableRequest } from '../testing/abort-test-helper'
 
 const {
   addDataToLayerMock,
@@ -163,10 +164,7 @@ describe('fetchAllFeatures', () => {
   })
 
   it('returns undefined and does not log on initial abort', async () => {
-    const signal = new AbortController().signal
-    const abortError = Object.assign(new Error('aborted'), {
-      name: 'AbortError'
-    })
+    const { signal, abortError } = createAbortableRequest()
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {})
@@ -180,10 +178,7 @@ describe('fetchAllFeatures', () => {
   })
 
   it('returns undefined when abort happens on a later recursive page', async () => {
-    const signal = new AbortController().signal
-    const abortError = Object.assign(new Error('aborted'), {
-      name: 'AbortError'
-    })
+    const { signal, abortError } = createAbortableRequest()
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {})

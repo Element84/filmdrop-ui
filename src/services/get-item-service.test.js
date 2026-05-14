@@ -3,6 +3,7 @@ import { GetItemService } from './get-item-service'
 import { store } from '../redux/store'
 import { setAppConfig } from '../redux/slices/mainSlice'
 import * as authHelper from '../utils/authHelper'
+import { createAbortableRequest } from '../testing/abort-test-helper'
 
 // Mock modules
 vi.mock('../utils/authHelper', async () => {
@@ -199,18 +200,18 @@ describe('GetItemService with collectionId', () => {
     })
 
     it('forwards AbortController signal when provided', async () => {
-      const controller = new AbortController()
+      const { signal } = createAbortableRequest()
       global.fetch.mockResolvedValueOnce({
         ok: true,
         json: async () => mockItemResponse
       })
 
-      await GetItemService(mockItemId, mockCollectionId, controller.signal)
+      await GetItemService(mockItemId, mockCollectionId, signal)
 
       expect(global.fetch).toHaveBeenCalledWith(
         expect.any(String),
         expect.objectContaining({
-          signal: controller.signal
+          signal
         })
       )
     })
@@ -275,9 +276,7 @@ describe('GetItemService with collectionId', () => {
     })
 
     it('returns undefined and does not log on abort errors', async () => {
-      const abortError = Object.assign(new Error('aborted'), {
-        name: 'AbortError'
-      })
+      const { abortError } = createAbortableRequest()
       const consoleErrorSpy = vi
         .spyOn(console, 'error')
         .mockImplementation(() => {})
@@ -393,9 +392,7 @@ describe('GetItemService without collectionId', () => {
   })
 
   it('returns undefined and does not log on abort errors', async () => {
-    const abortError = Object.assign(new Error('aborted'), {
-      name: 'AbortError'
-    })
+    const { abortError } = createAbortableRequest()
     const consoleErrorSpy = vi
       .spyOn(console, 'error')
       .mockImplementation(() => {})

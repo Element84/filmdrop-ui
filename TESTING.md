@@ -52,10 +52,35 @@ Add a case to this file whenever you touch the active-ref contract.
 - Assert on normalized error shapes (`stacErrorHelper`) when the service
   has been migrated; several services still throw raw errors.
 
+### Service contract assertions (required for migrated services)
+
+When testing services that follow the standardized contract, assert all three
+branches explicitly:
+
+1. Abort path: `AbortError` returns `undefined`, does not call `console.error`,
+   and still clears loading flags.
+2. Network/runtime failure: returns a normalized network error object and logs
+   exactly once with the service context label.
+3. HTTP/API failure (`!response.ok`): returns a normalized API error object and
+   logs exactly once with the same context label.
+
+Loading flags must be asserted as lifecycle behavior (set true in-flight,
+set false on completion/failure/abort), not just end state.
+
+Use `src/testing/abort-test-helper.js` to avoid re-implementing abort
+scaffolding across suites.
+
 ## Redux tests
 
 - Exercise reducers via the full store, not by importing the raw reducer.
 - Use `waitFor` to assert on async effects; never `setTimeout` in tests.
+
+## Isolation and lifecycle conventions
+
+- Use `beforeEach` to reset store state (`mainSliceReset()`) and reset mocks.
+- Use `afterEach` for `vi.restoreAllMocks()` so spies do not leak across files.
+- For async service flows, prefer explicit in-flight assertions over timing
+  hacks. Do not use artificial sleeps.
 
 ## Avoid these pitfalls
 
