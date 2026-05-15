@@ -22,6 +22,20 @@ export default defineConfig({
     'import.meta.env.VITE_APP_VERSION': JSON.stringify(pkg.version)
   },
   plugins: [react(), viteTsconfigPaths(), svgrPlugin()],
+  resolve: {
+    alias: [
+      {
+        find: /^filmdrop-ui\/style\.css$/,
+        replacement: fileURLToPath(new URL('./src/index.css', import.meta.url))
+      },
+      {
+        find: /^filmdrop-ui$/,
+        replacement: fileURLToPath(
+          new URL('./src/lib-entry.jsx', import.meta.url)
+        )
+      }
+    ]
+  },
   build: {
     outDir: 'build'
   },
