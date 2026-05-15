@@ -14,6 +14,8 @@ const PopupResult = (props) => {
   const [thumbnailInfo, setThumbnailInfo] = useState(null)
   const [thumbnailFailed, setThumbnailFailed] = useState(false)
   const isMountedRef = useRef(true)
+  const autoCenterOnItemChangedRef = useRef(_autoCenterOnItemChanged)
+  autoCenterOnItemChangedRef.current = _autoCenterOnItemChanged
 
   useEffect(() => {
     isMountedRef.current = true
@@ -23,39 +25,39 @@ const PopupResult = (props) => {
   }, [])
 
   useEffect(() => {
+    if (autoCenterOnItemChangedRef.current && props.result) {
+      zoomToItemExtent(props.result)
+    }
+  }, [props.result])
+
+  useEffect(() => {
     // Reset failure state whenever the item changes.
     setThumbnailFailed(false)
-    if (props.result) {
-      if (_autoCenterOnItemChanged) {
-        zoomToItemExtent(props.result)
-      }
-      const thumbnailURLForSelection = props.result?.links?.find(
-        ({ rel }) => rel === 'thumbnail'
-      )?.href
+    if (!props.result) return
 
-      // If no thumbnail available, clear immediately
-      if (!thumbnailURLForSelection) {
-        setThumbnailInfo(null)
-        return
-      }
+    const thumbnailURLForSelection = props.result?.links?.find(
+      ({ rel }) => rel === 'thumbnail'
+    )?.href
 
-      // Preload the new image, keeping the previous one visible until ready
-      const image = new Image()
-      image.onload = function () {
-        if (!isMountedRef.current) return
-        if (this.width > 0) {
-          setThumbnailInfo({
-            url: thumbnailURLForSelection,
-            width: this.width,
-            height: this.height
-          })
-        }
-      }
-      image.src = thumbnailURLForSelection
+    // If no thumbnail available, clear immediately
+    if (!thumbnailURLForSelection) {
+      setThumbnailInfo(null)
+      return
     }
-    // We intentionally do not list `_autoCenterOnItemChanged` so that toggling
-    // auto-center mid-view does not re-zoom or re-trigger the thumbnail load.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+
+    // Preload the new image, keeping the previous one visible until ready
+    const image = new Image()
+    image.onload = function () {
+      if (!isMountedRef.current) return
+      if (this.width > 0) {
+        setThumbnailInfo({
+          url: thumbnailURLForSelection,
+          width: this.width,
+          height: this.height
+        })
+      }
+    }
+    image.src = thumbnailURLForSelection
   }, [props.result])
 
   return (

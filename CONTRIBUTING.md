@@ -17,9 +17,11 @@ pipeline is wired into `vitest --run` via `npm run coverage`.
 
 ## Dependency & Effect Discipline
 
-- Stable refs (`dispatch`, `navigate`, TanStack hook returns) **must not**
-  appear in hook dependency arrays. Flag every intentional omission in the
-  PR description.
+- Stable references from framework hooks (`dispatch`, `navigate`, TanStack
+  router hook returns) are guaranteed stable and may be included in effect
+  dependency arrays to satisfy `react-hooks/exhaustive-deps`. This is
+  preferred over suppressing the rule. Never add
+  `eslint-disable-next-line react-hooks/exhaustive-deps` comments.
 - Prefer derivations, event handlers, and render-time compute over
   `useEffect`. Do not add effect chains (A sets state that triggers B).
 - Reuse existing helpers (`addTimeoutToMap`, `buildStacRequestHeaders`,

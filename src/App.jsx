@@ -78,7 +78,7 @@ function App() {
       }
     })
     const version = import.meta.env?.VITE_APP_VERSION
-    if (version) {
+    if (import.meta.env.DEV && version) {
       console.log('Version: ' + version)
     }
   }, [dispatch])
