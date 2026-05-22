@@ -13,7 +13,7 @@
     "@radiantearth/stac-fields": "^1.5.7",
     "@reduxjs/toolkit": "^2.11.2",
     "@tanstack/react-router": "^1.159.10",
-    "@vitejs/plugin-react": "^5.1.2",
+    "@vitejs/plugin-react": "^5.2.0",
     "colormap": "^2.3.2",
     "dayjs": "^1.11.19",
     "dayjs-plugin-utc": "^0.1.2",
