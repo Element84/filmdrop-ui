@@ -12,7 +12,7 @@
     "@mui/x-date-pickers": "^8.26.0",
     "@radiantearth/stac-fields": "^1.5.7",
     "@reduxjs/toolkit": "^2.11.2",
-    "@tanstack/react-router": "^1.159.10",
+    "@tanstack/react-router": "^1.168.25",
     "@vitejs/plugin-react": "^5.1.2",
     "colormap": "^2.3.2",
     "dayjs": "^1.11.19",
