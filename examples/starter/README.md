@@ -140,6 +140,10 @@ zero additional configuration. If brand assets look stale, run
 - **Theme CSS not applying** — ensure the starter is serving from
   `/app/`; the scoped `.filmdrop-root[data-theme=…]` selectors need the
   wrapper div that `App.jsx` renders.
+- **`npm run verify:starter` fails on CSS order** — ensure
+  `examples/starter/src/App.jsx` imports CSS in this exact order:
+  `leaflet/dist/leaflet.css`, `leaflet-draw/dist/leaflet.draw.css`, then
+  `filmdrop-ui/style.css`.
 - **`filmdrop-ui` resolution fails** — run `npm install` at the repo
   root (which sets up the workspace) AFTER running `npm run build:lib`.
   The starter declares `"filmdrop-ui": "file:../.."` so the workspace

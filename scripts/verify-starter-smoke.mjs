@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const starter = resolve(root, 'examples/starter')
+const starterAppSource = resolve(starter, 'src/App.jsx')
 
 function fail(msg) {
   console.error(`✗ ${msg}`)
@@ -25,14 +26,48 @@ if (process.env.FILMDROP_DEV_SRC === '1') {
 }
 pass('FILMDROP_DEV_SRC is not set.')
 
-// 2. Library dist must exist (workspace resolves filmdrop-ui from there).
+// 2. Starter source must keep CSS import order: Leaflet peers first,
+// then filmdrop-ui/style.css so overrides win the cascade.
+if (!existsSync(starterAppSource)) {
+  fail('examples/starter/src/App.jsx missing (cannot verify CSS import order).')
+}
+const starterSource = readFileSync(starterAppSource, 'utf8')
+const cssImports = {
+  leaflet: "import 'leaflet/dist/leaflet.css'",
+  leafletDraw: "import 'leaflet-draw/dist/leaflet.draw.css'",
+  filmdrop: "import 'filmdrop-ui/style.css'"
+}
+for (const [name, stmt] of Object.entries(cssImports)) {
+  if (!starterSource.includes(stmt)) {
+    fail(
+      `Missing ${name} CSS import in examples/starter/src/App.jsx. ` +
+        `Expected '${stmt}'. See examples/starter/README.md for required order.`
+    )
+  }
+}
+const idxLeaflet = starterSource.indexOf(cssImports.leaflet)
+const idxLeafletDraw = starterSource.indexOf(cssImports.leafletDraw)
+const idxFilmdrop = starterSource.indexOf(cssImports.filmdrop)
+if (!(idxLeaflet < idxLeafletDraw && idxLeafletDraw < idxFilmdrop)) {
+  fail(
+    'CSS import order mismatch in examples/starter/src/App.jsx. ' +
+      "Required order: 'leaflet/dist/leaflet.css', " +
+      "'leaflet-draw/dist/leaflet.draw.css', then 'filmdrop-ui/style.css'. " +
+      'See README.md and examples/starter/README.md for the host CSS contract.'
+  )
+}
+pass(
+  'Starter CSS import order contract satisfied (Leaflet peers before FilmDrop).'
+)
+
+// 3. Library dist must exist (workspace resolves filmdrop-ui from there).
 const distEntry = resolve(root, 'dist/filmdrop-ui.js')
 if (!existsSync(distEntry)) {
   fail('dist/filmdrop-ui.js missing — run `npm run build:lib` first.')
 }
 pass('Library dist/ present (consumed by starter via workspace).')
 
-// 3. Starter build output must exist.
+// 4. Starter build output must exist.
 const starterDist = resolve(starter, 'dist')
 if (!existsSync(starterDist)) {
   fail('examples/starter/dist missing — run `npm run build:starter` first.')
@@ -44,7 +79,7 @@ if (!existsSync(starterIndex)) {
 const starterHtml = readFileSync(starterIndex, 'utf8')
 pass('examples/starter/dist/index.html present.')
 
-// 4. The built HTML must reference the `/app/` base.
+// 5. The built HTML must reference the `/app/` base.
 if (!/\/app\//.test(starterHtml)) {
   fail(
     'Built starter index.html does not reference `/app/` — Vite `base` ' +
@@ -53,7 +88,7 @@ if (!/\/app\//.test(starterHtml)) {
 }
 pass('Starter built with `/app/` base.')
 
-// 5. config.json must exist and have STAC_API_URL.
+// 6. config.json must exist and have STAC_API_URL.
 const cfgPath = resolve(starter, 'public/config/config.json')
 if (!existsSync(cfgPath)) fail('starter public/config/config.json missing.')
 let cfg
@@ -65,7 +100,7 @@ try {
 if (!cfg.STAC_API_URL) fail('starter config.json must set STAC_API_URL.')
 pass(`starter config.json valid (STAC_API_URL=${cfg.STAC_API_URL}).`)
 
-// 6. Brand assets must be byte-identical to the canonical copies under
+// 7. Brand assets must be byte-identical to the canonical copies under
 //    repo-root public/.
 const BRAND = [
   'brand-logo-element84-light-mode.svg',
@@ -96,7 +131,7 @@ for (const file of BRAND) {
 }
 pass('Brand assets in starter match canonical public/ (no drift).')
 
-// 7. Size budgets: code (js+css+html+map) and total (includes ~32 MB
+// 8. Size budgets: code (js+css+html+map) and total (includes ~32 MB
 //    of grid JSON copied from public/data/).
 let totalSize = 0
 let codeSize = 0
