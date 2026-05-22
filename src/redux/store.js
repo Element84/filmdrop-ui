@@ -1,5 +1,10 @@
 import { configureStore } from '@reduxjs/toolkit'
 import mainSlice from './slices/mainSlice'
+import {
+  setActiveStore,
+  getActiveStore,
+  getActiveStoreOrNull
+} from './store-test-hooks'
 
 /**
  * Factory for a FilmDrop Redux store.
@@ -20,54 +25,7 @@ export function createFilmDropStore() {
   })
 }
 
-// Active store ref contract. FilmDropRoot calls setActiveStore on mount /
-// unmount; the refcount keeps the ref alive through React StrictMode double-
-// mount cycles. Dev-mode warns when more than one live instance is detected
-// (single-instance per page is assumed for v1).
-
-let activeStore = null
-const liveStores = new Set()
-
-function isDev() {
-  return Boolean(import.meta.env?.DEV)
-}
-
-export function setActiveStore(storeInstance, options) {
-  const action = options && options.action
-  if (action === 'mount') {
-    liveStores.add(storeInstance)
-    activeStore = storeInstance
-    if (liveStores.size > 1 && isDev()) {
-      console.warn(
-        'FilmDrop: multiple live FilmDropRoot instances detected. ' +
-          'A single instance per page is assumed.'
-      )
-    }
-  } else if (action === 'unmount') {
-    liveStores.delete(storeInstance)
-    activeStore = liveStores.size > 0 ? Array.from(liveStores).at(-1) : null
-  } else if (isDev()) {
-    console.warn(
-      "FilmDrop: setActiveStore requires { action: 'mount' | 'unmount' }"
-    )
-  }
-}
-
-export function getActiveStore() {
-  if (!activeStore && isDev()) {
-    console.warn('FilmDrop: getActiveStore called before FilmDropRoot mount')
-  }
-  return activeStore
-}
-
-/**
- * Test-only helper: forcibly reset the active-store refcount between tests.
- * Not exported for consumer use.
- */
-export function __resetActiveStoreForTests() {
-  liveStores.clear()
-  activeStore = null
-}
+export { setActiveStore, getActiveStore }
 
 /**
  * Back-compat `store` binding used by ~51 modules (source + tests).
@@ -81,7 +39,7 @@ export const store = new Proxy(
   {},
   {
     get(_target, prop) {
-      const s = activeStore
+      const s = getActiveStoreOrNull()
       if (!s) {
         throw new Error(
           'FilmDrop: store accessed before FilmDropRoot mounted. ' +
@@ -98,16 +56,17 @@ export const store = new Proxy(
     },
     set(_target, prop, value) {
       // Forward writes so vi.spyOn(store, 'getState') works through the proxy.
-      const s = activeStore
+      const s = getActiveStoreOrNull()
       if (!s) return false
       s[prop] = value
       return true
     },
     has(_target, prop) {
-      return activeStore ? prop in activeStore : false
+      const s = getActiveStoreOrNull()
+      return s ? prop in s : false
     },
     getOwnPropertyDescriptor(_target, prop) {
-      const s = activeStore
+      const s = getActiveStoreOrNull()
       if (!s) return undefined
       return (
         Object.getOwnPropertyDescriptor(s, prop) ||
@@ -122,7 +81,7 @@ export const store = new Proxy(
       )
     },
     defineProperty(_target, prop, descriptor) {
-      const s = activeStore
+      const s = getActiveStoreOrNull()
       if (!s) return false
       Object.defineProperty(s, prop, descriptor)
       return true

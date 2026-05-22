@@ -39,6 +39,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   and `CONFIGURATION.md` in addition to `dist/`, `README.md`,
   `LICENSE`, and `CHANGELOG.md`. Verified by `verify:consumer`.
 - **Test coverage.**
+  - New `src/redux/store.proxy.test.js` — 3 invariants locking proxy
+    behavior: pre-mount throw contract, stable method identity, and
+    `vi.spyOn` compatibility through proxy descriptor forwarding.
   - New `src/services/post-auth-service.test.js` — 10 cases covering
     success, sessionStorage `POST_AUTH_REDIRECT_URL` redirect with
     basepath applied, `javascript:` scheme rejection, pre-mount
@@ -90,6 +93,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   - Vitest coverage thresholds now enforce a floor based on current baseline (`statements: 69`, `branches: 58`, `functions: 73`, `lines: 70`).
   - TanStack Router test mocking is centralized via `mockTanstackRouter` in `src/testing/shared-mocks.js` for core URL/router tests.
   - Audit exception policy is documented in CONTRIBUTING and enforced via `.nsprc` at the repo root (which may remain an empty array until a temporary exception is required).
+  - Test-only runtime reset hooks are no longer re-exported from production-facing modules (`src/router.jsx`, `src/redux/store.js`); tests now consume `src/testing/runtime-test-hooks.js`.
+  - Embedded host docs explicitly keep the v1 single-instance assumption (`one <FilmDropRoot /> per page`) as a known limitation.
 
 - Style/docs polish:
   - Accessibility residuals were completed across key controls:

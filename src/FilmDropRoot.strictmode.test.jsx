@@ -2,9 +2,13 @@ import React from 'react'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { render } from '@testing-library/react'
 import FilmDropRoot from './FilmDropRoot'
-import { getActiveStore, __resetActiveStoreForTests } from './redux/store'
-import { getActiveRouter, __resetActiveRouterForTests } from './router'
+import { getActiveStore } from './redux/store'
+import { getActiveRouter } from './router'
 import { getActiveRouterOrNull } from './router-test-hooks'
+import {
+  __resetActiveStoreForTests,
+  __resetActiveRouterForTests
+} from './testing/runtime-test-hooks'
 import { getConfigBaseUrl, setConfigBaseUrl } from './utils/configBase'
 
 // Ensure services LoadConfigIntoStateService etc. are mocked for this file;

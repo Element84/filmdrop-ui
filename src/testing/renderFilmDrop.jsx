@@ -18,16 +18,9 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { Provider } from 'react-redux'
-import {
-  createFilmDropStore,
-  setActiveStore,
-  __resetActiveStoreForTests
-} from '../redux/store'
-import {
-  createFilmDropRouter,
-  setActiveRouter,
-  __resetActiveRouterForTests
-} from '../router'
+import { createFilmDropStore, setActiveStore } from '../redux/store'
+import { createFilmDropRouter, setActiveRouter } from '../router'
+import { resetRuntimeForTests } from './runtime-test-hooks'
 
 export function renderFilmDrop(ui, options = {}) {
   const { basename, initialUrl } = options
@@ -36,8 +29,7 @@ export function renderFilmDrop(ui, options = {}) {
   const testRouter =
     options.router || createFilmDropRouter({ basepath: basename })
 
-  __resetActiveStoreForTests()
-  __resetActiveRouterForTests()
+  resetRuntimeForTests()
   setActiveStore(testStore, { action: 'mount' })
   setActiveRouter(testRouter, { action: 'mount' })
 

@@ -2,8 +2,10 @@ import React from 'react'
 import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { render, act } from '@testing-library/react'
 import FilmDropRoot from './FilmDropRoot'
-import { __resetActiveStoreForTests } from './redux/store'
-import { __resetActiveRouterForTests } from './router'
+import {
+  __resetActiveStoreForTests,
+  __resetActiveRouterForTests
+} from './testing/runtime-test-hooks'
 import {
   getConfigBaseUrl,
   getCacheBusterSuffix,

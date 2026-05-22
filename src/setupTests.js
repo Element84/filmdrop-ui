@@ -2,20 +2,14 @@ import { expect, afterEach, beforeEach, vi } from 'vitest'
 import { cleanup } from '@testing-library/react'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { mainSliceReset } from './redux/slices/mainSlice'
-import {
-  createFilmDropStore,
-  setActiveStore,
-  __resetActiveStoreForTests
-} from './redux/store'
+import { createFilmDropStore, setActiveStore } from './redux/store'
 // Router is not imported at module scope. router.jsx imports App (for the
 // root route component), which would transitively load hooks and components
 // before per-test `vi.mock(...)` calls can take effect. We register a stub
 // router via router-test-hooks instead; tests that need a real router either
 // mock '@tanstack/react-router' or pass one through renderFilmDrop.
-import {
-  setActiveRouter,
-  __resetActiveRouterForTests
-} from './router-test-hooks'
+import { setActiveRouter } from './router-test-hooks'
+import { resetRuntimeForTests } from './testing/runtime-test-hooks'
 import 'resize-observer-polyfill'
 
 // vi.mock is hoisted to the top of the module at parse time. Placing these
@@ -58,8 +52,7 @@ setActiveRouter(testRouter, { action: 'mount' })
 beforeEach(() => {
   // Re-register the shared refs each test so getActiveStore / getActiveRouter
   // resolve even if a previous test unmounted them.
-  __resetActiveStoreForTests()
-  __resetActiveRouterForTests()
+  resetRuntimeForTests()
   setActiveStore(testStore, { action: 'mount' })
   setActiveRouter(testRouter, { action: 'mount' })
   testStore.dispatch(mainSliceReset())

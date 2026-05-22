@@ -23,11 +23,7 @@ import App from './App'
 
 // Active-router state lives in its own module so setupTests can import it
 // without pulling in App (which router.jsx imports for the root route).
-import {
-  setActiveRouter,
-  getActiveRouterOrNull,
-  __resetActiveRouterForTests
-} from './router-test-hooks'
+import { setActiveRouter, getActiveRouterOrNull } from './router-test-hooks'
 
 /**
  * Reserved search param names that are not queryable filters.
@@ -144,6 +140,8 @@ function stringifySearch(search) {
 
 export const router = createRouter({ routeTree, stringifySearch })
 
+let hasWarnedAboutFallbackRouter = false
+
 // Route path constants — mirror the TanStack route tree above. Callers in
 // searchHelper, mapHelper, get-pagination-service, and useUrlNavigate import
 // these instead of hard-coding the path strings.
@@ -169,10 +167,15 @@ export function createFilmDropRouter(options) {
   return createRouter(config)
 }
 
-export { setActiveRouter, __resetActiveRouterForTests }
+export { setActiveRouter }
 
 export function getActiveRouter() {
-  if (import.meta.env?.DEV && !getActiveRouterOrNull()) {
+  if (
+    import.meta.env?.DEV &&
+    !hasWarnedAboutFallbackRouter &&
+    !getActiveRouterOrNull()
+  ) {
+    hasWarnedAboutFallbackRouter = true
     console.warn(
       'FilmDrop: getActiveRouter called before FilmDropRoot mount; using fallback router.'
     )
