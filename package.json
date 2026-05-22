@@ -8,7 +8,7 @@
     "@floating-ui/react": "^0.27.17",
     "@floating-ui/react-dom": "^2.1.7",
     "@mui/icons-material": "^7.3.8",
-    "@mui/material": "^7.3.2",
+    "@mui/material": "^7.3.10",
     "@mui/x-date-pickers": "^8.26.0",
     "@radiantearth/stac-fields": "^1.5.7",
     "@reduxjs/toolkit": "^2.11.2",
