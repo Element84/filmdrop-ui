@@ -1,9 +1,9 @@
 import React from 'react'
 import { FilmDropRoot } from 'filmdrop-ui'
-import 'filmdrop-ui/style.css'
 // Leaflet CSS is a peer dependency — FilmDrop does NOT bundle it.
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw.css'
+import 'filmdrop-ui/style.css'
 
 /**
  * Minimal embedded mount.

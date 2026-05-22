@@ -445,6 +445,57 @@ describe('mainSlice reducer', () => {
       expect(getState().detailsResetKey).toBe(2)
     })
 
+    it('resetSearchState should only mutate search-derived fields', () => {
+      store.dispatch(setSearchResults({ features: [] }))
+      store.dispatch(setSearchLoading(true))
+      store.dispatch(setSearchType('spatial'))
+      store.dispatch(setShowZoomNotice(true))
+      store.dispatch(setMappedScenes([{ id: 'scene-1' }]))
+      store.dispatch(setSelectedPopupResultIndex(5))
+      store.dispatch(setPaginationNextLink('https://example.com?page=2'))
+      store.dispatch(setPaginationPrevLink('https://example.com?page=1'))
+      store.dispatch(setCurrentPage(2))
+      store.dispatch(setTotalPages(10))
+      store.dispatch(setPaginationHistory(['page1', 'page2']))
+      store.dispatch(setSearchGeojsonBoundary({ type: 'Feature' }))
+      store.dispatch(setIsDrawingEnabled(true))
+      store.dispatch(setSearchDateRangeValue(['2020-01-01', '2020-12-31']))
+      store.dispatch(setQueryableFilters({ property: 'value' }))
+      store.dispatch(setSelectedCollection('sentinel-2'))
+
+      const before = getState()
+      store.dispatch(resetSearchState())
+      const after = getState()
+
+      const changedKeys = Object.keys(after)
+        .filter(
+          (key) => JSON.stringify(after[key]) !== JSON.stringify(before[key])
+        )
+        .sort()
+
+      expect(changedKeys).toEqual(
+        [
+          'currentPage',
+          'detailsResetKey',
+          'isDrawingEnabled',
+          'mappedScenes',
+          'paginationHistory',
+          'paginationNextLink',
+          'paginationPrevLink',
+          'queryableFilters',
+          'searchDateRangeValue',
+          'searchGeojsonBoundary',
+          'searchLoading',
+          'searchResults',
+          'searchType',
+          'selectedPopupResultIndex',
+          'showZoomNotice',
+          'totalPages'
+        ].sort()
+      )
+      expect(after.selectedCollection).toBe('sentinel-2')
+    })
+
     it('incrementDetailsResetKey should increment the key', () => {
       expect(getState().detailsResetKey).toBe(0)
       store.dispatch(incrementDetailsResetKey())

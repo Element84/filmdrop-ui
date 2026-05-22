@@ -172,6 +172,11 @@ export function createFilmDropRouter(options) {
 export { setActiveRouter, __resetActiveRouterForTests }
 
 export function getActiveRouter() {
+  if (import.meta.env?.DEV && !getActiveRouterOrNull()) {
+    console.warn(
+      'FilmDrop: getActiveRouter called before FilmDropRoot mount; using fallback router.'
+    )
+  }
   // Fall back to the module-scope `router` (SPA / legacy) if no FilmDropRoot
   // has mounted yet — keeps existing behavior for pre-FilmDropRoot callers.
   return getActiveRouterOrNull() || router

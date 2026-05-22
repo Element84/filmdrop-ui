@@ -262,10 +262,10 @@ npm install filmdrop-ui \
 
 ```jsx
 import { FilmDropRoot } from 'filmdrop-ui'
-import 'filmdrop-ui/style.css'
 // Required by the Leaflet peer dependency (not bundled by filmdrop-ui):
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw.css'
+import 'filmdrop-ui/style.css'
 
 export default function App() {
   return (
@@ -307,9 +307,10 @@ export default function App() {
 
 ### Consumer checklist
 
-- **CSS imports (required).** `filmdrop-ui/style.css` plus the Leaflet
-  CSS peers. FilmDrop does NOT bundle `leaflet/dist/leaflet.css` to avoid
-  duplication with consumer code.
+- **CSS imports (required).** Load Leaflet peers first, then FilmDrop styles:
+  `leaflet/dist/leaflet.css`, `leaflet-draw/dist/leaflet.draw.css`, then
+  `filmdrop-ui/style.css`. FilmDrop does NOT bundle `leaflet/dist/leaflet.css`
+  to avoid duplication with consumer code.
 - **Fonts.** The library does NOT bundle the Inter font. Provide Inter
   (or an alternative) and your own `html, body` reset — `src/index.css`
   is deliberately excluded from the library bundle (Google Fonts import,

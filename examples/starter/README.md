@@ -8,6 +8,9 @@ non-root basepath.
 The starter is wired as an npm workspace, so the quickest path from a
 fresh clone is:
 
+`npm run sync:starter-data` is required before `npm run dev:starter`; the
+starter data files live in `examples/starter/public/data/` and are gitignored.
+
 ```bash
 # from the repo root
 npm install
@@ -20,6 +23,10 @@ npm run dev:starter          # http://localhost:5180/app/
 `npm install` at the repo root installs the starter's deps (workspace),
 and the two `sync:starter-*` commands populate the public assets the
 starter needs at runtime.
+
+When embedding `filmdrop-ui` in a host app, load CSS in this order:
+`leaflet/dist/leaflet.css`, `leaflet-draw/dist/leaflet.draw.css`, then
+`filmdrop-ui/style.css`.
 
 ## Development Modes
 

@@ -4,6 +4,7 @@ import { render } from '@testing-library/react'
 import FilmDropRoot from './FilmDropRoot'
 import { getActiveStore, __resetActiveStoreForTests } from './redux/store'
 import { getActiveRouter, __resetActiveRouterForTests } from './router'
+import { getActiveRouterOrNull } from './router-test-hooks'
 import { getConfigBaseUrl, setConfigBaseUrl } from './utils/configBase'
 
 // Ensure services LoadConfigIntoStateService etc. are mocked for this file;
@@ -36,6 +37,10 @@ describe('FilmDropRoot lifecycle', () => {
     expect(getActiveRouter()).not.toBeNull()
 
     unmount1()
+
+    expect(getActiveStore()).toBeNull()
+    expect(getActiveRouterOrNull()).toBeNull()
+    expect(getActiveRouter()).not.toBeNull()
 
     __resetActiveStoreForTests()
     __resetActiveRouterForTests()

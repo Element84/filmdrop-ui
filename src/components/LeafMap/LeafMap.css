@@ -32,7 +32,7 @@ path.leaflet-interactive:focus {
 
 .leaflet-touch .leaflet-bar,
 .leaflet-touch .leaflet-control-layers {
-  border: 1px solid var(--map-info-overlay-border);
+  border: 1px solid var(--map-info-overlay-border) !important;
   border-radius: var(--radius-md);
   background-color: var(--map-info-overlay-background);
 }
@@ -63,15 +63,15 @@ path.leaflet-interactive:focus {
   top: 17px !important;
   left: 15px !important;
   width: 7px !important;
-  border-color: var(--map-info-overlay-color);
+  border-color: var(--map-info-overlay-color) !important;
 }
 
 .leaflet-control-geosearch a.leaflet-bar-part:after {
-  top: 8px;
-  left: 8px;
+  top: 8px !important;
+  left: 8px !important;
   height: 10px !important;
   width: 10px !important;
-  border-color: var(--map-info-overlay-color);
+  border-color: var(--map-info-overlay-color) !important;
 }
 
 /* Leaflet Search Button and Form Overrides */
@@ -85,9 +85,9 @@ path.leaflet-interactive:focus {
 }
 
 .leaflet-control-geosearch form {
-  left: 43px;
+  left: 43px !important;
   max-width: 400px;
-  top: -1px;
+  top: -1px !important;
   border-radius: var(--radius-md);
   border: 1px solid var(--map-info-overlay-border);
   box-shadow: none;

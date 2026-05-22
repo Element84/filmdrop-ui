@@ -55,15 +55,8 @@ export default function FilmDropRoot(props) {
   const store = storeRef.current
   const router = routerRef.current
 
-  // Synchronously register active refs so non-hook call sites
-  // (searchHelper, mapHelper, services) work on first render.
-  if (typeof window !== 'undefined' && !storeRef.current.__filmdropRegistered) {
-    setActiveStore(store, { action: 'mount' })
-    setActiveRouter(router, { action: 'mount' })
-    storeRef.current.__filmdropRegistered = true
-  }
-
   useLayoutEffect(() => {
+    // Prevent duplicate active ref registration during React StrictMode dev remounts
     // In StrictMode, the component remounts: re-add to refcount so the
     // unmount cleanup doesn't drop the only live ref.
     if (!storeRef.current.__filmdropRegistered) {

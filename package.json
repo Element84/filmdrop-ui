@@ -36,7 +36,8 @@
     "h3-js": "^4.4.0",
     "js-cookie": "^3.0.5",
     "leaflet-geosearch": "^3.9.0",
-    "react-dropzone": "^14.3.8",
+    "prop-types": "^15.8.1",
+    "react-dropzone": "^14.4.0",
     "react-tooltip": "^5.30.0"
   },
   "peerDependencies": {
