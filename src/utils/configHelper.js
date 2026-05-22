@@ -507,6 +507,14 @@ export function autoConfigureRendering(config) {
         processedRender.expression = renderDef.expression
       }
 
+      // Optional: bidx
+      // Stored as a comma-separated string so it survives both URL builders
+      // in mapHelper.js: the scene-tiler path produces `asset_bidx=<asset>|<value>`
+      // and the mosaic path splits on `,` to emit `bidx=<n>` per band.
+      if (renderDef.bidx && Array.isArray(renderDef.bidx)) {
+        processedRender.bidx = renderDef.bidx.join(',')
+      }
+
       // Optional: resampling (map to TiTiler's resampling_method)
       if (renderDef.resampling) {
         processedRender.resampling = renderDef.resampling

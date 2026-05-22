@@ -310,6 +310,39 @@ describe('ConfigHelper', () => {
       expect(params.color_formula).toEqual('Gamma+RGB+3.2')
     })
 
+    it('should extract bidx as a comma-separated string', () => {
+      const config = {
+        SCENE_TILER_URL: 'https://example.com/titiler',
+        COLLECTIONS_CONFIG: {
+          dove: {}
+        },
+        _STAC_COLLECTIONS: [
+          {
+            id: 'dove',
+            renders: {
+              'true-color': {
+                title: 'True Color',
+                assets: ['analytic_cog'],
+                bidx: [6, 4, 2],
+                rescale: [
+                  [0, 3000],
+                  [0, 3000],
+                  [0, 3000]
+                ],
+                color_formula: 'Gamma RGB 3.5'
+              }
+            }
+          }
+        ]
+      }
+
+      const result = autoConfigureRendering(config)
+      const params = result.COLLECTIONS_CONFIG.dove.visualizations['true-color']
+
+      expect(params.assets).toEqual(['analytic_cog'])
+      expect(params.bidx).toEqual('6,4,2')
+    })
+
     it('should handle colormap_name and expression', () => {
       const config = {
         SCENE_TILER_URL: 'https://example.com/titiler',

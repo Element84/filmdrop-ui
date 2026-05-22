@@ -44,6 +44,7 @@ const ViewSelector = () => {
   )
 
   // Check if collection supports hex and grid aggregations
+  // Check for both new (stac-server >= 3.6.0) and old (deprecated) aggregation names
   const supportsHex = useMemo(
     () =>
       selectedCollectionData?.aggregations?.some(
