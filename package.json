@@ -34,7 +34,7 @@
     "dayjs": "^1.11.19",
     "dompurify": "^3.4.1",
     "h3-js": "^4.4.0",
-    "js-cookie": "^3.0.5",
+    "js-cookie": "3.0.7",
     "leaflet-geosearch": "^3.9.0",
     "prop-types": "^15.8.1",
     "react-dropzone": "^14.4.0",
