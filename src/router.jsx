@@ -20,6 +20,7 @@ import {
   defaultStringifySearch
 } from '@tanstack/react-router'
 import App from './App'
+import { extractPathParamsFromMatches } from './router-path-params'
 
 // Active-router state lives in its own module so setupTests can import it
 // without pulling in App (which router.jsx imports for the root route).
@@ -193,13 +194,5 @@ export function getActiveRouter() {
  */
 export function getPathParams(routerArg) {
   const r = routerArg || getActiveRouter()
-  const matches = r.state.matches
-  // Accumulate params from all matched routes
-  let params = {}
-  for (const match of matches) {
-    if (match.params) {
-      params = { ...params, ...match.params }
-    }
-  }
-  return params
+  return extractPathParamsFromMatches(r.state.matches)
 }

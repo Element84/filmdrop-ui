@@ -4,6 +4,9 @@ import { Provider } from 'react-redux'
 import { RouterProvider } from '@tanstack/react-router'
 import { createFilmDropStore, setActiveStore } from './redux/store'
 import { createFilmDropRouter, setActiveRouter } from './router'
+import { RuntimeContext, setActiveRuntime } from './runtime'
+import { createStoreAccessors } from './redux/store-accessors'
+import { createRouterAccessors } from './router-accessors'
 import { setConfigBaseUrl, setConfigCacheBuster } from './utils/configBase'
 import { clearPendingAlertTimeout } from './utils/alertHelper'
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
@@ -54,6 +57,20 @@ export default function FilmDropRoot(props) {
 
   const store = storeRef.current
   const router = routerRef.current
+  const runtimeRef = useRef(null)
+
+  if (runtimeRef.current === null) {
+    runtimeRef.current = {
+      store,
+      router,
+      accessors: {
+        store: createStoreAccessors(store),
+        router: createRouterAccessors(router)
+      }
+    }
+  }
+
+  const runtime = runtimeRef.current
 
   useLayoutEffect(() => {
     // Prevent duplicate active ref registration during React StrictMode dev remounts
@@ -62,15 +79,17 @@ export default function FilmDropRoot(props) {
     if (!storeRef.current.__filmdropRegistered) {
       setActiveStore(store, { action: 'mount' })
       setActiveRouter(router, { action: 'mount' })
+      setActiveRuntime(runtime, { action: 'mount' })
       storeRef.current.__filmdropRegistered = true
     }
     return () => {
       setActiveStore(store, { action: 'unmount' })
       setActiveRouter(router, { action: 'unmount' })
+      setActiveRuntime(runtime, { action: 'unmount' })
       storeRef.current.__filmdropRegistered = false
       clearPendingAlertTimeout()
     }
-  }, [store, router])
+  }, [runtime, store, router])
 
   // Sync configUrl prop changes and clear on unmount to prevent
   // stale base inheritance across remounts.
@@ -125,8 +144,10 @@ export default function FilmDropRoot(props) {
   return (
     <ErrorBoundary onError={onError}>
       <Provider store={store}>
-        <RouterProvider router={router} />
-        {children}
+        <RuntimeContext.Provider value={runtime}>
+          <RouterProvider router={router} />
+          {children}
+        </RuntimeContext.Provider>
       </Provider>
     </ErrorBoundary>
   )
