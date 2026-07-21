@@ -1,11 +1,9 @@
 import React, { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useParams } from '@tanstack/react-router'
 import {
   setSelectedCollectionData,
   setShowZoomNotice,
   setSearchLoading,
-  sethasCollectionChanged,
   setQueryableFilters,
   setSelectedVisualization
 } from '../../redux/slices/mainSlice'
@@ -13,13 +11,14 @@ import {
   zoomToCollectionExtent,
   clearAllLayers,
   clearMapSelection
-} from '../../utils/mapHelper'
+} from '../../utils/mapLayers'
 import Dropdown from '../Dropdown/Dropdown'
+import { getActiveUrlController } from '../../url-controller'
+import { ROUTE_COLLECTION } from '../../route-constants'
 
 const CollectionDropdown = () => {
   const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const params = useParams({ strict: false })
+  const controller = getActiveUrlController()
   const selectedCollection = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
@@ -60,7 +59,7 @@ const CollectionDropdown = () => {
   useEffect(() => {
     if (collectionsData.length === 0) return
     if (selectedCollection) return
-    if (params.collectionId) return
+    if (controller.getPathParams()?.collectionId) return
 
     // Get default from config
     const defaultCollection = appConfig.COLLECTIONS?.default
@@ -80,18 +79,12 @@ const CollectionDropdown = () => {
       }
     }
 
-    navigate({
-      to: '/$collectionId',
+    controller.navigate({
+      to: ROUTE_COLLECTION,
       params: { collectionId: defaultId },
       replace: true
     })
-  }, [
-    collectionsData,
-    selectedCollection,
-    appConfig,
-    navigate,
-    params.collectionId
-  ])
+  }, [collectionsData, selectedCollection, appConfig, controller])
 
   // Update collection data when selection changes
   useEffect(() => {
@@ -109,7 +102,7 @@ const CollectionDropdown = () => {
       if (isChanging) {
         // Skip animation on initial selection so the zoom completes
         // before the loading overlay disappears (no visible shift).
-        const animate = !!selectedCollectionData
+        const animate = !!selectedCollectionData?.id
         zoomToCollectionExtent(collection, { animate })
       }
     }
@@ -123,9 +116,6 @@ const CollectionDropdown = () => {
   const handleCollectionChange = (e) => {
     const newCollectionId = e.target.value
 
-    // Mark that collection has changed
-    dispatch(sethasCollectionChanged(true))
-
     // Clear map and filters
     clearMapSelection()
     clearAllLayers()
@@ -135,8 +125,8 @@ const CollectionDropdown = () => {
     dispatch(setSelectedVisualization(null))
 
     // Navigate to collection path — URL→Redux sync handles setSelectedCollection
-    navigate({
-      to: '/$collectionId',
+    controller.navigate({
+      to: ROUTE_COLLECTION,
       params: { collectionId: newCollectionId },
       search: (prev) => ({
         // Preserve map position; clear search-committed params for new collection

@@ -5,6 +5,8 @@ import Card from '../Card/Card'
 import './Dropdown.css'
 
 const Dropdown = ({ label, value, onChange, options, className = '' }) => {
+  const selectAriaLabel = label || 'Dropdown'
+
   const handleChange = (event) => {
     onChange(event)
   }
@@ -15,6 +17,7 @@ const Dropdown = ({ label, value, onChange, options, className = '' }) => {
         className="Dropdown__select"
         value={value}
         onChange={handleChange}
+        aria-label={selectAriaLabel}
         input={<OutlinedInput />}
         MenuProps={{
           classes: { paper: 'Dropdown__menu' }

@@ -2,6 +2,9 @@ import { React, useState, useEffect } from 'react'
 import './Login.css'
 import { AuthService } from '../../services/post-auth-service'
 import { useSelector } from 'react-redux'
+import { shouldApplyDocumentBranding } from '../../utils/themeHelper'
+import { resolveLogoUrl } from '../../utils/configBase'
+import { showApplicationAlert } from '../../utils/alertHelper'
 
 const Login = () => {
   const [username, setUsername] = useState('')
@@ -9,6 +12,9 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
+  const appLogoSrc = _appConfig.LOGO_URL
+    ? resolveLogoUrl(_appConfig.LOGO_URL)
+    : resolveLogoUrl('logo.png')
 
   const handleUsernameChange = (e) => {
     setUsername(e.target.value)
@@ -22,7 +28,10 @@ const Login = () => {
     e.preventDefault()
     setIsSubmitting(true)
     try {
-      await AuthService(username, password)
+      const result = await AuthService(username, password)
+      if (result?.error === true) {
+        showApplicationAlert('warning', 'Login Failed', 5000)
+      }
     } catch (error) {
       console.error('Login failed', error)
     } finally {
@@ -31,7 +40,14 @@ const Login = () => {
   }
 
   useEffect(() => {
+    if (!shouldApplyDocumentBranding()) {
+      return undefined
+    }
+    const previousTitle = document.title
     document.title = 'Login'
+    return () => {
+      document.title = previousTitle
+    }
   }, [])
 
   return (
@@ -39,17 +55,13 @@ const Login = () => {
       <div className="loginFormLogo">
         {_appConfig.LOGO_URL ? (
           <img
-            src={_appConfig.LOGO_URL}
+            src={appLogoSrc}
             alt={_appConfig.LOGO_ALT}
             className="loginLogoImage"
           ></img>
         ) : (
           <img
-            src={
-              _appConfig.PUBLIC_URL
-                ? _appConfig.PUBLIC_URL + '/logo.png'
-                : './logo.png'
-            }
+            src={appLogoSrc}
             alt="FilmDrop default app logo"
             className="loginLogoImage"
           />
@@ -58,16 +70,20 @@ const Login = () => {
       <div className="loginFormContainer">
         <h1>Login</h1>
         <form className="submitForm" onSubmit={submitLogin}>
-          <label htmlFor="loginForm">Username:</label>
+          <label htmlFor="filmdrop-login-username">Username:</label>
           <input
+            id="filmdrop-login-username"
             type="text"
+            autoComplete="username"
             value={username}
             onChange={handleUsernameChange}
             required={true}
           />
-          <label htmlFor="loginForm">Password:</label>
+          <label htmlFor="filmdrop-login-password">Password:</label>
           <input
+            id="filmdrop-login-password"
             type="password"
+            autoComplete="current-password"
             value={password}
             onChange={handlePasswordChange}
             required={true}

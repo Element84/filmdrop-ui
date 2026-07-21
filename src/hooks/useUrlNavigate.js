@@ -11,51 +11,102 @@
  * All updates use replace: true — the app intentionally does not create
  * browser history entries, so back/forward navigates away from the app.
  */
+import { useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
+import { getActiveUrlControllerOrNull } from '../url-controller'
+import {
+  ROUTE_COLLECTION,
+  ROUTE_COLLECTION_ITEM,
+  ROUTE_INDEX
+} from '../route-constants'
+import { useFilmDropOptions } from '../contexts/FilmDropOptionsContext'
 
+// Returns referentially stable callbacks so consumers can list them in
+// useEffect deps without causing re-runs on every render.
 export function useUrlNavigate() {
   const navigate = useNavigate()
   const params = useParams({ strict: false })
+  const { urlState } = useFilmDropOptions()
+  const controller = getActiveUrlControllerOrNull()
+  const shouldUseController = urlState !== undefined && !!controller
 
-  return {
-    /**
-     * Switch sidebar tab.
-     * @param {'search'|'details'} tab
-     */
-    setTab: (tab) =>
-      navigate({ search: (prev) => ({ ...prev, tab }), replace: true }),
+  const navigateFn = useCallback(
+    (options) => {
+      if (shouldUseController) {
+        return controller.navigate(options)
+      }
+      return navigate(options)
+    },
+    [controller, navigate, shouldUseController]
+  )
 
-    /**
-     * Change visualization selection.
-     * @param {string} viz - Visualization key
-     */
-    setViz: (viz) =>
-      navigate({ search: (prev) => ({ ...prev, viz }), replace: true }),
+  const getCollectionId = useCallback(() => {
+    if (shouldUseController) {
+      const pathParams = controller.getPathParams() || {}
+      return pathParams.collectionId
+    }
+    return params.collectionId
+  }, [controller, params.collectionId, shouldUseController])
 
-    /**
-     * Select an item (scene). Also switches to details tab.
-     * Navigates to /:collectionId/:itemId path.
-     * @param {string} itemId - The STAC item ID
-     */
-    setItem: (itemId) =>
-      navigate({
-        to: '/$collectionId/$itemId',
-        params: { collectionId: params.collectionId, itemId },
-        search: (prev) => ({ ...prev, tab: 'details' }),
+  /**
+   * Switch sidebar tab.
+   * @param {'search'|'details'} tab
+   */
+  const setTab = useCallback(
+    (tab) =>
+      navigateFn({
+        search: (prev) => ({ ...prev, tab }),
         replace: true
       }),
+    [navigateFn]
+  )
 
-    /**
-     * Clear item selection. Navigates back to /:collectionId (or /).
-     */
-    clearItem: () =>
-      navigate({
-        to: params.collectionId ? '/$collectionId' : '/',
-        params: params.collectionId
-          ? { collectionId: params.collectionId }
-          : {},
-        search: (prev) => ({ ...prev }),
+  /**
+   * Change visualization selection.
+   * @param {string} viz - Visualization key
+   */
+  const setViz = useCallback(
+    (viz) =>
+      navigateFn({
+        search: (prev) => ({ ...prev, viz }),
+        replace: true
+      }),
+    [navigateFn]
+  )
+
+  /**
+   * Select an item (scene). Also switches to details tab.
+   * Navigates to /:collectionId/:itemId path.
+   * @param {string} itemId - The STAC item ID
+   */
+  const setItem = useCallback(
+    (itemId) => {
+      const collectionId = getCollectionId()
+      return navigateFn({
+        to: ROUTE_COLLECTION_ITEM,
+        params: { collectionId, itemId },
+        search: (prev) => ({ ...prev, tab: 'details' }),
         replace: true
       })
-  }
+    },
+    [getCollectionId, navigateFn]
+  )
+
+  /**
+   * Clear item selection. Navigates back to /:collectionId (or /).
+   */
+  const clearItem = useCallback(() => {
+    const collectionId = getCollectionId()
+    return navigateFn({
+      to: collectionId ? ROUTE_COLLECTION : ROUTE_INDEX,
+      params: collectionId ? { collectionId } : {},
+      search: (prev) => ({ ...prev }),
+      replace: true
+    })
+  }, [getCollectionId, navigateFn])
+
+  return useMemo(
+    () => ({ setTab, setViz, setItem, clearItem }),
+    [setTab, setViz, setItem, clearItem]
+  )
 }

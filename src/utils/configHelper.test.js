@@ -1,5 +1,5 @@
 import { vi } from 'vitest'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import { store } from '../redux/store'
 import { mockAppConfig } from '../testing/shared-mocks'
 import {
@@ -22,14 +22,14 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_NAME: 'Demo App'
       }
-      store.dispatch(setappConfig(mockAppConfigAppTitle))
-      loadAppTitle()
+      store.dispatch(setAppConfig(mockAppConfigAppTitle))
+      loadAppTitle(mockAppConfigAppTitle, store.dispatch)
       expect(global.window.document.title).toBe('Demo App')
       expect(store.getState().mainSlice.appName).toBe('Demo App')
     })
     it('sets document title and appName from default if App_Name not present in config', () => {
-      store.dispatch(setappConfig(mockAppConfig))
-      loadAppTitle()
+      store.dispatch(setAppConfig(mockAppConfig))
+      loadAppTitle(mockAppConfig, store.dispatch)
       expect(global.window.document.title).toBe('FilmDrop UI')
       expect(store.getState().mainSlice.appName).toBe('FilmDrop UI')
     })
@@ -47,8 +47,8 @@ describe('ConfigHelper', () => {
     })
 
     it('should do nothing when APP_FAVICON is not provided', async () => {
-      store.dispatch(setappConfig(mockAppConfig))
-      await loadAppFavicon()
+      store.dispatch(setAppConfig(mockAppConfig))
+      await loadAppFavicon(mockAppConfig)
       expect(DoesFaviconExistService).not.toHaveBeenCalled()
     })
     it('should do nothing when DoesFaviconExistService returns false', async () => {
@@ -57,8 +57,8 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_FAVICON: 'favicon.ico'
       }
-      store.dispatch(setappConfig(mockAppConfigFavicon))
-      await loadAppFavicon()
+      store.dispatch(setAppConfig(mockAppConfigFavicon))
+      await loadAppFavicon(mockAppConfigFavicon)
       expect(DoesFaviconExistService).toHaveBeenCalled()
     })
     it('should call DoesFaviconExistService but not query for link if Favicon set in config but file does not exist', async () => {
@@ -67,12 +67,12 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_FAVICON: 'favicon.ico'
       }
-      store.dispatch(setappConfig(mockAppConfigFavicon))
+      store.dispatch(setAppConfig(mockAppConfigFavicon))
       const mockLink = document.createElement('link')
       mockLink.rel = 'icon'
       mockLink.href = '/favicon.ico'
       document.querySelector = vi.fn(() => mockLink)
-      await loadAppFavicon()
+      await loadAppFavicon(mockAppConfigFavicon)
       expect(DoesFaviconExistService).toHaveBeenCalled()
       expect(document.querySelector).not.toHaveBeenCalledWith(
         "link[rel~='icon']"
@@ -84,12 +84,12 @@ describe('ConfigHelper', () => {
         ...mockAppConfig,
         APP_FAVICON: 'favicon.ico'
       }
-      store.dispatch(setappConfig(mockAppConfigFavicon))
+      store.dispatch(setAppConfig(mockAppConfigFavicon))
       const mockLink = document.createElement('link')
       mockLink.rel = 'icon'
       mockLink.href = '/config/favicon.ico?_cb=123'
       document.querySelector = vi.fn(() => mockLink)
-      await loadAppFavicon()
+      await loadAppFavicon(mockAppConfigFavicon)
       expect(DoesFaviconExistService).toHaveBeenCalled()
       expect(document.querySelector).toHaveBeenCalledWith("link[rel~='icon']")
       expect(mockLink.href).toContain(
@@ -506,7 +506,7 @@ describe('ConfigHelper', () => {
     beforeEach(() => {
       // Reset store before each test
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['collection1', 'collection2'],
           COLLECTIONS_CONFIG: {
             collection1: {
@@ -522,23 +522,38 @@ describe('ConfigHelper', () => {
     })
 
     it('should retrieve value from COLLECTIONS_CONFIG (new format)', () => {
-      const result = getCollectionConfig('collection1', 'visualizations')
+      const appConfig = store.getState().mainSlice.appConfig
+      const result = getCollectionConfig(
+        'collection1',
+        'visualizations',
+        appConfig
+      )
       expect(result).toEqual({ default: { scene: 'value1' } })
     })
 
     it('should return undefined if collection does not exist', () => {
-      const result = getCollectionConfig('nonexistent', 'visualizations')
+      const appConfig = store.getState().mainSlice.appConfig
+      const result = getCollectionConfig(
+        'nonexistent',
+        'visualizations',
+        appConfig
+      )
       expect(result).toBeUndefined()
     })
 
     it('should return undefined if parameter does not exist for collection', () => {
-      const result = getCollectionConfig('collection1', 'nonexistentParam')
+      const appConfig = store.getState().mainSlice.appConfig
+      const result = getCollectionConfig(
+        'collection1',
+        'nonexistentParam',
+        appConfig
+      )
       expect(result).toBeUndefined()
     })
 
     it('should work with visualizations parameter', () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['collection1'],
           COLLECTIONS_CONFIG: {
             collection1: {
@@ -550,7 +565,12 @@ describe('ConfigHelper', () => {
         })
       )
 
-      const result = getCollectionConfig('collection1', 'visualizations')
+      const appConfig = store.getState().mainSlice.appConfig
+      const result = getCollectionConfig(
+        'collection1',
+        'visualizations',
+        appConfig
+      )
       expect(result).toEqual({
         'true-color': { assets: ['red', 'green', 'blue'] }
       })
@@ -575,7 +595,7 @@ describe('ConfigHelper', () => {
 
     it('should handle all parameter types from COLLECTIONS_CONFIG', () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['col1'],
           COLLECTIONS_CONFIG: {
             col1: {
@@ -589,22 +609,31 @@ describe('ConfigHelper', () => {
         })
       )
 
-      expect(getCollectionConfig('col1', 'mosaicTilerParams')).toEqual({
+      const appConfig = store.getState().mainSlice.appConfig
+      expect(
+        getCollectionConfig('col1', 'mosaicTilerParams', appConfig)
+      ).toEqual({
         m: '1'
       })
-      expect(getCollectionConfig('col1', 'sceneMinZoom')).toEqual(7)
-      expect(getCollectionConfig('col1', 'popupDisplayFields')).toEqual(['f1'])
-      expect(getCollectionConfig('col1', 'tileLayerParams')).toEqual({
-        t: '1'
-      })
-      expect(getCollectionConfig('col1', 'enhancedDisplayConfig')).toEqual({
+      expect(getCollectionConfig('col1', 'sceneMinZoom', appConfig)).toEqual(7)
+      expect(
+        getCollectionConfig('col1', 'popupDisplayFields', appConfig)
+      ).toEqual(['f1'])
+      expect(getCollectionConfig('col1', 'tileLayerParams', appConfig)).toEqual(
+        {
+          t: '1'
+        }
+      )
+      expect(
+        getCollectionConfig('col1', 'enhancedDisplayConfig', appConfig)
+      ).toEqual({
         e: '1'
       })
     })
 
     it('should retrieve visualizations from COLLECTIONS_CONFIG', () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           COLLECTIONS: ['collection1'],
           COLLECTIONS_CONFIG: {
             collection1: {
@@ -614,7 +643,12 @@ describe('ConfigHelper', () => {
         })
       )
 
-      const result = getCollectionConfig('collection1', 'visualizations')
+      const appConfig = store.getState().mainSlice.appConfig
+      const result = getCollectionConfig(
+        'collection1',
+        'visualizations',
+        appConfig
+      )
       expect(result).toEqual({ default: { new: 'value' } })
     })
   })

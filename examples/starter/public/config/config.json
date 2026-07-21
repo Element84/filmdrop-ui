@@ -1,0 +1,71 @@
+{
+  "APP_NAME": "FilmDrop Starter",
+  "LOGO_URL": "/app/config/logo.png",
+  "LOGO_ALT": "FilmDrop Logo",
+  "BRAND_LOGO": {
+    "url": "https://element84.com/filmdrop",
+    "title": "Learn more about FilmDrop",
+    "alt": "Element 84 Logo",
+    "image": null,
+    "image_light": "/app/config/brand-logo-element84-light-mode.svg",
+    "image_dark": "/app/config/brand-logo-element84-dark-mode.svg"
+  },
+  "STAC_API_URL": "https://earth-search.aws.element84.com/v1",
+  "SCENE_TILER_URL": "https://tiler.earth-search.aws.element84.com",
+  "MOSAIC_TILER_URL": "https://tiler.earth-search.aws.element84.com",
+  "MAP_CENTER": [40, -100],
+  "MAP_ZOOM": 4,
+  "COLLECTIONS": {
+    "default": "sentinel-2-c1-l2a",
+    "include": ["sentinel-2-c1-l2a", "landsat-c2-l2", "naip"]
+  },
+  "COLLECTIONS_CONFIG": {
+    "sentinel-2-c1-l2a": {
+      "visualizations": {
+        "true-color": {
+          "title": "True Color",
+          "assets": ["visual"],
+          "gamma": [1.1, 1.1, 1.1]
+        },
+        "vegetation": {
+          "title": "Vegetation False Color",
+          "assets": ["nir", "red", "green"],
+          "gamma": 1.1,
+          "rescale": [0, 3000]
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["visual"]
+      },
+      "sceneMinZoom": 6
+    },
+    "landsat-c2-l2": {
+      "visualizations": {
+        "true-color": {
+          "title": "True Color",
+          "assets": ["red", "green", "blue"],
+          "color_formula": "Gamma+RGB+2.0+Saturation+2.0+Sigmoidal+RGB+15+0.35"
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["red"],
+        "color_formula": "Gamma+R+1.7+Sigmoidal+R+15+0.35"
+      },
+      "sceneMinZoom": 7
+    },
+    "naip": {
+      "visualizations": {
+        "true-color": {
+          "title": "True Color",
+          "assets": ["image"],
+          "bidx": "1,2,3"
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["image"],
+        "bidx": "1,2,3"
+      },
+      "sceneMinZoom": 14
+    }
+  }
+}

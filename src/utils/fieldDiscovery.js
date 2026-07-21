@@ -4,7 +4,11 @@ import StacFields from '@radiantearth/stac-fields'
  * Field type detection and metadata discovery
  */
 
-// Cache for field type discovery to improve performance
+// Bounded LRU caches for field type discovery. Map preserves insertion
+// order; we re-insert on read to promote entries and drop the oldest
+// entry when size exceeds MAX_CACHE_SIZE. This avoids the previous
+// "nuke the whole cache when full" behavior, which caused thrashing on
+// long-running sessions browsing many items.
 const fieldTypeCache = new Map()
 const fieldSpecCache = new Map()
 const fieldMetadataCache = new Map()
@@ -12,19 +16,33 @@ const fieldMetadataCache = new Map()
 // Cache size limits to prevent memory leaks
 const MAX_CACHE_SIZE = 1000
 
+function lruGet(cache, key) {
+  if (!cache.has(key)) return undefined
+  const value = cache.get(key)
+  // Re-insert to move to most-recently-used position
+  cache.delete(key)
+  cache.set(key, value)
+  return value
+}
+
+function lruSet(cache, key, value) {
+  if (cache.has(key)) cache.delete(key)
+  cache.set(key, value)
+  if (cache.size > MAX_CACHE_SIZE) {
+    // Evict oldest entry (first key in insertion order)
+    const oldestKey = cache.keys().next().value
+    if (oldestKey !== undefined) cache.delete(oldestKey)
+  }
+}
+
 /**
- * Clear caches when they get too large
+ * Clear all field-discovery caches. Exported for host apps that tear down
+ * FilmDrop between mounts and want to reclaim memory.
  */
-function clearCachesIfNeeded() {
-  if (fieldTypeCache.size > MAX_CACHE_SIZE) {
-    fieldTypeCache.clear()
-  }
-  if (fieldSpecCache.size > MAX_CACHE_SIZE) {
-    fieldSpecCache.clear()
-  }
-  if (fieldMetadataCache.size > MAX_CACHE_SIZE) {
-    fieldMetadataCache.clear()
-  }
+export function clearFieldCaches() {
+  fieldTypeCache.clear()
+  fieldSpecCache.clear()
+  fieldMetadataCache.clear()
 }
 
 /**
@@ -162,21 +180,17 @@ function discoverFieldType(field, value) {
  */
 export function getStacFieldType(field, value, item) {
   const cacheKey = `${field}:${typeof value}:${Array.isArray(value) ? value.length : 'scalar'}`
-  if (fieldTypeCache.has(cacheKey)) {
-    return fieldTypeCache.get(cacheKey)
-  }
+  const cached = lruGet(fieldTypeCache, cacheKey)
+  if (cached !== undefined) return cached
 
   try {
     const fieldType = discoverFieldType(field, value)
-    clearCachesIfNeeded()
-    fieldTypeCache.set(cacheKey, fieldType)
-
+    lruSet(fieldTypeCache, cacheKey, fieldType)
     return fieldType
   } catch (error) {
     console.warn('Field type discovery failed for field:', field, error)
     const fallbackType = 'standard'
-    clearCachesIfNeeded()
-    fieldTypeCache.set(cacheKey, fallbackType)
+    lruSet(fieldTypeCache, cacheKey, fallbackType)
     return fallbackType
   }
 }
@@ -185,20 +199,16 @@ export function getStacFieldType(field, value, item) {
  * Get field specification with caching
  */
 export function getFieldSpec(field) {
-  if (fieldSpecCache.has(field)) {
-    return fieldSpecCache.get(field)
-  }
+  const cached = lruGet(fieldSpecCache, field)
+  if (cached !== undefined) return cached
 
   try {
     const spec = StacFields.Registry.getSpecification(field)
-    clearCachesIfNeeded()
-    fieldSpecCache.set(field, spec)
-
+    lruSet(fieldSpecCache, field, spec)
     return spec
   } catch (error) {
     const fallbackSpec = {}
-    clearCachesIfNeeded()
-    fieldSpecCache.set(field, fallbackSpec)
+    lruSet(fieldSpecCache, field, fallbackSpec)
     return fallbackSpec
   }
 }
@@ -207,9 +217,8 @@ export function getFieldSpec(field) {
  * Get field metadata with caching
  */
 export function getFieldMetadata(field) {
-  if (fieldMetadataCache.has(field)) {
-    return fieldMetadataCache.get(field)
-  }
+  const cached = lruGet(fieldMetadataCache, field)
+  if (cached !== undefined) return cached
 
   try {
     const spec = StacFields.Registry.getSpecification(field)
@@ -223,9 +232,7 @@ export function getFieldMetadata(field) {
       tooltipSource: hasTooltip ? 'registry' : null
     }
 
-    clearCachesIfNeeded()
-    fieldMetadataCache.set(field, metadata)
-
+    lruSet(fieldMetadataCache, field, metadata)
     return metadata
   } catch (error) {
     const fallbackMetadata = {
@@ -234,8 +241,7 @@ export function getFieldMetadata(field) {
       tooltipSource: null
     }
 
-    clearCachesIfNeeded()
-    fieldMetadataCache.set(field, fallbackMetadata)
+    lruSet(fieldMetadataCache, field, fallbackMetadata)
     return fallbackMetadata
   }
 }

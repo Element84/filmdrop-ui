@@ -2,8 +2,8 @@ import React from 'react'
 import './LayerList.css'
 import { useSelector, useDispatch } from 'react-redux'
 import { Checkbox } from '@mui/material'
-import { setreferenceLayers } from '../../redux/slices/mainSlice'
-import { toggleReferenceLayerVisibility } from '../../utils/mapHelper'
+import { setReferenceLayers } from '../../redux/slices/mainSlice'
+import { toggleReferenceLayerVisibility } from '../../utils/mapInteraction'
 
 const LayerList = () => {
   const dispatch = useDispatch()
@@ -16,7 +16,7 @@ const LayerList = () => {
         ? { ...layer, visibility: !layer.visibility }
         : layer
     )
-    dispatch(setreferenceLayers(updatedLayers))
+    dispatch(setReferenceLayers(updatedLayers))
     toggleReferenceLayerVisibility(combinedLayerName)
   }
 
@@ -28,8 +28,12 @@ const LayerList = () => {
       <div className="LayerListLayers">
         {_referenceLayers.map((layer) => (
           <div className="LayerListLayer" key={layer.combinedLayerName}>
-            <label className="LayerListLayerContainer">
+            <label
+              className="LayerListLayerContainer"
+              htmlFor={`layer-list-${layer.combinedLayerName}`}
+            >
               <Checkbox
+                id={`layer-list-${layer.combinedLayerName}`}
                 checked={layer.visibility}
                 onChange={() => onLayerClicked(layer.combinedLayerName)}
                 size="small"

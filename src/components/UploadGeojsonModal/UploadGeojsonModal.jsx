@@ -1,17 +1,17 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import Alert from '@mui/material/Alert'
 import './UploadGeojsonModal.css'
 import { useDispatch } from 'react-redux'
 import {
-  setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setSearchGeojsonBoundary,
+  setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import { useDropzone } from 'react-dropzone'
 import {
   addUploadedGeojsonToMap,
-  clearLayer,
   parseGeomUpload
-} from '../../utils/mapHelper'
+} from '../../utils/mapInteraction'
+import { clearLayer } from '../../utils/mapLayers'
 import { newSearch, validateUploadedGeometry } from '../../utils/searchHelper'
 import { showApplicationAlert } from '../../utils/alertHelper'
 
@@ -23,7 +23,29 @@ const UploadGeojsonModal = () => {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const submissionInFlightRef = useRef(false)
   const uploadAbortControllerRef = useRef(null)
+  const dialogRef = useRef(null)
+  const previouslyFocusedRef = useRef(null)
   const dispatch = useDispatch()
+
+  // Abort any in-flight submission when the modal unmounts.
+  useEffect(() => {
+    return () => {
+      uploadAbortControllerRef.current?.abort()
+      uploadAbortControllerRef.current = null
+    }
+  }, [])
+
+  // Capture trigger focus on mount, focus the dialog, restore on unmount.
+  useEffect(() => {
+    previouslyFocusedRef.current = document.activeElement
+    dialogRef.current?.focus()
+    return () => {
+      const el = previouslyFocusedRef.current
+      if (el && typeof el.focus === 'function' && document.contains(el)) {
+        el.focus()
+      }
+    }
+  }, [])
 
   const clearInlineServerError = () => {
     setServerErrorSummary(null)
@@ -85,9 +107,9 @@ const UploadGeojsonModal = () => {
   function onUploadGeojsonCancelClicked() {
     uploadAbortControllerRef.current?.abort()
     uploadAbortControllerRef.current = null
-    dispatch(setsearchGeojsonBoundary(null))
+    dispatch(setSearchGeojsonBoundary(null))
     clearLayer('drawBoundsLayer')
-    dispatch(setshowUploadGeojsonModal(false))
+    dispatch(setShowUploadGeojsonModal(false))
   }
 
   async function onUploadGeojsonAddClicked() {
@@ -137,7 +159,7 @@ const UploadGeojsonModal = () => {
       if (signal.aborted) return
 
       if (result && result.error) {
-        dispatch(setsearchGeojsonBoundary(null))
+        dispatch(setSearchGeojsonBoundary(null))
         clearLayer('drawBoundsLayer')
         setServerErrorSummary(result.summary)
         setServerErrorCode(result.code || null)
@@ -145,7 +167,7 @@ const UploadGeojsonModal = () => {
         return
       }
 
-      dispatch(setshowUploadGeojsonModal(false))
+      dispatch(setShowUploadGeojsonModal(false))
     } catch (error) {
       if (error?.name === 'AbortError') {
         return
@@ -163,10 +185,37 @@ const UploadGeojsonModal = () => {
   }
 
   return (
-    <div className="uploadGeojsonModal" data-testid="testUploadGeojsonModal">
+    <div
+      className="uploadGeojsonModal"
+      data-testid="testUploadGeojsonModal"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) {
+          onUploadGeojsonCancelClicked()
+        }
+      }}
+      onKeyDown={(e) => {
+        if (e.key === 'Escape') {
+          e.stopPropagation()
+          onUploadGeojsonCancelClicked()
+        }
+      }}
+      role="presentation"
+    >
       <div className="uploadGeojsonModalContainerBackground"></div>
-      <div className="uploadGeojsonModalContainer">
-        <span className="uploadGeojsonModalTitle">Upload Geojson File</span>
+      <div
+        className="uploadGeojsonModalContainer"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="filmdrop-upload-geojson-modal-title"
+        tabIndex={-1}
+        ref={dialogRef}
+      >
+        <span
+          id="filmdrop-upload-geojson-modal-title"
+          className="uploadGeojsonModalTitle"
+        >
+          Upload Geojson File
+        </span>
         <div className="uploadGeojsonModalContent">
           <div {...getRootProps({ className: dropzoneClass })} id="dropzone">
             <p>

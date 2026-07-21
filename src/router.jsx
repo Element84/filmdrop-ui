@@ -20,6 +20,16 @@ import {
   defaultStringifySearch
 } from '@tanstack/react-router'
 import App from './App'
+import {
+  ROUTE_INDEX,
+  ROUTE_COLLECTION,
+  ROUTE_COLLECTION_ITEM
+} from './route-constants'
+import { extractPathParamsFromMatches } from './router-path-params'
+
+// Active-router state lives in its own module so setupTests can import it
+// without pulling in App (which router.jsx imports for the root route).
+import { setActiveRouter, getActiveRouterOrNull } from './router-test-hooks'
 
 /**
  * Reserved search param names that are not queryable filters.
@@ -136,19 +146,56 @@ function stringifySearch(search) {
 
 export const router = createRouter({ routeTree, stringifySearch })
 
+let hasWarnedAboutFallbackRouter = false
+
+// Route path constants — mirror the TanStack route tree above. Callers in
+// searchHelper, mapHelper, get-pagination-service, and useUrlNavigate import
+// these instead of hard-coding the path strings.
+export { ROUTE_INDEX, ROUTE_COLLECTION, ROUTE_COLLECTION_ITEM }
+
+// FilmDropRoot creates a router via createFilmDropRouter() and registers it
+// via setActiveRouter(). Non-hook call sites read it through getActiveRouter()
+// or accept a router argument. Legacy `import { router }` callers keep working
+// via the module-scope `router` above, which is the fallback before mount.
+
+/**
+ * Create a FilmDrop router instance. Accepts `basepath` (TanStack's native
+ * option; `FilmDropRoot` maps the public `basename` prop to this).
+ */
+export function createFilmDropRouter(options) {
+  const opts = options || {}
+  const config = { routeTree, stringifySearch }
+  if (opts.basepath) {
+    config.basepath = opts.basepath
+  }
+  return createRouter(config)
+}
+
+export { setActiveRouter }
+
+export function getActiveRouter() {
+  if (
+    import.meta.env?.DEV &&
+    !hasWarnedAboutFallbackRouter &&
+    !getActiveRouterOrNull()
+  ) {
+    hasWarnedAboutFallbackRouter = true
+    console.warn(
+      'FilmDrop: getActiveRouter called before FilmDropRoot mount; using fallback router.'
+    )
+  }
+  // Fall back to the module-scope `router` (SPA / legacy) if no FilmDropRoot
+  // has mounted yet — keeps existing behavior for pre-FilmDropRoot callers.
+  return getActiveRouterOrNull() || router
+}
+
 /**
  * Read current path params from router state.
  * For use outside React (searchHelper, mapHelper, services).
+ * Accepts an optional router argument; falls back to the active router.
  * Returns { collectionId?, itemId? }.
  */
-export function getPathParams() {
-  const matches = router.state.matches
-  // Accumulate params from all matched routes
-  let params = {}
-  for (const match of matches) {
-    if (match.params) {
-      params = { ...params, ...match.params }
-    }
-  }
-  return params
+export function getPathParams(routerArg) {
+  const r = routerArg || getActiveRouter()
+  return extractPathParamsFromMatches(r.state.matches)
 }

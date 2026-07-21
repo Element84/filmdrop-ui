@@ -3,6 +3,7 @@ import {
   RESERVED_PARAMS,
   extractQueryableParams,
   normalizeSearch,
+  getPathParams,
   router
 } from './router'
 
@@ -120,5 +121,45 @@ describe('stringifySearch', () => {
 
   it('returns empty string when all values are empty', () => {
     expect(stringify({ dt: '', view: '' })).toBe('')
+  })
+})
+
+describe('getPathParams', () => {
+  it('returns empty object when there are no route matches', () => {
+    const fakeRouter = {
+      state: {
+        matches: []
+      }
+    }
+
+    expect(getPathParams(fakeRouter)).toEqual({})
+  })
+
+  it('returns params from a single matched route', () => {
+    const fakeRouter = {
+      state: {
+        matches: [{ params: { collectionId: 'sentinel-2' } }]
+      }
+    }
+
+    expect(getPathParams(fakeRouter)).toEqual({ collectionId: 'sentinel-2' })
+  })
+
+  it('accumulates params across multiple matches with later matches overriding earlier keys', () => {
+    const fakeRouter = {
+      state: {
+        matches: [
+          { params: { collectionId: 'sentinel-2', shared: 'parent' } },
+          { params: { itemId: 'scene-123', shared: 'child' } },
+          { params: null }
+        ]
+      }
+    }
+
+    expect(getPathParams(fakeRouter)).toEqual({
+      collectionId: 'sentinel-2',
+      itemId: 'scene-123',
+      shared: 'child'
+    })
   })
 })

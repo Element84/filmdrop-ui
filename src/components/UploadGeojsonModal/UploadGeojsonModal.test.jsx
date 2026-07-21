@@ -6,15 +6,22 @@ import UploadGeojsonModal from './UploadGeojsonModal'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import {
-  setsearchGeojsonBoundary,
-  setshowUploadGeojsonModal
+  setSearchGeojsonBoundary,
+  setShowUploadGeojsonModal
 } from '../../redux/slices/mainSlice'
 import * as alertHelper from '../../utils/alertHelper'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapInteraction from '../../utils/mapInteraction'
+import * as mapLayers from '../../utils/mapLayers'
 import * as searchHelper from '../../utils/searchHelper'
 
 vi.mock('../../utils/alertHelper')
-vi.mock('../../utils/mapHelper')
+vi.mock('../../utils/mapInteraction', () => ({
+  addUploadedGeojsonToMap: vi.fn(),
+  parseGeomUpload: vi.fn()
+}))
+vi.mock('../../utils/mapLayers', () => ({
+  clearLayer: vi.fn()
+}))
 vi.mock('../../utils/searchHelper')
 
 describe('UploadGeojsonModal', () => {
@@ -29,7 +36,7 @@ describe('UploadGeojsonModal', () => {
 
   describe('when cancel button is clicked', () => {
     it('should set showUploadGeojsonModal to be false in state', async () => {
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const cancelButton = screen.getByRole('button', { name: /cancel/i })
       await user.click(cancelButton)
@@ -45,7 +52,7 @@ describe('UploadGeojsonModal', () => {
         alertHelper,
         'showApplicationAlert'
       )
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const json = '{ "invalid json"'
       const file = new File([json], 'test.geojson', {
@@ -70,12 +77,14 @@ describe('UploadGeojsonModal', () => {
         'showApplicationAlert'
       )
       const spyaddUploadedGeojsonToMap = vi.spyOn(
-        mapHelper,
+        mapInteraction,
         'addUploadedGeojsonToMap'
       )
-      mapHelper.parseGeomUpload.mockRejectedValueOnce(new Error('Parse error'))
+      mapInteraction.parseGeomUpload.mockRejectedValueOnce(
+        new Error('Parse error')
+      )
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const geojson = JSON.stringify({
         type: 'Feature',
@@ -110,16 +119,16 @@ describe('UploadGeojsonModal', () => {
         'showApplicationAlert'
       )
       const spyaddUploadedGeojsonToMap = vi.spyOn(
-        mapHelper,
+        mapInteraction,
         'addUploadedGeojsonToMap'
       )
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
       vi.spyOn(searchHelper, 'newSearch').mockResolvedValueOnce(undefined)
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
       const geojson = JSON.stringify({
         type: 'Feature',
@@ -149,8 +158,8 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('clears AOI and draw layer when newSearch returns structured error', async () => {
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
@@ -160,9 +169,9 @@ describe('UploadGeojsonModal', () => {
         code: 'BadRequest',
         details: 'fail'
       })
-      mapHelper.addUploadedGeojsonToMap.mockImplementationOnce(() => {
+      mapInteraction.addUploadedGeojsonToMap.mockImplementationOnce(() => {
         store.dispatch(
-          setsearchGeojsonBoundary({
+          setSearchGeojsonBoundary({
             type: 'Feature',
             geometry: { type: 'Point', coordinates: [2, 2] },
             properties: {}
@@ -170,7 +179,7 @@ describe('UploadGeojsonModal', () => {
         )
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -204,7 +213,7 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('should show inline STAC error and keep modal open when upload validation returns error object', async () => {
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce({
         error: true,
         code: 'BadRequest',
@@ -212,7 +221,7 @@ describe('UploadGeojsonModal', () => {
         details: 'geo coordinates must be numbers'
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -246,12 +255,12 @@ describe('UploadGeojsonModal', () => {
       expect(screen.getByTestId('testUploadGeojsonErrorDetails')).toHaveClass(
         'uploadGeojsonModalErrorDetails'
       )
-      expect(mapHelper.addUploadedGeojsonToMap).not.toHaveBeenCalled()
+      expect(mapInteraction.addUploadedGeojsonToMap).not.toHaveBeenCalled()
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
     })
 
     it('keeps error summary visible and renders long details in dedicated container', async () => {
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       const longDetails = `very long server message ${'x'.repeat(500)}`
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce({
         error: true,
@@ -260,7 +269,7 @@ describe('UploadGeojsonModal', () => {
         details: longDetails
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -297,7 +306,7 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('clears inline STAC errors when a new (still-accepted) file drop fails validation', async () => {
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce({
         error: true,
         code: 'BadRequest',
@@ -305,7 +314,7 @@ describe('UploadGeojsonModal', () => {
         details: 'geo coordinates must be numbers'
       })
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -355,13 +364,13 @@ describe('UploadGeojsonModal', () => {
         resolveSearch = resolve
       })
 
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
       vi.spyOn(searchHelper, 'newSearch').mockReturnValue(searchPromise)
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -403,13 +412,13 @@ describe('UploadGeojsonModal', () => {
         resolveSearch = resolve
       })
 
-      mapHelper.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
+      mapInteraction.parseGeomUpload.mockResolvedValueOnce('parsed geojson')
       vi.spyOn(searchHelper, 'validateUploadedGeometry').mockResolvedValueOnce(
         undefined
       )
       vi.spyOn(searchHelper, 'newSearch').mockReturnValue(searchPromise)
 
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const geojson = JSON.stringify({
@@ -443,15 +452,15 @@ describe('UploadGeojsonModal', () => {
     })
 
     it('clears upload AOI state when cancel is clicked', async () => {
-      const spyClearLayer = vi.spyOn(mapHelper, 'clearLayer')
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
       store.dispatch(
-        setsearchGeojsonBoundary({
+        setSearchGeojsonBoundary({
           type: 'Feature',
           geometry: { type: 'Point', coordinates: [0, 0] },
           properties: {}
         })
       )
-      store.dispatch(setshowUploadGeojsonModal(true))
+      store.dispatch(setShowUploadGeojsonModal(true))
       setup()
 
       const cancelButton = screen.getByRole('button', { name: /cancel/i })
@@ -460,6 +469,56 @@ describe('UploadGeojsonModal', () => {
       expect(store.getState().mainSlice.searchGeojsonBoundary).toBeNull()
       expect(spyClearLayer).toHaveBeenCalledWith('drawBoundsLayer')
       expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
+    })
+  })
+
+  describe('dialog semantics', () => {
+    it('exposes role=dialog with aria-modal and aria-labelledby pointing at title', () => {
+      store.dispatch(setShowUploadGeojsonModal(true))
+      setup()
+      const dialog = screen.getByRole('dialog')
+      expect(dialog).toHaveAttribute('aria-modal', 'true')
+      const labelId = dialog.getAttribute('aria-labelledby')
+      expect(labelId).toBeTruthy()
+      expect(document.getElementById(labelId)).toHaveTextContent(
+        'Upload Geojson File'
+      )
+    })
+
+    it('closes when Escape is pressed inside the dialog', () => {
+      store.dispatch(setShowUploadGeojsonModal(true))
+      setup()
+      fireEvent.keyDown(screen.getByRole('dialog'), { key: 'Escape' })
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
+    })
+
+    it('closes when the backdrop is clicked', () => {
+      store.dispatch(setShowUploadGeojsonModal(true))
+      setup()
+      const backdrop = screen.getByTestId('testUploadGeojsonModal')
+      fireEvent.click(backdrop)
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeFalsy()
+    })
+
+    it('does not close when the dialog content is clicked', () => {
+      store.dispatch(setShowUploadGeojsonModal(true))
+      setup()
+      fireEvent.click(screen.getByRole('dialog'))
+      expect(store.getState().mainSlice.showUploadGeojsonModal).toBeTruthy()
+    })
+
+    it('returns focus to the previously focused element on unmount', () => {
+      store.dispatch(setShowUploadGeojsonModal(true))
+      const trigger = document.createElement('button')
+      trigger.textContent = 'open upload'
+      document.body.appendChild(trigger)
+      trigger.focus()
+      expect(document.activeElement).toBe(trigger)
+      const { unmount } = setup()
+      expect(document.activeElement).toBe(screen.getByRole('dialog'))
+      unmount()
+      expect(document.activeElement).toBe(trigger)
+      trigger.remove()
     })
   })
 })

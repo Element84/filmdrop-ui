@@ -3,17 +3,18 @@ import {
   setClickResults,
   setSearchLoading,
   setSearchResults,
-  setmappedScenes,
-  settabSelected,
-  setpaginationNextLink,
-  setpaginationPrevLink,
-  setcurrentPage,
-  settotalPages,
-  setpaginationHistory
+  setMappedScenes,
+  setTabSelected,
+  setPaginationNextLink,
+  setPaginationPrevLink,
+  setCurrentPage,
+  setTotalPages,
+  setPaginationHistory
 } from '../redux/slices/mainSlice'
-import { addDataToLayer, footprintLayerStyle } from '../utils/mapHelper'
+import { addDataToLayer } from '../utils/mapLayers'
+import { footprintLayerStyle } from '../utils/mapStyles'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
-import { DEFAULT_API_MAX_ITEMS } from '../components/defaults'
+import { DEFAULT_API_MAX_ITEMS } from '../constants/defaults'
 import {
   normalizeStacErrorResponse,
   normalizeStacNetworkError
@@ -63,19 +64,19 @@ export async function SearchService(
 
     if (typeOfSearch === 'scene') {
       store.dispatch(setSearchResults(json))
-      store.dispatch(setmappedScenes(json.features))
+      store.dispatch(setMappedScenes(json.features))
 
       // Extract pagination metadata
       const nextLink = json.links?.find((link) => link.rel === 'next')
       const prevLink = json.links?.find((link) => link.rel === 'prev')
 
-      store.dispatch(setpaginationNextLink(nextLink?.href || null))
-      store.dispatch(setpaginationPrevLink(prevLink?.href || null))
-      store.dispatch(setcurrentPage(1))
+      store.dispatch(setPaginationNextLink(nextLink?.href || null))
+      store.dispatch(setPaginationPrevLink(prevLink?.href || null))
+      store.dispatch(setCurrentPage(1))
 
       // Initialize pagination history with the current search URL (page 1)
       const currentUrl = `${store.getState().mainSlice.appConfig.STAC_API_URL}/search?${searchParams}`
-      store.dispatch(setpaginationHistory([{ page: 1, url: currentUrl }]))
+      store.dispatch(setPaginationHistory([{ page: 1, url: currentUrl }]))
 
       // Calculate total pages if we have numberMatched
       if (json.context?.matched || json.numberMatched) {
@@ -84,7 +85,7 @@ export async function SearchService(
           store.getState().mainSlice.appConfig.API_MAX_ITEMS ||
           DEFAULT_API_MAX_ITEMS
         const totalPages = Math.ceil(totalItems / limit)
-        store.dispatch(settotalPages(totalPages))
+        store.dispatch(setTotalPages(totalPages))
       }
 
       const options = {
@@ -95,7 +96,7 @@ export async function SearchService(
     }
 
     store.dispatch(setClickResults(json.features))
-    store.dispatch(settabSelected('details'))
+    store.dispatch(setTabSelected('details'))
     return undefined
   } catch (error) {
     if (error?.name === 'AbortError') {

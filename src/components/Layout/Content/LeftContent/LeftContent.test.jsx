@@ -6,31 +6,26 @@ import { Provider } from 'react-redux'
 import { store } from '../../../../redux/store'
 import { LayoutProvider } from '../../../../contexts/LayoutContext'
 import {
-  setappConfig,
+  setAppConfig,
   setSearchLoading,
-  settabSelected
+  setTabSelected
 } from '../../../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
 
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => vi.fn(),
-  useParams: () => ({}),
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({
-    state: { location: { search: {} }, matches: [] }
-  })),
-  defaultStringifySearch: vi.fn()
-}))
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } =
+    await import('../../../../testing/shared-mocks')
+  return mockTanstackRouter()()
+})
 
 // Mock useUrlNavigate so setTab dispatches to Redux (simulating URL→Redux sync)
 vi.mock('../../../../hooks/useUrlNavigate', async () => {
   const { store } = await import('../../../../redux/store')
-  const { settabSelected } = await import('../../../../redux/slices/mainSlice')
+  const { setTabSelected } = await import('../../../../redux/slices/mainSlice')
   return {
     useUrlNavigate: () => ({
-      setTab: (tab) => store.dispatch(settabSelected(tab)),
+      setTab: (tab) => store.dispatch(setTabSelected(tab)),
       setViz: vi.fn(),
       setItem: vi.fn(),
       clearItem: vi.fn()
@@ -50,7 +45,7 @@ describe('LeftContent', () => {
     )
 
   beforeEach(() => {
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
     vi.mock('../../../../utils/mapHelper')
   })
   afterEach(() => {
@@ -67,7 +62,7 @@ describe('LeftContent', () => {
   describe('when search loading', () => {
     it('should render disabled search bar overlay div', async () => {
       store.dispatch(setSearchLoading(true))
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       setup()
       expect(
         screen.queryByTestId('test_disableSearchOverlay')
@@ -90,7 +85,7 @@ describe('LeftContent', () => {
     })
     describe('on Search tab clicked', () => {
       it('should show search and hide item details', async () => {
-        store.dispatch(settabSelected('details'))
+        store.dispatch(setTabSelected('details'))
         setup()
         expect(screen.queryByTestId('Search')).not.toBeVisible()
         expect(screen.queryByTestId('testPopupResults')).toBeVisible()

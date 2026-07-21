@@ -270,5 +270,30 @@ describe('NumericRangeInputs', () => {
       fireEvent.focus(maxInput)
       expect(maxInput).toHaveValue(null)
     })
+
+    it('does not clobber an active edit when external value changes mid-edit', () => {
+      const { rerender, onChange } = renderComponent({
+        value: { min: 10, max: 90 }
+      })
+      const minInput = screen.getByLabelText('Test Field minimum value')
+
+      // User starts editing min: focus, type a partial value, do not blur.
+      fireEvent.focus(minInput)
+      fireEvent.change(minInput, { target: { value: '42' } })
+      expect(minInput).toHaveValue(42)
+
+      // External value updates while user is still editing.
+      rerender(
+        <NumericRangeInputs
+          value={{ min: 99, max: 90 }}
+          onChange={onChange}
+          label="Test Field"
+          mode="unbounded"
+        />
+      )
+
+      // The active edit must not be overwritten by the external value.
+      expect(minInput).toHaveValue(42)
+    })
   })
 })

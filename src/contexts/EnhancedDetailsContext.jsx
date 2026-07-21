@@ -1,4 +1,4 @@
-import { createContext, useContext } from 'react'
+import React, { createContext, useContext, useMemo } from 'react'
 import PropTypes from 'prop-types'
 
 const EnhancedDetailsContext = createContext(null)
@@ -19,11 +19,14 @@ export const EnhancedDetailsProvider = ({
   enhancedColumns,
   appConfig
 }) => {
-  const value = {
-    item,
-    enhancedColumns,
-    appConfig
-  }
+  const value = useMemo(
+    () => ({
+      item,
+      enhancedColumns,
+      appConfig
+    }),
+    [item, enhancedColumns, appConfig]
+  )
 
   return (
     <EnhancedDetailsContext.Provider value={value}>

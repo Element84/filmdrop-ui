@@ -2,32 +2,29 @@ import { store } from '../redux/store'
 import {
   setCollectionsData,
   setCollectionsLoadError,
-  setShowAppLoading,
-  setapplicationAlertMessage,
-  setshowApplicationAlert
+  setShowAppLoading
 } from '../redux/slices/mainSlice'
 import { buildCollectionsData, loadLocalGridData } from '../utils/dataHelper'
-import { showApplicationAlert } from '../utils/alertHelper'
 import { getCollections } from './stac-api'
-import { appendStacHeaderCookies } from '../utils/stacRequest'
+import { buildStacRequestHeaders } from '../utils/stacRequest'
+import { normalizeStacNetworkError } from '../utils/stacErrorHelper'
 
-export async function GetCollectionsService(searchParams) {
+/**
+ * Load, filter, and normalize collections into Redux state.
+ * @param {Object} [searchParams] - Reserved argument for compatibility with existing call sites.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<{error:false,collectionsCount:number}|Object>} Success payload or normalized error object.
+ */
+export async function GetCollectionsService(searchParams, signal) {
   const appConfig = store.getState().mainSlice.appConfig
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
-  const isSTACTokenAuthEnabled = appConfig.APP_TOKEN_AUTH_ENABLED ?? false
-
-  // Build custom headers for authentication
-  const requestHeaders = new Headers()
-  if (JWT && isSTACTokenAuthEnabled) {
-    requestHeaders.append('Authorization', `Bearer ${JWT}`)
-  }
-  appendStacHeaderCookies(requestHeaders)
+  const requestHeaders = buildStacRequestHeaders()
 
   try {
     // Use stac-api client to fetch collections
     const json = await getCollections(appConfig.STAC_API_URL, {
       headers: requestHeaders,
-      credentials: appConfig.FETCH_CREDENTIALS || 'same-origin'
+      credentials: appConfig.FETCH_CREDENTIALS || 'same-origin',
+      signal
     })
 
     const collections = appConfig.COLLECTIONS
@@ -39,35 +36,32 @@ export async function GetCollectionsService(searchParams) {
       )
     }
 
-    const formattedData = await buildCollectionsData(json)
-
-    if (Object.values(formattedData).length === 0) {
-      store.dispatch(setapplicationAlertMessage('Error: No Collections Found'))
-      store.dispatch(setshowApplicationAlert(true))
-    }
+    const formattedData = await buildCollectionsData(json, appConfig)
+    const collectionsCount = Object.values(formattedData).length
 
     store.dispatch(setCollectionsData(formattedData))
     store.dispatch(setCollectionsLoadError(false))
     store.dispatch(setShowAppLoading(false))
     loadLocalGridData()
+
+    return {
+      error: false,
+      collectionsCount
+    }
   } catch (error) {
+    const normalizedError =
+      error?.error === true
+        ? error
+        : normalizeStacNetworkError(error, 'Error Fetching Collections')
+
     // Set empty collections data to prevent UI errors
     store.dispatch(setCollectionsData([]))
     store.dispatch(setCollectionsLoadError(true))
     store.dispatch(setShowAppLoading(false))
 
-    if (error.status === 403) {
-      showApplicationAlert(
-        'error',
-        'STAC API returned 403. Bad Token OR needs STAC Auth Enabled in config.',
-        null,
-        true
-      )
-    } else {
-      showApplicationAlert('error', 'Error Fetching Collections')
-    }
     const message = 'Error Fetching Collections'
     // log full error for diagnosing client side errors if needed
-    console.error(message, error)
+    console.error(message, normalizedError)
+    return normalizedError
   }
 }

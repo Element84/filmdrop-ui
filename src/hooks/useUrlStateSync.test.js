@@ -10,7 +10,7 @@ import { showApplicationAlert } from '../utils/alertHelper'
 import {
   setSelectedCollection,
   setSelectedVisualization,
-  settabSelected,
+  setTabSelected,
   setSearchDateRangeValue,
   setViewMode,
   setQueryableFilters
@@ -19,13 +19,14 @@ import {
 // Mock TanStack Router — search params no longer include col/item
 let mockSearch = {}
 let mockParams = {}
-vi.mock('@tanstack/react-router', () => ({
-  useSearch: () => mockSearch,
-  useParams: () => mockParams,
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({}))
-}))
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('../testing/shared-mocks')
+  return mockTanstackRouter({
+    useSearch: () => mockSearch,
+    useParams: () => mockParams,
+    createRouter: vi.fn(() => ({}))
+  })()
+})
 
 vi.mock('../utils/alertHelper', () => ({
   showApplicationAlert: vi.fn()
@@ -61,8 +62,8 @@ const mockClearItemSelection = vi.fn()
 
 vi.mock('./useUrlInitialize', () => ({
   useUrlInitialize: () => ({
-    isInitialized: mockIsInitialized,
-    prevSearch: mockPrevSearch,
+    isInitializedRef: mockIsInitialized,
+    prevSearchRef: mockPrevSearch,
     fetchAndDisplayItem: mockFetchAndDisplayItem,
     clearItemSelection: mockClearItemSelection
   })
@@ -91,7 +92,7 @@ const baseState = {
   item: ''
 }
 
-describe('useUrlStateSync — Phase 2 ongoing sync', () => {
+describe('useUrlStateSync — ongoing sync', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     mockIsInitialized.current = true
@@ -125,12 +126,12 @@ describe('useUrlStateSync — Phase 2 ongoing sync', () => {
   })
 
   describe('tab sync', () => {
-    it('dispatches settabSelected when tab changes', () => {
+    it('dispatches setTabSelected when tab changes', () => {
       mockSearch = { ...baseSearchParams, tab: 'details' }
 
       renderHook(() => useUrlStateSync())
 
-      expect(mockDispatch).toHaveBeenCalledWith(settabSelected('details'))
+      expect(mockDispatch).toHaveBeenCalledWith(setTabSelected('details'))
     })
 
     it('dispatches default "search" when tab is cleared', () => {
@@ -139,7 +140,7 @@ describe('useUrlStateSync — Phase 2 ongoing sync', () => {
 
       renderHook(() => useUrlStateSync())
 
-      expect(mockDispatch).toHaveBeenCalledWith(settabSelected('search'))
+      expect(mockDispatch).toHaveBeenCalledWith(setTabSelected('search'))
     })
   })
 

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import PopupResult from './PopupResult'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
-import { setappConfig } from '../../redux/slices/mainSlice'
+import { setAppConfig } from '../../redux/slices/mainSlice'
 import { mockAppConfig, mockClickResults } from '../../testing/shared-mocks'
 import { describe, beforeEach, vi, it, expect } from 'vitest'
 
@@ -27,7 +27,7 @@ describe('PopupResult', () => {
     )
 
   beforeEach(() => {
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
     vi.clearAllMocks()
     // Mock Image constructor to simulate successful image load
     global.Image = vi.fn(function () {
@@ -136,7 +136,7 @@ describe('PopupResult', () => {
         ...mockAppConfig,
         CART_ENABLED: true
       }
-      store.dispatch(setappConfig(configWithCart))
+      store.dispatch(setAppConfig(configWithCart))
       setup()
 
       const container = screen.getByTestId('testPopupResult')
@@ -148,7 +148,7 @@ describe('PopupResult', () => {
         ...mockAppConfig,
         CART_ENABLED: false
       }
-      store.dispatch(setappConfig(configWithoutCart))
+      store.dispatch(setAppConfig(configWithoutCart))
       setup()
 
       const container = screen.getByTestId('testPopupResult')

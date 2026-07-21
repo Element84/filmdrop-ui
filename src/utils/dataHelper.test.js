@@ -1,5 +1,4 @@
 import { vi } from 'vitest'
-import { store } from '../redux/store'
 import {
   loadLocalGridData,
   isSceneInCart,
@@ -8,7 +7,7 @@ import {
   setScenesForCartLayer
 } from './dataHelper'
 import * as getLocalGridDataService from '../services/get-local-grid-data-json-service'
-import * as MapHelper from './mapHelper'
+import * as mapLayers from './mapLayers'
 
 describe('dataHelper', () => {
   describe('loadLocalGridData', () => {
@@ -25,24 +24,14 @@ describe('dataHelper', () => {
   describe('isSceneInCart', () => {
     it('returns true if scene is in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockCart
-        }
-      })
       const scene = { id: '1' }
-      const result = isSceneInCart(scene)
+      const result = isSceneInCart(scene, mockCart)
       expect(result).toBe(true)
     })
     it('returns false if scene is not in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockCart
-        }
-      })
       const scene = { id: '3' }
-      const result = isSceneInCart(scene)
+      const result = isSceneInCart(scene, mockCart)
       expect(result).toBe(false)
     })
   })
@@ -50,13 +39,8 @@ describe('dataHelper', () => {
   describe('numberOfSelectedInCart', () => {
     it('returns number of selected scenes in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockCart
-        }
-      })
       const mockResults = [{ id: '1' }, { id: '3' }]
-      const count = numberOfSelectedInCart(mockResults)
+      const count = numberOfSelectedInCart(mockResults, mockCart)
       expect(count).toBe(1)
     })
   })
@@ -64,24 +48,14 @@ describe('dataHelper', () => {
   describe('areAllScenesSelectedInCart', () => {
     it('returns true if all scenes are in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockCart
-        }
-      })
       const mockResults = [{ id: '1' }, { id: '2' }]
-      const allInCart = areAllScenesSelectedInCart(mockResults)
+      const allInCart = areAllScenesSelectedInCart(mockResults, mockCart)
       expect(allInCart).toBe(true)
     })
     it('returns false if some scenes not in cart', () => {
       const mockCart = [{ id: '1' }, { id: '2' }]
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockCart
-        }
-      })
       const mockResults = [{ id: '1' }, { id: '3' }]
-      const allInCart = areAllScenesSelectedInCart(mockResults)
+      const allInCart = areAllScenesSelectedInCart(mockResults, mockCart)
       expect(allInCart).toBe(false)
     })
   })
@@ -89,24 +63,14 @@ describe('dataHelper', () => {
   describe('setScenesForCartLayer', () => {
     it('clears layer if no cart items', () => {
       const mockEmptyCart = []
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockEmptyCart
-        }
-      })
-      const spyClearLayer = vi.spyOn(MapHelper, 'clearLayer')
-      setScenesForCartLayer()
+      const spyClearLayer = vi.spyOn(mapLayers, 'clearLayer')
+      setScenesForCartLayer(mockEmptyCart)
       expect(spyClearLayer).toHaveBeenCalledWith('cartFootprintsLayer')
     })
     it('sets geojson and options for cart layer', () => {
       const mockCartItems = [{ id: '1' }, { id: '2' }]
-      vi.spyOn(store, 'getState').mockReturnValue({
-        mainSlice: {
-          cartItems: mockCartItems
-        }
-      })
-      const spyAddDataToLayer = vi.spyOn(MapHelper, 'addDataToLayer')
-      setScenesForCartLayer()
+      const spyAddDataToLayer = vi.spyOn(mapLayers, 'addDataToLayer')
+      setScenesForCartLayer(mockCartItems)
       expect(spyAddDataToLayer).toHaveBeenCalledWith(
         expect.objectContaining({
           type: 'FeatureCollection',

@@ -19,9 +19,18 @@ export const useResizablePanel = (panelRef) => {
   const isRightSidebarEnabled = useSelector(
     (state) => state.mainSlice.appConfig?.RIGHT_SIDEBAR_ENABLED ?? false
   )
+  // Ref so handleMouseMove stays stable across sidebar-config toggles
+  // (otherwise global listeners + ResizeObserver re-register on every toggle).
+  const isRightSidebarEnabledRef = useRef(isRightSidebarEnabled)
+  useEffect(() => {
+    isRightSidebarEnabledRef.current = isRightSidebarEnabled
+  }, [isRightSidebarEnabled])
   const isDraggingRef = useRef(false)
   const startXRef = useRef(0)
   const startWidthRef = useRef(0)
+  // Snapshot host body styles so we restore (not clobber) them on drag end.
+  const prevBodyCursorRef = useRef('')
+  const prevBodyUserSelectRef = useRef('')
 
   // Calculate columns based on panel width
   const calculateColumns = useCallback((width) => {
@@ -66,7 +75,7 @@ export const useResizablePanel = (panelRef) => {
       if (!isDraggingRef.current) return
 
       const deltaX = e.clientX - startXRef.current
-      const signedDeltaX = isRightSidebarEnabled ? -deltaX : deltaX
+      const signedDeltaX = isRightSidebarEnabledRef.current ? -deltaX : deltaX
       const newWidth = Math.min(
         MAX_PANEL_WIDTH,
         Math.max(MIN_PANEL_WIDTH, startWidthRef.current + signedDeltaX)
@@ -75,14 +84,15 @@ export const useResizablePanel = (panelRef) => {
       updateLeftPanelWidth(newWidth)
       updateColumns(newWidth)
     },
-    [isRightSidebarEnabled, updateLeftPanelWidth, updateColumns]
+    [updateLeftPanelWidth, updateColumns]
   )
 
   // Mouse up handler
   const handleMouseUp = useCallback(() => {
+    if (!isDraggingRef.current) return
     isDraggingRef.current = false
-    document.body.style.cursor = ''
-    document.body.style.userSelect = ''
+    document.body.style.cursor = prevBodyCursorRef.current
+    document.body.style.userSelect = prevBodyUserSelectRef.current
   }, [])
 
   // Mouse down handler for drag handle
@@ -92,6 +102,8 @@ export const useResizablePanel = (panelRef) => {
       isDraggingRef.current = true
       startXRef.current = e.clientX
       startWidthRef.current = leftPanelWidth
+      prevBodyCursorRef.current = document.body.style.cursor
+      prevBodyUserSelectRef.current = document.body.style.userSelect
       document.body.style.cursor = 'ew-resize'
       document.body.style.userSelect = 'none'
     },
@@ -106,6 +118,12 @@ export const useResizablePanel = (panelRef) => {
     return () => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
+      // Restore body styles if unmount occurs mid-drag.
+      if (isDraggingRef.current) {
+        document.body.style.cursor = prevBodyCursorRef.current
+        document.body.style.userSelect = prevBodyUserSelectRef.current
+        isDraggingRef.current = false
+      }
     }
   }, [handleMouseMove, handleMouseUp])
 

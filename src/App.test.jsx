@@ -4,34 +4,35 @@ import App from './App'
 import { Provider } from 'react-redux'
 import { store } from './redux/store'
 import {
-  setshowUploadGeojsonModal,
-  setshowApplicationAlert,
-  setappConfig,
-  setshowCartModal
+  setShowUploadGeojsonModal,
+  setShowApplicationAlert,
+  setAppConfig,
+  setShowCartModal
 } from './redux/slices/mainSlice'
-import { vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import * as CollectionsService from './services/get-collections-service'
 import * as LoadConfigService from './services/get-config-service'
 import { mockAppConfig } from './testing/shared-mocks'
 import * as ConfigHelper from './utils/configHelper'
 import * as ThemeHelper from './utils/themeHelper'
+import { useFilmDropOptions } from './contexts/FilmDropOptionsContext'
 
 vi.mock('./hooks/useUrlStateSync', () => ({
   useUrlStateSync: vi.fn()
 }))
 
-vi.mock('@tanstack/react-router', () => ({
-  Outlet: () => null,
-  useNavigate: () => vi.fn(),
-  useParams: () => ({}),
-  createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-  createRouter: vi.fn(() => ({
-    state: { location: { search: {} }, matches: [] }
-  })),
-  defaultStringifySearch: vi.fn()
+vi.mock('./contexts/FilmDropOptionsContext', () => ({
+  useFilmDropOptions: vi.fn(() => ({
+    config: undefined,
+    urlState: undefined,
+    onUrlStateChange: undefined
+  }))
 }))
 
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('./testing/shared-mocks')
+  return mockTanstackRouter()()
+})
 vi.mock('./hooks/useUrlNavigate', () => ({
   useUrlNavigate: () => ({
     setTab: vi.fn(),
@@ -42,6 +43,14 @@ vi.mock('./hooks/useUrlNavigate', () => ({
 }))
 
 describe('App', () => {
+  beforeEach(() => {
+    vi.mocked(useFilmDropOptions).mockReturnValue({
+      config: undefined,
+      urlState: undefined,
+      onUrlStateChange: undefined
+    })
+  })
+
   const setup = () =>
     render(
       <Provider store={store}>
@@ -51,7 +60,7 @@ describe('App', () => {
 
   describe('on app render with config', () => {
     beforeEach(() => {
-      store.dispatch(setappConfig(mockAppConfig))
+      store.dispatch(setAppConfig(mockAppConfig))
       // Mock theme initialization to avoid CSS validation errors in tests
       vi.spyOn(ThemeHelper, 'initializeTheme').mockReturnValue({
         currentTheme: null,
@@ -77,6 +86,49 @@ describe('App', () => {
       setup()
       expect(spy).toHaveBeenCalledTimes(1)
     })
+    it('passes props-driven config to LoadConfigIntoStateService when provided', () => {
+      const componentConfig = { APP_NAME: 'Embedded FilmDrop' }
+      vi.mocked(useFilmDropOptions).mockReturnValue({
+        config: componentConfig,
+        urlState: undefined,
+        onUrlStateChange: undefined
+      })
+
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
+      setup()
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({ config: componentConfig })
+      )
+    })
+    it('treats config: null the same as config: undefined (falls back to fetch)', () => {
+      vi.mocked(useFilmDropOptions).mockReturnValue({
+        config: null,
+        urlState: undefined,
+        onUrlStateChange: undefined
+      })
+
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
+      setup()
+
+      expect(spy).toHaveBeenCalledTimes(1)
+      const [callArgs] = spy.mock.calls[0]
+      expect(callArgs).not.toHaveProperty('config')
+      expect(callArgs).toEqual(
+        expect.objectContaining({ signal: expect.anything() })
+      )
+    })
+    it('should initialize theme even when document branding is disabled', () => {
+      window.__filmdropApplyBranding = false
+      const initSpy = vi.spyOn(ThemeHelper, 'initializeTheme')
+      const applySpy = vi.spyOn(ThemeHelper, 'applyTheme')
+
+      setup()
+
+      expect(initSpy).toHaveBeenCalledTimes(1)
+      expect(applySpy).toHaveBeenCalledTimes(1)
+      delete window.__filmdropApplyBranding
+    })
     it('should render the PageHeader component', () => {
       setup()
       const PageHeaderComponent = screen.queryByTestId('testPageHeader')
@@ -96,7 +148,7 @@ describe('App', () => {
         expect(UploadGeojsonModalComponent).toBeNull()
       })
       it('should render UploadGeojsonModal if showUploadGeojsonModal in state is true', () => {
-        store.dispatch(setshowUploadGeojsonModal(true))
+        store.dispatch(setShowUploadGeojsonModal(true))
         setup()
         const UploadGeojsonModalComponent = screen.queryByTestId(
           'testUploadGeojsonModal'
@@ -111,7 +163,7 @@ describe('App', () => {
         expect(SystemMessageComponent).toBeNull()
       })
       it('should render SystemMessage if showApplicationAlert in state is true', () => {
-        store.dispatch(setshowApplicationAlert(true))
+        store.dispatch(setShowApplicationAlert(true))
         setup()
         const SystemMessageComponent = screen.queryByTestId('testSystemMessage')
         expect(SystemMessageComponent).not.toBeNull()
@@ -124,7 +176,7 @@ describe('App', () => {
         expect(CartModalComponent).toBeNull()
       })
       it('should render CartModal if showCartModal in state is true', () => {
-        store.dispatch(setshowCartModal(true))
+        store.dispatch(setShowCartModal(true))
         setup()
         const CartModalComponent = screen.queryByTestId('testCartModal')
         expect(CartModalComponent).not.toBeNull()

@@ -7,17 +7,19 @@ import CartButton from '../../Cart/CartButton/CartButton'
 import ThemeSwitcher from '../../ThemeSwitcher/ThemeSwitcher'
 import { logoutUser } from '../../../utils/authHelper'
 import { getBrandLogoConfig } from '../../../utils/themeHelper'
+import { openExternal } from '../../../utils/openExternal'
+import { resolveLogoUrl } from '../../../utils/configBase'
 
 const PageHeader = () => {
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
 
   function onDashboardClick() {
-    window.open(_appConfig.DASHBOARD_BTN_URL, '_blank')
+    openExternal(_appConfig.DASHBOARD_BTN_URL, { source: 'dashboard-btn' })
   }
 
   function onAnalyzeClick() {
-    window.open(_appConfig.ANALYZE_BTN_URL, '_blank')
+    openExternal(_appConfig.ANALYZE_BTN_URL, { source: 'analyze-btn' })
   }
 
   function onLogoutClick() {
@@ -26,23 +28,22 @@ const PageHeader = () => {
 
   // Get brand logo configuration
   const brandLogoConfig = getBrandLogoConfig(_appConfig, _currentTheme)
+  const appLogoSrc = _appConfig.LOGO_URL
+    ? resolveLogoUrl(_appConfig.LOGO_URL)
+    : resolveLogoUrl('logo.png')
 
   return (
     <div className="PageHeader" data-testid="testPageHeader">
       <div className="pageHeaderLeft">
         {_appConfig.LOGO_URL ? (
           <img
-            src={_appConfig.LOGO_URL}
+            src={appLogoSrc}
             alt={_appConfig.LOGO_ALT}
             className="headerLogoImage"
           ></img>
         ) : (
           <img
-            src={
-              _appConfig.PUBLIC_URL
-                ? _appConfig.PUBLIC_URL + '/logo.png'
-                : './logo.png'
-            }
+            src={appLogoSrc}
             alt="FilmDrop default app logo"
             className="headerLogoImage"
           />

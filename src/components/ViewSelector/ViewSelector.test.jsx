@@ -1,26 +1,26 @@
 import { vi } from 'vitest'
 import React from 'react'
-import { render, screen, fireEvent, act } from '@testing-library/react'
+import { screen, fireEvent, act } from '@testing-library/react'
 import ViewSelector from './ViewSelector'
-import { Provider } from 'react-redux'
-import { store } from '../../redux/store'
+import { renderFilmDrop } from '../../testing/renderFilmDrop'
 import {
-  setappConfig,
+  setAppConfig,
   setSelectedCollectionData,
   setViewMode,
   setMap,
-  setautoCenterOnItemChanged
+  setAutoCenterOnItemChanged
 } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapLayers from '../../utils/mapLayers'
 
-vi.mock('../../utils/mapHelper', () => ({
+vi.mock('../../utils/mapLayers', () => ({
   getCurrentMapZoomLevel: vi.fn(() => 10)
 }))
 
 describe('ViewSelector', () => {
   let mockMap
   let zoomEndCallback
+  let currentStore
 
   const setup = (
     configOverrides = {},
@@ -29,22 +29,12 @@ describe('ViewSelector', () => {
   ) => {
     const { skipMap = false, zoomLevel = 10 } = options
 
-    store.dispatch(
-      setappConfig({
-        ...mockAppConfig,
-        ...configOverrides
-      })
-    )
-    store.dispatch(
-      setSelectedCollectionData({
-        id: 'test-collection',
-        aggregations: [],
-        ...collectionDataOverrides
-      })
-    )
+    // Render via the canonical FilmDrop test harness
+    const result = renderFilmDrop(<ViewSelector />)
+    currentStore = result.store
 
     if (!skipMap) {
-      mapHelper.getCurrentMapZoomLevel.mockReturnValue(zoomLevel)
+      mapLayers.getCurrentMapZoomLevel.mockReturnValue(zoomLevel)
       mockMap = {
         on: vi.fn((event, callback) => {
           if (event === 'zoomend') {
@@ -53,16 +43,28 @@ describe('ViewSelector', () => {
         }),
         off: vi.fn()
       }
-      store.dispatch(setMap(mockMap))
     }
 
-    const result = render(
-      <Provider store={store}>
-        <ViewSelector />
-      </Provider>
-    )
+    // State is dispatched after render so selectors flow through re-renders.
+    act(() => {
+      currentStore.dispatch(
+        setAppConfig({
+          ...mockAppConfig,
+          ...configOverrides
+        })
+      )
+      currentStore.dispatch(
+        setSelectedCollectionData({
+          id: 'test-collection',
+          aggregations: [],
+          ...collectionDataOverrides
+        })
+      )
+      if (!skipMap) {
+        currentStore.dispatch(setMap(mockMap))
+      }
+    })
 
-    // Trigger the zoom update if map is present
     if (!skipMap && zoomEndCallback) {
       act(() => {
         zoomEndCallback()
@@ -76,8 +78,9 @@ describe('ViewSelector', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
-    store.dispatch(setViewMode('scene'))
-    store.dispatch(setMap(null))
+    zoomEndCallback = undefined
+    mockMap = undefined
+    currentStore = undefined
   })
 
   afterEach(() => {
@@ -181,8 +184,7 @@ describe('ViewSelector', () => {
 
       fireEvent.click(getButton('Hex'))
 
-      const state = store.getState()
-      expect(state.mainSlice.viewMode).toBe('hex')
+      expect(currentStore.getState().mainSlice.viewMode).toBe('hex')
     })
 
     it('should dispatch setViewMode("grid-code") when clicking Grid button', () => {
@@ -190,18 +192,18 @@ describe('ViewSelector', () => {
 
       fireEvent.click(getButton('Grid'))
 
-      const state = store.getState()
-      expect(state.mainSlice.viewMode).toBe('grid-code')
+      expect(currentStore.getState().mainSlice.viewMode).toBe('grid-code')
     })
 
     it('should dispatch setViewMode("scene") when clicking Scene button', () => {
       setup({ SCENE_TILER_URL: 'https://titiler.example.com' })
-      store.dispatch(setViewMode('hex')) // Start from different mode
+      act(() => {
+        currentStore.dispatch(setViewMode('hex'))
+      })
 
       fireEvent.click(getButton('Scene'))
 
-      const state = store.getState()
-      expect(state.mainSlice.viewMode).toBe('scene')
+      expect(currentStore.getState().mainSlice.viewMode).toBe('scene')
     })
 
     it('should dispatch setViewMode("mosaic") when clicking Mosaic button', () => {
@@ -209,8 +211,7 @@ describe('ViewSelector', () => {
 
       fireEvent.click(getButton('Mosaic'))
 
-      const state = store.getState()
-      expect(state.mainSlice.viewMode).toBe('mosaic')
+      expect(currentStore.getState().mainSlice.viewMode).toBe('mosaic')
     })
   })
 
@@ -225,15 +226,18 @@ describe('ViewSelector', () => {
       expect(screen.getByText('Item Auto-Zoom')).toBeInTheDocument()
     })
 
-    it('should dispatch setautoCenterOnItemChanged when checkbox is toggled', () => {
-      store.dispatch(setautoCenterOnItemChanged(false))
+    it('should dispatch setAutoCenterOnItemChanged when checkbox is toggled', () => {
       setup({ SHOW_ITEM_AUTO_ZOOM: true })
+      act(() => {
+        currentStore.dispatch(setAutoCenterOnItemChanged(false))
+      })
 
       const checkbox = screen.getByRole('checkbox')
       fireEvent.click(checkbox)
 
-      const state = store.getState()
-      expect(state.mainSlice.autoCenterOnItemChanged).toBe(true)
+      expect(currentStore.getState().mainSlice.autoCenterOnItemChanged).toBe(
+        true
+      )
     })
   })
 })

@@ -24,7 +24,7 @@ export function formatStacFieldEnhanced(field, value, item) {
 
   // Log security warnings in development (only for actual security issues)
   if (
-    process.env.NODE_ENV === 'development' &&
+    import.meta.env?.DEV &&
     securityValidation.warnings.length > 0 &&
     securityValidation.warnings.some((w) => w.includes('dangerous HTML'))
   ) {

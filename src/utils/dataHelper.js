@@ -1,19 +1,14 @@
 import { GetCollectionQueryablesService } from '../services/get-queryables-service'
 import { GetCollectionAggregationsService } from '../services/get-aggregations-service'
 import { LoadLocalGridDataService } from '../services/get-local-grid-data-json-service'
-import { store } from '../redux/store'
-import {
-  cartFootprintLayerStyle,
-  addDataToLayer,
-  clearLayer
-} from './mapHelper'
+import { cartFootprintLayerStyle } from './mapStyles'
+import { addDataToLayer, clearLayer } from './mapLayers'
 
-export async function buildCollectionsData(collections) {
+export async function buildCollectionsData(collections, appConfig) {
   for (const collection of collections.collections) {
     let queryables
     let aggregations
-    const hasAggregations =
-      store.getState().mainSlice.appConfig.SUPPORTS_AGGREGATIONS ?? true
+    const hasAggregations = appConfig?.SUPPORTS_AGGREGATIONS ?? true
     if (hasAggregations) {
       ;[queryables, aggregations] = await Promise.all([
         GetCollectionQueryablesService(collection),
@@ -43,13 +38,11 @@ export async function loadLocalGridData() {
   })
 }
 
-export function isSceneInCart(sceneObject) {
-  const cartItems = store.getState().mainSlice.cartItems
+export function isSceneInCart(sceneObject, cartItems) {
   return cartItems.some((cartItem) => cartItem.id === sceneObject.id)
 }
 
-export function numberOfSelectedInCart(results) {
-  const cartItems = store.getState().mainSlice.cartItems
+export function numberOfSelectedInCart(results, cartItems) {
   return results.reduce((count, result) => {
     if (cartItems.some((cartItem) => cartItem.id === result.id)) {
       return count + 1
@@ -58,21 +51,20 @@ export function numberOfSelectedInCart(results) {
   }, 0)
 }
 
-export function areAllScenesSelectedInCart(results) {
-  const cartItems = store.getState().mainSlice.cartItems
+export function areAllScenesSelectedInCart(results, cartItems) {
   return results.every((result) =>
     cartItems.some((cartItem) => cartItem.id === result.id)
   )
 }
 
-export function setScenesForCartLayer() {
-  if (store.getState().mainSlice.cartItems.length === 0) {
+export function setScenesForCartLayer(cartItems) {
+  if (cartItems.length === 0) {
     clearLayer('cartFootprintsLayer')
     return
   }
   const cartGeojson = {
     type: 'FeatureCollection',
-    features: store.getState().mainSlice.cartItems
+    features: cartItems
   }
   const options = {
     style: cartFootprintLayerStyle,

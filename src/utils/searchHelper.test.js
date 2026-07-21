@@ -2,27 +2,30 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { store } from '../redux/store'
 import {
   setSelectedCollectionData,
+  setSelectedVisualization,
   setSearchDateRangeValue,
   setQueryableFilters,
   setMosaicCache,
-  setappConfig
+  setAppConfig
 } from '../redux/slices/mainSlice'
 import {
   DEFAULT_DATE_RANGE,
   DEFAULT_MOSAIC_TOP_COMPARE_ITEMS
-} from '../components/defaults'
+} from '../constants/defaults'
 import {
   newSearch,
+  clearSearch,
   validateUploadedGeometry,
   buildUrlParamFromBBOX,
   buildSearchScenesParams,
   buildSearchAggregateParams
 } from './searchHelper'
-import * as mapHelper from './mapHelper'
+import * as mapLayers from './mapLayers'
 import { AddMosaicService } from '../services/post-mosaic-service'
 import * as getSearchService from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
 import { STAC_UPLOAD_ERROR_CONTEXT_LABEL } from './stacErrorHelper'
+import { __resetActiveUrlControllerForTests } from '../url-controller'
 
 const DEFAULT_SEARCH_ERROR_SUMMARY = 'Error Fetching Search Results'
 const DEFAULT_AGGREGATE_ERROR_SUMMARY =
@@ -36,8 +39,8 @@ vi.mock('../services/get-aggregate-service', () => ({
   AggregateSearchService: vi.fn()
 }))
 
-vi.mock('./mapHelper', async () => {
-  const actual = await vi.importActual('./mapHelper')
+vi.mock('./mapLayers', async () => {
+  const actual = await vi.importActual('./mapLayers')
   return {
     ...actual,
     hasMosaicImageLayer: vi.fn(() => true)
@@ -63,11 +66,18 @@ function mockMapBounds(bbox) {
 describe('searchHelper newSearch', () => {
   beforeEach(() => {
     store.dispatch(
-      setappConfig({
+      setAppConfig({
         STAC_API_URL: 'https://example.com/stac',
         MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
         FETCH_CREDENTIALS: 'same-origin',
-        APP_TOKEN_AUTH_ENABLED: false
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            mosaicTilerParams: {
+              assets: ['test-asset']
+            }
+          }
+        }
       })
     )
     store.dispatch(
@@ -87,8 +97,8 @@ describe('searchHelper newSearch', () => {
     AddMosaicService.mockReset()
     AggregateSearchService.mockReset()
     vi.spyOn(getSearchService, 'fetchTopItemsForMosaic').mockReset()
-    mapHelper.hasMosaicImageLayer.mockReset()
-    mapHelper.hasMosaicImageLayer.mockReturnValue(true)
+    mapLayers.hasMosaicImageLayer.mockReset()
+    mapLayers.hasMosaicImageLayer.mockReturnValue(true)
   })
 
   it('creates a mosaic when there is no cache (mosaic view)', async () => {
@@ -159,7 +169,7 @@ describe('searchHelper newSearch', () => {
     AddMosaicService.mockClear()
     // Layer still present; first gate will miss (compareCount 100 ≠ cached 3),
     // second gate must carry the load.
-    mapHelper.hasMosaicImageLayer.mockReturnValue(true)
+    mapLayers.hasMosaicImageLayer.mockReturnValue(true)
 
     await newSearch({ viewMode: 'mosaic' })
 
@@ -186,7 +196,7 @@ describe('searchHelper newSearch', () => {
     )
 
     AddMosaicService.mockClear()
-    mapHelper.hasMosaicImageLayer.mockReturnValue(false)
+    mapLayers.hasMosaicImageLayer.mockReturnValue(false)
 
     await newSearch({ viewMode: 'mosaic' })
 
@@ -234,6 +244,37 @@ describe('searchHelper newSearch', () => {
 
     const [, cacheMetadata] = AddMosaicService.mock.calls[0]
     expect(cacheMetadata.compareCount).toBe(DEFAULT_MOSAIC_TOP_COMPARE_ITEMS)
+  })
+
+  it('derives mosaic asset_name from selected visualization when mosaicTilerParams are missing', async () => {
+    store.dispatch(
+      setAppConfig({
+        STAC_API_URL: 'https://example.com/stac',
+        MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
+        FETCH_CREDENTIALS: 'same-origin',
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            visualizations: {
+              'true-color': { assets: ['visual'] },
+              vegetation: { assets: ['nir', 'red', 'green'] }
+            }
+          }
+        }
+      })
+    )
+    store.dispatch(setSelectedVisualization('vegetation'))
+
+    vi.spyOn(getSearchService, 'fetchTopItemsForMosaic').mockResolvedValue({
+      itemIds: null,
+      effectiveLimit: 0
+    })
+
+    await newSearch({ viewMode: 'mosaic' })
+
+    const [requestOptions] = AddMosaicService.mock.calls[0]
+    const body = JSON.parse(requestOptions.body)
+    expect(body.asset_name).toBe('green')
   })
 
   it('returns inline error when fetchTopItemsForMosaic rejects', async () => {
@@ -324,6 +365,127 @@ describe('searchHelper newSearch', () => {
     expect(AggregateSearchService).toHaveBeenCalledTimes(1)
     expect(AddMosaicService).toHaveBeenCalledTimes(0)
     expect(result).toBe(normalizedError)
+  })
+
+  it('returns early when no collection is selected', async () => {
+    store.dispatch(setSelectedCollectionData(null))
+    const searchServiceSpy = vi.spyOn(getSearchService, 'SearchService')
+
+    const result = await newSearch({ viewMode: 'scene' })
+
+    expect(result).toBeUndefined()
+    expect(searchServiceSpy).not.toHaveBeenCalled()
+    expect(AggregateSearchService).not.toHaveBeenCalled()
+    expect(AddMosaicService).not.toHaveBeenCalled()
+  })
+
+  it('falls back to scene search when selected view mode is unsupported by collection aggregations', async () => {
+    store.dispatch(
+      setSelectedCollectionData({
+        ...mockCollection,
+        aggregations: []
+      })
+    )
+
+    const searchServiceSpy = vi
+      .spyOn(getSearchService, 'SearchService')
+      .mockResolvedValueOnce(undefined)
+
+    const result = await newSearch({ viewMode: 'hex' })
+
+    expect(result).toBeUndefined()
+    expect(AggregateSearchService).not.toHaveBeenCalled()
+    expect(searchServiceSpy).toHaveBeenCalledTimes(1)
+    expect(searchServiceSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      'scene',
+      undefined,
+      undefined
+    )
+  })
+
+  it('shows zoom notice and skips scene search when below sceneMinZoom', async () => {
+    store.dispatch(
+      setAppConfig({
+        STAC_API_URL: 'https://example.com/stac',
+        MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
+        FETCH_CREDENTIALS: 'same-origin',
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            sceneMinZoom: 9,
+            mosaicTilerParams: {
+              assets: ['test-asset']
+            }
+          }
+        }
+      })
+    )
+
+    vi.spyOn(mapLayers, 'getCurrentMapZoomLevel').mockReturnValue(3)
+    const searchServiceSpy = vi.spyOn(getSearchService, 'SearchService')
+
+    const result = await newSearch({ viewMode: 'scene' })
+
+    expect(result).toBeUndefined()
+    expect(searchServiceSpy).not.toHaveBeenCalled()
+    expect(store.getState().mainSlice.showZoomNotice).toBe(true)
+    expect(store.getState().mainSlice.zoomLevelNeeded).toBe(9)
+  })
+
+  it('runs scene search when at or above sceneMinZoom', async () => {
+    store.dispatch(
+      setAppConfig({
+        STAC_API_URL: 'https://example.com/stac',
+        MOSAIC_MAX_ITEMS: DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
+        FETCH_CREDENTIALS: 'same-origin',
+        APP_TOKEN_AUTH_ENABLED: false,
+        COLLECTIONS_CONFIG: {
+          'test-collection': {
+            sceneMinZoom: 9,
+            mosaicTilerParams: {
+              assets: ['test-asset']
+            }
+          }
+        }
+      })
+    )
+
+    vi.spyOn(mapLayers, 'getCurrentMapZoomLevel').mockReturnValue(10)
+    const searchServiceSpy = vi
+      .spyOn(getSearchService, 'SearchService')
+      .mockResolvedValueOnce(undefined)
+
+    const result = await newSearch({ viewMode: 'scene' })
+
+    expect(result).toBeUndefined()
+    expect(searchServiceSpy).toHaveBeenCalledTimes(1)
+    expect(searchServiceSpy).toHaveBeenCalledWith(
+      expect.any(String),
+      'scene',
+      undefined,
+      undefined
+    )
+  })
+
+  it('does not throw when syncing search state after FilmDropRoot has unmounted', async () => {
+    // newSearch runs via debounceNewSearch, so it can resolve after
+    // FilmDropRoot has already unmounted and torn down the URL controller.
+    __resetActiveUrlControllerForTests()
+    vi.spyOn(getSearchService, 'fetchTopItemsForMosaic').mockResolvedValue({
+      itemIds: null,
+      effectiveLimit: 0
+    })
+
+    await newSearch({ viewMode: 'mosaic' })
+
+    expect(AddMosaicService).toHaveBeenCalledTimes(1)
+  })
+
+  it('clearSearch does not throw without a mounted URL controller', () => {
+    __resetActiveUrlControllerForTests()
+
+    expect(() => clearSearch()).not.toThrow()
   })
 })
 
@@ -431,7 +593,7 @@ describe('validateUploadedGeometry', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
     store.dispatch(
-      setappConfig({
+      setAppConfig({
         STAC_API_URL: 'https://example.com/stac',
         FETCH_CREDENTIALS: 'same-origin',
         APP_TOKEN_AUTH_ENABLED: false

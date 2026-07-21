@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 import { TextField as MuiTextField } from '@mui/material'
 import Card from '../Card/Card'
@@ -15,16 +15,17 @@ const TextField = ({
 }) => {
   // Local state for immediate UI updates (prevents stuttering)
   const [localValue, setLocalValue] = useState(value)
+  // Reset the draft on parent prop change via render-phase setState (do NOT
+  // replace with useEffect — that cascades renders).
+  // https://react.dev/reference/react/useState#storing-information-from-previous-renders
+  const [prevValue, setPrevValue] = useState(value)
+  if (value !== prevValue) {
+    setPrevValue(value)
+    setLocalValue(value)
+  }
 
   // Debounced onChange callback
   const debouncedOnChange = useDebouncedCallback(onChange, debounceDelay)
-
-  // Sync local state when external value changes
-  useEffect(() => {
-    if (value !== localValue) {
-      setLocalValue(value)
-    }
-  }, [value])
 
   // Handle local input changes
   const handleLocalChange = (e) => {

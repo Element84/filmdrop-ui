@@ -58,11 +58,13 @@ export const useRenderableQueryables = () => {
   const selectedCollectionData = useSelector(
     (state) => state.mainSlice.selectedCollectionData
   )
+  const appConfig = useSelector((state) => state.mainSlice.appConfig)
 
   const queryables = selectedCollectionData?.queryables
   const queryableFilters = getCollectionConfig(
     selectedCollection,
-    'queryableFilters'
+    'queryableFilters',
+    appConfig
   )
 
   return useMemo(() => {

@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react'
 import PageHeader from './PageHeader'
 import { Provider } from 'react-redux'
 import { store } from '../../../redux/store'
-import { setappConfig, setcartItems } from '../../../redux/slices/mainSlice'
+import { setAppConfig, setCartItems } from '../../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../../testing/shared-mocks'
 import userEvent from '@testing-library/user-event'
 import { describe, vi } from 'vitest'
@@ -18,7 +18,7 @@ describe('PageHeader', () => {
     )
 
   beforeEach(() => {
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
   })
   describe('on app render', () => {
     it('should load the brand logo into the document if BRAND_LOGO is configured', () => {
@@ -47,7 +47,7 @@ describe('PageHeader', () => {
         BRAND_LOGO,
         ...mockAppConfig
       }
-      store.dispatch(setappConfig(mockAppConfigWithBrandLogo))
+      store.dispatch(setAppConfig(mockAppConfigWithBrandLogo))
       setup()
       expect(
         screen.queryByRole('img', {
@@ -60,7 +60,7 @@ describe('PageHeader', () => {
         ...mockAppConfig,
         BRAND_LOGO: null
       }
-      store.dispatch(setappConfig(mockAppConfigNoBrandLogo))
+      store.dispatch(setAppConfig(mockAppConfigNoBrandLogo))
       setup()
       expect(
         screen.queryByRole('img', {
@@ -73,7 +73,7 @@ describe('PageHeader', () => {
         ...mockAppConfig,
         ANALYZE_BTN_URL: ''
       }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
       setup()
       expect(screen.queryByTestId('testAnalyzeButton')).not.toBeInTheDocument()
     })
@@ -82,7 +82,7 @@ describe('PageHeader', () => {
         ...mockAppConfig,
         DASHBOARD_BTN_URL: ''
       }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
       setup()
       expect(
         screen.queryByTestId('testDashboardButton')
@@ -93,7 +93,7 @@ describe('PageHeader', () => {
         ...mockAppConfig,
         ANALYZE_BTN_URL: '   '
       }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
       setup()
       expect(screen.queryByTestId('testAnalyzeButton')).not.toBeInTheDocument()
     })
@@ -102,7 +102,7 @@ describe('PageHeader', () => {
         ...mockAppConfig,
         DASHBOARD_BTN_URL: '   '
       }
-      store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+      store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
       setup()
       expect(
         screen.queryByTestId('testDashboardButton')
@@ -119,11 +119,15 @@ describe('PageHeader', () => {
           ...mockAppConfig,
           ANALYZE_BTN_URL: mockAnalyzeBtnUrl
         }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
         setup()
         const analyzeButton = screen.getByTestId('testAnalyzeButton')
         await user.click(analyzeButton)
-        expect(openSpy).toHaveBeenCalledWith(mockAnalyzeBtnUrl, '_blank')
+        expect(openSpy).toHaveBeenCalledWith(
+          mockAnalyzeBtnUrl,
+          '_blank',
+          'noopener,noreferrer'
+        )
       })
     })
     describe('dashboard button', () => {
@@ -135,17 +139,21 @@ describe('PageHeader', () => {
           ...mockAppConfig,
           DASHBOARD_BTN_URL: mockDashboardBtnUrl
         }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
         setup()
         const dashboardButton = screen.getByTestId('testDashboardButton')
         await user.click(dashboardButton)
-        expect(openSpy).toHaveBeenCalledWith(mockDashboardBtnUrl, '_blank')
+        expect(openSpy).toHaveBeenCalledWith(
+          mockDashboardBtnUrl,
+          '_blank',
+          'noopener,noreferrer'
+        )
       })
     })
     describe('cart button', () => {
       describe('if cartEnabled is set to false in config', () => {
         beforeEach(() => {
-          store.dispatch(setappConfig(mockAppConfig))
+          store.dispatch(setAppConfig(mockAppConfig))
         })
         describe('on render', () => {
           it('should not render cart button when CART_ENABLED is false', () => {
@@ -160,7 +168,7 @@ describe('PageHeader', () => {
             ...mockAppConfig,
             CART_ENABLED: true
           }
-          store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+          store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
         })
         describe('on render', () => {
           it('should render cart button when CART_ENABLED is true', () => {
@@ -176,7 +184,7 @@ describe('PageHeader', () => {
             expect(store.getState().mainSlice.showCartModal).toBeFalsy()
           })
           it('should open modal if cart has items', async () => {
-            store.dispatch(setcartItems([{ name: 'test item' }]))
+            store.dispatch(setCartItems([{ name: 'test item' }]))
             setup()
             expect(store.getState().mainSlice.showCartModal).toBeFalsy()
             await user.click(screen.getByTestId('testCartButton'))
@@ -189,7 +197,7 @@ describe('PageHeader', () => {
             expect(screen.getByTestId('testCartCount').innerHTML).toBe('0')
           })
           it('should show count of 1 items if redux state changed', () => {
-            store.dispatch(setcartItems([{ name: 'test item' }]))
+            store.dispatch(setCartItems([{ name: 'test item' }]))
             setup()
             expect(screen.getByTestId('testCartCount').innerHTML).toBe('1')
           })

@@ -13,25 +13,25 @@ import {
   setSelectedCollection,
   setSelectedCollectionData,
   setSelectedVisualization,
-  settabSelected,
+  setTabSelected,
   setSearchDateRangeValue,
   setViewMode,
   setQueryableFilters,
   setClickResults,
   setCurrentPopupResult,
-  setselectedPopupResultIndex,
+  setSelectedPopupResultIndex,
   setSearchResults,
-  setmappedScenes
+  setMappedScenes
 } from '../redux/slices/mainSlice'
 import { GetItemService } from '../services/get-item-service'
 import { syncSelectionWithFetchedItem } from '../utils/selectionSync'
 import {
   addDataToLayer,
-  footprintLayerStyle,
   clearMapSelection,
   zoomToCollectionExtent,
   zoomToItemExtent
-} from '../utils/mapHelper'
+} from '../utils/mapLayers'
+import { footprintLayerStyle } from '../utils/mapStyles'
 import { getCollectionVisualizations } from '../utils/configHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 import { newSearch } from '../utils/searchHelper'
@@ -48,9 +48,9 @@ function hasSearchParams(search) {
 }
 
 export function useUrlInitialize(search, dispatch) {
-  const isInitialized = useRef(false)
+  const isInitializedRef = useRef(false)
   const isInitializing = useRef(false)
-  const prevSearch = useRef(null)
+  const prevSearchRef = useRef(null)
   const latestItemRequest = useRef(null)
 
   // Redux state we need to watch for initialization readiness
@@ -80,7 +80,7 @@ export function useUrlInitialize(search, dispatch) {
           syncSelectionWithFetchedItem(existingClickResults, cachedItem)
 
         dispatch(setClickResults(clickResults))
-        dispatch(setselectedPopupResultIndex(selectedIndex))
+        dispatch(setSelectedPopupResultIndex(selectedIndex))
         dispatch(setCurrentPopupResult(currentResult))
         return cachedItem
       }
@@ -124,7 +124,7 @@ export function useUrlInitialize(search, dispatch) {
             searchType: 'direct-item'
           }
           dispatch(setSearchResults(searchResultsObject))
-          dispatch(setmappedScenes(searchResultsObject.features))
+          dispatch(setMappedScenes(searchResultsObject.features))
           addDataToLayer(
             searchResultsObject,
             'searchResultsLayer',
@@ -139,7 +139,7 @@ export function useUrlInitialize(search, dispatch) {
           syncSelectionWithFetchedItem(existingClickResults, result)
 
         dispatch(setClickResults(clickResults))
-        dispatch(setselectedPopupResultIndex(selectedIndex))
+        dispatch(setSelectedPopupResultIndex(selectedIndex))
         dispatch(setCurrentPopupResult(currentResult))
         return result
       } catch (error) {
@@ -160,7 +160,7 @@ export function useUrlInitialize(search, dispatch) {
     clearMapSelection()
     dispatch(setClickResults([]))
     dispatch(setCurrentPopupResult(null))
-    dispatch(setselectedPopupResultIndex(0))
+    dispatch(setSelectedPopupResultIndex(0))
   }, [dispatch])
 
   /**
@@ -168,7 +168,7 @@ export function useUrlInitialize(search, dispatch) {
    * Runs once when appConfig, collectionsData, and map are all ready.
    */
   useEffect(() => {
-    if (isInitialized.current || isInitializing.current) return
+    if (isInitializedRef.current || isInitializing.current) return
     if (!appConfig || !collectionsData || collectionsData.length === 0) return
     if (!map || Object.keys(map).length === 0) return
 
@@ -177,7 +177,7 @@ export function useUrlInitialize(search, dispatch) {
     function restoreVisualization(col, viz) {
       if (!viz) return
       const { visualizationKeys, hasVisualizations } =
-        getCollectionVisualizations(col)
+        getCollectionVisualizations(col, appConfig)
       if (hasVisualizations && visualizationKeys.includes(viz)) {
         dispatch(setSelectedVisualization(viz))
       } else if (viz) {
@@ -198,7 +198,7 @@ export function useUrlInitialize(search, dispatch) {
       }
       // Default to details tab for item view, but respect URL tab if set
       if (!tab) {
-        dispatch(settabSelected('details'))
+        dispatch(setTabSelected('details'))
       }
     }
 
@@ -212,7 +212,7 @@ export function useUrlInitialize(search, dispatch) {
 
         // 2. Set tab from URL
         if (urlSearch.tab) {
-          dispatch(settabSelected(urlSearch.tab))
+          dispatch(setTabSelected(urlSearch.tab))
         }
 
         // 3. If URL has search params, restore search state and auto-search
@@ -319,12 +319,12 @@ export function useUrlInitialize(search, dispatch) {
           }
         }
 
-        prevSearch.current = urlSearch
-        isInitialized.current = true
+        prevSearchRef.current = urlSearch
+        isInitializedRef.current = true
       } catch (error) {
         console.error('URL state initialization error:', error)
-        prevSearch.current = search
-        isInitialized.current = true
+        prevSearchRef.current = search
+        isInitializedRef.current = true
       } finally {
         isInitializing.current = false
       }
@@ -341,5 +341,10 @@ export function useUrlInitialize(search, dispatch) {
     clearItemSelection
   ])
 
-  return { isInitialized, prevSearch, fetchAndDisplayItem, clearItemSelection }
+  return {
+    isInitializedRef,
+    prevSearchRef,
+    fetchAndDisplayItem,
+    clearItemSelection
+  }
 }

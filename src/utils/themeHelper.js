@@ -1,6 +1,28 @@
-import { DEFAULT_BASEMAP } from '../components/defaults'
+import { DEFAULT_BASEMAP } from '../constants/defaults'
+import { resolveLogoUrl } from './configBase'
 
 const THEME_STORAGE_KEY = 'APP_THEME_PREFERENCE'
+
+/**
+ * Returns true when FilmDrop should write branding to the host document
+ * (title, favicon, <html> data-theme). Default true for SPA mode;
+ * FilmDropRoot sets `window.__filmdropApplyBranding = false` when the
+ * consumer passes `applyDocumentBranding={false}`.
+ */
+export function shouldApplyDocumentBranding() {
+  if (typeof window === 'undefined') return true
+  return window.__filmdropApplyBranding !== false
+}
+
+/**
+ * Returns true when FilmDrop should persist theme preference to
+ * localStorage. Gated by the `persistThemePreference` prop on
+ * FilmDropRoot.
+ */
+export function shouldPersistThemePreference() {
+  if (typeof window === 'undefined') return true
+  return window.__filmdropPersistThemePreference !== false
+}
 
 export function getSystemTheme() {
   if (typeof window !== 'undefined' && window.matchMedia) {
@@ -12,8 +34,18 @@ export function getSystemTheme() {
 }
 
 export function applyTheme(theme) {
-  if (typeof document !== 'undefined') {
-    const themeValue = theme === 'filmdrop' ? 'filmdrop' : `filmdrop-${theme}`
+  if (typeof document === 'undefined') return
+  const themeValue = theme === 'filmdrop' ? 'filmdrop' : `filmdrop-${theme}`
+  // Always expose a FilmDrop-specific theme attribute on <html> so
+  // portal-rendered components (MUI menus, pickers) can resolve CSS
+  // variables even when document branding is disabled in embedded mode.
+  document.documentElement.setAttribute('data-filmdrop-theme', themeValue)
+  // Mirror onto any mounted .filmdrop-root container so the scoped
+  // selectors (`.filmdrop-root[data-theme='filmdrop-*']`) match in
+  // embedded mode.
+  const roots = document.querySelectorAll('.filmdrop-root')
+  roots.forEach((el) => el.setAttribute('data-theme', themeValue))
+  if (shouldApplyDocumentBranding()) {
     document.documentElement.setAttribute('data-theme', themeValue)
   }
 }
@@ -26,9 +58,9 @@ export function getThemeFromStorage() {
 }
 
 export function saveThemeToStorage(theme) {
-  if (typeof localStorage !== 'undefined') {
-    localStorage.setItem(THEME_STORAGE_KEY, theme)
-  }
+  if (typeof localStorage === 'undefined') return
+  if (!shouldPersistThemePreference()) return
+  localStorage.setItem(THEME_STORAGE_KEY, theme)
 }
 
 export function getBasemapConfig(appConfig, currentTheme) {
@@ -57,10 +89,11 @@ export function getBrandLogoConfig(appConfig, currentTheme) {
   const config = appConfig.BRAND_LOGO
   let logoImage = config.image
 
-  if (appConfig.THEME_SWITCHING_ENABLED === true && currentTheme) {
-    if (currentTheme === 'light' && config.image_light) {
+  if (appConfig.THEME_SWITCHING_ENABLED === true) {
+    const effectiveTheme = currentTheme || getSystemTheme()
+    if (effectiveTheme === 'light' && config.image_light) {
       logoImage = config.image_light
-    } else if (currentTheme === 'dark' && config.image_dark) {
+    } else if (effectiveTheme === 'dark' && config.image_dark) {
       logoImage = config.image_dark
     }
   }
@@ -73,8 +106,16 @@ export function getBrandLogoConfig(appConfig, currentTheme) {
     url: config.url,
     title: config.title,
     alt: config.alt,
-    image: logoImage
+    image: resolveLogoUrl(logoImage)
   }
+}
+
+function normalizeStoredTheme(theme) {
+  if (!theme) return null
+  if (theme === 'dark' || theme === 'light') return theme
+  if (theme === 'filmdrop-dark') return 'dark'
+  if (theme === 'filmdrop-light') return 'light'
+  return null
 }
 
 function validateThemeCSS(switchingEnabled) {
@@ -98,25 +139,25 @@ function validateThemeCSS(switchingEnabled) {
           const rule = rules[j]
 
           if (rule.selectorText) {
-            if (
-              rule.selectorText.includes(':root[data-theme="filmdrop"]') ||
-              rule.selectorText.includes(":root[data-theme='filmdrop']")
-            ) {
-              hasFilmdropRootSelector = true
-            }
-            if (
-              rule.selectorText.includes(':root[data-theme="filmdrop-dark"]') ||
-              rule.selectorText.includes(":root[data-theme='filmdrop-dark']")
-            ) {
-              hasFilmdropDarkThemeSelector = true
-            }
-            if (
-              rule.selectorText.includes(
-                ':root[data-theme="filmdrop-light"]'
-              ) ||
-              rule.selectorText.includes(":root[data-theme='filmdrop-light']")
-            ) {
-              hasFilmdropLightThemeSelector = true
+            // Accept either the host-scoped `:root[data-theme=…]`
+            // selector (SPA mode) or the container-scoped
+            // `.filmdrop-root[data-theme=…]` variant that ships
+            // alongside it for embedded mode.
+            const matches = rule.selectorText.matchAll(
+              /(?::root|\.filmdrop-root)\[data-theme=['"](filmdrop(?:-dark|-light)?)['"]\]/g
+            )
+            for (const match of matches) {
+              switch (match[1]) {
+                case 'filmdrop':
+                  hasFilmdropRootSelector = true
+                  break
+                case 'filmdrop-dark':
+                  hasFilmdropDarkThemeSelector = true
+                  break
+                case 'filmdrop-light':
+                  hasFilmdropLightThemeSelector = true
+                  break
+              }
             }
           }
         }
@@ -165,7 +206,10 @@ export function initializeTheme(appConfig) {
     }
   }
 
-  let currentTheme = getThemeFromStorage()
+  let currentTheme = null
+  if (shouldPersistThemePreference()) {
+    currentTheme = normalizeStoredTheme(getThemeFromStorage())
+  }
 
   if (!currentTheme) {
     try {

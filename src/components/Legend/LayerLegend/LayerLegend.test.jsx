@@ -5,9 +5,9 @@ import { Provider } from 'react-redux'
 import { store } from '../../../redux/store'
 import {
   setSearchResults,
-  setappConfig,
+  setAppConfig,
   setSearchType,
-  setcartItems
+  setCartItems
 } from '../../../redux/slices/mainSlice'
 import {
   mockAppConfig,
@@ -25,7 +25,7 @@ describe('LayerLegend', () => {
     )
 
   beforeEach(() => {
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
   })
 
   describe('on conditional render', () => {
@@ -35,8 +35,8 @@ describe('LayerLegend', () => {
           ...mockAppConfig,
           CART_ENABLED: 'true'
         }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
-        store.dispatch(setcartItems([mockSceneSearchResult]))
+        store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
+        store.dispatch(setCartItems([mockSceneSearchResult]))
         setup()
         expect(screen.queryByText(/scenes in cart/i)).toBeInTheDocument()
       })
@@ -45,7 +45,7 @@ describe('LayerLegend', () => {
           ...mockAppConfig,
           CART_ENABLED: 'true'
         }
-        store.dispatch(setappConfig(mockAppConfigSearchEnabled))
+        store.dispatch(setAppConfig(mockAppConfigSearchEnabled))
         setup()
         expect(screen.queryByText(/scenes in cart/i)).not.toBeInTheDocument()
       })

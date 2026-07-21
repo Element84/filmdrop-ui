@@ -6,34 +6,36 @@ import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import {
   setCollectionsData,
-  setappConfig,
+  setAppConfig,
   setSelectedCollection
 } from '../../redux/slices/mainSlice'
 import { mockCollectionsData, mockAppConfig } from '../../testing/shared-mocks'
-import * as mapHelper from '../../utils/mapHelper'
+import * as mapLayers from '../../utils/mapLayers'
 import userEvent from '@testing-library/user-event'
 
-// Mock useNavigate so it simulates URL→Redux sync for selectedCollection
+vi.mock('../../utils/mapLayers', () => ({
+  zoomToCollectionExtent: vi.fn(),
+  clearMapSelection: vi.fn(),
+  clearAllLayers: vi.fn()
+}))
+
+// Mock URL controller so it simulates URL→Redux sync for selectedCollection
 const mockNavigate = vi.fn()
-vi.mock('@tanstack/react-router', async () => {
+vi.mock('../../url-controller', async () => {
   const { store } = await import('../../redux/store')
   const { setSelectedCollection } = await import('../../redux/slices/mainSlice')
+
   return {
-    useParams: () => ({}),
-    useNavigate: () => {
-      return (...args) => {
+    getActiveUrlController: () => ({
+      getPathParams: () => ({}),
+      navigate: (...args) => {
         mockNavigate(...args)
-        // Simulate URL→Redux sync: extract collectionId from params
         const navOptions = args[0]
         if (navOptions?.params?.collectionId) {
           store.dispatch(setSelectedCollection(navOptions.params.collectionId))
         }
       }
-    },
-    createRootRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-    createRoute: vi.fn(() => ({ addChildren: vi.fn(() => ({})) })),
-    createRouter: vi.fn(() => ({})),
-    defaultStringifySearch: vi.fn()
+    })
   }
 })
 
@@ -46,8 +48,7 @@ describe('CollectionDropdown', () => {
     )
 
   beforeEach(() => {
-    vi.mock('../../utils/mapHelper')
-    store.dispatch(setappConfig(mockAppConfig))
+    store.dispatch(setAppConfig(mockAppConfig))
     store.dispatch(setCollectionsData(mockCollectionsData))
     store.dispatch(setSelectedCollection(null))
     mockNavigate.mockClear()
@@ -68,25 +69,13 @@ describe('CollectionDropdown', () => {
     })
   })
   describe('on collection changed', () => {
-    it('should set hasCollectionChanged to true in redux state', async () => {
-      setup()
-      expect(store.getState().mainSlice.hasCollectionChanged).toBeFalsy()
-      const select = screen.getByRole('combobox')
-      await userEvent.click(select)
-      // Click a different collection than the auto-selected first one
-      const option = screen.getByRole('option', {
-        name: /sentinel-2 level 2a/i
-      })
-      await userEvent.click(option)
-      expect(store.getState().mainSlice.hasCollectionChanged).toBeTruthy()
-    })
     it('should navigate to collection path and call functions to reset map', async () => {
       const spyZoomToCollectionExtent = vi.spyOn(
-        mapHelper,
+        mapLayers,
         'zoomToCollectionExtent'
       )
-      const spyClearMapSelection = vi.spyOn(mapHelper, 'clearMapSelection')
-      const spyClearAllLayers = vi.spyOn(mapHelper, 'clearAllLayers')
+      const spyClearMapSelection = vi.spyOn(mapLayers, 'clearMapSelection')
+      const spyClearAllLayers = vi.spyOn(mapLayers, 'clearAllLayers')
       setup()
       const select = screen.getByRole('combobox')
       await userEvent.click(select)

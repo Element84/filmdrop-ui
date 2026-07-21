@@ -1,11 +1,9 @@
-import { DEFAULT_COLORMAP } from '../components/defaults'
+import { DEFAULT_COLORMAP } from '../constants/defaults'
 import colormap from 'colormap'
-import { store } from '../redux/store'
 
-export const colorMap = (largestRatio) => {
+export const colorMap = (largestRatio, appConfig) => {
   return colormap({
-    colormap:
-      store.getState().mainSlice.appConfig.CONFIG_COLORMAP || DEFAULT_COLORMAP,
+    colormap: appConfig?.CONFIG_COLORMAP || DEFAULT_COLORMAP,
     nshades: Math.round(Math.max(9, largestRatio)),
     format: 'hex'
   })

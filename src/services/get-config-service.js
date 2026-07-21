@@ -1,71 +1,94 @@
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
-import { showApplicationAlert } from '../utils/alertHelper'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import {
   normalizeCollectionsConfig,
   applyConfigDefaults,
   autoConfigureCollections,
   autoConfigureRendering
 } from '../utils/configHelper'
+import {
+  resolveConfigUrl,
+  resolveFaviconUrl,
+  getCacheBusterSuffix
+} from '../utils/configBase'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
-export async function LoadConfigIntoStateService() {
-  const cacheBuster = Date.now()
-  const configUrl = `${
-    import.meta.env.BASE_URL
-  }config/config.json?_cb=${cacheBuster}`
+export async function prepareAppConfig(rawConfig) {
+  let normalizedConfig = normalizeCollectionsConfig(rawConfig)
 
-  await fetch(configUrl, {
-    cache: 'no-store'
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json()
-      }
-      throw new Error()
-    })
-    .then(async (json) => {
-      // Validate config and enforce strict modern format requirements
-      let normalizedConfig = normalizeCollectionsConfig(json)
+  // Auto-configure collections from STAC API if STAC_API_URL is provided
+  if (normalizedConfig.STAC_API_URL) {
+    normalizedConfig = await autoConfigureCollections(
+      normalizedConfig.STAC_API_URL,
+      normalizedConfig
+    )
+  }
 
-      // Auto-configure collections from STAC API if STAC_API_URL is provided
-      if (normalizedConfig.STAC_API_URL) {
-        normalizedConfig = await autoConfigureCollections(
-          normalizedConfig.STAC_API_URL,
-          normalizedConfig
-        )
-      }
+  // Auto-configure rendering based on collection render extension
+  normalizedConfig = autoConfigureRendering(normalizedConfig)
 
-      // Auto-configure rendering based on collection render extension
-      normalizedConfig = autoConfigureRendering(normalizedConfig)
-
-      // Apply defaults for optional parameters
-      const configWithDefaults = applyConfigDefaults(normalizedConfig)
-      store.dispatch(setappConfig(configWithDefaults))
-    })
-    .catch((error) => {
-      const message =
-        error?.code === 'LEGACY_CONFIG_NOT_SUPPORTED' ||
-        error?.code === 'MIXED_CONFIG_NOT_SUPPORTED' ||
-        error?.code === 'INVALID_CONFIG_FORMAT'
-          ? error.message
-          : 'Error Fetching Config File'
-      // log full error for diagnosing client side errors if needed
-      console.error(message, error)
-      showApplicationAlert('error', message, null)
-    })
+  // Apply defaults for optional parameters
+  return applyConfigDefaults(normalizedConfig)
 }
 
-export async function DoesFaviconExistService() {
-  const cacheBuster = Date.now()
+/**
+ * Load runtime config, normalize it, and store it in Redux.
+ * @param {{signal?: AbortSignal, config?: Object}} [options]
+ * @returns {Promise<Object>} Final config object or normalized error object.
+ */
+export async function LoadConfigIntoStateService({ signal, config } = {}) {
+  const contextLabel = 'Error Fetching Config File'
 
   try {
+    let rawConfig = config
+
+    if (rawConfig === undefined) {
+      const configUrl = `${resolveConfigUrl()}${getCacheBusterSuffix()}`
+      const response = await fetch(configUrl, {
+        cache: 'no-store',
+        signal
+      })
+
+      if (!response.ok) {
+        throw await normalizeStacErrorResponse(response, contextLabel)
+      }
+
+      rawConfig = await response.json()
+    }
+
+    const configWithDefaults = await prepareAppConfig(rawConfig)
+    // Aborted means a newer load may already be in flight or committed.
+    if (signal?.aborted) return configWithDefaults
+    store.dispatch(setAppConfig(configWithDefaults))
+    return configWithDefaults
+  } catch (error) {
+    const normalizedError =
+      error?.error === true
+        ? error
+        : normalizeStacNetworkError(error, contextLabel)
+    console.error(contextLabel, normalizedError)
+    return normalizedError
+  }
+}
+
+/**
+ * Check whether configured favicon exists.
+ * @param {AbortSignal} [signal] - Optional abort signal.
+ * @returns {Promise<boolean>} True when favicon HEAD request succeeds.
+ */
+export async function DoesFaviconExistService(signal) {
+  try {
     const response = await fetch(
-      `/config/${
+      `${resolveFaviconUrl(
         store.getState().mainSlice.appConfig.APP_FAVICON
-      }?_cb=${cacheBuster}`,
+      )}${getCacheBusterSuffix()}`,
       {
         method: 'HEAD',
-        cache: 'no-store'
+        cache: 'no-store',
+        signal
       }
     )
 

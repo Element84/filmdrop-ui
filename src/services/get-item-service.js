@@ -1,6 +1,10 @@
 import { store } from '../redux/store'
 import { logoutUser } from '../utils/authHelper'
-import { appendStacHeaderCookies } from '../utils/stacRequest'
+import { buildStacRequestHeaders } from '../utils/stacRequest'
+import {
+  normalizeStacErrorResponse,
+  normalizeStacNetworkError
+} from '../utils/stacErrorHelper'
 
 /**
  * Fetches a single STAC item from the API.
@@ -14,22 +18,18 @@ import { appendStacHeaderCookies } from '../utils/stacRequest'
  *
  * @param {string} itemId - The unique identifier for the item
  * @param {string} [collectionId] - The collection ID (optional)
- * @returns {Promise<Object>} The STAC item GeoJSON feature or error object {error: true, status: number}
+ * @returns {Promise<Object | undefined>} The STAC item GeoJSON feature, normalized error object, or undefined when aborted
  * @example
  * // Known collection
  * const item = await GetItemService('S2A_17SNB_20230617_0_L2A', 'sentinel-2-l2a')
  * // Unknown collection — discovers it via search
  * const item = await GetItemService('S2A_17SNB_20230617_0_L2A')
  */
-export async function GetItemService(itemId, collectionId) {
+export async function GetItemService(itemId, collectionId, signal) {
   const appConfig = store.getState().mainSlice.appConfig
+  const contextLabel = 'Error fetching STAC item'
 
-  const requestHeaders = new Headers()
-  const JWT = localStorage.getItem('APP_AUTH_TOKEN')
-  if (JWT && (appConfig.APP_TOKEN_AUTH_ENABLED ?? false)) {
-    requestHeaders.append('Authorization', `Bearer ${JWT}`)
-  }
-  appendStacHeaderCookies(requestHeaders)
+  const requestHeaders = buildStacRequestHeaders()
 
   const url = collectionId
     ? `${appConfig.STAC_API_URL}/collections/${collectionId}/items/${itemId}`
@@ -38,14 +38,19 @@ export async function GetItemService(itemId, collectionId) {
   try {
     const response = await fetch(url, {
       credentials: appConfig.FETCH_CREDENTIALS || 'same-origin',
-      headers: requestHeaders
+      headers: requestHeaders,
+      signal
     })
 
     if (!response.ok) {
       if (response.status === 403) {
         logoutUser()
       }
-      return { error: true, status: response.status }
+      const normalizedError = await normalizeStacErrorResponse(
+        response,
+        contextLabel
+      )
+      return normalizedError
     }
 
     const json = await response.json()
@@ -68,9 +73,19 @@ export async function GetItemService(itemId, collectionId) {
       )
     }
 
-    return { error: true, status: 404 }
+    return {
+      error: true,
+      status: 404,
+      code: null,
+      summary: contextLabel,
+      details: 'Item not found'
+    }
   } catch (error) {
-    console.error('Error fetching STAC item:', error)
-    return { error: true, status: null }
+    if (error?.name === 'AbortError') {
+      return undefined
+    }
+
+    console.error(contextLabel + ':', error)
+    return normalizeStacNetworkError(error, contextLabel)
   }
 }

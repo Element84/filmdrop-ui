@@ -1,7 +1,7 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { AddMosaicService } from './post-mosaic-service'
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 
 const DEFAULT_MOSAIC_ERROR_SUMMARY = 'Error Fetching Mosaic'
 
@@ -10,7 +10,7 @@ global.fetch = vi.fn()
 beforeEach(() => {
   vi.clearAllMocks()
   store.dispatch(
-    setappConfig({
+    setAppConfig({
       MOSAIC_TILER_URL: 'https://mosaic.example.com',
       FETCH_CREDENTIALS: 'same-origin'
     })

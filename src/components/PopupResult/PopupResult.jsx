@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResult.css'
 import { useSelector } from 'react-redux'
-import { zoomToItemExtent } from '../../utils/mapHelper'
+import { zoomToItemExtent } from '../../utils/mapLayers'
 import ItemHeader from '../EnhancedDetails/ItemHeader.jsx'
 import VisualizationDropdown from '../VisualizationDropdown/VisualizationDropdown'
 
@@ -12,36 +12,52 @@ const PopupResult = (props) => {
     (state) => state.mainSlice.autoCenterOnItemChanged
   )
   const [thumbnailInfo, setThumbnailInfo] = useState(null)
+  const [thumbnailFailed, setThumbnailFailed] = useState(false)
+  const isMountedRef = useRef(true)
+  const autoCenterOnItemChangedRef = useRef(_autoCenterOnItemChanged)
+  autoCenterOnItemChangedRef.current = _autoCenterOnItemChanged
 
   useEffect(() => {
-    if (props.result) {
-      if (_autoCenterOnItemChanged) {
-        zoomToItemExtent(props.result)
-      }
-      const thumbnailURLForSelection = props.result?.links?.find(
-        ({ rel }) => rel === 'thumbnail'
-      )?.href
-
-      // If no thumbnail available, clear immediately
-      if (!thumbnailURLForSelection) {
-        setThumbnailInfo(null)
-        return
-      }
-
-      // Preload the new image, keeping the previous one visible until ready
-      const image = new Image()
-      image.onload = function () {
-        if (this.width > 0) {
-          setThumbnailInfo({
-            url: thumbnailURLForSelection,
-            width: this.width,
-            height: this.height
-          })
-        }
-      }
-      image.src = thumbnailURLForSelection
+    isMountedRef.current = true
+    return () => {
+      isMountedRef.current = false
     }
-    // eslint-disable-next-line
+  }, [])
+
+  useEffect(() => {
+    if (autoCenterOnItemChangedRef.current && props.result) {
+      zoomToItemExtent(props.result)
+    }
+  }, [props.result])
+
+  useEffect(() => {
+    // Reset failure state whenever the item changes.
+    setThumbnailFailed(false)
+    if (!props.result) return
+
+    const thumbnailURLForSelection = props.result?.links?.find(
+      ({ rel }) => rel === 'thumbnail'
+    )?.href
+
+    // If no thumbnail available, clear immediately
+    if (!thumbnailURLForSelection) {
+      setThumbnailInfo(null)
+      return
+    }
+
+    // Preload the new image, keeping the previous one visible until ready
+    const image = new Image()
+    image.onload = function () {
+      if (!isMountedRef.current) return
+      if (this.width > 0) {
+        setThumbnailInfo({
+          url: thumbnailURLForSelection,
+          width: this.width,
+          height: this.height
+        })
+      }
+    }
+    image.src = thumbnailURLForSelection
   }, [props.result])
 
   return (
@@ -55,7 +71,7 @@ const PopupResult = (props) => {
     >
       {props.result ? (
         <div className="popupResultHero">
-          {thumbnailInfo && (
+          {thumbnailInfo && !thumbnailFailed && (
             <div
               className="popupResultThumbnailContainer"
               style={{
@@ -67,10 +83,7 @@ const PopupResult = (props) => {
                   src={thumbnailInfo.url}
                   alt="thumbnail"
                   className="popupResultThumbnail"
-                  onError={({ currentTarget }) => {
-                    currentTarget.onerror = null // prevents looping
-                    currentTarget.parentElement.parentElement.remove()
-                  }}
+                  onError={() => setThumbnailFailed(true)}
                 />
               </picture>
             </div>

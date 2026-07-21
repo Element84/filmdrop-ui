@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-gates:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - run: npm ci
+      - run: npm run check-markdown
+      - run: npm run lint
+      - run: npm run format
+      - run: npm run typecheck
+      - run: npm run test-pre-commit
+      - name: Build SPA
+        run: npm run build
+      - name: Build library
+        run: npm run build:lib
+      - name: Bundle size budget
+        run: |
+          node -e "const fs=require('fs');const s=fs.statSync('dist/filmdrop-ui.js').size;const MAX=1600000;console.log('lib size:',s);if(s>MAX){console.error('dist/filmdrop-ui.js exceeds bundle budget:',s,'>',MAX);process.exit(1)}"
+          node -e "const fs=require('fs');const s=fs.statSync('dist/style.css').size;const MAX=120000;console.log('css size:',s);if(s>MAX){console.error('dist/style.css exceeds bundle budget:',s,'>',MAX);process.exit(1)}"
+      - name: Publish dry-run
+        run: npm publish --dry-run
+
+  # Exercises the published-tarball surface, the starter reference build,
+  # the generated type definitions, and the starter workspace tests on a
+  # single Node 22 runner. Runs after quality-gates so a failing typecheck
+  # or unit test fails fast before this slower job spins up. The job
+  # rebuilds the library and starter from source rather than passing
+  # artifacts between jobs to keep the workflow simple and peer-resolution
+  # deterministic.
+  verify:
+    name: Verify library, starter, consumer, types
+    needs: quality-gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Build library (chains verify:lib)
+        run: npm run build:lib
+      - name: Sync starter brand assets
+        run: npm run sync:starter-brand
+      - name: Build starter
+        run: npm run build:starter
+      - run: npm run verify:starter
+      - run: npm run verify:consumer
+      - run: npm run verify:types
+      - name: Starter workspace tests
+        run: npm run test -w filmdrop-starter -- --run
+
+  # Supply-chain advisories on production deps. Blocking on PR CI: a
+  # failing audit reflects either a new transitive advisory or a missing
+  # entry in the .nsprc allowlist; either case requires action before
+  # merge. The release workflow runs the same check as a blocking gate
+  # before publish.
+  audit:
+    name: Production dependency audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run audit-prod

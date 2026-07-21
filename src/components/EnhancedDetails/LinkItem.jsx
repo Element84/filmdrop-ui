@@ -30,7 +30,7 @@ const LinkItem = React.memo(({ link }) => {
   const [copiedUrl, setCopiedUrl] = useState(null)
   const timeoutRef = useRef(null)
 
-  // Cleanup timeout on unmount
+  // Cleanup timeout on unmount (prevents state updates after unmount)
   useEffect(() => {
     return () => {
       if (timeoutRef.current) {
@@ -51,7 +51,9 @@ const LinkItem = React.memo(({ link }) => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
-      timeoutRef.current = setTimeout(() => setCopiedUrl(null), 2000)
+      timeoutRef.current = setTimeout(() => {
+        setCopiedUrl(null)
+      }, 2000)
     }
   }
 

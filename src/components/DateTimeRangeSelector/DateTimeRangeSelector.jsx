@@ -9,6 +9,8 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import Card from '../Card/Card'
 
+// dayjs.extend is idempotent; calling it at module load is safe and only
+// needs to happen once per bundle.
 dayjs.extend(utc)
 
 const calendarSlotProps = {

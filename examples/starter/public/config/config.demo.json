@@ -1,0 +1,1328 @@
+{
+  "APP_NAME": "FilmDrop Starter",
+  "THEME_SWITCHING_ENABLED": true,
+  "MAP_CENTER": [40, -100],
+  "MAP_ZOOM": 4,
+  "LOGO_URL": "/app/config/logo.png",
+  "LOGO_ALT": "FilmDrop Logo",
+  "BRAND_LOGO": {
+    "url": "https://element84.com/filmdrop",
+    "title": "Learn more about FilmDrop",
+    "alt": "Element 84 Logo",
+    "image": null,
+    "image_light": "/app/config/brand-logo-element84-light-mode.svg",
+    "image_dark": "/app/config/brand-logo-element84-dark-mode.svg"
+  },
+  "STAC_API_URL": "https://earth-search.aws.element84.com/v1",
+  "API_MAX_ITEMS": 250,
+  "SCENE_TILER_URL": "https://tiler.earth-search.aws.element84.com",
+  "MOSAIC_TILER_URL": "https://tiler.earth-search.aws.element84.com",
+  "STAC_LINK_ENABLED": true,
+  "STAC_LINKS_SECTION_ENABLED": true,
+  "COLLECTIONS": {
+    "default": "sentinel-2-c1-l2a",
+    "include": [
+      "sentinel-2-c1-l2a",
+      "landsat-c2-l2",
+      "naip",
+      "cop-dem-glo-30",
+      "cop-dem-glo-90",
+      "sentinel-1-grd"
+    ]
+  },
+  "MOSAIC_MAX_ITEMS": 100,
+  "COLLECTIONS_CONFIG": {
+    "sentinel-2-c1-l2a": {
+      "visualizations": {
+        "vegetation": {
+          "title": "Vegetation False Color",
+          "assets": ["nir", "red", "green"],
+          "gamma": 1.1,
+          "rescale": [0, 3000]
+        },
+        "true-color": {
+          "title": "True Color",
+          "assets": ["visual"],
+          "gamma": [1.1, 1.1, 1.1]
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["visual"]
+      },
+      "sceneMinZoom": 6,
+      "popupDisplayFields": ["datetime", "platform"]
+    },
+    "sentinel-2-pre-c1-l2a": {
+      "visualizations": {
+        "default": {
+          "assets": ["visual"]
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["visual"]
+      },
+      "sceneMinZoom": 7,
+      "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              },
+              {
+                "name": "platform"
+              },
+              {
+                "name": "constellation"
+              },
+              {
+                "name": "instruments"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              },
+              {
+                "name": "mgrs:utm_zone"
+              },
+              {
+                "name": "mgrs:latitude_band"
+              },
+              {
+                "name": "mgrs:grid_square"
+              },
+              {
+                "name": "grid:code"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              },
+              {
+                "name": "view:off_nadir"
+              }
+            ]
+          },
+          {
+            "name": "Data Quality",
+            "fields": [
+              {
+                "name": "eo:cloud_cover"
+              }
+            ]
+          },
+          {
+            "name": "Sentinel-2 Processing",
+            "fields": [
+              {
+                "name": "s2:processing_baseline"
+              },
+              {
+                "name": "s2:product_type"
+              }
+            ]
+          },
+          {
+            "name": "Scientific Reference",
+            "fields": [
+              {
+                "name": "sci:doi"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "10m Bands",
+            "fields": [
+              {
+                "name": "red"
+              },
+              {
+                "name": "green"
+              },
+              {
+                "name": "blue"
+              },
+              {
+                "name": "nir"
+              },
+              {
+                "name": "visual"
+              }
+            ]
+          },
+          {
+            "name": "20m Bands",
+            "fields": [
+              {
+                "name": "swir22"
+              },
+              {
+                "name": "rededge2"
+              },
+              {
+                "name": "rededge3"
+              },
+              {
+                "name": "rededge1"
+              },
+              {
+                "name": "swir16"
+              },
+              {
+                "name": "nir08"
+              },
+              {
+                "name": "scl"
+              },
+              {
+                "name": "aot"
+              },
+              {
+                "name": "wvp"
+              },
+              {
+                "name": "cloud"
+              },
+              {
+                "name": "snow"
+              }
+            ]
+          },
+          {
+            "name": "60m Bands",
+            "fields": [
+              {
+                "name": "coastal"
+              },
+              {
+                "name": "nir09"
+              }
+            ]
+          },
+          {
+            "name": "Metadata",
+            "fields": [
+              {
+                "name": "granule_metadata"
+              },
+              {
+                "name": "tileinfo_metadata"
+              },
+              {
+                "name": "product_metadata"
+              },
+              {
+                "name": "thumbnail"
+              },
+              {
+                "name": "preview"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "sentinel-2-l2a": {
+      "visualizations": {
+        "default": {
+          "assets": ["visual"]
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["visual"]
+      },
+      "sceneMinZoom": 7,
+      "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              },
+              {
+                "name": "platform"
+              },
+              {
+                "name": "constellation"
+              },
+              {
+                "name": "instruments"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              },
+              {
+                "name": "mgrs:utm_zone"
+              },
+              {
+                "name": "mgrs:latitude_band"
+              },
+              {
+                "name": "mgrs:grid_square"
+              },
+              {
+                "name": "grid:code"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              },
+              {
+                "name": "view:off_nadir"
+              }
+            ]
+          },
+          {
+            "name": "Data Quality",
+            "fields": [
+              {
+                "name": "eo:cloud_cover"
+              }
+            ]
+          },
+          {
+            "name": "Sentinel-2 Processing",
+            "fields": [
+              {
+                "name": "s2:processing_baseline"
+              },
+              {
+                "name": "s2:product_type"
+              }
+            ]
+          },
+          {
+            "name": "Scientific Reference",
+            "fields": [
+              {
+                "name": "sci:doi"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "10m Bands",
+            "fields": [
+              {
+                "name": "red"
+              },
+              {
+                "name": "green"
+              },
+              {
+                "name": "blue"
+              },
+              {
+                "name": "nir"
+              },
+              {
+                "name": "visual"
+              }
+            ]
+          },
+          {
+            "name": "20m Bands",
+            "fields": [
+              {
+                "name": "swir22"
+              },
+              {
+                "name": "rededge2"
+              },
+              {
+                "name": "rededge3"
+              },
+              {
+                "name": "rededge1"
+              },
+              {
+                "name": "swir16"
+              },
+              {
+                "name": "nir08"
+              },
+              {
+                "name": "scl"
+              },
+              {
+                "name": "aot"
+              },
+              {
+                "name": "wvp"
+              },
+              {
+                "name": "cloud"
+              },
+              {
+                "name": "snow"
+              }
+            ]
+          },
+          {
+            "name": "60m Bands",
+            "fields": [
+              {
+                "name": "coastal"
+              },
+              {
+                "name": "nir09"
+              }
+            ]
+          },
+          {
+            "name": "JP2 Format",
+            "fields": [
+              {
+                "name": "aot-jp2"
+              },
+              {
+                "name": "blue-jp2"
+              },
+              {
+                "name": "coastal-jp2"
+              },
+              {
+                "name": "green-jp2"
+              },
+              {
+                "name": "nir-jp2"
+              },
+              {
+                "name": "nir08-jp2"
+              },
+              {
+                "name": "nir09-jp2"
+              },
+              {
+                "name": "red-jp2"
+              },
+              {
+                "name": "rededge1-jp2"
+              },
+              {
+                "name": "rededge2-jp2"
+              },
+              {
+                "name": "rededge3-jp2"
+              },
+              {
+                "name": "scl-jp2"
+              },
+              {
+                "name": "swir16-jp2"
+              },
+              {
+                "name": "swir22-jp2"
+              },
+              {
+                "name": "visual-jp2"
+              },
+              {
+                "name": "wvp-jp2"
+              }
+            ]
+          },
+          {
+            "name": "Metadata",
+            "fields": [
+              {
+                "name": "granule_metadata"
+              },
+              {
+                "name": "tileinfo_metadata"
+              },
+              {
+                "name": "product_metadata"
+              },
+              {
+                "name": "thumbnail"
+              },
+              {
+                "name": "preview"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "sentinel-2-l1c": {
+      "sceneMinZoom": 7,
+      "popupDisplayFields": ["datetime", "platform", "eo:cloud_cover"],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              },
+              {
+                "name": "platform"
+              },
+              {
+                "name": "constellation"
+              },
+              {
+                "name": "instruments"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              },
+              {
+                "name": "mgrs:utm_zone"
+              },
+              {
+                "name": "mgrs:latitude_band"
+              },
+              {
+                "name": "mgrs:grid_square"
+              },
+              {
+                "name": "grid:code"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              },
+              {
+                "name": "view:off_nadir"
+              }
+            ]
+          },
+          {
+            "name": "Data Quality",
+            "fields": [
+              {
+                "name": "eo:cloud_cover"
+              }
+            ]
+          },
+          {
+            "name": "Sentinel-2 Processing",
+            "fields": [
+              {
+                "name": "s2:processing_baseline"
+              },
+              {
+                "name": "s2:product_type"
+              }
+            ]
+          },
+          {
+            "name": "Scientific Reference",
+            "fields": [
+              {
+                "name": "sci:doi"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "10m Bands",
+            "fields": [
+              {
+                "name": "red"
+              },
+              {
+                "name": "green"
+              },
+              {
+                "name": "blue"
+              },
+              {
+                "name": "nir"
+              },
+              {
+                "name": "visual"
+              }
+            ]
+          },
+          {
+            "name": "20m Bands",
+            "fields": [
+              {
+                "name": "swir22"
+              },
+              {
+                "name": "rededge2"
+              },
+              {
+                "name": "rededge3"
+              },
+              {
+                "name": "rededge1"
+              },
+              {
+                "name": "swir16"
+              },
+              {
+                "name": "nir08"
+              }
+            ]
+          },
+          {
+            "name": "60m Bands",
+            "fields": [
+              {
+                "name": "coastal"
+              },
+              {
+                "name": "nir09"
+              },
+              {
+                "name": "cirrus"
+              }
+            ]
+          },
+          {
+            "name": "Metadata",
+            "fields": [
+              {
+                "name": "granule_metadata"
+              },
+              {
+                "name": "tileinfo_metadata"
+              },
+              {
+                "name": "thumbnail"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "landsat-c2-l2": {
+      "visualizations": {
+        "default": {
+          "assets": ["red", "green", "blue"],
+          "color_formula": "Gamma+RGB+2.0+Saturation+2.0+Sigmoidal+RGB+15+0.35"
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["red"],
+        "color_formula": "Gamma+R+1.7+Sigmoidal+R+15+0.35"
+      },
+      "sceneMinZoom": 7,
+      "popupDisplayFields": [
+        "datetime",
+        "platform",
+        "instruments",
+        "eo:cloud_cover"
+      ],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              },
+              {
+                "name": "platform"
+              },
+              {
+                "name": "instruments"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              },
+              {
+                "name": "mgrs:utm_zone"
+              },
+              {
+                "name": "mgrs:latitude_band"
+              },
+              {
+                "name": "mgrs:grid_square"
+              },
+              {
+                "name": "grid:code"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              }
+            ]
+          },
+          {
+            "name": "Landsat Processing",
+            "fields": [
+              {
+                "name": "landsat:correction"
+              },
+              {
+                "name": "landsat:collection_category"
+              },
+              {
+                "name": "landsat:collection_number"
+              },
+              {
+                "name": "landsat:product_generated"
+              }
+            ]
+          },
+          {
+            "name": "Landsat Grid",
+            "fields": [
+              {
+                "name": "landsat:wrs_path"
+              },
+              {
+                "name": "landsat:wrs_row"
+              },
+              {
+                "name": "landsat:wrs_type"
+              }
+            ]
+          },
+          {
+            "name": "Data Quality",
+            "fields": [
+              {
+                "name": "landsat:cloud_cover_land"
+              }
+            ]
+          },
+          {
+            "name": "Scientific Reference",
+            "fields": [
+              {
+                "name": "sci:doi"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "Surface Reflectance",
+            "fields": [
+              {
+                "name": "coastal"
+              },
+              {
+                "name": "blue"
+              },
+              {
+                "name": "green"
+              },
+              {
+                "name": "red"
+              },
+              {
+                "name": "nir08"
+              },
+              {
+                "name": "swir16"
+              },
+              {
+                "name": "swir22"
+              }
+            ]
+          },
+          {
+            "name": "Quality Assessment",
+            "fields": [
+              {
+                "name": "qa_pixel"
+              },
+              {
+                "name": "qa_radsat"
+              },
+              {
+                "name": "cloud_qa"
+              },
+              {
+                "name": "qa_aerosol"
+              }
+            ]
+          },
+          {
+            "name": "Temperature Products",
+            "fields": [
+              {
+                "name": "lwir11"
+              },
+              {
+                "name": "lwir"
+              },
+              {
+                "name": "atran"
+              },
+              {
+                "name": "cdist"
+              },
+              {
+                "name": "drad"
+              },
+              {
+                "name": "urad"
+              },
+              {
+                "name": "trad"
+              },
+              {
+                "name": "emis"
+              },
+              {
+                "name": "emsd"
+              },
+              {
+                "name": "qa"
+              }
+            ]
+          },
+          {
+            "name": "Atmospheric Products",
+            "fields": [
+              {
+                "name": "atmos_opacity"
+              }
+            ]
+          },
+          {
+            "name": "Metadata",
+            "fields": [
+              {
+                "name": "thumbnail"
+              },
+              {
+                "name": "reduced_resolution_browse"
+              },
+              {
+                "name": "mtl.json"
+              },
+              {
+                "name": "mtl.txt"
+              },
+              {
+                "name": "mtl.xml"
+              },
+              {
+                "name": "ang"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "naip": {
+      "visualizations": {
+        "default": {
+          "assets": ["image"],
+          "bidx": "1,2,3"
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["image"],
+        "bidx": "1,2,3"
+      },
+      "sceneMinZoom": 14,
+      "popupDisplayFields": ["datetime", "naip:state", "naip:year", "gsd"],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              },
+              {
+                "name": "platform"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              }
+            ]
+          },
+          {
+            "name": "Scientific Reference",
+            "fields": [
+              {
+                "name": "sci:doi"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "COGs",
+            "fields": [
+              {
+                "name": "image"
+              }
+            ]
+          },
+          {
+            "name": "Metadata",
+            "fields": [
+              {
+                "name": "metadata"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "cop-dem-glo-30": {
+      "visualizations": {
+        "default": {
+          "assets": ["data"],
+          "colormap_name": "terrain",
+          "rescale": ["-1000,4000"]
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["data"],
+        "colormap_name": "terrain",
+        "rescale": ["-1000,4000"]
+      },
+      "sceneMinZoom": 8,
+      "popupDisplayFields": ["datetime"],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              }
+            ]
+          },
+          {
+            "name": "Platform Information",
+            "fields": [
+              {
+                "name": "platform"
+              }
+            ]
+          },
+          {
+            "name": "Storage Information",
+            "fields": [
+              {
+                "name": "storage:platform"
+              },
+              {
+                "name": "storage:region"
+              },
+              {
+                "name": "storage:requester_pays"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "DEM Data",
+            "fields": [
+              {
+                "name": "data"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "cop-dem-glo-90": {
+      "visualizations": {
+        "default": {
+          "assets": ["data"],
+          "colormap_name": "terrain",
+          "rescale": ["-1000,4000"]
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["data"],
+        "colormap_name": "terrain",
+        "rescale": ["-1000,4000"]
+      },
+      "sceneMinZoom": 8,
+      "popupDisplayFields": ["datetime"],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              }
+            ]
+          },
+          {
+            "name": "Imagery Properties",
+            "fields": [
+              {
+                "name": "gsd"
+              }
+            ]
+          },
+          {
+            "name": "Platform Information",
+            "fields": [
+              {
+                "name": "platform"
+              }
+            ]
+          },
+          {
+            "name": "Storage Information",
+            "fields": [
+              {
+                "name": "storage:platform"
+              },
+              {
+                "name": "storage:region"
+              },
+              {
+                "name": "storage:requester_pays"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "DEM Data",
+            "fields": [
+              {
+                "name": "data"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "sentinel-1-grd": {
+      "visualizations": {
+        "default": {
+          "assets": ["vv"],
+          "rescale": ["0,250"],
+          "colormap_name": "plasma"
+        }
+      },
+      "mosaicTilerParams": {
+        "assets": ["vv"],
+        "rescale": ["0,250"],
+        "colormap_name": "plasma"
+      },
+      "sceneMinZoom": 7,
+      "popupDisplayFields": [
+        "datetime",
+        "platform",
+        "sar:instrument_mode",
+        "sar:polarizations"
+      ],
+      "enhancedDisplayConfig": {
+        "property_groups": [
+          {
+            "name": "Core Fields",
+            "fields": [
+              {
+                "name": "datetime",
+                "label": "Acquisition Time"
+              },
+              {
+                "name": "platform"
+              },
+              {
+                "name": "constellation"
+              }
+            ]
+          },
+          {
+            "name": "Spatial Reference",
+            "fields": [
+              {
+                "name": "proj:epsg"
+              },
+              {
+                "name": "proj:centroid"
+              }
+            ]
+          },
+          {
+            "name": "SAR Properties",
+            "fields": [
+              {
+                "name": "s1:resolution"
+              },
+              {
+                "name": "s1:orbit_source"
+              },
+              {
+                "name": "sar:looks_range"
+              },
+              {
+                "name": "sat:orbit_state"
+              },
+              {
+                "name": "sar:product_type"
+              },
+              {
+                "name": "sar:looks_azimuth"
+              },
+              {
+                "name": "sar:polarizations"
+              },
+              {
+                "name": "sar:frequency_band"
+              },
+              {
+                "name": "s1:processing_level"
+              },
+              {
+                "name": "sar:instrument_mode"
+              },
+              {
+                "name": "sar:center_frequency"
+              },
+              {
+                "name": "s1:product_timeliness"
+              },
+              {
+                "name": "sar:resolution_range"
+              },
+              {
+                "name": "sar:resolution_azimuth"
+              },
+              {
+                "name": "sar:pixel_spacing_range"
+              },
+              {
+                "name": "sar:observation_direction"
+              },
+              {
+                "name": "sar:pixel_spacing_azimuth"
+              },
+              {
+                "name": "sar:looks_equivalent_number"
+              },
+              {
+                "name": "sat:platform_international_designator"
+              }
+            ]
+          },
+          {
+            "name": "Storage Information",
+            "fields": [
+              {
+                "name": "storage:platform"
+              },
+              {
+                "name": "storage:region"
+              },
+              {
+                "name": "storage:requester_pays"
+              }
+            ]
+          }
+        ],
+        "asset_groups": [
+          {
+            "name": "SAR Data",
+            "fields": [
+              {
+                "name": "hh"
+              },
+              {
+                "name": "hv"
+              },
+              {
+                "name": "vh"
+              },
+              {
+                "name": "vv"
+              }
+            ]
+          },
+          {
+            "name": "Metadata",
+            "fields": [
+              {
+                "name": "thumbnail"
+              },
+              {
+                "name": "safe-manifest"
+              }
+            ]
+          },
+          {
+            "name": "Noise Schemas",
+            "fields": [
+              {
+                "name": "schema-noise-hh"
+              },
+              {
+                "name": "schema-noise-hv"
+              },
+              {
+                "name": "schema-noise-vh"
+              },
+              {
+                "name": "schema-noise-vv"
+              }
+            ]
+          },
+          {
+            "name": "Product Schemas",
+            "fields": [
+              {
+                "name": "schema-product-hh"
+              },
+              {
+                "name": "schema-product-hv"
+              },
+              {
+                "name": "schema-product-vh"
+              },
+              {
+                "name": "schema-product-vv"
+              }
+            ]
+          },
+          {
+            "name": "Calibration Schemas",
+            "fields": [
+              {
+                "name": "schema-calibration-hh"
+              },
+              {
+                "name": "schema-calibration-hv"
+              },
+              {
+                "name": "schema-calibration-vh"
+              },
+              {
+                "name": "schema-calibration-vv"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "CART_ENABLED": false,
+  "LAYER_LIST_SERVICES": [
+    {
+      "name": "Service 1",
+      "type": "wms",
+      "url": "https://ows.terrestris.de/osm-gray/service",
+      "layers": [
+        {
+          "name": "TOPO-WMS",
+          "alias": "Topography",
+          "default_visibility": false,
+          "crs": "EPSG:4326"
+        }
+      ]
+    }
+  ],
+  "SUPPORTS_AGGREGATIONS": true
+}

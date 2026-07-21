@@ -13,13 +13,12 @@
  * Collection and item come from path params (/:collectionId/:itemId).
  * All other state comes from search params.
  */
-import { useEffect, useMemo } from 'react'
-import { useSearch, useParams } from '@tanstack/react-router'
+import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   setSelectedCollection,
   setSelectedVisualization,
-  settabSelected,
+  setTabSelected,
   setSearchDateRangeValue,
   setViewMode,
   setQueryableFilters
@@ -28,6 +27,7 @@ import { extractQueryableParams } from '../router'
 import { deserializeQueryableFiltersFromURL } from '../utils/urlParamHelper'
 import { showApplicationAlert } from '../utils/alertHelper'
 import { useUrlInitialize } from './useUrlInitialize'
+import { useResolvedUrlState } from './useResolvedUrlState'
 
 /**
  * Declarative map for simple URL param → Redux sync.
@@ -40,7 +40,7 @@ import { useUrlInitialize } from './useUrlInitialize'
  * - requireTruthy: if true, skip dispatch when value is falsy
  */
 const SIMPLE_PARAM_HANDLERS = [
-  { param: 'tab', action: settabSelected, defaultValue: 'search' },
+  { param: 'tab', action: setTabSelected, defaultValue: 'search' },
   { param: 'viz', action: setSelectedVisualization, defaultValue: null },
   { param: 'view', action: setViewMode, defaultValue: 'scene' },
   { param: 'col', action: setSelectedCollection, requireTruthy: true },
@@ -66,21 +66,10 @@ function shallowEqual(a, b) {
 }
 
 export function useUrlStateSync() {
-  const search = useSearch({ from: '__root__' })
-  const params = useParams({ strict: false })
+  const resolvedUrlState = useResolvedUrlState()
   const dispatch = useDispatch()
 
-  // Build combined URL state: search params + path params mapped to col/item
-  const collectionId = params.collectionId || ''
-  const itemId = params.itemId || ''
-  const urlState = useMemo(
-    () => ({
-      ...search,
-      col: collectionId,
-      item: itemId
-    }),
-    [search, collectionId, itemId]
-  )
+  const urlState = resolvedUrlState
 
   const selectedCollectionData = useSelector(
     (state) => state.mainSlice.selectedCollectionData
@@ -89,19 +78,23 @@ export function useUrlStateSync() {
     (state) => state.mainSlice.collectionsData
   )
 
-  const { isInitialized, prevSearch, fetchAndDisplayItem, clearItemSelection } =
-    useUrlInitialize(urlState, dispatch)
+  const {
+    isInitializedRef,
+    prevSearchRef,
+    fetchAndDisplayItem,
+    clearItemSelection
+  } = useUrlInitialize(urlState, dispatch)
 
   /**
    * Ongoing URL → Redux sync.
    * Runs whenever URL params change after initialization.
    */
   useEffect(() => {
-    if (!isInitialized.current) return
-    if (prevSearch.current === null) return
+    if (!isInitializedRef.current) return
+    if (prevSearchRef.current === null) return
 
-    const prev = prevSearch.current
-    prevSearch.current = urlState
+    const prev = prevSearchRef.current
+    prevSearchRef.current = urlState
 
     // Validate collection change before processing other params
     if (urlState.col !== prev.col && urlState.col) {
@@ -176,6 +169,8 @@ export function useUrlStateSync() {
     collectionsData,
     dispatch,
     fetchAndDisplayItem,
-    clearItemSelection
+    clearItemSelection,
+    isInitializedRef,
+    prevSearchRef
   ])
 }

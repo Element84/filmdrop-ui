@@ -2,7 +2,45 @@
   "name": "filmdrop-ui",
   "version": "7.1.0-pre",
   "license": "Apache-2.0",
+  "description": "FilmDrop UI — a React component library (and standalone SPA) for exploring and visualizing STAC API catalogs.",
+  "type": "module",
+  "main": "./dist/filmdrop-ui.js",
+  "module": "./dist/filmdrop-ui.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/filmdrop-ui.js",
+      "default": "./dist/filmdrop-ui.js"
+    },
+    "./style.css": "./dist/style.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE",
+    "CHANGELOG.md",
+    "CONFIGURATION.md"
+  ],
+  "sideEffects": [
+    "**/*.css",
+    "./src/components/DateTimeRangeSelector/DateTimeRangeSelector.jsx"
+  ],
   "dependencies": {
+    "@radiantearth/stac-fields": "^1.5.7",
+    "colormap": "^2.3.2",
+    "dayjs": "^1.11.19",
+    "dompurify": "^3.4.12",
+    "h3-js": "^4.4.0",
+    "js-cookie": "3.0.7",
+    "leaflet-geosearch": "^3.9.0",
+    "prop-types": "^15.8.1",
+    "react-dropzone": "^14.4.0",
+    "react-tooltip": "^5.30.0"
+  },
+  "peerDependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
     "@floating-ui/react": "^0.27.17",
@@ -10,16 +48,8 @@
     "@mui/icons-material": "^7.3.8",
     "@mui/material": "^7.3.2",
     "@mui/x-date-pickers": "^8.26.0",
-    "@radiantearth/stac-fields": "^1.5.7",
     "@reduxjs/toolkit": "^2.11.2",
     "@tanstack/react-router": "^1.159.10",
-    "@vitejs/plugin-react": "^5.1.2",
-    "colormap": "^2.3.2",
-    "dayjs": "^1.11.19",
-    "dayjs-plugin-utc": "^0.1.2",
-    "dompurify": "^3.4.0",
-    "h3-js": "^4.4.0",
-    "js-cookie": "^3.0.5",
     "leaflet": "^1.9.4",
     "leaflet-draw": "^1.0.4",
     "leaflet-geosearch": "^3.9.0",
@@ -31,6 +61,13 @@
     "react-tooltip": "^5.30.0"
   },
   "devDependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.1",
+    "@mui/icons-material": "^7.3.8",
+    "@mui/material": "^7.3.2",
+    "@mui/x-date-pickers": "^8.26.0",
+    "@reduxjs/toolkit": "^2.11.2",
+    "@tanstack/react-router": "^1.159.10",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
@@ -41,6 +78,7 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/eslint-plugin": "^8.44.1",
     "@typescript-eslint/parser": "^8.44.1",
+    "@vitejs/plugin-react": "^5.1.2",
     "@vitest/coverage-v8": "^4.0.18",
     "better-npm-audit": "^3.7.3",
     "cross-env": "^7.0.3",
@@ -52,13 +90,20 @@
     "eslint-plugin-n": "^16.3.1",
     "eslint-plugin-promise": "^6.6.0",
     "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-testing-library": "^7.14.0",
     "globals": "^16.5.0",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
+    "leaflet": "^1.9.4",
+    "leaflet-draw": "^1.0.4",
     "prettier": "^3.7.4",
     "prettier-eslint": "^16.4.2",
     "prettier-eslint-cli": "^8.0.1",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "react-leaflet": "^5.0.0",
+    "react-redux": "^9.2.0",
     "remark-cli": "^12.0.1",
     "remark-gfm": "^4.0.1",
     "remark-lint": "^10.0.0",
@@ -77,6 +122,21 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
+    "build:lib": "vite build --config vite.lib.config.mts && npm run build:types && npm run verify:lib",
+    "build:types": "node scripts/copy-types.mjs",
+    "verify:lib": "node scripts/verify-lib-bundle.mjs",
+    "verify:consumer": "node scripts/verify-consumer-smoke.mjs",
+    "verify:starter": "node scripts/verify-starter-smoke.mjs",
+    "verify:types": "node scripts/verify-types.mjs",
+    "sync:starter-data": "node scripts/sync-starter-data.mjs",
+    "sync:starter-brand": "node scripts/sync-starter-brand.mjs",
+    "dev:starter": "npm run -w filmdrop-starter dev",
+    "dev:starter:src": "cross-env FILMDROP_DEV_SRC=1 npm run -w filmdrop-starter dev",
+    "build:starter": "npm run -w filmdrop-starter build",
+    "build:starter:src": "cross-env FILMDROP_DEV_SRC=1 npm run -w filmdrop-starter build",
+    "preview:starter": "npm run -w filmdrop-starter preview",
+    "verify:starter:src": "npm run build:starter:src",
+    "prepublishOnly": "npm run build:lib && npm run lint && npm run format && npm run typecheck && npm run test-pre-commit",
     "serve": "vite preview --outDir build",
     "test": "vitest",
     "test-pre-commit": "cross-env NODE_ENV=test vitest --run",
@@ -94,6 +154,9 @@
     "config:migrate": "node scripts/migrate-config.mjs",
     "prepare": "husky"
   },
+  "workspaces": [
+    "examples/starter"
+  ],
   "browserslist": {
     "production": [
       ">0.2%",
@@ -184,20 +247,14 @@
     ]
   },
   "engines": {
-    "node": ">=18",
-    "npm": ">=8"
+    "node": ">=20",
+    "npm": ">=10"
   },
   "overrides": {
     "rollup": "^4.59.0",
     "picomatch@<=2.3.1": "2.3.2",
     "picomatch@>=4.0.0 <4.0.4": "4.0.4",
     "yaml@>=2.0.0 <2.8.3": "2.8.3",
-    "cosmiconfig": {
-      "yaml": "1.10.3"
-    },
-    "readdirp": {
-      "picomatch": "2.3.2"
-    },
     "semver": "^7.5.3",
     "cross-spawn": "^7.0.5",
     "form-data": "^4.0.4",

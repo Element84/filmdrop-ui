@@ -1,10 +1,7 @@
 import { store } from '../redux/store'
 import { setSearchLoading, setSearchResults } from '../redux/slices/mainSlice'
-import {
-  addDataToLayer,
-  buildHexGridLayerOptions,
-  gridCodeLayerStyle
-} from '../utils/mapHelper'
+import { addDataToLayer, buildHexGridLayerOptions } from '../utils/mapLayers'
+import { gridCodeLayerStyle } from '../utils/mapStyles'
 import { mapHexGridFromJson, mapGridCodeFromJson } from '../utils/searchHelper'
 import { buildStacRequestHeaders } from '../utils/stacRequest'
 import {

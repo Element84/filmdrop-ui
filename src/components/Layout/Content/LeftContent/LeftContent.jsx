@@ -1,10 +1,10 @@
-import { React, useEffect, useCallback, useRef } from 'react'
+import React, { useEffect, useCallback, useRef } from 'react'
 import './LeftContent.css'
 import Search from '../../../Search/Search'
 import PopupResults from '../../../PopupResults/PopupResults'
 import { useSelector } from 'react-redux'
 import { debounceNewSearch } from '../../../../utils/searchHelper'
-import { debounceTitilerOverlay } from '../../../../utils/mapHelper'
+import { debounceTitilerOverlay } from '../../../../utils/mapLayers'
 import { useResizablePanel } from '../../../../hooks/useResizablePanel'
 import { useLayout } from '../../../../contexts/LayoutContext'
 import { useUrlNavigate } from '../../../../hooks/useUrlNavigate'
@@ -41,6 +41,11 @@ const LeftContent = () => {
   const { setTab } = useUrlNavigate()
 
   useEffect(() => {
+    const handleKeyPress = (event) => {
+      if (event.ctrlKey && event.key === ' ') {
+        debounceNewSearch()
+      }
+    }
     document.addEventListener('keydown', handleKeyPress)
     return () => {
       document.removeEventListener('keydown', handleKeyPress)
@@ -53,12 +58,6 @@ const LeftContent = () => {
       debounceTitilerOverlay(_currentPopupResult)
     }
   }, [_selectedVisualization, _currentPopupResult])
-
-  const handleKeyPress = (event) => {
-    if (event.ctrlKey && event.key === ' ') {
-      debounceNewSearch()
-    }
-  }
 
   const setSearchTab = useCallback(() => {
     setTab('search')
@@ -107,6 +106,7 @@ const LeftContent = () => {
           <div
             className="LeftContentTabPanel"
             style={{ display: _tabSelected === 'search' ? undefined : 'none' }}
+            aria-hidden={_tabSelected !== 'search'}
           >
             <Search></Search>
           </div>
@@ -114,6 +114,7 @@ const LeftContent = () => {
             className="LeftContentTabPanel"
             key={`${_selectedCollection}-${_detailsResetKey}`}
             style={{ display: _tabSelected === 'details' ? undefined : 'none' }}
+            aria-hidden={_tabSelected !== 'details'}
           >
             <AccordionStateProvider>
               <PopupResults results={_clickResults}></PopupResults>

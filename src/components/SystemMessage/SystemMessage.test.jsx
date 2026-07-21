@@ -6,9 +6,9 @@ import SystemMessage from './SystemMessage'
 import { Provider } from 'react-redux'
 import { store } from '../../redux/store'
 import {
-  setapplicationAlertMessage,
-  setapplicationAlertSeverity,
-  setshowApplicationAlert
+  setApplicationAlertMessage,
+  setApplicationAlertSeverity,
+  setShowApplicationAlert
 } from '../../redux/slices/mainSlice'
 
 describe('SystemMessage', () => {
@@ -23,7 +23,7 @@ describe('SystemMessage', () => {
 
   describe('when user clicks close button', () => {
     it('should set ShowApplicationAlert in state to false', async () => {
-      store.dispatch(setshowApplicationAlert(true))
+      store.dispatch(setShowApplicationAlert(true))
       setup()
       await user.click(
         screen.getByRole('button', {
@@ -36,14 +36,14 @@ describe('SystemMessage', () => {
 
   describe('when alert renders', () => {
     it('should set severity to reflect redux state', async () => {
-      store.dispatch(setshowApplicationAlert(true))
-      store.dispatch(setapplicationAlertSeverity('success'))
+      store.dispatch(setShowApplicationAlert(true))
+      store.dispatch(setApplicationAlertSeverity('success'))
       setup()
       expect(screen.getByRole('alert')).toHaveClass('MuiAlert-standardSuccess')
     })
     it('should set message to reflect redux state', async () => {
-      store.dispatch(setshowApplicationAlert(true))
-      store.dispatch(setapplicationAlertMessage('user updated'))
+      store.dispatch(setShowApplicationAlert(true))
+      store.dispatch(setApplicationAlertMessage('user updated'))
       setup()
       expect(screen.getByText(/user updated/i)).toBeInTheDocument()
     })

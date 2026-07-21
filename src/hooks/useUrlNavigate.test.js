@@ -3,10 +3,28 @@ import { renderHook } from '@testing-library/react'
 import { useUrlNavigate } from './useUrlNavigate'
 
 const mockNavigate = vi.fn()
-const mockParams = { collectionId: 'sentinel-2' }
-vi.mock('@tanstack/react-router', () => ({
-  useNavigate: () => mockNavigate,
-  useParams: () => mockParams
+let mockParams = { collectionId: 'sentinel-2' }
+let mockController = null
+let mockOptions = {
+  config: undefined,
+  urlState: undefined,
+  onUrlStateChange: undefined
+}
+
+vi.mock('@tanstack/react-router', async () => {
+  const { mockTanstackRouter } = await import('../testing/shared-mocks')
+  return mockTanstackRouter({
+    useNavigate: () => mockNavigate,
+    useParams: () => mockParams
+  })()
+})
+
+vi.mock('../url-controller', () => ({
+  getActiveUrlControllerOrNull: () => mockController
+}))
+
+vi.mock('../contexts/FilmDropOptionsContext', () => ({
+  useFilmDropOptions: () => mockOptions
 }))
 
 describe('useUrlNavigate', () => {
@@ -21,6 +39,13 @@ describe('useUrlNavigate', () => {
 
   beforeEach(() => {
     mockNavigate.mockClear()
+    mockParams = { collectionId: 'sentinel-2' }
+    mockController = null
+    mockOptions = {
+      config: undefined,
+      urlState: undefined,
+      onUrlStateChange: undefined
+    }
   })
 
   /** Helper: call the navigate search function with prev */
@@ -71,5 +96,67 @@ describe('useUrlNavigate', () => {
     expect(call.to).toBe('/$collectionId')
     expect(call.params).toEqual({ collectionId: 'sentinel-2' })
     expect(call.replace).toBe(true)
+  })
+
+  it('returns referentially stable callbacks across renders with unchanged params', () => {
+    const { result, rerender } = renderHook(() => useUrlNavigate())
+    const first = result.current
+    rerender()
+    rerender()
+    const second = result.current
+
+    expect(second.setTab).toBe(first.setTab)
+    expect(second.setViz).toBe(first.setViz)
+    expect(second.setItem).toBe(first.setItem)
+    expect(second.clearItem).toBe(first.clearItem)
+  })
+
+  it('invalidates collectionId-dependent callbacks when collectionId changes; keeps the others stable', () => {
+    const { result, rerender } = renderHook(() => useUrlNavigate())
+    const first = result.current
+
+    mockParams = { collectionId: 'landsat-c2-l2' }
+    rerender()
+    const second = result.current
+
+    expect(second.setItem).not.toBe(first.setItem)
+    expect(second.clearItem).not.toBe(first.clearItem)
+    expect(second.setTab).toBe(first.setTab)
+    expect(second.setViz).toBe(first.setViz)
+  })
+
+  it('uses active URL controller for controlled mode', () => {
+    const controllerNavigate = vi.fn()
+    const controllerGetPathParams = vi.fn(() => ({
+      collectionId: 'controlled-collection'
+    }))
+    mockController = {
+      navigate: controllerNavigate,
+      getPathParams: controllerGetPathParams
+    }
+    mockOptions = {
+      config: undefined,
+      urlState: {
+        collectionId: 'controlled-collection',
+        itemId: '',
+        search: {}
+      },
+      onUrlStateChange: vi.fn()
+    }
+
+    const { result } = renderHook(() => useUrlNavigate())
+    result.current.setItem('SCENE-123')
+
+    expect(controllerGetPathParams).toHaveBeenCalled()
+    expect(controllerNavigate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: '/$collectionId/$itemId',
+        params: {
+          collectionId: 'controlled-collection',
+          itemId: 'SCENE-123'
+        }
+      })
+    )
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 })

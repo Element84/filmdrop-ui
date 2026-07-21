@@ -9,6 +9,162 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 
+- **Library-mode env reads.** Migrated `process.env` reads in `src/`
+  to `import.meta.env`:
+  - `src/utils/fieldFormatting.js` — dev-mode security warning now
+    triggers via `import.meta.env?.DEV` (previously gated by an
+    `isDev()` check that always returned `false` in the browser, so
+    the warning never fired).
+  - `src/App.jsx` — version log reads `import.meta.env.VITE_APP_VERSION`;
+    `try/catch` wrapper removed (no longer needed).
+  - `src/redux/store.js` and `src/router-test-hooks.js` — `isDev()`
+    helpers replaced with a one-liner over `import.meta.env.DEV`,
+    fixing the same browser-undefined-`process` issue.
+  - `vite.config.mts` define swap: `process.env.REACT_APP_VERSION` →
+    `import.meta.env.VITE_APP_VERSION`. `vite.lib.config.mts` matches.
+- **`NOTICE` file.** Added a top-level `NOTICE` documenting the
+  Element 84 / FilmDrop trademark boundary, third-party component
+  attributions, and the brand-asset replacement requirement for forks.
+  `NOTICE` is included in the published npm tarball alongside `LICENSE`.
+- **Starter brand assets and workspace wiring.** The `examples/starter`
+  project is now an npm workspace and ships the canonical Element 84
+  logos and FilmDrop favicon under `examples/starter/public/config/`
+  so `npm run dev:starter` works after a fresh clone with no manual
+  copying. Brand-asset replacement guidance for external integrators
+  is documented in `examples/starter/README.md` and `NOTICE`. New
+  scripts: `dev:starter`, `dev:starter:src` (source-HMR mode),
+  `build:starter`, `preview:starter`, `verify:starter`,
+  `verify:types`, `sync:starter-brand`, `sync:starter-data`.
+- **Published-package surface.** The npm tarball now includes `NOTICE`
+  and `CONFIGURATION.md` in addition to `dist/`, `README.md`,
+  `LICENSE`, and `CHANGELOG.md`. Verified by `verify:consumer`.
+- **Test coverage.**
+  - New `src/redux/store.proxy.test.js` — 3 invariants locking proxy
+    behavior: pre-mount throw contract, stable method identity, and
+    `vi.spyOn` compatibility through proxy descriptor forwarding.
+  - New `src/services/post-auth-service.test.js` — 10 cases covering
+    success, sessionStorage `POST_AUTH_REDIRECT_URL` redirect with
+    basepath applied, `javascript:` scheme rejection, pre-mount
+    `getActiveRouter` fallback, network/non-OK/missing-token error
+    paths.
+  - New `src/utils/clipboardHelper.test.js` — 4 cases locking in the
+    post-fallback-removal contract (no `document.body.appendChild`)
+    across success / no-API / rejected-writeText / non-function-API.
+- **Host-integration hardening.** Every `FilmDropRoot` prop that
+  affects host state is now gated behind a default-true flag so embedded
+  consumers can opt out:
+  - `applyDocumentBranding={false}` — suppresses writes to
+    `document.title`, `<link rel=icon>`, and `<html data-theme>`
+    (`src/utils/configHelper.js`, `src/components/Login/Login.jsx`,
+    `src/utils/themeHelper.js`).
+  - `persistThemePreference={false}` — suppresses
+    `localStorage['APP_THEME_PREFERENCE']` reads/writes
+    (`ThemeSwitcher` + `themeHelper`).
+  - `configCacheBuster` — `'timestamp'` (default), `'none'`, or a literal
+    revision stamp. Threaded through `configBase.getCacheBusterSuffix()`
+    and consumed by `get-config-service` and
+    `get-local-grid-data-json-service`.
+- **CSS container scoping.** Theme CSS now ships dual selectors:
+  `:root[data-theme=…], .filmdrop-root[data-theme=…]`. `App.jsx` wraps
+  its root in `<div className="App filmdrop-root" data-theme=…>` so the
+  scoped selectors match in embedded mode. `scripts/verify-consumer-smoke.mjs`
+  asserts both selectors are present in `dist/style.css`.
+- **Basepath-aware post-auth redirect.** `applyBasepathToRedirect`
+  (exported from `src/services/post-auth-service.js`) prefixes the
+  router's basepath onto stored `POST_AUTH_REDIRECT_URL` values so
+  embedded hosts don't lose their route subtree on login.
+- **`examples/starter/`** — runnable reference host-app that mounts
+  `FilmDropRoot` at `/app` with `applyDocumentBranding={false}` and the
+  other opt-out flags. Excluded from the npm tarball via the
+  `package.json` `files` whitelist.
+- **Public API: `clearFieldCaches()`** — exported from `lib-entry.jsx`
+  for long-lived host apps that tear down and remount FilmDrop.
+- **Basepath regression suite** — `src/router.basepath.test.js`
+  exercises `createFilmDropRouter({ basepath })` option propagation +
+  `applyBasepathToRedirect` matrix. 9 new tests; suite total now 700
+  (+ 14 from this round: 10 post-auth, 4 clipboard).
+- **Props-driven config and controlled URL mode.** `FilmDropRoot` now supports
+  `config` (object) to bypass runtime config fetch and supports controlled URL
+  ownership via `urlState` + `onUrlStateChange`. Added URL controller/runtime
+  plumbing to route URL reads/writes through either TanStack Router or a
+  parent-owned state adapter.
+- **Controlled URL contract enforcement.** `FilmDropRoot` now fails fast at
+  mount when `urlState` is passed without `onUrlStateChange`, preventing silent
+  no-op navigation updates in partially controlled integrations.
+- **URL abstraction tests.** Added dedicated coverage for URL controller and
+  controlled URL resolution paths:
+  - `src/url-controller.test.js`
+  - `src/hooks/useResolvedUrlState.test.js`
+  - controlled-mode branch coverage in `src/hooks/useUrlNavigate.test.js`
+
+### Changed
+
+- Build and quality infrastructure hardening:
+  - TypeScript now enforces `noImplicitAny` (`tsconfig.json`).
+  - Runtime engines now target Node.js 20+ and npm 10+; prerequisites in README updated to match.
+  - ESLint test globals are scoped to test files instead of relying on a root-level `jest` env.
+  - Vitest coverage thresholds now enforce a floor based on current baseline (`statements: 69`, `branches: 58`, `functions: 73`, `lines: 70`).
+  - TanStack Router test mocking is centralized via `mockTanstackRouter` in `src/testing/shared-mocks.js` for core URL/router tests.
+  - Audit exception policy is documented in CONTRIBUTING and enforced via `.nsprc` at the repo root (which may remain an empty array until a temporary exception is required).
+  - Test-only runtime reset hooks are no longer re-exported from production-facing modules (`src/router.jsx`, `src/redux/store.js`); tests now consume `src/testing/runtime-test-hooks.js`.
+  - Embedded host docs explicitly keep the v1 single-instance assumption (`one <FilmDropRoot /> per page`) as a known limitation.
+
+- Style/docs polish:
+  - Accessibility residuals were completed across key controls:
+    select labeling, loading status semantics, range-group labeling,
+    cart count labeling, checkbox label association, and hidden
+    tab-panel semantics.
+  - Utility dependency direction cleanup was completed by removing internal `store.getState()` reads from `colorMap`, `dataHelper`, and `configHelper` and moving callers to explicit inputs.
+  - Queryables `$ref` resolution now rejects unsafe URL schemes (`javascript:`, `data:`, `file:`, `blob:`, `vbscript:`) before fetch.
+  - Service contract documentation and style consistency were improved with expanded JSDoc coverage and async/await alignment in remaining promise-chain services.
+  - CI/test command usage is now standardized on `npm run test-pre-commit` across CI workflows and local gate scripts.
+
+- Map utility internals were split into focused modules:
+  `src/utils/mapStyles.js`, `src/utils/mapLayers.js`, and
+  `src/utils/mapInteraction.js`, with `src/utils/mapHelper.js` kept as
+  a re-export barrel for existing imports.
+- Replaced remaining `clickedSceneImageLayer` literals with the shared
+  `CLICKED_SCENE_IMAGE_LAYER` constant to reduce layer-name drift.
+- `useUrlStateSync` — removed `dispatch` from the URL→Redux sync
+  effect's dep array.
+  Memoized callbacks (`fetchAndDisplayItem`, `clearItemSelection`)
+  retained as deps.
+- `clipboardHelper.copyToClipboard` — dropped the legacy
+  `document.execCommand('copy')` fallback that mounted a hidden
+  textarea on `document.body`. Uses `navigator.clipboard.writeText`
+  unconditionally; reports failures to the console instead of mutating
+  host DOM.
+- `ExportButton` — uses a detached `<a>` + synthetic click for GeoJSON
+  download. No longer appends/removes the anchor on `document.body`.
+- `MultiSelect` — chip delete handler blurs the Select input via a
+  React ref instead of `document.activeElement`.
+- `useResizablePanel` — snapshots the host's prior
+  `document.body.style.cursor` / `userSelect` into refs on
+  `mousedown` and restores them on `mouseup`/unmount, rather than
+  clobbering to empty strings.
+- `get-queryables-service` `resolveRefs` — adds cycle detection,
+  `MAX_REF_DEPTH=10`, and a per-resolve URL fetch cache so hostile or
+  self-referential queryable schemas cannot spin the resolver.
+- `fieldDiscovery` caches are now bounded LRU (replaces the nuclear
+  "clear on overflow" behavior that thrashed long sessions).
+- DOM audit documented in `CONTRIBUTING.md` as the per-PR checklist for
+  new host-DOM writes.
+
+- **Library packaging.** FilmDrop UI now builds as an installable
+  component package (`filmdrop-ui`) via `npm run build:lib`, producing
+  `dist/filmdrop-ui.js` (ESM), `dist/style.css`, and hand-authored
+  `dist/index.d.ts`. See the new "Use as a Library" section in the
+  README.
+- Added `vite.lib.config.mts` (library build config) + `src/lib-entry.jsx`
+  (public API surface). Peer deps (React, Redux, TanStack Router, MUI,
+  Emotion, Leaflet, react-leaflet) are externalized; everything else
+  bundles.
+- Added `scripts/verify-lib-bundle.mjs` post-build guard: fails CI if core
+  Leaflet CSS leaks into `dist/style.css`.
+- Added `scripts/copy-types.mjs` to publish hand-authored TypeScript types.
+- Added `src/config.schema.json` — JSON Schema for `config.json`.
+- Added `CONTRIBUTING.md` and `TESTING.md` documenting quality gates,
+  release workflow, single-instance scope, and canonical test harness.
 - Added a NumericRangeInputs component for numeric fields that supports unbounded, min-only, and max-only queryables.
 - Added unit tests for bbox coordinate rounding/clamping (`mapHelper`) and URL/search param bbox handling (`searchHelper`).
 - Added mosaic search caching metadata to track the last mosaic request and top N item IDs for re-use across searches.
@@ -22,6 +178,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Changed
 
+- **Dependency reclassification.** Peer dependencies
+  now include `react`, `react-dom`, `react-redux`, `@reduxjs/toolkit`,
+  `@tanstack/react-router`, `@mui/*`, `@emotion/*`, `leaflet`, `leaflet-draw`,
+  `react-leaflet`. `@vitejs/plugin-react` moved to devDependencies.
+  Orphan direct deps removed: `@floating-ui/react`, `@floating-ui/react-dom`
+  (transitive), `dayjs-plugin-utc` (unused).
+- **Leaflet CSS externalized** from the library bundle.
+  Library consumers must `import 'leaflet/dist/leaflet.css'` and
+  `'leaflet-draw/dist/leaflet.draw.css'` themselves. The SPA entry
+  (`src/index.jsx`) imports them for standalone mode.
+- Leaflet control theme overrides moved from `Search.css` → `LeafMap.css`
+  so removing the Search component does not silently drop map styling.
+- Marker icon assets (`marker-icon.png`, `marker-shadow.png`) now resolved
+  via bundler import from `src/assets/` instead of absolute `/marker-icon.png`
+  paths, so the library works under any `configUrl` base.
+- `vite.config.mts` replaced `require('./package.json')` with an ESM
+  `readFileSync` + `JSON.parse` read.
 - Moved Item pagination buttons from below to above the Item Details content.
 - Limited bbox precision to 6 decimals in map bounds and search/URL params; longitude clamped to [-180, 180]. Exported `roundCoord`, `clampAndRoundBbox` for reuse.
 - Item Details field grid: column layout set to `minmax(0, 40%) 1fr`, alignment and padding adjusted for clearer spacing and to avoid overflowing text.
@@ -41,6 +214,27 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Fixed
 
+- Bumped `dompurify` to `^3.4.1` to resolve moderate advisory
+  [GHSA-39q2-94rc-95cp](https://github.com/advisories/GHSA-39q2-94rc-95cp)
+  (`ADD_TAGS` bypasses `FORBID_TAGS` via short-circuit evaluation).
+- Restored `check-markdown` (blocking) and `audit-prod` supply-chain
+  checks to CI and release workflows. `audit-prod` is
+  `continue-on-error` on PR CI to surface advisories without blocking
+  unrelated work, and blocking on the release workflow to prevent
+  publishing a tarball with known prod-dep CVEs.
+- Deduplicated `cosmiconfig` and `readdirp` override blocks in `package.json`; only the caret-range forms remain, silencing the esbuild "duplicate key" warning during `build:lib`.
+- Tightened `scripts/verify-consumer-smoke.mjs` peer-externals check
+  from "at least one peer present" to "every declared peer present"
+  as a bare import; expanded `peerNames` to match the actual library
+  bundle (`@mui/icons-material`, `@mui/x-date-pickers` added;
+  `react-dom` and `@emotion/react` removed — they are
+  consumer-installed but not directly imported by the library
+  bundle).
+- Hardened `.github/workflows/release.yml`: added workflow-level
+  `concurrency` block to prevent overlapping tag publishes, added
+  `npm run verify:consumer` step, and mirrored the JS/CSS
+  bundle-size budget checks from `ci.yml` so a force-pushed tag
+  cannot bypass the size gate.
 - Corrected the multi-select filter component to properly lose focus after deleting chips.
 - Fixed map auto-zoom when loading items via `/:collectionId/:itemId` URLs.
 - Fixed search and mosaic requests sending invalid or undefined bbox when viewport bounds are missing; URL bbox param and zoom-to-extent now handle null bounds safely.
@@ -49,6 +243,51 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed repeated mosaic layer recreation on identical mosaic searches by reusing the existing mosaic image layer when the request parameters and top items have not changed.
 - Dismissing the GeoJSON upload modal no longer leaves a staged AOI driving later searches; in-flight fetches are aborted so late completions do not repopulate results after **Cancel**.
 - Non-upload flows do not inherit upload-specific error copy; mosaic prefetch uses a dedicated summary to avoid redundant generic search messaging.
+- **Login form accessibility.** Username and password inputs now have
+  associated `<label htmlFor>` bindings and `autoComplete` hints
+  (`username` / `current-password`) so screen readers and password
+  managers can fill the form correctly.
+- **Modal dialog accessibility.** The cart modal and GeoJSON upload
+  modal now expose `role="dialog"` with `aria-modal`, accept the
+  Escape key and backdrop clicks to close, move focus into the
+  dialog on open, and restore focus to the previously focused
+  element on close. Their close buttons have descriptive
+  `aria-label`s.
+- **Loading overlay layout.** The full-app loading overlay now sizes
+  to its container instead of the viewport, so it no longer escapes
+  embedded layouts or causes horizontal scrollbars when the host
+  page has scrollbars of its own.
+- **Removed verbose request logging.** The STAC search service no
+  longer prints request URLs and parameters to the browser console
+  in production builds.
+
+### Security
+
+- **Export download link hardened.** The CSV export anchor now sets
+  `rel="noopener noreferrer"` (previously `noopener` only),
+  preventing referrer leakage when the download is opened in a new
+  context.
+
+### Changed
+
+- **Internal performance and stability cleanup** for hooks and
+  effects. No user-visible behavior change is intended:
+  - Layout and Enhanced-Details React contexts now memoize their
+    provider value, so unrelated state changes no longer re-render
+    every consumer subscribed via context.
+  - The numeric range filter no longer clobbers an in-progress edit
+    when the parent's value updates mid-typing.
+  - The text-field search input simplifies its sync-from-prop effect
+    and is now covered by a focused unit test.
+  - The popup-result effect that drives the active item, map
+    overlay, and `:itemId` URL is consolidated into a single hook
+    so a results change cannot double-dispatch the active item.
+  - Mount-guards added to the link "copied!" timeout, the popup
+    thumbnail preload, and the overflow-tooltip resize observer
+    so they no longer attempt to update state after unmount.
+  - The resizable left panel tracks the right-sidebar configuration
+    via a ref, so toggling the sidebar no longer re-registers the
+    global mouse listeners or the panel's `ResizeObserver`.
 
 ## v7.1.0-pre - 2026-01-15
 

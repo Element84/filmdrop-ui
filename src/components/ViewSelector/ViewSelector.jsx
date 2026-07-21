@@ -2,16 +2,15 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   setViewMode,
-  setautoCenterOnItemChanged
+  setAutoCenterOnItemChanged
 } from '../../redux/slices/mainSlice'
 import { Checkbox as MuiCheckbox } from '@mui/material'
 import './ViewSelector.css'
 import ButtonGroup from '../ButtonGroup/ButtonGroup'
-import { getCurrentMapZoomLevel } from '../../utils/mapHelper'
+import { getCurrentMapZoomLevel } from '../../utils/mapLayers'
 import { getCollectionConfig } from '../../utils/configHelper'
-import { router } from '../../router'
-
-const DEFAULT_SCENE_MIN_ZOOM = 7
+import { DEFAULT_SCENE_MIN_ZOOM } from '../../constants/defaults'
+import { getActiveUrlControllerOrNull } from '../../url-controller'
 
 const ViewSelector = () => {
   const dispatch = useDispatch()
@@ -25,16 +24,23 @@ const ViewSelector = () => {
     (state) => state.mainSlice.autoCenterOnItemChanged
   )
 
+  // Read the initial `view` search param from the active router once at
+  // mount. urlHasView controls a one-time "skip default-view reset on
+  // initial load" behavior below.
+  const [initialUrlView] = useState(
+    () => !!getActiveUrlControllerOrNull()?.getSearch()?.view
+  )
+
   const [currentZoom, setCurrentZoom] = useState(0)
   // Track whether user has manually selected a view mode.
   // Once true, auto-switching based on zoom level is disabled until
   // the collection changes. This preserves the user's explicit choice
   // while still resetting on collection change.
-  // Treat URL-provided view mode as a manual selection so auto-switch
-  // doesn't override it on initial load.
-  const urlHasView = useRef(!!router.state.location.search.view)
+  // URL-provided view is treated as a manual selection, so auto-zoom
+  // doesn't override it on page load.
+  const urlHasView = useRef(initialUrlView)
   const [isManualSelection, setIsManualSelection] = useState(
-    () => !!router.state.location.search.view
+    () => initialUrlView
   )
 
   // Check if collection supports hex and grid aggregations
@@ -60,16 +66,19 @@ const ViewSelector = () => {
   // Get minimum zoom level for scene/mosaic views
   const sceneMinZoom = useMemo(() => {
     return selectedCollectionData
-      ? getCollectionConfig(selectedCollectionData.id, 'sceneMinZoom') ||
-          DEFAULT_SCENE_MIN_ZOOM
+      ? getCollectionConfig(
+          selectedCollectionData.id,
+          'sceneMinZoom',
+          appConfig
+        ) || DEFAULT_SCENE_MIN_ZOOM
       : DEFAULT_SCENE_MIN_ZOOM
-  }, [selectedCollectionData])
+  }, [selectedCollectionData, appConfig])
 
   const canUseScene = currentZoom >= sceneMinZoom
 
   // Reset to default view when collection changes
   useEffect(() => {
-    if (!selectedCollectionData) return
+    if (!selectedCollectionData?.id) return
 
     // On initial load from a shared URL with an explicit view param,
     // skip the default-view reset so the URL's view mode is preserved.
@@ -86,7 +95,7 @@ const ViewSelector = () => {
         : 'scene'
     dispatch(setViewMode(defaultView))
     setIsManualSelection(false)
-  }, [selectedCollectionData?.id, supportsHex, supportsGrid, dispatch])
+  }, [selectedCollectionData?.id, dispatch, supportsHex, supportsGrid])
 
   // Update current zoom when map changes
   useEffect(() => {
@@ -135,7 +144,7 @@ const ViewSelector = () => {
   }
 
   const handleAutoZoomChange = (e) => {
-    dispatch(setautoCenterOnItemChanged(e.target.checked))
+    dispatch(setAutoCenterOnItemChanged(e.target.checked))
   }
 
   // Build buttons array for ButtonGroup
@@ -173,8 +182,12 @@ const ViewSelector = () => {
   return (
     <ButtonGroup label="View Mode" buttons={buttons}>
       {appConfig?.SHOW_ITEM_AUTO_ZOOM && (
-        <label className="ViewSelector__checkbox">
+        <label
+          className="ViewSelector__checkbox"
+          htmlFor="viewSelectorAutoZoom"
+        >
           <MuiCheckbox
+            id="viewSelectorAutoZoom"
             checked={autoCenterOnItemChanged}
             onChange={handleAutoZoomChange}
             size="small"

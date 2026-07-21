@@ -1,5 +1,6 @@
-import React, { useMemo, useCallback } from 'react'
+import React, { useMemo, useEffect, useRef } from 'react'
 import { useSelector } from 'react-redux'
+import './EnhancedDetails.css'
 import { useEnhancedDetails } from '../../contexts/EnhancedDetailsContext'
 import {
   groupFieldsSemantically,
@@ -21,36 +22,22 @@ import { showApplicationAlert } from '../../utils/alertHelper.js'
  * Handles both configured and auto-discovery field grouping
  */
 const EnhancedDetailsDisplay = () => {
-  const {
-    item: currentPopupResult,
-    enhancedColumns,
-    appConfig
-  } = useEnhancedDetails()
+  const { item: currentPopupResult, enhancedColumns } = useEnhancedDetails()
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
 
-  // Error handling for field processing
-  const handleFieldProcessingError = useCallback((error, context) => {
-    console.error(`Enhanced Details ${context} error:`, error)
-    showApplicationAlert(
-      'error',
-      `Failed to process ${context}. Please try again.`
-    )
-  }, [])
-
-  // Calculate enhanced display configuration once (single source of truth)
   const enhancedDisplayConfig = useMemo(() => {
     if (!currentPopupResult) return null
     const { collection } = currentPopupResult
-    return getCollectionConfig(collection, 'enhancedDisplayConfig')
-  }, [currentPopupResult])
+    return getCollectionConfig(collection, 'enhancedDisplayConfig', _appConfig)
+  }, [currentPopupResult, _appConfig])
 
   const hasEnhancedConfig = useMemo(() => {
     return !!enhancedDisplayConfig
   }, [enhancedDisplayConfig])
 
-  // Enhanced Details logic - field grouping
-  const groupedFields = useMemo(() => {
-    if (!currentPopupResult) return {}
+  // Field grouping with discriminated result to avoid render-phase setState.
+  const groupedFieldsResult = useMemo(() => {
+    if (!currentPopupResult) return { ok: true, value: {} }
     const { properties, collection } = currentPopupResult
 
     try {
@@ -68,22 +55,49 @@ const EnhancedDetailsDisplay = () => {
               orderedGroups[group.name] = groupFields
             }
           })
-          return orderedGroups
+          return { ok: true, value: orderedGroups }
         }
-        const shouldShowField = createEnhancedDisplayFieldPredicate(collection)
-        return groupFieldsSemantically(properties, shouldShowField)
+        const shouldShowField = createEnhancedDisplayFieldPredicate(
+          collection,
+          _appConfig
+        )
+        return {
+          ok: true,
+          value: groupFieldsSemantically(properties, shouldShowField)
+        }
       }
-      return groupPropertiesByExtension(properties)
+      return { ok: true, value: groupPropertiesByExtension(properties) }
     } catch (error) {
-      handleFieldProcessingError(error, 'field grouping')
-      return {}
+      return { ok: false, error, context: 'field grouping' }
     }
-  }, [
-    currentPopupResult,
-    hasEnhancedConfig,
-    enhancedDisplayConfig,
-    handleFieldProcessingError
-  ])
+  }, [currentPopupResult, hasEnhancedConfig, enhancedDisplayConfig, _appConfig])
+
+  const groupedFields = groupedFieldsResult.ok
+    ? groupedFieldsResult.value
+    : hasEnhancedConfig
+      ? {}
+      : []
+
+  // Dedupe alerts: one per (item id + context) error transition.
+  const lastErrorKeyRef = useRef(null)
+  useEffect(() => {
+    if (!groupedFieldsResult.ok) {
+      const itemId = currentPopupResult?.id ?? 'unknown'
+      const errorKey = `${itemId}::${groupedFieldsResult.context}`
+      if (lastErrorKeyRef.current === errorKey) return
+      lastErrorKeyRef.current = errorKey
+      console.error(
+        `Enhanced Details ${groupedFieldsResult.context} error:`,
+        groupedFieldsResult.error
+      )
+      showApplicationAlert(
+        'error',
+        `Failed to process ${groupedFieldsResult.context}. Please try again.`
+      )
+    } else {
+      lastErrorKeyRef.current = null
+    }
+  }, [groupedFieldsResult, currentPopupResult])
 
   const sortFields = useMemo(() => {
     if (!currentPopupResult) return () => []

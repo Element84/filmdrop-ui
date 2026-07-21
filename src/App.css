@@ -1,3 +1,10 @@
+/*
+ * Library consumers: the `position: fixed` rules below span the viewport
+ * and will escape an embedded container. Until a `.filmdrop-root` scope
+ * ships, wrap FilmDropRoot in `position: relative; contain: layout;` and
+ * set `applyDocumentBranding={false}` to avoid `<html>` mutations.
+ */
+
 .App {
   height: 100%;
   width: 100%;

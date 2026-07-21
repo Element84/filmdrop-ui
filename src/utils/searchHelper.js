@@ -3,9 +3,8 @@ import {
   DEFAULT_SCENE_MIN_ZOOM,
   DEFAULT_API_MAX_ITEMS,
   DEFAULT_MOSAIC_MAX_ITEMS,
-  DEFAULT_MOSAIC_TOP_COMPARE_ITEMS,
-  DEFAULT_DATE_RANGE
-} from '../components/defaults'
+  DEFAULT_MOSAIC_TOP_COMPARE_ITEMS
+} from '../constants/defaults'
 import {
   getCurrentMapZoomLevel,
   clearAllLayers,
@@ -14,8 +13,8 @@ import {
   clampAndRoundBbox,
   clearMapSelection,
   hasMosaicImageLayer
-} from './mapHelper'
-import { getCollectionConfig } from './configHelper'
+} from './mapLayers'
+import { getCollectionConfig, getEffectiveMosaicAsset } from './configHelper'
 import { convertDateForURL, convertDate } from './datetime'
 import * as getSearchService from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
@@ -25,25 +24,23 @@ import {
   setShowZoomNotice,
   setZoomLevelNeeded,
   setSearchResults,
-  setShowPopupModal,
-  setSearchDateRangeValue,
-  setQueryableFilters,
-  setmappedScenes,
-  setselectedPopupResultIndex,
-  setsearchGeojsonBoundary,
-  setisDrawingEnabled,
-  setpaginationNextLink,
-  setpaginationPrevLink,
-  setcurrentPage,
-  settotalPages,
-  setpaginationHistory,
+  setPaginationNextLink,
+  setPaginationPrevLink,
+  setCurrentPage,
+  setTotalPages,
+  setPaginationHistory,
   setMosaicCache,
-  incrementDetailsResetKey
+  resetSearchState
 } from '../redux/slices/mainSlice'
 import * as h3 from 'h3-js'
 import debounce from './debounce'
 import { AddMosaicService } from '../services/post-mosaic-service'
-import { router, getPathParams } from '../router'
+import {
+  ROUTE_INDEX,
+  ROUTE_COLLECTION,
+  ROUTE_COLLECTION_ITEM
+} from '../route-constants'
+import { getActiveUrlControllerOrNull } from '../url-controller'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 import { serializeQueryableFiltersForUrl } from './urlParamHelper'
 import {
@@ -103,20 +100,54 @@ function formatStacErrorMessage(result) {
   return detailsText ? `${result.summary}: ${detailsText}` : result.summary
 }
 
-export async function newSearch(options = {}) {
-  const { viewMode: overrideViewMode, preserveItem = false, signal } = options
+/**
+ * Build search context from current Redux state and options.
+ * Consolidates all state reads into one place for clarity and consistency.
+ * @param {Object} options - Options for search (viewMode override, preserveItem, signal)
+ * @returns {Object} Search context with state, config, and computed values
+ */
+function buildSearchContext(options = {}) {
+  const { viewMode: overrideViewMode, preserveItem = false } = options
+  const state = store.getState().mainSlice
 
-  // Snapshot all needed Redux state upfront, before any dispatches or URL writes.
-  const _state = store.getState().mainSlice
-  const _selectedCollection = _state.selectedCollectionData
-  const viewMode = overrideViewMode || _state.viewMode
-  const dateRange = _state.searchDateRangeValue
+  const selectedCollection = state.selectedCollectionData
+  const viewMode = overrideViewMode || state.viewMode
+  const dateRange = state.searchDateRangeValue
   const dt =
     dateRange && dateRange[0] && dateRange[1]
       ? `${dateRange[0]}/${dateRange[1]}`
       : ''
 
+  // newSearch runs via debounceNewSearch, so this can resolve after
+  // FilmDropRoot has already unmounted.
+  const currentPathParams =
+    getActiveUrlControllerOrNull()?.getPathParams() || {}
+  const currentItemId = preserveItem ? currentPathParams.itemId || '' : ''
+  const collectionId = selectedCollection?.id || ''
+
+  return {
+    state,
+    selectedCollection,
+    viewMode,
+    dateRange,
+    dt,
+    collectionId,
+    currentItemId,
+    currentPathParams,
+    appConfig: state.appConfig,
+    selectedVisualization: state.selectedVisualization,
+    queryableFilters: state.queryableFilters
+  }
+}
+
+/**
+ * Reset map and pagination state for a new search.
+ * Clears layers and resets pagination metadata.
+ * @param {string} viewMode - Current view mode (scene, hex, grid-code, mosaic)
+ */
+function resetMapAndPaginationState(viewMode) {
   clearMapSelection()
+
   if (viewMode !== 'mosaic') {
     clearAllLayers()
     store.dispatch(setSearchResults(null))
@@ -125,23 +156,30 @@ export async function newSearch(options = {}) {
   }
 
   // Reset pagination state for new search
-  store.dispatch(setpaginationNextLink(null))
-  store.dispatch(setpaginationPrevLink(null))
-  store.dispatch(setcurrentPage(1))
-  store.dispatch(settotalPages(null))
-  store.dispatch(setpaginationHistory([]))
+  store.dispatch(setPaginationNextLink(null))
+  store.dispatch(setPaginationPrevLink(null))
+  store.dispatch(setCurrentPage(1))
+  store.dispatch(setTotalPages(null))
+  store.dispatch(setPaginationHistory([]))
+}
 
-  // Commit current search state to URL (replace — no history entry)
-  const collectionId = _selectedCollection?.id || ''
-  const currentPathParams = getPathParams()
-  const currentItemId = preserveItem ? currentPathParams.itemId || '' : ''
+/**
+ * Sync current search parameters to URL for bookmarking/sharing.
+ * Determines route based on collection and item selection.
+ * @param {Object} context - Search context from buildSearchContext()
+ */
+function syncSearchToUrl(context) {
+  const controller = getActiveUrlControllerOrNull()
+  if (!controller) return
 
-  router.navigate({
+  const { collectionId, currentItemId, viewMode, dt } = context
+
+  controller.navigate({
     to: currentItemId
-      ? '/$collectionId/$itemId'
+      ? ROUTE_COLLECTION_ITEM
       : collectionId
-        ? '/$collectionId'
-        : '/',
+        ? ROUTE_COLLECTION
+        : ROUTE_INDEX,
     params: currentItemId
       ? { collectionId, itemId: currentItemId }
       : collectionId
@@ -155,114 +193,132 @@ export async function newSearch(options = {}) {
       c: prev.c,
       dt,
       view: viewMode || 'scene',
-      viz: _state.selectedVisualization || '',
-      ...serializeQueryableFiltersForUrl(_state.queryableFilters)
+      viz: context.selectedVisualization || '',
+      ...serializeQueryableFiltersForUrl(context.queryableFilters)
     }),
     replace: true
   })
+}
 
-  // Handle mosaic mode
-  if (viewMode === 'mosaic') {
-    if (!_selectedCollection) {
-      return
-    }
-    const sceneMinZoom =
-      getCollectionConfig(_selectedCollection.id, 'sceneMinZoom') ||
-      DEFAULT_SCENE_MIN_ZOOM
-    const currentMapZoomLevel = getCurrentMapZoomLevel()
-    if (currentMapZoomLevel < sceneMinZoom) {
-      store.dispatch(setZoomLevelNeeded(sceneMinZoom))
-      store.dispatch(setShowZoomNotice(true))
-      return
-    }
-    store.dispatch(setSearchLoading(true))
-    return newMosaicSearch(signal)
+function normalizeSearchResult(result) {
+  const normalizedError = getStacErrorResult(result)
+  if (normalizedError) {
+    return normalizedError
+  }
+  return undefined
+}
+
+function getSceneMinZoom(context) {
+  return (
+    getCollectionConfig(
+      context.selectedCollection.id,
+      'sceneMinZoom',
+      context.appConfig
+    ) || DEFAULT_SCENE_MIN_ZOOM
+  )
+}
+
+async function runSceneSearch(sceneMinZoom, currentMapZoomLevel, signal) {
+  if (currentMapZoomLevel < sceneMinZoom) {
+    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
+    store.dispatch(setShowZoomNotice(true))
+    return undefined
   }
 
-  // Get minimum zoom level for scene/mosaic views
-  const sceneMinZoom =
-    getCollectionConfig(_selectedCollection.id, 'sceneMinZoom') ||
-    DEFAULT_SCENE_MIN_ZOOM
+  const searchScenesParams = buildSearchScenesParams()
+  store.dispatch(setSearchType('scene'))
+  store.dispatch(setSearchLoading(true))
+  const searchResult = await getSearchService.SearchService(
+    searchScenesParams,
+    'scene',
+    undefined,
+    signal
+  )
+  return normalizeSearchResult(searchResult)
+}
 
+async function runHexSearch(signal) {
+  const searchAggregateParams = buildSearchAggregateParams('hex')
+  store.dispatch(setSearchLoading(true))
+  store.dispatch(setSearchType('hex'))
+  const result = await AggregateSearchService(
+    searchAggregateParams,
+    'hex',
+    undefined,
+    signal
+  )
+  return normalizeSearchResult(result)
+}
+
+async function runGridCodeSearch(signal) {
+  const searchAggregateParams = buildSearchAggregateParams('grid-code')
+  store.dispatch(setSearchType('grid-code'))
+  store.dispatch(setSearchLoading(true))
+  const result = await AggregateSearchService(
+    searchAggregateParams,
+    'grid-code',
+    undefined,
+    signal
+  )
+  return normalizeSearchResult(result)
+}
+
+async function runMosaicSearch(sceneMinZoom, currentMapZoomLevel, signal) {
+  if (currentMapZoomLevel < sceneMinZoom) {
+    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
+    store.dispatch(setShowZoomNotice(true))
+    return undefined
+  }
+
+  store.dispatch(setSearchLoading(true))
+  return newMosaicSearch(signal)
+}
+
+export async function newSearch(options = {}) {
+  const { signal } = options
+
+  // Build context from state (consolidates all state reads)
+  const context = buildSearchContext(options)
+
+  // Reset map and pagination for new search
+  resetMapAndPaginationState(context.viewMode)
+
+  // Sync current search parameters to URL
+  syncSearchToUrl(context)
+
+  if (!context.selectedCollection) {
+    return undefined
+  }
+
+  const sceneMinZoom = getSceneMinZoom(context)
   const currentMapZoomLevel = getCurrentMapZoomLevel()
 
+  // Handle mosaic mode
+  if (context.viewMode === 'mosaic') {
+    return runMosaicSearch(sceneMinZoom, currentMapZoomLevel, signal)
+  }
+
   // Check for both new (stac-server >= 3.6.0) and old (deprecated) aggregation names
-  const includesGeoHex = _selectedCollection.aggregations?.some(
+  const includesGeoHex = context.selectedCollection.aggregations?.some(
     (el) =>
       el.name === 'centroid_geohex_grid_frequency' ||
       el.name === 'grid_geohex_frequency'
   )
-  const includesGridCode = _selectedCollection.aggregations?.some(
+  const includesGridCode = context.selectedCollection.aggregations?.some(
     (el) => el.name === 'grid_code_frequency'
   )
 
   // Handle user-selected view mode
-  if (viewMode === 'scene') {
-    // User wants scene view - check zoom level
-    if (currentMapZoomLevel < sceneMinZoom) {
-      store.dispatch(setZoomLevelNeeded(sceneMinZoom))
-      store.dispatch(setShowZoomNotice(true))
-      return
-    }
-    const searchScenesParams = buildSearchScenesParams()
-    store.dispatch(setSearchType('scene'))
-    store.dispatch(setSearchLoading(true))
-    const searchResult = await getSearchService.SearchService(
-      searchScenesParams,
-      'scene',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(searchResult)
-    if (normalizedError) return normalizedError
-    return
-  } else if (viewMode === 'hex' && includesGeoHex) {
-    // User wants hex view - no zoom restriction
-    const searchAggregateParams = buildSearchAggregateParams('hex')
-    store.dispatch(setSearchLoading(true))
-    store.dispatch(setSearchType('hex'))
-    const result = await AggregateSearchService(
-      searchAggregateParams,
-      'hex',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(result)
-    if (normalizedError) return normalizedError
-    return
-  } else if (viewMode === 'grid-code' && includesGridCode) {
-    // User wants grid-code view - no zoom restriction
-    const searchAggregateParams = buildSearchAggregateParams('grid-code')
-    store.dispatch(setSearchType('grid-code'))
-    store.dispatch(setSearchLoading(true))
-    const result = await AggregateSearchService(
-      searchAggregateParams,
-      'grid-code',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(result)
-    if (normalizedError) return normalizedError
-    return
+  if (context.viewMode === 'scene') {
+    return runSceneSearch(sceneMinZoom, currentMapZoomLevel, signal)
+  } else if (context.viewMode === 'hex' && includesGeoHex) {
+    return runHexSearch(signal)
+  } else if (context.viewMode === 'grid-code' && includesGridCode) {
+    return runGridCodeSearch(signal)
   }
 
   // Fallback: if no valid selection, default to scene view if zoom allows
-  if (currentMapZoomLevel >= sceneMinZoom) {
-    const searchScenesParams = buildSearchScenesParams()
-    store.dispatch(setSearchType('scene'))
-    store.dispatch(setSearchLoading(true))
-    const searchResult = await getSearchService.SearchService(
-      searchScenesParams,
-      'scene',
-      undefined,
-      signal
-    )
-    const normalizedError = getStacErrorResult(searchResult)
-    if (normalizedError) return normalizedError
-  } else {
-    store.dispatch(setZoomLevelNeeded(sceneMinZoom))
-    store.dispatch(setShowZoomNotice(true))
-  }
+  return runSceneSearch(sceneMinZoom, currentMapZoomLevel, signal)
 }
 
 export async function validateUploadedGeometry(uploadedFeature, signal) {
@@ -285,39 +341,19 @@ export function clearSearch() {
   clearAllLayers()
   clearLayer('drawBoundsLayer')
 
-  // Clear drawn AOI boundary
-  store.dispatch(setsearchGeojsonBoundary(null))
-  store.dispatch(setisDrawingEnabled(false))
+  // Reset all search-derived Redux state in a single dispatch.
+  // See `resetSearchState` in mainSlice for the field list.
+  store.dispatch(resetSearchState())
 
-  // Clear search results and related state
-  store.dispatch(setSearchResults(null))
-  store.dispatch(setSearchLoading(false))
-  store.dispatch(setSearchType(null))
-  store.dispatch(setShowZoomNotice(false))
-  store.dispatch(setmappedScenes([]))
-  store.dispatch(setShowPopupModal(false))
-  store.dispatch(setselectedPopupResultIndex(0))
-
-  // Reset pagination
-  store.dispatch(setpaginationNextLink(null))
-  store.dispatch(setpaginationPrevLink(null))
-  store.dispatch(setcurrentPage(1))
-  store.dispatch(settotalPages(null))
-  store.dispatch(setpaginationHistory([]))
-
-  // Reset filters to defaults
-  store.dispatch(setSearchDateRangeValue(DEFAULT_DATE_RANGE))
-  store.dispatch(setQueryableFilters({}))
-
-  // Reset item details accordion state
-  store.dispatch(incrementDetailsResetKey())
+  const controller = getActiveUrlControllerOrNull()
+  if (!controller) return
 
   // Update URL: preserve collection path, view, viz, z, c; clear dt, item, queryable filters
-  const currentPathParams = getPathParams()
+  const currentPathParams = controller.getPathParams()
   const collectionId = currentPathParams.collectionId || ''
 
-  router.navigate({
-    to: collectionId ? '/$collectionId' : '/',
+  controller.navigate({
+    to: collectionId ? ROUTE_COLLECTION : ROUTE_INDEX,
     params: collectionId ? { collectionId } : {},
     search: (prev) => ({
       dt: '',
@@ -804,15 +840,17 @@ async function newMosaicSearch(signal) {
 }
 
 const constructMosaicAssetVal = (collection) => {
-  const mosaicTilerParams = getCollectionConfig(collection, 'mosaicTilerParams')
-  const assets = mosaicTilerParams?.assets
-  if (!assets) {
+  const selectedVisualization =
+    store.getState().mainSlice.selectedVisualization || null
+  const appConfig = store.getState().mainSlice.appConfig
+  const asset = getEffectiveMosaicAsset(
+    collection,
+    selectedVisualization,
+    appConfig
+  )
+  if (!asset) {
     console.log(`Assets not defined for ${collection}`)
     return null
   }
-  // Handle both string and array formats without mutation
-  if (Array.isArray(assets)) {
-    return assets[assets.length - 1]
-  }
-  return assets
+  return asset
 }

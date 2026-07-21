@@ -3,7 +3,7 @@ import './LoadingAnimation.css'
 
 const LoadingAnimation = () => {
   return (
-    <div className="animated-loader">
+    <div className="animated-loader" role="status" aria-label="Loading">
       <svg
         version="1.1"
         id="filmdrop-loader"

@@ -2,7 +2,7 @@ import React from 'react'
 import './CartButton.css'
 import { Stack } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { setshowCartModal } from '../../../redux/slices/mainSlice'
+import { setShowCartModal } from '../../../redux/slices/mainSlice'
 
 const CartButton = () => {
   const dispatch = useDispatch()
@@ -12,16 +12,20 @@ const CartButton = () => {
     if (_cartItems.length === 0) {
       return
     }
-    dispatch(setshowCartModal(true))
+    dispatch(setShowCartModal(true))
   }
   return (
     <div className="CartButton">
       <Stack
+        component="button"
+        type="button"
         className={
           _cartItems.length > 0 ? 'cartButton cartButtonEnabled' : 'cartButton'
         }
+        disabled={_cartItems.length === 0}
         data-testid="testCartButton"
         onClick={onCartButtonClick}
+        aria-label={`Cart, ${_cartItems.length} item${_cartItems.length === 1 ? '' : 's'}`}
       >
         <span>Cart</span>
         <div

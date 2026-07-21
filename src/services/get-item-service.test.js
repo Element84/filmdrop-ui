@@ -1,13 +1,18 @@
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
 import { GetItemService } from './get-item-service'
 import { store } from '../redux/store'
-import { setappConfig } from '../redux/slices/mainSlice'
+import { setAppConfig } from '../redux/slices/mainSlice'
 import * as authHelper from '../utils/authHelper'
+import { createAbortableRequest } from '../testing/abort-test-helper'
 
 // Mock modules
-vi.mock('../utils/authHelper', () => ({
-  logoutUser: vi.fn()
-}))
+vi.mock('../utils/authHelper', async () => {
+  const actual = await vi.importActual('../utils/authHelper')
+  return {
+    ...actual,
+    logoutUser: vi.fn()
+  }
+})
 
 // Mock fetch globally
 global.fetch = vi.fn()
@@ -26,7 +31,7 @@ const mockItemResponse = {
 beforeEach(() => {
   vi.clearAllMocks()
   store.dispatch(
-    setappConfig({
+    setAppConfig({
       STAC_API_URL: mockStacApiUrl,
       APP_TOKEN_AUTH_ENABLED: false,
       FETCH_CREDENTIALS: 'same-origin'
@@ -76,7 +81,7 @@ describe('GetItemService with collectionId', () => {
       const mockToken = 'mock-jwt-token'
       localStorage.setItem('APP_AUTH_TOKEN', mockToken)
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: true,
           FETCH_CREDENTIALS: 'same-origin'
@@ -105,7 +110,7 @@ describe('GetItemService with collectionId', () => {
     it('does not include Authorization header when auth is disabled', async () => {
       localStorage.setItem('APP_AUTH_TOKEN', 'mock-token')
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: false,
           FETCH_CREDENTIALS: 'same-origin'
@@ -126,7 +131,7 @@ describe('GetItemService with collectionId', () => {
 
     it('does not include Authorization header when token does not exist', async () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: true,
           FETCH_CREDENTIALS: 'same-origin'
@@ -149,7 +154,7 @@ describe('GetItemService with collectionId', () => {
   describe('credentials configuration', () => {
     it('uses FETCH_CREDENTIALS from config', async () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: false,
           FETCH_CREDENTIALS: 'include'
@@ -173,7 +178,7 @@ describe('GetItemService with collectionId', () => {
 
     it('defaults to same-origin when FETCH_CREDENTIALS not configured', async () => {
       store.dispatch(
-        setappConfig({
+        setAppConfig({
           STAC_API_URL: mockStacApiUrl,
           APP_TOKEN_AUTH_ENABLED: false
         })
@@ -190,6 +195,23 @@ describe('GetItemService with collectionId', () => {
         expect.any(String),
         expect.objectContaining({
           credentials: 'same-origin'
+        })
+      )
+    })
+
+    it('forwards AbortController signal when provided', async () => {
+      const { signal } = createAbortableRequest()
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockItemResponse
+      })
+
+      await GetItemService(mockItemId, mockCollectionId, signal)
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        expect.any(String),
+        expect.objectContaining({
+          signal
         })
       )
     })
@@ -218,7 +240,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: 404 })
+      expect(result).toMatchObject({ error: true, status: 404 })
     })
 
     it('calls logoutUser on 403 response', async () => {
@@ -230,7 +252,7 @@ describe('GetItemService with collectionId', () => {
       const result = await GetItemService(mockItemId, mockCollectionId)
 
       expect(authHelper.logoutUser).toHaveBeenCalledOnce()
-      expect(result).toEqual({ error: true, status: 403 })
+      expect(result).toMatchObject({ error: true, status: 403 })
     })
 
     it('returns error object with status on 500', async () => {
@@ -241,7 +263,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: 500 })
+      expect(result).toMatchObject({ error: true, status: 500 })
       expect(authHelper.logoutUser).not.toHaveBeenCalled()
     })
 
@@ -250,7 +272,21 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: null })
+      expect(result).toMatchObject({ error: true, status: null })
+    })
+
+    it('returns undefined and does not log on abort errors', async () => {
+      const { abortError } = createAbortableRequest()
+      const consoleErrorSpy = vi
+        .spyOn(console, 'error')
+        .mockImplementation(() => {})
+
+      global.fetch.mockRejectedValueOnce(abortError)
+
+      const result = await GetItemService(mockItemId, mockCollectionId)
+
+      expect(result).toBeUndefined()
+      expect(consoleErrorSpy).not.toHaveBeenCalled()
     })
 
     it('returns error object with null status on JSON parse failure', async () => {
@@ -263,7 +299,7 @@ describe('GetItemService with collectionId', () => {
 
       const result = await GetItemService(mockItemId, mockCollectionId)
 
-      expect(result).toEqual({ error: true, status: null })
+      expect(result).toMatchObject({ error: true, status: null })
     })
   })
 })
@@ -310,7 +346,7 @@ describe('GetItemService without collectionId', () => {
 
     const result = await GetItemService(mockItemId)
 
-    expect(result).toEqual({ error: true, status: 404 })
+    expect(result).toMatchObject({ error: true, status: 404 })
   })
 
   it('returns 404 error when multiple matches found (ambiguous)', async () => {
@@ -328,7 +364,7 @@ describe('GetItemService without collectionId', () => {
 
     const result = await GetItemService(mockItemId)
 
-    expect(result).toEqual({ error: true, status: 404 })
+    expect(result).toMatchObject({ error: true, status: 404 })
     expect(consoleSpy).toHaveBeenCalledWith(
       expect.stringContaining('Ambiguous item ID')
     )
@@ -344,7 +380,7 @@ describe('GetItemService without collectionId', () => {
     const result = await GetItemService(mockItemId)
 
     expect(authHelper.logoutUser).toHaveBeenCalledOnce()
-    expect(result).toEqual({ error: true, status: 403 })
+    expect(result).toMatchObject({ error: true, status: 403 })
   })
 
   it('returns error object with null status on network failure', async () => {
@@ -352,6 +388,20 @@ describe('GetItemService without collectionId', () => {
 
     const result = await GetItemService(mockItemId)
 
-    expect(result).toEqual({ error: true, status: null })
+    expect(result).toMatchObject({ error: true, status: null })
+  })
+
+  it('returns undefined and does not log on abort errors', async () => {
+    const { abortError } = createAbortableRequest()
+    const consoleErrorSpy = vi
+      .spyOn(console, 'error')
+      .mockImplementation(() => {})
+
+    global.fetch.mockRejectedValueOnce(abortError)
+
+    const result = await GetItemService(mockItemId)
+
+    expect(result).toBeUndefined()
+    expect(consoleErrorSpy).not.toHaveBeenCalled()
   })
 })

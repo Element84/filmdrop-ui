@@ -1,18 +1,17 @@
 import React, { useEffect, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import './PopupResults.css'
-import '../EnhancedDetails/EnhancedDetails.css'
 import { useDispatch, useSelector } from 'react-redux'
 import PopupResult from '../PopupResult/PopupResult'
 import {
   setCurrentPopupResult,
-  setcartItems,
-  setimageOverlayLoading,
-  setselectedPopupResultIndex
+  setCartItems,
+  setImageOverlayLoading,
+  setSelectedPopupResultIndex
 } from '../../redux/slices/mainSlice'
 import PopupFooter from '../PopupFooter/PopupFooter.jsx'
 import { isSceneInCart } from '../../utils/dataHelper'
-import { debounceTitilerOverlay } from '../../utils/mapHelper'
+import { debounceTitilerOverlay } from '../../utils/mapLayers'
 import { useLayout } from '../../contexts/LayoutContext'
 import { EnhancedDetailsProvider } from '../../contexts/EnhancedDetailsContext'
 import EnhancedDetailsDisplay from '../EnhancedDetails/EnhancedDetailsDisplay.jsx'
@@ -34,50 +33,57 @@ const PopupResults = (props) => {
     (state) => state.mainSlice.selectedVisualization
   )
 
+  // Effect A: Sync popup result when results/index changes
+  // Handles: index validation, item selection, URL sync
   useEffect(() => {
     if (props.results.length > 0) {
       if (
         !_currentPopupResult ||
         !props.results.includes(_currentPopupResult)
       ) {
-        dispatch(setselectedPopupResultIndex(0))
+        dispatch(setSelectedPopupResultIndex(0))
       }
-      debounceTitilerOverlay(props.results[_selectedPopupResultIndex])
-      dispatch(setCurrentPopupResult(props.results[_selectedPopupResultIndex]))
-    }
-    return () => {
-      dispatch(setimageOverlayLoading(false))
-    }
-  }, [props.results, _selectedPopupResultIndex, _selectedVisualization])
-
-  useEffect(() => {
-    if (props.results.length > 0) {
-      dispatch(setCurrentPopupResult(props.results[_selectedPopupResultIndex]))
-
-      // Update URL when navigating between items
       const currentItem = props.results[_selectedPopupResultIndex]
+      dispatch(setCurrentPopupResult(currentItem))
       if (currentItem && currentItem.id) {
         setItem(currentItem.id)
       }
     }
-  }, [_selectedPopupResultIndex, props.results])
+  }, [
+    props.results,
+    _selectedPopupResultIndex,
+    _currentPopupResult,
+    dispatch,
+    setItem
+  ])
+
+  // Effect B: Update overlay when popup result or visualization changes
+  // Handles: Tiler overlay updates based on result and visualization selection
+  useEffect(() => {
+    if (_currentPopupResult) {
+      debounceTitilerOverlay(_currentPopupResult)
+    }
+    return () => {
+      dispatch(setImageOverlayLoading(false))
+    }
+  }, [_currentPopupResult, _selectedVisualization, dispatch])
 
   const onNextClick = useCallback(() => {
     if (_selectedPopupResultIndex < props.results.length - 1) {
-      dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex + 1))
+      dispatch(setSelectedPopupResultIndex(_selectedPopupResultIndex + 1))
     }
-  }, [_selectedPopupResultIndex, props.results.length])
+  }, [_selectedPopupResultIndex, props.results.length, dispatch])
 
   const onPrevClick = useCallback(() => {
     if (_selectedPopupResultIndex > 0) {
-      dispatch(setselectedPopupResultIndex(_selectedPopupResultIndex - 1))
+      dispatch(setSelectedPopupResultIndex(_selectedPopupResultIndex - 1))
     }
-  }, [_selectedPopupResultIndex])
+  }, [_selectedPopupResultIndex, dispatch])
 
   function onAddRemoveSceneToCartClicked() {
-    if (isSceneInCart(props.results[_selectedPopupResultIndex])) {
+    if (isSceneInCart(props.results[_selectedPopupResultIndex], _cartItems)) {
       dispatch(
-        setcartItems(
+        setCartItems(
           _cartItems.filter(
             (_cartItems) =>
               _cartItems.id !== props.results[_selectedPopupResultIndex].id
@@ -87,7 +93,7 @@ const PopupResults = (props) => {
       return
     }
     dispatch(
-      setcartItems([..._cartItems, props.results[_selectedPopupResultIndex]])
+      setCartItems([..._cartItems, props.results[_selectedPopupResultIndex]])
     )
   }
 
@@ -101,7 +107,10 @@ const PopupResults = (props) => {
             onPrevClick={onPrevClick}
             onNextClick={onNextClick}
             cartEnabled={_appConfig.CART_ENABLED}
-            isInCart={isSceneInCart(props.results[_selectedPopupResultIndex])}
+            isInCart={isSceneInCart(
+              props.results[_selectedPopupResultIndex],
+              _cartItems
+            )}
             onCartClick={onAddRemoveSceneToCartClicked}
           />
           <div

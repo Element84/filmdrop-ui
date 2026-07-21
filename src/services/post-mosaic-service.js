@@ -1,6 +1,6 @@
 import { store } from '../redux/store'
 import { setSearchLoading, setMosaicCache } from '../redux/slices/mainSlice'
-import { addMosaicLayer } from '../utils/mapHelper'
+import { addMosaicLayer } from '../utils/mapLayers'
 import {
   normalizeStacErrorResponse,
   normalizeStacNetworkError

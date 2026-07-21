@@ -127,6 +127,15 @@ cache-breaker to prevent stale files.
 
 > **Security Note:** Client-side authentication provides limited security. Ensure STAC API also validates tokens.
 
+### Queryables Schema Security
+
+When FilmDrop resolves JSON Schema `$ref` values from collection queryables,
+it rejects unsafe URL schemes before any fetch is attempted. The following
+schemes are blocked: `javascript:`, `data:`, `file:`, `blob:`, and `vbscript:`.
+
+If a blocked scheme is encountered, FilmDrop logs a warning and leaves the
+original schema entry unresolved rather than failing the entire queryables load.
+
 #### Map Configuration
 
 | Parameter         | Type   | Default       | Description                                                                                              |
