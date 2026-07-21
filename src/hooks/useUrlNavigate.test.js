@@ -4,6 +4,13 @@ import { useUrlNavigate } from './useUrlNavigate'
 
 const mockNavigate = vi.fn()
 let mockParams = { collectionId: 'sentinel-2' }
+let mockController = null
+let mockOptions = {
+  config: undefined,
+  urlState: undefined,
+  onUrlStateChange: undefined
+}
+
 vi.mock('@tanstack/react-router', async () => {
   const { mockTanstackRouter } = await import('../testing/shared-mocks')
   return mockTanstackRouter({
@@ -11,6 +18,14 @@ vi.mock('@tanstack/react-router', async () => {
     useParams: () => mockParams
   })()
 })
+
+vi.mock('../url-controller', () => ({
+  getActiveUrlControllerOrNull: () => mockController
+}))
+
+vi.mock('../contexts/FilmDropOptionsContext', () => ({
+  useFilmDropOptions: () => mockOptions
+}))
 
 describe('useUrlNavigate', () => {
   const prev = {
@@ -25,6 +40,12 @@ describe('useUrlNavigate', () => {
   beforeEach(() => {
     mockNavigate.mockClear()
     mockParams = { collectionId: 'sentinel-2' }
+    mockController = null
+    mockOptions = {
+      config: undefined,
+      urlState: undefined,
+      onUrlStateChange: undefined
+    }
   })
 
   /** Helper: call the navigate search function with prev */
@@ -102,5 +123,40 @@ describe('useUrlNavigate', () => {
     expect(second.clearItem).not.toBe(first.clearItem)
     expect(second.setTab).toBe(first.setTab)
     expect(second.setViz).toBe(first.setViz)
+  })
+
+  it('uses active URL controller for controlled mode', () => {
+    const controllerNavigate = vi.fn()
+    const controllerGetPathParams = vi.fn(() => ({
+      collectionId: 'controlled-collection'
+    }))
+    mockController = {
+      navigate: controllerNavigate,
+      getPathParams: controllerGetPathParams
+    }
+    mockOptions = {
+      config: undefined,
+      urlState: {
+        collectionId: 'controlled-collection',
+        itemId: '',
+        search: {}
+      },
+      onUrlStateChange: vi.fn()
+    }
+
+    const { result } = renderHook(() => useUrlNavigate())
+    result.current.setItem('SCENE-123')
+
+    expect(controllerGetPathParams).toHaveBeenCalled()
+    expect(controllerNavigate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        to: '/$collectionId/$itemId',
+        params: {
+          collectionId: 'controlled-collection',
+          itemId: 'SCENE-123'
+        }
+      })
+    )
+    expect(mockNavigate).not.toHaveBeenCalled()
   })
 })

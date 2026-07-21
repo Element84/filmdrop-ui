@@ -279,6 +279,43 @@ export default function App() {
 }
 ```
 
+Controlled URL state (advanced embed mode):
+
+```jsx
+import { useMemo, useState } from 'react'
+import { FilmDropRoot } from 'filmdrop-ui'
+
+export default function App() {
+  const [urlState, setUrlState] = useState({
+    collectionId: 'sentinel-2-l2a',
+    itemId: '',
+    search: { tab: 'search' }
+  })
+
+  const config = useMemo(
+    () => ({
+      STAC_API_URL: 'https://earth-search.aws.element84.com/v1',
+      COLLECTIONS_CONFIG: {
+        'sentinel-2-l2a': {
+          sceneMinZoom: 7
+        }
+      }
+    }),
+    []
+  )
+
+  return (
+    <FilmDropRoot
+      basename="/filmdrop"
+      config={config}
+      urlState={urlState}
+      onUrlStateChange={(nextState) => setUrlState(nextState)}
+      applyDocumentBranding={false}
+    />
+  )
+}
+```
+
 ### `<FilmDropRoot />` props
 
 | Prop                     | Type                          | Default                         |
@@ -290,6 +327,9 @@ export default function App() {
 | `persistThemePreference` | `boolean`                     | `true`                          |
 | `onError`                | `(error, info) => void`       | —                               |
 | `onOpenExternal`         | `(url, meta?) => void`        | `window.open(url, '_blank', …)` |
+| `config`                 | `object`                      | —                               |
+| `urlState`               | `FilmDropUrlState`            | —                               |
+| `onUrlStateChange`       | `(nextState, meta) => void`   | —                               |
 
 - `basename` — public alias of TanStack Router's `basepath`.
 - `configUrl` — URL (or directory base) for `config/config.json` and `data/*.json`.
@@ -304,6 +344,20 @@ export default function App() {
   the library's ErrorBoundary.
 - `onOpenExternal` — override outbound link handling for embedded hosts
   (default opens in a new tab with `noopener,noreferrer`).
+- `config` — optional props-driven runtime config. When provided, FilmDrop
+  skips fetching `config/config.json` from `configUrl`.
+- `urlState` — optional parent-controlled URL state source
+  (`{ collectionId?, itemId?, search? }`).
+- `onUrlStateChange` — required when `urlState` is provided. FilmDrop calls
+  this callback whenever it requests URL state updates.
+
+Controlled URL contract:
+
+- `urlState` + `onUrlStateChange`: controlled mode (host owns URL state).
+- `urlState` without `onUrlStateChange`: runtime error on mount.
+- no `urlState`: uncontrolled mode (FilmDrop uses its internal router state).
+- viewport params `z` (zoom) and `c` (center) are also emitted through
+  `onUrlStateChange` search updates in controlled mode.
 
 ### Consumer checklist
 

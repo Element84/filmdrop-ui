@@ -15,9 +15,18 @@ import * as LoadConfigService from './services/get-config-service'
 import { mockAppConfig } from './testing/shared-mocks'
 import * as ConfigHelper from './utils/configHelper'
 import * as ThemeHelper from './utils/themeHelper'
+import { useFilmDropOptions } from './contexts/FilmDropOptionsContext'
 
 vi.mock('./hooks/useUrlStateSync', () => ({
   useUrlStateSync: vi.fn()
+}))
+
+vi.mock('./contexts/FilmDropOptionsContext', () => ({
+  useFilmDropOptions: vi.fn(() => ({
+    config: undefined,
+    urlState: undefined,
+    onUrlStateChange: undefined
+  }))
 }))
 
 vi.mock('@tanstack/react-router', async () => {
@@ -34,6 +43,14 @@ vi.mock('./hooks/useUrlNavigate', () => ({
 }))
 
 describe('App', () => {
+  beforeEach(() => {
+    vi.mocked(useFilmDropOptions).mockReturnValue({
+      config: undefined,
+      urlState: undefined,
+      onUrlStateChange: undefined
+    })
+  })
+
   const setup = () =>
     render(
       <Provider store={store}>
@@ -68,6 +85,38 @@ describe('App', () => {
       const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
       setup()
       expect(spy).toHaveBeenCalledTimes(1)
+    })
+    it('passes props-driven config to LoadConfigIntoStateService when provided', () => {
+      const componentConfig = { APP_NAME: 'Embedded FilmDrop' }
+      vi.mocked(useFilmDropOptions).mockReturnValue({
+        config: componentConfig,
+        urlState: undefined,
+        onUrlStateChange: undefined
+      })
+
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
+      setup()
+
+      expect(spy).toHaveBeenCalledWith(
+        expect.objectContaining({ config: componentConfig })
+      )
+    })
+    it('treats config: null the same as config: undefined (falls back to fetch)', () => {
+      vi.mocked(useFilmDropOptions).mockReturnValue({
+        config: null,
+        urlState: undefined,
+        onUrlStateChange: undefined
+      })
+
+      const spy = vi.spyOn(LoadConfigService, 'LoadConfigIntoStateService')
+      setup()
+
+      expect(spy).toHaveBeenCalledTimes(1)
+      const [callArgs] = spy.mock.calls[0]
+      expect(callArgs).not.toHaveProperty('config')
+      expect(callArgs).toEqual(
+        expect.objectContaining({ signal: expect.anything() })
+      )
     })
     it('should initialize theme even when document branding is disabled', () => {
       window.__filmdropApplyBranding = false

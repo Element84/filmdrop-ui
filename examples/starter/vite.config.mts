@@ -1,6 +1,7 @@
 /// <reference types="vitest/config" />
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import svgrPlugin from 'vite-plugin-svgr'
 import { fileURLToPath } from 'node:url'
 import { resolve, dirname } from 'node:path'
 
@@ -13,10 +14,11 @@ const useSrc = process.env.FILMDROP_DEV_SRC === '1'
 
 export default defineConfig({
   base: '/app/',
-  plugins: [react()],
+  plugins: [react(), svgrPlugin()],
   resolve: {
     alias: useSrc
       ? {
+          'filmdrop-ui/style.css': resolve(here, '../../src/style.css'),
           'filmdrop-ui': resolve(here, '../../src/lib-entry.jsx')
         }
       : undefined,

@@ -7,9 +7,13 @@ import { renderFilmDrop } from '../../testing/renderFilmDrop'
 import { createFilmDropStore } from '../../redux/store'
 import { setAppConfig } from '../../redux/slices/mainSlice'
 import { mockAppConfig } from '../../testing/shared-mocks'
+import { FilmDropOptionsContext } from '../../contexts/FilmDropOptionsContext'
 
 const mapInstances = []
-const navigateMock = vi.fn()
+const controllerNavigateMock = vi.fn()
+const getSearchMock = vi.fn(() => ({}))
+let activeController = null
+let mockResolvedUrlState = { col: '', item: '' }
 
 function createMockMap() {
   const panes = {
@@ -61,22 +65,25 @@ function createMockMap() {
   return map
 }
 
-vi.mock('@tanstack/react-router', async (importOriginal) => {
-  const actual = await importOriginal()
-  return {
-    ...actual,
-    useNavigate: () => navigateMock
-  }
-})
+vi.mock('../../url-controller', () => ({
+  getActiveUrlControllerOrNull: () => activeController
+}))
+
+vi.mock('../../hooks/useResolvedUrlState', () => ({
+  useResolvedUrlState: () => mockResolvedUrlState
+}))
 
 vi.mock('leaflet-draw', () => ({}))
+
+const capturedMapContainerProps = []
 
 /* eslint-disable react/prop-types */
 vi.mock('react-leaflet/MapContainer', async () => {
   const ReactModule = await import('react')
   return {
-    MapContainer: ({ children, ref }) => {
+    MapContainer: ({ children, ref, ...props }) => {
       const map = ReactModule.useMemo(() => createMockMap(), [])
+      capturedMapContainerProps.push(props)
       ReactModule.useEffect(() => {
         if (typeof ref === 'function') {
           ref(map)
@@ -166,7 +173,15 @@ vi.mock('leaflet', () => {
 describe('LeafMap', () => {
   beforeEach(() => {
     mapInstances.length = 0
-    navigateMock.mockReset()
+    capturedMapContainerProps.length = 0
+    controllerNavigateMock.mockReset()
+    getSearchMock.mockReset()
+    getSearchMock.mockReturnValue({})
+    mockResolvedUrlState = { col: '', item: '' }
+    activeController = {
+      navigate: controllerNavigateMock,
+      getSearch: getSearchMock
+    }
     vi.useFakeTimers()
   })
 
@@ -174,8 +189,18 @@ describe('LeafMap', () => {
     vi.useRealTimers()
   })
 
-  const renderSubject = () => {
+  const renderSubject = (options = {}) => {
     const store = createFilmDropStore()
+    const urlState = options.urlState
+    const onUrlStateChange = options.onUrlStateChange
+    if (urlState !== undefined) {
+      mockResolvedUrlState = {
+        ...(urlState?.search || {}),
+        col: urlState?.collectionId || '',
+        item: urlState?.itemId || ''
+      }
+    }
+
     store.dispatch(
       setAppConfig({
         ...mockAppConfig,
@@ -184,11 +209,28 @@ describe('LeafMap', () => {
       })
     )
 
-    return renderFilmDrop(<LeafMap />, { store })
+    return renderFilmDrop(
+      <FilmDropOptionsContext.Provider
+        value={{ config: undefined, urlState, onUrlStateChange }}
+      >
+        <LeafMap />
+      </FilmDropOptionsContext.Provider>,
+      { store }
+    )
   }
 
   const findNamedLayer = (map, name) =>
     map.layersAdded.find((layer) => layer.layer_name === name)
+
+  it('derives initial center/zoom from useResolvedUrlState in uncontrolled mode', () => {
+    mockResolvedUrlState = { z: 9, c: '12.3400,-45.6700', col: '', item: '' }
+
+    renderSubject()
+
+    const firstProps = capturedMapContainerProps[0]
+    expect(firstProps.zoom).toBe(9)
+    expect(firstProps.center).toEqual([12.34, -45.67])
+  })
 
   it('keeps pane and control creation stable across remount', async () => {
     const first = renderSubject()
@@ -271,7 +313,7 @@ describe('LeafMap', () => {
       vi.advanceTimersByTime(300)
     })
 
-    expect(navigateMock).not.toHaveBeenCalled()
+    expect(controllerNavigateMock).not.toHaveBeenCalled()
 
     map.getCenter.mockReturnValue({ lat: 38.8897, lng: -77.0089 })
     map.getZoom.mockReturnValue(9.6)
@@ -281,15 +323,15 @@ describe('LeafMap', () => {
       vi.advanceTimersByTime(300)
     })
 
-    expect(navigateMock).toHaveBeenCalledTimes(1)
-    expect(navigateMock).toHaveBeenCalledWith(
+    expect(controllerNavigateMock).toHaveBeenCalledTimes(1)
+    expect(controllerNavigateMock).toHaveBeenCalledWith(
       expect.objectContaining({
         replace: true,
         search: expect.any(Function)
       })
     )
 
-    const [{ search }] = navigateMock.mock.calls[0]
+    const [{ search }] = controllerNavigateMock.mock.calls[0]
     expect(search({ item: 'scene-1' })).toEqual({
       item: 'scene-1',
       z: 10,
@@ -301,5 +343,76 @@ describe('LeafMap', () => {
     })
 
     expect(map.off.mock.calls.some((call) => call[0] === 'moveend')).toBe(true)
+  })
+
+  it('emits controlled viewport updates through onUrlStateChange callback', async () => {
+    const onUrlStateChange = vi.fn()
+    activeController = {
+      getSearch: getSearchMock,
+      navigate: (options) => {
+        controllerNavigateMock(options)
+        const nextSearch = options.search({ tab: 'search' })
+        onUrlStateChange(
+          {
+            collectionId: 'sentinel-2-l2a',
+            itemId: undefined,
+            search: nextSearch
+          },
+          {
+            replace: options.replace,
+            source: 'filmdrop-controller'
+          }
+        )
+      }
+    }
+
+    const { unmount } = renderSubject({
+      urlState: {
+        collectionId: 'sentinel-2-l2a',
+        itemId: undefined,
+        search: { tab: 'search' }
+      },
+      onUrlStateChange
+    })
+
+    await act(async () => {})
+
+    const map = mapInstances[0]
+    map.getCenter.mockReturnValue({ lat: 35.4321, lng: -120.8765 })
+    map.getZoom.mockReturnValue(7.2)
+
+    await act(async () => {
+      map.getHandler('moveend')()
+      vi.advanceTimersByTime(300)
+    })
+
+    // First move initializes the guard and does not sync.
+    expect(onUrlStateChange).not.toHaveBeenCalled()
+
+    await act(async () => {
+      map.getHandler('moveend')()
+      vi.advanceTimersByTime(300)
+    })
+
+    expect(controllerNavigateMock).toHaveBeenCalledTimes(1)
+    expect(onUrlStateChange).toHaveBeenCalledWith(
+      {
+        collectionId: 'sentinel-2-l2a',
+        itemId: undefined,
+        search: {
+          tab: 'search',
+          z: 7,
+          c: '35.4321,-120.8765'
+        }
+      },
+      {
+        replace: true,
+        source: 'filmdrop-controller'
+      }
+    )
+
+    await act(async () => {
+      unmount()
+    })
   })
 })

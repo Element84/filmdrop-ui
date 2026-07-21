@@ -83,6 +83,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
   exercises `createFilmDropRouter({ basepath })` option propagation +
   `applyBasepathToRedirect` matrix. 9 new tests; suite total now 700
   (+ 14 from this round: 10 post-auth, 4 clipboard).
+- **Props-driven config and controlled URL mode.** `FilmDropRoot` now supports
+  `config` (object) to bypass runtime config fetch and supports controlled URL
+  ownership via `urlState` + `onUrlStateChange`. Added URL controller/runtime
+  plumbing to route URL reads/writes through either TanStack Router or a
+  parent-owned state adapter.
+- **Controlled URL contract enforcement.** `FilmDropRoot` now fails fast at
+  mount when `urlState` is passed without `onUrlStateChange`, preventing silent
+  no-op navigation updates in partially controlled integrations.
+- **URL abstraction tests.** Added dedicated coverage for URL controller and
+  controlled URL resolution paths:
+  - `src/url-controller.test.js`
+  - `src/hooks/useResolvedUrlState.test.js`
+  - controlled-mode branch coverage in `src/hooks/useUrlNavigate.test.js`
 
 ### Changed
 

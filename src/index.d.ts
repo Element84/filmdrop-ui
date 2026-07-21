@@ -14,6 +14,27 @@ export type FilmDropOnOpenExternal = (
   meta?: { source?: string; [key: string]: unknown }
 ) => void
 
+export interface FilmDropUrlSearchState {
+  dt?: string
+  view?: 'scene' | 'hex' | 'grid-code' | 'mosaic'
+  viz?: string
+  tab?: 'search' | 'details'
+  z?: number
+  c?: string
+  [queryableParam: string]: unknown
+}
+
+export interface FilmDropUrlState {
+  collectionId?: string
+  itemId?: string
+  search?: FilmDropUrlSearchState
+}
+
+export type FilmDropOnUrlStateChange = (
+  nextState: FilmDropUrlState,
+  meta: { replace?: boolean; source: string }
+) => void
+
 export interface FilmDropRootProps {
   /** Public alias of TanStack Router's `basepath`, e.g. "/filmdrop". */
   basename?: string
@@ -45,6 +66,12 @@ export interface FilmDropRootProps {
    * `window.open(url, '_blank', 'noopener,noreferrer')`.
    */
   onOpenExternal?: FilmDropOnOpenExternal
+  /** Optional props-driven runtime config. When provided, config fetch is skipped. */
+  config?: Record<string, unknown>
+  /** Optional parent-controlled URL state source for embedded usage. */
+  urlState?: FilmDropUrlState
+  /** Callback fired when FilmDrop requests URL state changes in controlled mode. */
+  onUrlStateChange?: FilmDropOnUrlStateChange
   children?: ReactNode
 }
 

@@ -4,7 +4,8 @@ import { render, act } from '@testing-library/react'
 import FilmDropRoot from './FilmDropRoot'
 import {
   __resetActiveStoreForTests,
-  __resetActiveRouterForTests
+  __resetActiveRouterForTests,
+  __resetActiveUrlControllerForTests
 } from './testing/runtime-test-hooks'
 import {
   getConfigBaseUrl,
@@ -21,6 +22,7 @@ describe('FilmDropRoot public contract', () => {
   beforeEach(() => {
     __resetActiveStoreForTests()
     __resetActiveRouterForTests()
+    __resetActiveUrlControllerForTests()
     setConfigBaseUrl(null)
     setConfigCacheBuster('timestamp')
     delete window.__filmdropApplyBranding
@@ -31,11 +33,62 @@ describe('FilmDropRoot public contract', () => {
   afterEach(() => {
     __resetActiveStoreForTests()
     __resetActiveRouterForTests()
+    __resetActiveUrlControllerForTests()
   })
 
   it('renders without crashing with no props', () => {
     const { unmount } = render(<FilmDropRoot />)
     unmount()
+  })
+
+  it('throws when urlState is provided without onUrlStateChange', () => {
+    expect(() =>
+      render(
+        <FilmDropRoot
+          urlState={{
+            collectionId: 'sentinel-2',
+            itemId: 'S2-ITEM',
+            search: { tab: 'details' }
+          }}
+        />
+      )
+    ).toThrow(/urlState requires onUrlStateChange/i)
+  })
+
+  it('throws when urlState controlled mode changes after mount in dev/test', () => {
+    // import.meta.env.DEV is true under the default Vitest config, so this
+    // exercises the dev/test fail-fast branch.
+    const onUrlStateChange = vi.fn()
+    const { rerender } = render(
+      <FilmDropRoot
+        urlState={{ collectionId: '', itemId: '', search: {} }}
+        onUrlStateChange={onUrlStateChange}
+      />
+    )
+
+    expect(() => rerender(<FilmDropRoot />)).toThrow(
+      /urlState controlled mode changed after mount/i
+    )
+  })
+
+  it('logs (but does not throw) when urlState controlled mode changes after mount in production', () => {
+    vi.stubEnv('DEV', false)
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const onUrlStateChange = vi.fn()
+    const { rerender, unmount } = render(
+      <FilmDropRoot
+        urlState={{ collectionId: '', itemId: '', search: {} }}
+        onUrlStateChange={onUrlStateChange}
+      />
+    )
+
+    expect(() => rerender(<FilmDropRoot />)).not.toThrow()
+    expect(errorSpy).toHaveBeenCalledWith(
+      expect.stringMatching(/urlState controlled mode changed after mount/i)
+    )
+
+    unmount()
+    vi.unstubAllEnvs()
   })
 
   it('applies configUrl prop to the configBase module', () => {

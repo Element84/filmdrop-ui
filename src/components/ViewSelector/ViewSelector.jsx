@@ -10,7 +10,7 @@ import ButtonGroup from '../ButtonGroup/ButtonGroup'
 import { getCurrentMapZoomLevel } from '../../utils/mapLayers'
 import { getCollectionConfig } from '../../utils/configHelper'
 import { DEFAULT_SCENE_MIN_ZOOM } from '../../constants/defaults'
-import { getActiveRouterOrNull } from '../../router-test-hooks'
+import { getActiveUrlControllerOrNull } from '../../url-controller'
 
 const ViewSelector = () => {
   const dispatch = useDispatch()
@@ -28,7 +28,7 @@ const ViewSelector = () => {
   // mount. urlHasView controls a one-time "skip default-view reset on
   // initial load" behavior below.
   const [initialUrlView] = useState(
-    () => !!getActiveRouterOrNull()?.state?.location?.search?.view
+    () => !!getActiveUrlControllerOrNull()?.getSearch()?.view
   )
 
   const [currentZoom, setCurrentZoom] = useState(0)

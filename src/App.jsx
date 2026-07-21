@@ -21,9 +21,11 @@ import { LayoutProvider } from './contexts/LayoutContext'
 import { useUrlStateSync } from './hooks/useUrlStateSync'
 import { Outlet } from '@tanstack/react-router'
 import { getAuthToken } from './utils/authHelper'
+import { useFilmDropOptions } from './contexts/FilmDropOptionsContext'
 
 function App() {
   useUrlStateSync()
+  const { config: propConfig } = useFilmDropOptions()
   const dispatch = useDispatch()
   const _showUploadGeojsonModal = useSelector(
     (state) => state.mainSlice.showUploadGeojsonModal
@@ -69,19 +71,38 @@ function App() {
 
   // Effect 1 — one-time init: auth token, config load, version log.
   useEffect(() => {
+    const controller = new AbortController()
+
     if (getAuthToken()) {
       dispatch(setAuthTokenExists(true))
     }
-    Promise.resolve(LoadConfigIntoStateService()).then((result) => {
+
+    const loadConfigPromise =
+      propConfig != null
+        ? LoadConfigIntoStateService({
+            signal: controller.signal,
+            config: propConfig
+          })
+        : LoadConfigIntoStateService({
+            signal: controller.signal
+          })
+
+    Promise.resolve(loadConfigPromise).then((result) => {
+      if (controller.signal.aborted) return
       if (result?.error === true) {
         showApplicationAlert('error', getConfigLoadMessage(result), null)
       }
     })
+
     const version = import.meta.env?.VITE_APP_VERSION
     if (import.meta.env.DEV && version) {
       console.log('Version: ' + version)
     }
-  }, [dispatch])
+
+    return () => {
+      controller.abort()
+    }
+  }, [dispatch, propConfig])
 
   // Effect 2 — config-reaction: runs once per config change. Handles
   // collections load + theme initialization.

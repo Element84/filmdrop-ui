@@ -25,7 +25,7 @@ describe('get-config-service signal forwarding and behavior', () => {
       './get-config-service'
     )
 
-    await LoadConfigIntoStateService(controller.signal)
+    await LoadConfigIntoStateService({ signal: controller.signal })
 
     expect(fetchSpy).toHaveBeenCalledWith(
       expect.any(String),
@@ -64,9 +64,9 @@ describe('get-config-service signal forwarding and behavior', () => {
       './get-config-service'
     )
 
-    const result = await LoadConfigIntoStateService(
-      new AbortController().signal
-    )
+    const result = await LoadConfigIntoStateService({
+      signal: new AbortController().signal
+    })
 
     expect(result).toBeDefined()
     const [url] = fetchSpy.mock.calls[0]
@@ -82,10 +82,45 @@ describe('get-config-service signal forwarding and behavior', () => {
       './get-config-service'
     )
 
-    await LoadConfigIntoStateService(new AbortController().signal)
+    await LoadConfigIntoStateService({ signal: new AbortController().signal })
 
     const [, options] = fetchSpy.mock.calls[0]
     expect(options.cache).toBe('no-store')
+  })
+
+  it('skips fetch when config is provided in options', async () => {
+    const fetchSpy = vi.spyOn(globalThis, 'fetch')
+    const { LoadConfigIntoStateService } = await vi.importActual(
+      './get-config-service'
+    )
+
+    const result = await LoadConfigIntoStateService({
+      config: { APP_NAME: 'Embedded FilmDrop' }
+    })
+
+    expect(fetchSpy).not.toHaveBeenCalled()
+    expect(result).toEqual(
+      expect.objectContaining({ APP_NAME: 'Embedded FilmDrop' })
+    )
+  })
+
+  it('does not dispatch a stale config when the signal is already aborted', async () => {
+    const dispatchSpy = vi.spyOn(store, 'dispatch')
+    const controller = new AbortController()
+    controller.abort()
+    const { LoadConfigIntoStateService } = await vi.importActual(
+      './get-config-service'
+    )
+
+    const result = await LoadConfigIntoStateService({
+      signal: controller.signal,
+      config: { APP_NAME: 'Embedded FilmDrop' }
+    })
+
+    expect(dispatchSpy).not.toHaveBeenCalled()
+    expect(result).toEqual(
+      expect.objectContaining({ APP_NAME: 'Embedded FilmDrop' })
+    )
   })
 
   it('handles non-OK response with error normalization', async () => {
@@ -99,9 +134,9 @@ describe('get-config-service signal forwarding and behavior', () => {
       './get-config-service'
     )
 
-    const result = await LoadConfigIntoStateService(
-      new AbortController().signal
-    )
+    const result = await LoadConfigIntoStateService({
+      signal: new AbortController().signal
+    })
 
     expect(result).toHaveProperty('error')
   })
@@ -114,9 +149,9 @@ describe('get-config-service signal forwarding and behavior', () => {
       './get-config-service'
     )
 
-    const result = await LoadConfigIntoStateService(
-      new AbortController().signal
-    )
+    const result = await LoadConfigIntoStateService({
+      signal: new AbortController().signal
+    })
 
     expect(result).toHaveProperty('error')
   })

@@ -20,6 +20,11 @@ import {
   defaultStringifySearch
 } from '@tanstack/react-router'
 import App from './App'
+import {
+  ROUTE_INDEX,
+  ROUTE_COLLECTION,
+  ROUTE_COLLECTION_ITEM
+} from './route-constants'
 import { extractPathParamsFromMatches } from './router-path-params'
 
 // Active-router state lives in its own module so setupTests can import it
@@ -146,9 +151,7 @@ let hasWarnedAboutFallbackRouter = false
 // Route path constants — mirror the TanStack route tree above. Callers in
 // searchHelper, mapHelper, get-pagination-service, and useUrlNavigate import
 // these instead of hard-coding the path strings.
-export const ROUTE_INDEX = '/'
-export const ROUTE_COLLECTION = '/$collectionId'
-export const ROUTE_COLLECTION_ITEM = '/$collectionId/$itemId'
+export { ROUTE_INDEX, ROUTE_COLLECTION, ROUTE_COLLECTION_ITEM }
 
 // FilmDropRoot creates a router via createFilmDropRouter() and registers it
 // via setActiveRouter(). Non-hook call sites read it through getActiveRouter()

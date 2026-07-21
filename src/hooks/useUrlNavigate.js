@@ -13,21 +13,52 @@
  */
 import { useCallback, useMemo } from 'react'
 import { useNavigate, useParams } from '@tanstack/react-router'
+import { getActiveUrlControllerOrNull } from '../url-controller'
+import {
+  ROUTE_COLLECTION,
+  ROUTE_COLLECTION_ITEM,
+  ROUTE_INDEX
+} from '../route-constants'
+import { useFilmDropOptions } from '../contexts/FilmDropOptionsContext'
 
 // Returns referentially stable callbacks so consumers can list them in
 // useEffect deps without causing re-runs on every render.
 export function useUrlNavigate() {
   const navigate = useNavigate()
   const params = useParams({ strict: false })
-  const collectionId = params.collectionId
+  const { urlState } = useFilmDropOptions()
+  const controller = getActiveUrlControllerOrNull()
+  const shouldUseController = urlState !== undefined && !!controller
+
+  const navigateFn = useCallback(
+    (options) => {
+      if (shouldUseController) {
+        return controller.navigate(options)
+      }
+      return navigate(options)
+    },
+    [controller, navigate, shouldUseController]
+  )
+
+  const getCollectionId = useCallback(() => {
+    if (shouldUseController) {
+      const pathParams = controller.getPathParams() || {}
+      return pathParams.collectionId
+    }
+    return params.collectionId
+  }, [controller, params.collectionId, shouldUseController])
 
   /**
    * Switch sidebar tab.
    * @param {'search'|'details'} tab
    */
   const setTab = useCallback(
-    (tab) => navigate({ search: (prev) => ({ ...prev, tab }), replace: true }),
-    [navigate]
+    (tab) =>
+      navigateFn({
+        search: (prev) => ({ ...prev, tab }),
+        replace: true
+      }),
+    [navigateFn]
   )
 
   /**
@@ -35,8 +66,12 @@ export function useUrlNavigate() {
    * @param {string} viz - Visualization key
    */
   const setViz = useCallback(
-    (viz) => navigate({ search: (prev) => ({ ...prev, viz }), replace: true }),
-    [navigate]
+    (viz) =>
+      navigateFn({
+        search: (prev) => ({ ...prev, viz }),
+        replace: true
+      }),
+    [navigateFn]
   )
 
   /**
@@ -45,29 +80,30 @@ export function useUrlNavigate() {
    * @param {string} itemId - The STAC item ID
    */
   const setItem = useCallback(
-    (itemId) =>
-      navigate({
-        to: '/$collectionId/$itemId',
+    (itemId) => {
+      const collectionId = getCollectionId()
+      return navigateFn({
+        to: ROUTE_COLLECTION_ITEM,
         params: { collectionId, itemId },
         search: (prev) => ({ ...prev, tab: 'details' }),
         replace: true
-      }),
-    [navigate, collectionId]
+      })
+    },
+    [getCollectionId, navigateFn]
   )
 
   /**
    * Clear item selection. Navigates back to /:collectionId (or /).
    */
-  const clearItem = useCallback(
-    () =>
-      navigate({
-        to: collectionId ? '/$collectionId' : '/',
-        params: collectionId ? { collectionId } : {},
-        search: (prev) => ({ ...prev }),
-        replace: true
-      }),
-    [navigate, collectionId]
-  )
+  const clearItem = useCallback(() => {
+    const collectionId = getCollectionId()
+    return navigateFn({
+      to: collectionId ? ROUTE_COLLECTION : ROUTE_INDEX,
+      params: collectionId ? { collectionId } : {},
+      search: (prev) => ({ ...prev }),
+      replace: true
+    })
+  }, [getCollectionId, navigateFn])
 
   return useMemo(
     () => ({ setTab, setViz, setItem, clearItem }),

@@ -62,12 +62,11 @@ vi.mock('./mapLayers', () => ({
   clearMapSelection: vi.fn()
 }))
 
-vi.mock('../router', () => ({
-  getActiveRouter: vi.fn(() => ({
-    navigate: vi.fn()
-  })),
-  getPathParams: vi.fn(() => ({ collectionId: 'test-collection' })),
-  ROUTE_COLLECTION_ITEM: '/collection/:collectionId/item/:itemId'
+vi.mock('../url-controller', () => ({
+  getActiveUrlController: vi.fn(() => ({
+    navigate: vi.fn(),
+    getPathParams: vi.fn(() => ({ collectionId: 'test-collection' }))
+  }))
 }))
 
 vi.mock('./searchHelper', () => ({

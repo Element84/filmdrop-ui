@@ -14,6 +14,7 @@ import {
 } from '../constants/defaults'
 import {
   newSearch,
+  clearSearch,
   validateUploadedGeometry,
   buildUrlParamFromBBOX,
   buildSearchScenesParams,
@@ -24,6 +25,7 @@ import { AddMosaicService } from '../services/post-mosaic-service'
 import * as getSearchService from '../services/get-search-service'
 import { AggregateSearchService } from '../services/get-aggregate-service'
 import { STAC_UPLOAD_ERROR_CONTEXT_LABEL } from './stacErrorHelper'
+import { __resetActiveUrlControllerForTests } from '../url-controller'
 
 const DEFAULT_SEARCH_ERROR_SUMMARY = 'Error Fetching Search Results'
 const DEFAULT_AGGREGATE_ERROR_SUMMARY =
@@ -464,6 +466,26 @@ describe('searchHelper newSearch', () => {
       undefined,
       undefined
     )
+  })
+
+  it('does not throw when syncing search state after FilmDropRoot has unmounted', async () => {
+    // newSearch runs via debounceNewSearch, so it can resolve after
+    // FilmDropRoot has already unmounted and torn down the URL controller.
+    __resetActiveUrlControllerForTests()
+    vi.spyOn(getSearchService, 'fetchTopItemsForMosaic').mockResolvedValue({
+      itemIds: null,
+      effectiveLimit: 0
+    })
+
+    await newSearch({ viewMode: 'mosaic' })
+
+    expect(AddMosaicService).toHaveBeenCalledTimes(1)
+  })
+
+  it('clearSearch does not throw without a mounted URL controller', () => {
+    __resetActiveUrlControllerForTests()
+
+    expect(() => clearSearch()).not.toThrow()
   })
 })
 

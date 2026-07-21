@@ -36,12 +36,11 @@ import * as h3 from 'h3-js'
 import debounce from './debounce'
 import { AddMosaicService } from '../services/post-mosaic-service'
 import {
-  getActiveRouter,
-  getPathParams,
   ROUTE_INDEX,
   ROUTE_COLLECTION,
   ROUTE_COLLECTION_ITEM
-} from '../router'
+} from '../route-constants'
+import { getActiveUrlControllerOrNull } from '../url-controller'
 import { appendStacHeaderCookies } from '../utils/stacRequest'
 import { serializeQueryableFiltersForUrl } from './urlParamHelper'
 import {
@@ -119,7 +118,10 @@ function buildSearchContext(options = {}) {
       ? `${dateRange[0]}/${dateRange[1]}`
       : ''
 
-  const currentPathParams = getPathParams()
+  // newSearch runs via debounceNewSearch, so this can resolve after
+  // FilmDropRoot has already unmounted.
+  const currentPathParams =
+    getActiveUrlControllerOrNull()?.getPathParams() || {}
   const currentItemId = preserveItem ? currentPathParams.itemId || '' : ''
   const collectionId = selectedCollection?.id || ''
 
@@ -167,9 +169,12 @@ function resetMapAndPaginationState(viewMode) {
  * @param {Object} context - Search context from buildSearchContext()
  */
 function syncSearchToUrl(context) {
+  const controller = getActiveUrlControllerOrNull()
+  if (!controller) return
+
   const { collectionId, currentItemId, viewMode, dt } = context
 
-  getActiveRouter().navigate({
+  controller.navigate({
     to: currentItemId
       ? ROUTE_COLLECTION_ITEM
       : collectionId
@@ -340,11 +345,14 @@ export function clearSearch() {
   // See `resetSearchState` in mainSlice for the field list.
   store.dispatch(resetSearchState())
 
+  const controller = getActiveUrlControllerOrNull()
+  if (!controller) return
+
   // Update URL: preserve collection path, view, viz, z, c; clear dt, item, queryable filters
-  const currentPathParams = getPathParams()
+  const currentPathParams = controller.getPathParams()
   const collectionId = currentPathParams.collectionId || ''
 
-  getActiveRouter().navigate({
+  controller.navigate({
     to: collectionId ? ROUTE_COLLECTION : ROUTE_INDEX,
     params: collectionId ? { collectionId } : {},
     search: (prev) => ({

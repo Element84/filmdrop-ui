@@ -9,6 +9,11 @@ import { createStoreAccessors } from './redux/store-accessors'
 import { createRouterAccessors } from './router-accessors'
 import { setConfigBaseUrl, setConfigCacheBuster } from './utils/configBase'
 import { clearPendingAlertTimeout } from './utils/alertHelper'
+import {
+  createControlledUrlController,
+  setActiveUrlController
+} from './url-controller'
+import { FilmDropOptionsContext } from './contexts/FilmDropOptionsContext'
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary'
 
 /**
@@ -34,6 +39,9 @@ export default function FilmDropRoot(props) {
     persistThemePreference = true,
     onError,
     onOpenExternal,
+    config,
+    urlState,
+    onUrlStateChange,
     children
   } = props
 
@@ -57,7 +65,17 @@ export default function FilmDropRoot(props) {
 
   const store = storeRef.current
   const router = routerRef.current
+  const initialUrlModeRef = useRef(urlState !== undefined)
+  const optionsStateRef = useRef({
+    urlState,
+    onUrlStateChange
+  })
+  optionsStateRef.current = {
+    urlState,
+    onUrlStateChange
+  }
   const runtimeRef = useRef(null)
+  const urlControllerRef = useRef(null)
 
   if (runtimeRef.current === null) {
     runtimeRef.current = {
@@ -70,6 +88,44 @@ export default function FilmDropRoot(props) {
     }
   }
 
+  if (urlControllerRef.current === null) {
+    const isControlledUrl = initialUrlModeRef.current
+    if (isControlledUrl && typeof onUrlStateChange !== 'function') {
+      throw new Error(
+        'FilmDrop: urlState requires onUrlStateChange so navigation updates can be synchronized.'
+      )
+    }
+
+    // Fail fast for a misconfigured controlled contract, then keep the
+    // onChange wrapper stable via refs across re-renders. Safe to reuse the
+    // router accessors instance created above: createRouterAccessors
+    // returns a stateless wrapper around `router` with no internal mutable
+    // state of its own.
+    urlControllerRef.current = isControlledUrl
+      ? createControlledUrlController({
+          getState: () => optionsStateRef.current.urlState,
+          onChange: (nextState, meta) => {
+            const handler = optionsStateRef.current.onUrlStateChange
+            if (typeof handler === 'function') {
+              handler(nextState, meta)
+            }
+          }
+        })
+      : runtimeRef.current.accessors.router
+  }
+
+  // A production throw here would turn a host-integration mistake into a
+  // full page crash — safer to always log loudly and only hard-fail in dev/test.
+  if (initialUrlModeRef.current !== (urlState !== undefined)) {
+    const message =
+      'FilmDrop: urlState controlled mode changed after mount. ' +
+      'Remount FilmDropRoot (e.g. via a changed `key` prop) to switch URL ownership modes.'
+    console.error(message)
+    if (import.meta.env?.DEV) {
+      throw new Error(message)
+    }
+  }
+
   const runtime = runtimeRef.current
 
   useLayoutEffect(() => {
@@ -79,12 +135,14 @@ export default function FilmDropRoot(props) {
     if (!storeRef.current.__filmdropRegistered) {
       setActiveStore(store, { action: 'mount' })
       setActiveRouter(router, { action: 'mount' })
+      setActiveUrlController(urlControllerRef.current, { action: 'mount' })
       setActiveRuntime(runtime, { action: 'mount' })
       storeRef.current.__filmdropRegistered = true
     }
     return () => {
       setActiveStore(store, { action: 'unmount' })
       setActiveRouter(router, { action: 'unmount' })
+      setActiveUrlController(urlControllerRef.current, { action: 'unmount' })
       setActiveRuntime(runtime, { action: 'unmount' })
       storeRef.current.__filmdropRegistered = false
       clearPendingAlertTimeout()
@@ -141,12 +199,20 @@ export default function FilmDropRoot(props) {
     return undefined
   }, [persistThemePreference])
 
+  const optionsValue = {
+    config,
+    urlState,
+    onUrlStateChange
+  }
+
   return (
     <ErrorBoundary onError={onError}>
       <Provider store={store}>
         <RuntimeContext.Provider value={runtime}>
-          <RouterProvider router={router} />
-          {children}
+          <FilmDropOptionsContext.Provider value={optionsValue}>
+            <RouterProvider router={router} />
+            {children}
+          </FilmDropOptionsContext.Provider>
         </RuntimeContext.Provider>
       </Provider>
     </ErrorBoundary>
@@ -161,5 +227,12 @@ FilmDropRoot.propTypes = {
   persistThemePreference: PropTypes.bool,
   onError: PropTypes.func,
   onOpenExternal: PropTypes.func,
+  config: PropTypes.object,
+  urlState: PropTypes.shape({
+    collectionId: PropTypes.string,
+    itemId: PropTypes.string,
+    search: PropTypes.object
+  }),
+  onUrlStateChange: PropTypes.func,
   children: PropTypes.node
 }

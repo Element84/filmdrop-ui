@@ -23,7 +23,8 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 import { DEFAULT_API_MAX_ITEMS } from '../constants/defaults'
-import { getActiveRouter, getPathParams, ROUTE_COLLECTION } from '../router'
+import { ROUTE_COLLECTION } from '../route-constants'
+import { getActiveUrlController } from '../url-controller'
 
 /**
  * Fetch a specific page of search results using pagination links
@@ -36,9 +37,9 @@ export async function FetchPageService(pageUrl, pageNumber, signal) {
   const requestHeaders = buildStacRequestHeaders()
 
   // If currently viewing an item, navigate back to collection path
-  const pathParams = getPathParams()
+  const pathParams = getActiveUrlController().getPathParams()
   if (pathParams.itemId) {
-    getActiveRouter().navigate({
+    getActiveUrlController().navigate({
       to: ROUTE_COLLECTION,
       params: { collectionId: pathParams.collectionId },
       search: (prev) => ({ ...prev }),

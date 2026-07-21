@@ -53,6 +53,15 @@ There are two ways to develop the starter:
    `build:lib`. Use this for development only; never publish or measure
    bundle size in this mode.
 
+Source-HMR verification:
+
+```bash
+npm run verify:starter:src
+```
+
+This confirms the source aliases for `filmdrop-ui` and
+`filmdrop-ui/style.css` compile with the starter dev toolchain.
+
 ## Run (inside `examples/starter/`)
 
 ```bash
@@ -100,6 +109,17 @@ providing a richer reference config for manual evaluation.
   `?_cb=<timestamp>` suffix so the host's CDN + ETag strategy wins.
 - **`onError` + `onOpenExternal`** — show the two extension points
   embedded hosts usually wire into their own telemetry and routing.
+
+## Controlled URL mode (optional)
+
+This starter intentionally uses FilmDrop's unmanaged (router-owned) URL mode to
+keep the example minimal. If your host app needs full ownership of navigation
+state, use the controlled contract in the root
+[`README.md`](../../README.md#filmdroproot-props): pass both `urlState` and
+`onUrlStateChange` to `<FilmDropRoot />`.
+
+Important: `urlState` without `onUrlStateChange` is an invalid configuration
+and now throws a runtime error at mount.
 
 ## Container CSS contract
 

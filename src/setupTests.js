@@ -9,6 +9,10 @@ import { createFilmDropStore, setActiveStore } from './redux/store'
 // router via router-test-hooks instead; tests that need a real router either
 // mock '@tanstack/react-router' or pass one through renderFilmDrop.
 import { setActiveRouter } from './router-test-hooks'
+import {
+  setActiveUrlController,
+  __resetActiveUrlControllerForTests
+} from './url-controller'
 import { resetRuntimeForTests } from './testing/runtime-test-hooks'
 import 'resize-observer-polyfill'
 
@@ -46,8 +50,14 @@ const testRouter = {
   navigate: () => {},
   subscribe: () => () => {}
 }
+const testUrlController = {
+  navigate: () => Promise.resolve(),
+  getPathParams: () => ({}),
+  getSearch: () => Object.freeze({})
+}
 setActiveStore(testStore, { action: 'mount' })
 setActiveRouter(testRouter, { action: 'mount' })
+setActiveUrlController(testUrlController, { action: 'mount' })
 
 beforeEach(() => {
   // Re-register the shared refs each test so getActiveStore / getActiveRouter
@@ -55,6 +65,7 @@ beforeEach(() => {
   resetRuntimeForTests()
   setActiveStore(testStore, { action: 'mount' })
   setActiveRouter(testRouter, { action: 'mount' })
+  setActiveUrlController(testUrlController, { action: 'mount' })
   testStore.dispatch(mainSliceReset())
 
   // Suppress console.error for expected errors in tests
@@ -64,4 +75,5 @@ beforeEach(() => {
 afterEach(() => {
   cleanup()
   vi.restoreAllMocks()
+  __resetActiveUrlControllerForTests()
 })

@@ -7,11 +7,8 @@ import {
 } from '../redux/slices/mainSlice'
 import { searchGridCodeScenes } from './searchHelper'
 import GeoJSONValidation from './geojsonValidation'
-import {
-  getActiveRouter,
-  getPathParams,
-  ROUTE_COLLECTION_ITEM
-} from '../router'
+import { ROUTE_COLLECTION_ITEM } from '../route-constants'
+import { getActiveUrlController } from '../url-controller'
 import {
   clickedFootprintLayerStyle,
   customSearchPointIconStyle,
@@ -67,8 +64,8 @@ export function mapClickHandler(e) {
 
             const firstItem = intersectingFeatures[0]
             if (firstItem.id) {
-              const { collectionId } = getPathParams()
-              getActiveRouter().navigate({
+              const { collectionId } = getActiveUrlController().getPathParams()
+              getActiveUrlController().navigate({
                 to: ROUTE_COLLECTION_ITEM,
                 params: { collectionId, itemId: firstItem.id },
                 search: (prev) => ({ ...prev, tab: 'details' }),

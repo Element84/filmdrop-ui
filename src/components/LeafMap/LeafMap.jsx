@@ -7,7 +7,6 @@ import {
   setShowMapAttribution
 } from '../../redux/slices/mainSlice'
 import * as L from 'leaflet'
-import { useNavigate } from '@tanstack/react-router'
 import 'leaflet-draw'
 import { MapContainer } from 'react-leaflet/MapContainer'
 import { TileLayer } from 'react-leaflet/TileLayer'
@@ -28,14 +27,15 @@ import {
   DEFAULT_MAP_ZOOM_MAX
 } from '../../constants/defaults'
 import { getBasemapConfig, getMapGeometryColors } from '../../utils/themeHelper'
-import { getActiveRouterOrNull } from '../../router-test-hooks'
+import { getActiveUrlControllerOrNull } from '../../url-controller'
+import { useResolvedUrlState } from '../../hooks/useResolvedUrlState'
 
 const LeafMap = () => {
   const dispatch = useDispatch()
   const _appConfig = useSelector((state) => state.mainSlice.appConfig)
   const _cartItems = useSelector((state) => state.mainSlice.cartItems)
   const _currentTheme = useSelector((state) => state.mainSlice.currentTheme)
-  const navigate = useNavigate()
+  const resolvedUrlState = useResolvedUrlState()
 
   // set map ref to itself with useRef
   const mapRef = useRef(null)
@@ -57,17 +57,16 @@ const LeafMap = () => {
   // so this value should not be reactive. Runtime URL ↔ map sync happens
   // via the `moveend` handler below (replace: true).
   const [initialPosition] = useState(() => {
-    const initialSearch = getActiveRouterOrNull()?.state?.location?.search || {}
     let center = _appConfig.MAP_CENTER || DEFAULT_MAP_CENTER
     // Ensure the initial zoom fills the viewport vertically so tiles
     // are pre-loaded behind the loading cover (no blank bands on reveal).
     const minZoom = Math.ceil(Math.log2(window.innerHeight / 256))
     let zoom = Math.max(_appConfig.MAP_ZOOM || DEFAULT_MAP_ZOOM, minZoom)
-    if (initialSearch.z != null) {
-      zoom = Math.max(Number(initialSearch.z), minZoom)
+    if (resolvedUrlState.z != null) {
+      zoom = Math.max(Number(resolvedUrlState.z), minZoom)
     }
-    if (initialSearch.c) {
-      const parts = String(initialSearch.c).split(',').map(Number)
+    if (resolvedUrlState.c) {
+      const parts = String(resolvedUrlState.c).split(',').map(Number)
       if (parts.length === 2 && !isNaN(parts[0]) && !isNaN(parts[1])) {
         center = parts
       }
@@ -277,7 +276,10 @@ const LeafMap = () => {
       try {
         const center = map.getCenter()
         const zoom = map.getZoom()
-        navigate({
+        const controller = getActiveUrlControllerOrNull()
+        if (!controller) return
+
+        controller.navigate({
           search: (prev) => ({
             ...prev,
             z: Math.round(zoom),
@@ -327,7 +329,7 @@ const LeafMap = () => {
       mapTouchedRef.current = false
       hasInitializedViewport.current = false
     }
-  }, [dispatch, mapInstance, navigate, searchControl])
+  }, [dispatch, mapInstance, searchControl])
 
   return (
     <div className="LeafMap" data-testid="LeafMap">

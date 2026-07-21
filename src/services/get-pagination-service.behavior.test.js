@@ -31,10 +31,11 @@ vi.mock('../utils/mapStyles', () => ({
   footprintLayerStyle: footprintLayerStyleMock
 }))
 
-vi.mock('../router', () => ({
-  getActiveRouter: () => ({ navigate: navigateMock }),
-  getPathParams: getPathParamsMock,
-  ROUTE_COLLECTION: '/$collectionId'
+vi.mock('../url-controller', () => ({
+  getActiveUrlController: () => ({
+    navigate: navigateMock,
+    getPathParams: getPathParamsMock
+  })
 }))
 
 describe('FetchPageService behavior', () => {

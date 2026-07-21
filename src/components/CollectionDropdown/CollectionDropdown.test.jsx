@@ -19,24 +19,24 @@ vi.mock('../../utils/mapLayers', () => ({
   clearAllLayers: vi.fn()
 }))
 
-// Mock useNavigate so it simulates URL→Redux sync for selectedCollection
+// Mock URL controller so it simulates URL→Redux sync for selectedCollection
 const mockNavigate = vi.fn()
-vi.mock('@tanstack/react-router', async () => {
-  const { mockTanstackRouter } = await import('../../testing/shared-mocks')
+vi.mock('../../url-controller', async () => {
   const { store } = await import('../../redux/store')
   const { setSelectedCollection } = await import('../../redux/slices/mainSlice')
-  return mockTanstackRouter({
-    useParams: () => ({}),
-    useNavigate: () => {
-      return (...args) => {
+
+  return {
+    getActiveUrlController: () => ({
+      getPathParams: () => ({}),
+      navigate: (...args) => {
         mockNavigate(...args)
         const navOptions = args[0]
         if (navOptions?.params?.collectionId) {
           store.dispatch(setSelectedCollection(navOptions.params.collectionId))
         }
       }
-    }
-  })()
+    })
+  }
 })
 
 describe('CollectionDropdown', () => {

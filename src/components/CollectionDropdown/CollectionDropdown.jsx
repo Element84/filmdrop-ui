@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { useNavigate, useParams } from '@tanstack/react-router'
 import {
   setSelectedCollectionData,
   setShowZoomNotice,
@@ -14,11 +13,12 @@ import {
   clearMapSelection
 } from '../../utils/mapLayers'
 import Dropdown from '../Dropdown/Dropdown'
+import { getActiveUrlController } from '../../url-controller'
+import { ROUTE_COLLECTION } from '../../route-constants'
 
 const CollectionDropdown = () => {
   const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const params = useParams({ strict: false })
+  const controller = getActiveUrlController()
   const selectedCollection = useSelector(
     (state) => state.mainSlice.selectedCollection
   )
@@ -59,7 +59,7 @@ const CollectionDropdown = () => {
   useEffect(() => {
     if (collectionsData.length === 0) return
     if (selectedCollection) return
-    if (params.collectionId) return
+    if (controller.getPathParams()?.collectionId) return
 
     // Get default from config
     const defaultCollection = appConfig.COLLECTIONS?.default
@@ -79,18 +79,12 @@ const CollectionDropdown = () => {
       }
     }
 
-    navigate({
-      to: '/$collectionId',
+    controller.navigate({
+      to: ROUTE_COLLECTION,
       params: { collectionId: defaultId },
       replace: true
     })
-  }, [
-    collectionsData,
-    selectedCollection,
-    appConfig,
-    navigate,
-    params.collectionId
-  ])
+  }, [collectionsData, selectedCollection, appConfig, controller])
 
   // Update collection data when selection changes
   useEffect(() => {
@@ -131,8 +125,8 @@ const CollectionDropdown = () => {
     dispatch(setSelectedVisualization(null))
 
     // Navigate to collection path — URL→Redux sync handles setSelectedCollection
-    navigate({
-      to: '/$collectionId',
+    controller.navigate({
+      to: ROUTE_COLLECTION,
       params: { collectionId: newCollectionId },
       search: (prev) => ({
         // Preserve map position; clear search-committed params for new collection

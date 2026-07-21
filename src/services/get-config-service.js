@@ -16,43 +16,52 @@ import {
   normalizeStacNetworkError
 } from '../utils/stacErrorHelper'
 
+export async function prepareAppConfig(rawConfig) {
+  let normalizedConfig = normalizeCollectionsConfig(rawConfig)
+
+  // Auto-configure collections from STAC API if STAC_API_URL is provided
+  if (normalizedConfig.STAC_API_URL) {
+    normalizedConfig = await autoConfigureCollections(
+      normalizedConfig.STAC_API_URL,
+      normalizedConfig
+    )
+  }
+
+  // Auto-configure rendering based on collection render extension
+  normalizedConfig = autoConfigureRendering(normalizedConfig)
+
+  // Apply defaults for optional parameters
+  return applyConfigDefaults(normalizedConfig)
+}
+
 /**
  * Load runtime config, normalize it, and store it in Redux.
- * @param {AbortSignal} [signal] - Optional abort signal.
+ * @param {{signal?: AbortSignal, config?: Object}} [options]
  * @returns {Promise<Object>} Final config object or normalized error object.
  */
-export async function LoadConfigIntoStateService(signal) {
-  const configUrl = `${resolveConfigUrl()}${getCacheBusterSuffix()}`
+export async function LoadConfigIntoStateService({ signal, config } = {}) {
   const contextLabel = 'Error Fetching Config File'
 
   try {
-    const response = await fetch(configUrl, {
-      cache: 'no-store',
-      signal
-    })
+    let rawConfig = config
 
-    if (!response.ok) {
-      throw await normalizeStacErrorResponse(response, contextLabel)
+    if (rawConfig === undefined) {
+      const configUrl = `${resolveConfigUrl()}${getCacheBusterSuffix()}`
+      const response = await fetch(configUrl, {
+        cache: 'no-store',
+        signal
+      })
+
+      if (!response.ok) {
+        throw await normalizeStacErrorResponse(response, contextLabel)
+      }
+
+      rawConfig = await response.json()
     }
 
-    const json = await response.json()
-
-    // Validate config and enforce strict modern format requirements
-    let normalizedConfig = normalizeCollectionsConfig(json)
-
-    // Auto-configure collections from STAC API if STAC_API_URL is provided
-    if (normalizedConfig.STAC_API_URL) {
-      normalizedConfig = await autoConfigureCollections(
-        normalizedConfig.STAC_API_URL,
-        normalizedConfig
-      )
-    }
-
-    // Auto-configure rendering based on collection render extension
-    normalizedConfig = autoConfigureRendering(normalizedConfig)
-
-    // Apply defaults for optional parameters
-    const configWithDefaults = applyConfigDefaults(normalizedConfig)
+    const configWithDefaults = await prepareAppConfig(rawConfig)
+    // Aborted means a newer load may already be in flight or committed.
+    if (signal?.aborted) return configWithDefaults
     store.dispatch(setAppConfig(configWithDefaults))
     return configWithDefaults
   } catch (error) {
